@@ -20,7 +20,15 @@ EnumProperty(attr="lamp_type",
 		("Sun","Sun",""),
 ),default="Sun")
 
+BoolProperty(attr="create_geometry")
+
 BoolProperty(attr="infinite")
+
+BoolProperty(attr="spot_soft_shadows")
+
+FloatProperty(attr="shadow_fuzzyness")
+
+BoolProperty(attr="photon_only")
 
 IntProperty(attr="angle",
 		max = 80,
@@ -54,41 +62,38 @@ class YAF_PT_lamp(bpy.types.Panel):
 		if context.scene.lamp_type == 'Area':
 			context.lamp.type = 'AREA'
 			col.prop(context.lamp,"shadow_ray_samples", text= "Samples")
-			
+			col.prop(context.lamp,"size", text= "SizeX")
+			col.prop(context.lamp,"size_y", text= "SizeY")
+			col.prop(context.scene,"create_geometry", text= "Create Geometry")
 
 		if context.scene.lamp_type == 'Directional':
 			context.lamp.type = 'SUN'
 			col.prop(context.scene,"infinite", text= "Infinite")
 			col.prop(context.lamp,"shadow_soft_size", text= "Radius")
-			
 
 		if context.scene.lamp_type == 'Sphere':
 			context.lamp.type = 'POINT'
 			col.prop(context.lamp,"shadow_soft_size", text= "Radius")
 			col.prop(context.lamp,"shadow_ray_samples", text= "Samples")
-			
+			col.prop(context.scene,"create_geometry", text= "Create Geometry")
 
 		if context.scene.lamp_type == 'Spot':
 			context.lamp.type = 'SPOT'
 			col.prop(context.lamp,"spot_blend", text= "Blend")
 			col.prop(context.lamp,"spot_size", text= "Cone Angle")
-			
+			col.prop(context.scene,"spot_soft_shadows", text= "Soft Shadow")
+			col.prop(context.scene,"shadow_fuzzyness", text= "Shadow Fuzzyness")
+			col = split.column()
+			col.prop(context.scene,"photon_only", text= "Photon Only")
+			col.prop(context.lamp,"shadow_ray_samples", text= "Samples")
 
 		if context.scene.lamp_type == 'Sun':
 			context.lamp.type = 'SUN'
 			col.prop(context.scene,"angle", text= "Angle")
 			col.prop(context.lamp,"shadow_ray_samples", text= "Samples")
-			
-		
-		if context.scene.lamp_type == 'Area':
-			context.lamp.type = 'POINT'
 
 		col.prop(context.lamp,"color", text= "Color")
 		col.prop(context.lamp,"energy", text= "Power")
-
-
-
-
 
 classes = [YAF_PT_lamp]
 
