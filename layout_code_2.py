@@ -305,7 +305,7 @@ class DrawPanel(object):
 if __name__  == '__main__' :
     
     panel_code = DrawPanel('lamp','PROPERTIES','WINDOW','data','Lamp')
-    panel_code.set_file_name('/home/shuvro/Documents/GSOC_yafaray/codes/may27/main_code/panel_code.py')
+    panel_code.set_file_name('panel_code.py')
     
     ''' each property consists of four parts  - context, name, type, do_implement '''
     
@@ -321,6 +321,10 @@ if __name__  == '__main__' :
     panel_code.add_enum_values('lamp_type',['Area','Directional','MeshLight','Point','Sphere','Spot','Sun'])
     
     panel_code.add_enum('lamp_type', 'Area', ['lamp','shadow_ray_samples','int',True,'Samples'])
+    panel_code.add_enum('lamp_type', 'Area', ['lamp','size','float',True,'SizeX'])
+    panel_code.add_enum('lamp_type', 'Area', ['lamp','size_y','float',True,'SizeY'])
+    panel_code.add_enum('lamp_type', 'Area', ['scene','create_geometry','bool',False,'Create Geometry'])
+    
     
     panel_code.add_enum('lamp_type', 'Directional', ['scene','infinite','bool',False,'Infinite'])
     panel_code.add_enum('lamp_type', 'Directional', ['lamp','shadow_soft_size','float',True,'Radius']) #radius
@@ -329,9 +333,15 @@ if __name__  == '__main__' :
     
     panel_code.add_enum('lamp_type', 'Sphere', ['lamp','shadow_soft_size','float',True,'Radius'])
     panel_code.add_enum('lamp_type', 'Sphere', ['lamp','shadow_ray_samples','int',True,'Samples'])
+    panel_code.add_enum('lamp_type', 'Sphere', ['scene','create_geometry','bool',False,'Create Geometry'])
     
     panel_code.add_enum('lamp_type', 'Spot', ['lamp','spot_blend','float',True,'Blend']) #blend
     panel_code.add_enum('lamp_type', 'Spot', ['lamp','spot_size','int',True,'Cone Angle']) #cone_angle
+    panel_code.add_enum('lamp_type', 'Spot', ['scene','spot_soft_shadows','bool',False,'Soft Shadow'])
+    panel_code.add_enum('lamp_type', 'Spot', ['scene','shadow_fuzzyness','float',False,'Shadow Fuzzyness'])
+    panel_code.add_enum('lamp_type', 'Spot', ['scene','photon_only','bool',False,'Photon Only'])
+    panel_code.add_enum('lamp_type', 'Spot', ['lamp','shadow_ray_samples','int',True,'Samples'])
+    
     
     panel_code.add_enum('lamp_type', 'Sun', ['scene','angle','int',False,'Angle'])
     panel_code.add_enum('lamp_type', 'Sun', ['lamp','shadow_ray_samples','int',True,'Samples'])
