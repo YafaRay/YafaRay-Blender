@@ -133,6 +133,7 @@ class DrawPanel(object):
             print("In the enum block ")
             string += 'EnumProperty(attr="' + prop_name + '",\n'
             string += self.add_tab(1) + 'items = (\n'
+            string += self.add_tab(2) + '("' + prop_name + '","' + prop_name + '",""),\n'
             for item in self.enum_values[prop_name]:
                 ''' to enhance enum edit here '''  
                 string += self.add_tab(2) + '("' + item + '","' + item + '",""),\n'
@@ -171,13 +172,18 @@ class DrawPanel(object):
 
     
     def extract_properties_enum(self,prop_name):
+        print("prop name :" + prop_name)
         values   = self.enum_values[prop_name]
+        
+        print(str(values))
                 
         for value in values:
             if (prop_name,value) in self.enumerator:
                 enum_value_props = self.enumerator[(prop_name,value)]
-            if enum_value_props:
-                self.add_properties_rna(enum_value_props)
+                if enum_value_props:
+                    self.add_properties_rna(enum_value_props)
+            else :
+                print("enum with no associated property")
                             
     
     def draw_header_poll(self):
@@ -262,13 +268,30 @@ class DrawPanel(object):
                     #self.flag = True
                     self.add_props(prop_list,num_tab +  1)
         
-        self.file.write("\n")    
+        self.file.write("\n")
+        
+    def draw_register_unregister(self):
+            
+        string =  "classes = [" + 'YAF_PT_' + self.panel_name +"]\n\n"
+        string += "def register():\n"
+        string += "\tregister = bpy.types.register\n"
+        string += "\tfor cls in classes:\n"
+        string += self.add_tab(2) + "register(cls)\n\n\n"
+        string += "def unregister():\n"
+        string += "\tunregister = bpy.types.unregister\n"
+        string += "\tfor cls in classes:\n"
+        string += self.add_tab(2) + "unregister(cls)\n\n\n"
+        string += 'if __name__ == "__main__":\n'
+        string += self.add_tab(1) + "register()\n"
+        
+        self.file.write(string)
+    
     
     def generate_code(self):
 
         self.file = open(self.address_to_save,'w')
         
-        string = ""
+        string = "import bpy\n\n\n"
         string += 'FloatProperty = bpy.types.Scene.FloatProperty\n'
         string += 'IntProperty = bpy.types.Scene.IntProperty\n'
         string += 'BoolProperty = bpy.types.Scene.BoolProperty\n'
@@ -296,6 +319,7 @@ class DrawPanel(object):
         self.file.write(string)
         
         self.add_props(self.properties,2)
+        self.draw_register_unregister()
         
         
         self.file.close()
@@ -307,7 +331,7 @@ if __name__  == '__main__' :
     panel_code = DrawPanel('lamp','PROPERTIES','WINDOW','data','Lamp')
     panel_code.set_file_name('panel_code.py')
     
-    ''' each property consists of four parts  - context, name, type, do_implement '''
+    ''' each property consists of five parts  - context, name, type, do_implement label'''
     
     properties = []
 

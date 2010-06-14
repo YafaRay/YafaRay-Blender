@@ -89,6 +89,8 @@ class yafObject(object):
         print('I have come to this point')
         
         #scene = bpy.data.scenes[0]
+        yi.paramsSetString("type", "shinydiffusemat")
+        ymat = yi.createMaterial("defaultMat")
         
         for obj in objects:
             if obj.type in ('LAMP', 'CAMERA', 'EMPTY', 'META', 'ARMATURE'):
@@ -106,7 +108,7 @@ class yafObject(object):
                 continue
         
             hasOrco = False
-            hasUV   = True
+            hasUV   = False
             
             # Check if the object has an orco mapped texture
             for mat in mesh.materials:
@@ -163,8 +165,6 @@ class yafObject(object):
             
             print("count is : " + str(count) + "number of faces : " + str( len(mesh.faces) ) )
             
-            yi.paramsSetString("type", "shinydiffusemat")
-            ymat = yi.createMaterial("defaultMat")
             
             yi.startTriMesh(ID, len(mesh.verts), len(mesh.faces) , hasOrco, hasUV, obType)
             print("The name of id is : " + str(ID) )
@@ -192,24 +192,30 @@ class yafObject(object):
                 
                 if mesh.active_uv_texture is not None :
                     co = mesh.active_uv_texture.data[index]
-        
-                if hasUV == True and (co is not None) :
-                    uv0 = yi.addUV(co.uv1[0], co.uv1[1])
-                    uv1 = yi.addUV(co.uv2[0], co.uv2[1])
-                    uv2 = yi.addUV(co.uv3[0], co.uv3[1])
-                    yi.addTriangle(f.verts[0], f.verts[1], f.verts[2], uv0, uv1, uv2, ymat)
+                    hasUV = True
+                #
+                #if hasUV == True and (co is not None) :
+                #    uv0 = yi.addUV(co.uv1[0], co.uv1[1])
+                #    uv1 = yi.addUV(co.uv2[0], co.uv2[1])
+                #    uv2 = yi.addUV(co.uv3[0], co.uv3[1])
+                #    yi.addTriangle(f.verts[0], f.verts[1], f.verts[2], uv0, uv1, uv2, ymat)
+                #    print("with uv case 1")
+                #
+                #else:
+                yi.addTriangle(f.verts[0], f.verts[1], f.verts[2],ymat)
+                print("without uv case 1")
                 
-                else:
-                    yi.addTriangle(f.verts[0], f.verts[1], f.verts[2],ymat)
-                
-                print("trying to locate error " + str(index))
+                #print("trying to locate error " + str(index))
         
                 if len(f.verts) == 4:
-                    if hasUV == True and (co is not None):
-                        uv3 = yi.addUV(co.uv4[0], co.uv4[1])
-                        yi.addTriangle(f.verts[2], f.verts[3], f.verts[0], uv2, uv3, uv0, ymat)
-                    else:
-                        yi.addTriangle(f.verts[2], f.verts[3], f.verts[0], ymat)
+                    #if hasUV == True and (co is not None):
+                    #    uv3 = yi.addUV(co.uv4[0], co.uv4[1])
+                    #    yi.addTriangle(f.verts[2], f.verts[3], f.verts[0], uv2, uv3, uv0, ymat)
+                    #    print("with uv case 2")
+                    #else:
+                    yi.addTriangle(f.verts[2], f.verts[3], f.verts[0],ymat)
+                    print("without uv case 2")
+                    
             yi.endTriMesh()
         
             if isSmooth == True:
