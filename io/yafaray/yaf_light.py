@@ -1,5 +1,5 @@
 import bpy
-import math
+from  math import *
 import Mathutils
 #import yafrayinterface
 
@@ -36,9 +36,12 @@ class yafLight:
 			for u in range(0, nu-2):
 				yi.addTriangle( 2+v*(nu-1)+u, 2+v*(nu-1)+u+1, 2+((v+1)%nv)*(nu-1)+u, mat );
 				yi.addTriangle( 2+v*(nu-1)+u+1, 2+((v+1)%nv)*(nu-1)+u+1, 2+((v+1)%nv)*(nu-1)+u, mat );
-
+		
+		print("before starting end trimesh ...")
 		yi.endTriMesh();
+		print("before starting end geometry ...")
 		yi.endGeometry();
+		print("ID is :" + str(ID+100))
 		return ID
 		
 		
@@ -89,6 +92,8 @@ class yafLight:
 			yi.paramsSetString("type", "spherelight")
 			#yi.paramsSetInt("samples", props["samples"])
 			yi.paramsSetInt("samples", lamp.shadow_ray_samples)
+			
+			print(str(lamp.shadow_ray_samples))
 			yi.paramsSetFloat("radius", radius)
 
 		elif lampType == "Spot":
@@ -161,7 +166,7 @@ class yafLight:
 
 			yi.paramsClearAll();
 			yi.paramsSetString("type", "arealight");
-			yi.paramsSetInt("samples", lamp.shadow_ray_samples)
+			yi.paramsSetInt("samples", lamp.shadow_ray_samples_x)
 			
 			yi.paramsSetPoint("corner", point[0], point[1], point[2]);
 			yi.paramsSetPoint("point1", corner1[0], corner1[1], corner1[2]);

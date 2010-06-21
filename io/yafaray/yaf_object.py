@@ -5,58 +5,96 @@ class yafObject(object):
     def __init__(self, yi):
         self.yi = yi
 
-    def createCamera(self, yi, scene):
+    def createCamera(self,yi,scene,useView = False):
+        
+        print("INFO: Exporting Camera")
+
         camera = scene.camera
         matrix = camera.matrix
         render = scene.render
+        
+        #renderData = scene.getRenderingContext()
+        #
+        #if not useView:
+        #    camObj = scene.objects.camera
+        #    camera = camObj.getData()
+        #
+        if useView:
+            # use the view matrix to calculate the inverted transformed
+            # points cam pos (0,0,0), front (0,0,1) and up (0,1,0)
+            # view matrix works like the opengl view part of the
+            # projection matrix, i.e. transforms everything so camera is
+            # at 0,0,0 looking towards 0,0,1 (y axis being up)
+        
+            m = matrix.copy()
+            m.transpose()
+            inv = m.invert()
+            pos = inv * mathutils.Vector(0, 0, 0, 1)
+            aboveCam = inv * mathutils.Vector(0, 1, 0, 1)
+            frontCam = inv * mathutils.Vector(0, 0, 1, 1)
+            dir = frontCam - pos
+            up = aboveCam - pos
 
-        pos = matrix[3]
-        dir = matrix[2]
-        up = matrix[1]
+        else:
+
+            pos = matrix[3]
+            dir = matrix[2]
+            up = matrix[1]
+
         to = [pos[0] - dir[0], pos[1] - dir[1], pos[2] - dir[2]]
-
+        
         x = int(render.resolution_x * render.resolution_percentage * 0.01)
         y = int(render.resolution_y * render.resolution_percentage * 0.01)
- 
+
         yi.paramsClearAll()
 
-        if camera.data.YF_type == YafCameraProperties._type.orthographic:
-            yi.paramsSetString("type", camera.data.YF_type)
-            yi.paramsSetFloat("scale", camera.data.ortho_scale)
 
-        elif camera.data.YF_type in [YafCameraProperties._type.perspective,
-                                     YafCameraProperties._type.architecture]:
-            yi.paramsSetString("type", camera.data.YF_type)
-            f_aspect = 1.0;
-            if (x * x) <= (y * y):
-                f_aspect=(x * x) / (y * y)
-            yi.paramsSetFloat("focal", camera.data.lens/(f_aspect*32.0))
-
-                        # DOF params, only valid for real camera
-                        # use DOF object distance if present or fixed DOF
-            if (camera.data.dof_object):
-                # use DOF object distance
-                dof_distance = camera.data.dof_object.location.length
-            else:
-                # use fixed DOF distance
-                dof_distance = camera.data.dof_distance
-
-            yi.paramsSetFloat("dof_distance", dof_distance)
-            yi.paramsSetFloat("aperture", camera.data.YF_aperture)
-
-            yi.paramsSetString("bokeh_type", camera.data.YF_bokeh_type)
-            yi.paramsSetFloat("bokeh_rotation", camera.data.YF_bokeh_rotation)
-        
-        elif camera.data.YF_type == YafCameraProperties._type.angular:
-            yi.paramsSetString("type", camera.data.YF_type);
-            yi.paramsSetBool("circular", camera.data.YF_circular)
-            yi.paramsSetBool("mirrored", camera.data.YF_mirrored)
-            yi.paramsSetFloat("max_angle", camera.data.YF_max_angle)
-            yi.paramsSetFloat("angle", camera.data.YF_angle)
-                        
+        if useView:
+            yi.paramsSetString("type", "perspective");
         else:
-            raise Exception("Undefinied Camera type: %s" % camera.type)
+            #camProp = camObj.properties["YafRay"]
+            fdist = 1 # only changes for ortho
 
+
+            camType = scene.camera_type
+
+            if camType == "orthographic":
+                yi.paramsSetString("type", "orthographic");
+                yi.paramsSetFloat("scale", camera.data.ortho_scale)
+
+            elif camType == "perspective" or camType == "architect":
+                
+                yi.paramsSetString("type", camType);
+                f_aspect = 1.0;
+                if (x * x) <= (y * y):
+                    f_aspect=(x * x) / (y * y)
+
+                #print "f_aspect: ", f_aspect
+                yi.paramsSetFloat("focal", camera.data.lens/(f_aspect*32.0))
+                                
+                # DOF params, only valid for real camera
+                # use DOF object distance if present or fixed DOF
+                
+                if (camera.data.dof_object):
+                    # use DOF object distance
+                    dof_distance = camera.data.dof_object.location.length
+                else:
+                    # use fixed DOF distance
+                    dof_distance = camera.data.dof_distance
+
+                yi.paramsSetFloat("dof_distance", dof_distance)
+                yi.paramsSetFloat("aperture", scene.aperture)
+                # bokeh params
+                yi.paramsSetString("bokeh_type", scene.bokeh_type)
+                yi.paramsSetFloat("bokeh_rotation",scene.bokeh_rotation)
+            
+            elif camType == "angular":
+                yi.paramsSetString("type", "angular");
+                yi.paramsSetBool("circular", scene.circular)
+                yi.paramsSetBool("mirrored", scene.mirrored)
+                yi.paramsSetFloat("max_angle",scene.max_angle)
+                yi.paramsSetFloat("angle", camera.data.lens)
+        
         yi.paramsSetInt("resx", x)
         yi.paramsSetInt("resy", y)
 
@@ -64,6 +102,7 @@ class yafObject(object):
         yi.paramsSetPoint("up", pos[0] + up[0], pos[1] + up[1], pos[2] + up[2])
         yi.paramsSetPoint("to", to[0], to[1], to[2])
         yi.createCamera("cam")
+
 
     def getBBCorners(self,object):
             bb = object.bound_box   #look bpy.types.Object if there is any problem
