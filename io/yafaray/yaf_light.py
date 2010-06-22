@@ -148,7 +148,7 @@ class yafLight:
 			corner3 = matrix * corner3
 			
 			#print("point: ", point, corner1, corner2, corner3)
-
+			yi.paramsClearAll();
 			if scene.create_geometry  == True:
 				ID = yi.getNextFreeID()
 				yi.startGeometry();
@@ -164,7 +164,7 @@ class yafLight:
 				yi.endGeometry();
 				yi.paramsSetInt("object", ID);
 
-			yi.paramsClearAll();
+			
 			yi.paramsSetString("type", "arealight");
 			yi.paramsSetInt("samples", lamp.shadow_ray_samples_x)
 			
