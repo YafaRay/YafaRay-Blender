@@ -45,4 +45,13 @@ panel_code.add_enum('camera_type', 'architect', ['scene','bokeh_bias','enum',Tru
 panel_code.add_enum('camera_type', 'architect', ['camera','lens','float',True,'Focal Length'])
 
 panel_code.add_additional_poll_text('context.camera')
+
+panel_code.prop_prereq['lens']        = ['type','PERSP']
+panel_code.prop_prereq['ortho_scale'] = ['type','ORTHO']
+
+panel_code.poll_unreg_module.append('properties_data_camera')
+
+#DATA_PT_context_camera
+panel_code.builtin_module_and_class_reg.append(['properties_data_camera','DATA_PT_context_camera'])
+
 panel_code.generate_code()

@@ -14,19 +14,32 @@ class DrawPanel(object):
         
         #self.row         = []
         #self.column      = []
-        self.properties  = []
-        self.enumerator  = {}
-        self.enum_values = {}
-        self.prop_data   = {}
+        self.properties       = []
+        #self.properties_dict  = {}
+        self.enumerator       = {}
+        self.enum_values      = {}
+        self.prop_data        = {}
+        
+        '''To use an existing property, some property should be of specific value,
+        or some class must be instantiated. Each element
+        of the dictionary contains a list [property name, expected value] '''
+        
+        self.prop_prereq      = {}   
         
         self.prop_ui_data     = {}
         self.prop_implemented = {}
         
         self.poll_text   = "True "
+        #self.poll_reg_module = []
+        self.poll_unreg_module = []
+        
+        #format : each element is a list [module name, class name]
+        self.builtin_module_and_class_reg = []
+        
         self.address_to_save = '/home/shuvro/Desktop/Blender/install/linux2/.blender/scripts/ui/panel_code_yafaray.py'
         
         #self.flag = False
-        self.COMPAT_ENGINES = ['YAF_RENDER_ENGINE']
+        self.COMPAT_ENGINES = ['YAFA_RENDER']
     
     def set_file_name(self,file_name):
         self.address_to_save = file_name
@@ -36,7 +49,11 @@ class DrawPanel(object):
 
     def add_properties(self,list_properties):
         '''assign those properties that are general to the context '''
+        #lamp','shadow_ray_samples','int',True,'Samples'
         self.properties = deepcopy(list_properties)
+        
+        #for context,prop_name,prop_type,is_implemented,prop_label in properties:
+        #    self.properties_dict[prop_name] = [context,prop_type]
     
     def add_property(self,context,property_name,data_type,is_implemented,label):
         '''assign a property that is general to the context '''
@@ -133,7 +150,7 @@ class DrawPanel(object):
             print("In the enum block ")
             string += 'EnumProperty(attr="' + prop_name + '",\n'
             string += self.add_tab(1) + 'items = (\n'
-            string += self.add_tab(2) + '("' + prop_name + '","' + prop_name + '",""),\n'
+            #string += self.add_tab(2) + '("' + prop_name + '","' + prop_name + '",""),\n'
             for item in self.enum_values[prop_name]:
                 ''' to enhance enum edit here '''  
                 string += self.add_tab(2) + '("' + item + '","' + item + '",""),\n'
@@ -199,8 +216,26 @@ class DrawPanel(object):
         '''poll function started '''
         string += '\tdef poll(self, context):\n\n'
         string += '\t\tengine = context.scene.render.engine\n'
-        string += '\t\treturn ' + '(' + self.poll_text + ' and  (engine in self.COMPAT_ENGINES) ) \n'
         
+        for item in self.poll_unreg_module:
+            string += '\n\t\timport ' + item + '\n\n'
+        
+
+        for item in self.poll_unreg_module:
+            string += self.add_tab(2) + 'if ' + '(' + self.poll_text + ' and  (engine in self.COMPAT_ENGINES) ) :\n'
+            
+            string += self.add_tab(3) + 'try :\n'
+            string += self.add_tab(4) + item + '.unregister()\n'
+            string += self.add_tab(3) + 'except: \n'
+            string += self.add_tab(4) + 'pass\n'
+            
+            string += self.add_tab(2) + 'else:\n'
+            string += self.add_tab(3) + 'try:\n'
+            string += self.add_tab(4) + item + '.register()\n'
+            string += self.add_tab(3) + 'except: \n'
+            string += self.add_tab(4) + 'pass\n'
+        
+        string += '\t\treturn ' + '(' + self.poll_text + ' and  (engine in self.COMPAT_ENGINES) ) \n'
         self.file.write(string)
     
     def add_props(self,prop_list,tab_count,break_column = 4):
@@ -215,17 +250,17 @@ class DrawPanel(object):
             ''' update prop_ui_data nested dict or create new if not exists '''
             if prop_name not in self.prop_ui_data.keys():
                 
-                if prop_type == "enum":
-                    self.prop_ui_data[prop_name] = {'text' : ""}
-                else:
-                    self.prop_ui_data[prop_name] = {'text' : prop_label}
+                #if prop_type == "enum":
+                #    self.prop_ui_data[prop_name] = {'text' : ""}
+                #else:
+                self.prop_ui_data[prop_name] = {'text' : prop_label}
             
             else:
                 
-                if prop_type == "enum":
-                    self.prop_ui_data[prop_name].update(text="")
-                else:
-                    self.prop_ui_data[prop_name].update(text = prop_label)
+                #if prop_type == "enum":
+                #    self.prop_ui_data[prop_name].update(text="")
+                #else:
+                self.prop_ui_data[prop_name].update(text = prop_label)
                 
             
             if i == break_column :
@@ -234,9 +269,15 @@ class DrawPanel(object):
                 string += self.add_tab(tab_count) + 'col = split.column()\n'
                 
             ''' add property '''
+            ''' for using built-in properties check for any prerequisites '''
+            if prop_implemented == True :
+                if prop_name in self.prop_prereq.keys():
+                    string += self.add_tab(tab_count) + 'context.'+prop_context  + '.'
+                    string += self.prop_prereq[prop_name][0] + ' = \'' + self.prop_prereq[prop_name][1] + '\'\n' 
+                
             if prop_type == "enum" :
-                string += "\n" + self.add_tab(tab_count) + 'col.label(text="' + prop_name + '")\n'
-                string += self.add_tab(tab_count) + 'col.prop(context.'+ prop_context + ',"' +  prop_name + '"' + self.append_ui_prop(prop_name) +')\n'
+                #string += "\n" + self.add_tab(tab_count) + 'col.label(text="' + prop_name + '")\n'
+                string += self.add_tab(tab_count) + 'col.prop_menu_enum(context.'+ prop_context + ',"' +  prop_name + '"' + self.append_ui_prop(prop_name) +')\n'
             else:
                 string += self.add_tab(tab_count) + 'col.prop(context.'+ prop_context + ',"' +  prop_name + '"' + self.append_ui_prop(prop_name) + ')\n'
                 #,text="'+ prop_name + '"
@@ -271,16 +312,39 @@ class DrawPanel(object):
         self.file.write("\n")
         
     def draw_register_unregister(self):
+        
+        string = '\n\n'
+        for module_name,class_name in self.builtin_module_and_class_reg:
+            string += 'from ' + module_name + ' import ' + class_name + '\n'
+        
+        string += '\n'
             
-        string =  "classes = [" + 'YAF_PT_' + self.panel_name +"]\n\n"
+        string +=  "classes = [\n"
+        string += '\tYAF_PT_' + self.panel_name + ',\n'
+        
+        #for module_name,class_name in self.builtin_module_and_class_reg:
+        #    string += '\t' + class_name + ',\n'
+        
+        string +="]\n\n"
+        
+        
+        #register method
         string += "def register():\n"
+        for module_name,class_name in self.builtin_module_and_class_reg:
+            string += '\tYAF_PT_' + self.panel_name + '.prepend( ' + class_name + '.draw )\n'
         string += "\tregister = bpy.types.register\n"
         string += "\tfor cls in classes:\n"
         string += self.add_tab(2) + "register(cls)\n\n\n"
+        
+        #unregister method
         string += "def unregister():\n"
+        for module_name,class_name in self.builtin_module_and_class_reg:
+            string += '\tbpy.types.YAF_PT_' + self.panel_name + '.remove( ' + class_name + '.draw )\n'
         string += "\tunregister = bpy.types.unregister\n"
         string += "\tfor cls in classes:\n"
         string += self.add_tab(2) + "unregister(cls)\n\n\n"
+        
+        
         string += 'if __name__ == "__main__":\n'
         string += self.add_tab(1) + "register()\n"
         
@@ -329,7 +393,7 @@ class DrawPanel(object):
 if __name__  == '__main__' :
     
     panel_code = DrawPanel('lamp','PROPERTIES','WINDOW','data','Lamp')
-    panel_code.set_file_name('panel_code.py')
+    panel_code.set_file_name('panel_code_enum_handle.py')
     
     ''' each property consists of five parts  - context, name, type, do_implement label'''
     
@@ -374,6 +438,12 @@ if __name__  == '__main__' :
     panel_code.prop_data['angle'] = {'min' : 0, 'max' : 80}
     
     panel_code.add_additional_poll_text('context.lamp')
+    
+    panel_code.poll_unreg_module.append('properties_data_lamp')
+    
+    panel_code.builtin_module_and_class_reg.append(['dummy_module','dummy_class'])
+    
+    panel_code.prop_prereq['spot_blend'] = ['dummy_name','dummy_value']
     
 
     panel_code.generate_code()
