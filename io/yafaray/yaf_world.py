@@ -81,7 +81,7 @@ class yafWorld:
 
                 elif bg_type == 'Sunsky' :
                         
-                    f = scene.bg_form
+                    f = scene.bg_from
                     yi.paramsSetPoint("from", f[0], f[1], f[2])
                     
                     yi.paramsSetFloat("turbidity", scene.bg_turbidity)
@@ -101,7 +101,7 @@ class yafWorld:
                 
                 elif bg_type == "DarkTide's SunSky" :
                     
-                    f = scene.bg_form
+                    f = scene.bg_from
                     yi.paramsSetPoint("from", f[0], f[1], f[2])
                     
                     yi.paramsSetFloat("turbidity", scene.bg_turbidity)
@@ -124,6 +124,14 @@ class yafWorld:
                     yi.paramsSetFloat("bright", scene.bg_dsbright)
                     yi.paramsSetBool("night", scene.bg_dsnight)
                     yi.paramsSetString("type", "darksky")
+                
+                else:
+                    c = world.horizon_color
+                    yi.paramsSetColor("color", c[0], c[1], c[2])
+                    yi.paramsSetBool("ibl", 0)
+                    yi.paramsSetInt("ibl_samples", 16)
+                    yi.paramsSetFloat("power", scene.bg_power)
+                    yi.paramsSetString("type", "constant");
 
                 yi.createBackground("world_background")
                 return True
