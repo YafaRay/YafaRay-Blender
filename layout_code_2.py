@@ -145,6 +145,20 @@ class DrawPanel(object):
             string += 'FloatVectorProperty(attr="' + prop_name + '"'
             string += self.append_add_prop(prop_name)
             string += ')'
+        
+        #FloatVectorProperty(attr= 'dummy_prop',soft_min = 0.0, soft_max = 1.0,description = 'Color Property Test',default=(0.2, 0.3, 0.6), min=0.0, max=100.0,step = 5, precision = 3,subtype = 'XYZ')
+        elif prop_type == "point" :
+            print("I am in point ...")
+            string += 'FloatVectorProperty(attr="' + prop_name + '"'
+            string += ',description = "Point Info", subtype = "XYZ", step = 10, precision = 3'
+            string += self.append_add_prop(prop_name)
+            string += ')'
+        
+        elif prop_type == "color" :
+            string += 'FloatVectorProperty(attr="' + prop_name + '"'
+            string += ',description = "Color Settings", subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0'
+            #string += self.append_add_prop(prop_name)
+            string += ')'
           
         elif prop_type == "enum" :
             print("In the enum block ")
@@ -159,7 +173,7 @@ class DrawPanel(object):
             string += ',default="'+ item + '")'
         
         #print(string)   
-        self.file.write(string + '\n\n')
+        self.file.write(string + '\n')
         
             
     
@@ -206,7 +220,7 @@ class DrawPanel(object):
     def draw_header_poll(self):
         
         '''define header '''
-        string  = 'class YAF_PT_' + self.panel_name +'(bpy.types.Panel):\n\n'
+        string  = '\n\nclass YAF_PT_' + self.panel_name +'(bpy.types.Panel):\n\n'
         string += '\tbl_label = \'' + self.label + '\'\n'
         string += '\tbl_space_type = \'' + self.space + '\'\n'
         string += '\tbl_region_type = \'' + self.region + '\'\n'
@@ -238,8 +252,9 @@ class DrawPanel(object):
         string += '\t\treturn ' + '(' + self.poll_text + ' and  (engine in self.COMPAT_ENGINES) ) \n'
         self.file.write(string)
     
-    def add_props(self,prop_list,tab_count,break_column = 4):
+    def add_props(self,prop_list,tab_count):
         
+        break_column = self.break_column
         i =  0
         
         for prop_context, prop_name, prop_type, prop_implemented, prop_label in prop_list:
@@ -273,7 +288,13 @@ class DrawPanel(object):
             if prop_implemented == True :
                 if prop_name in self.prop_prereq.keys():
                     string += self.add_tab(tab_count) + 'context.'+prop_context  + '.'
-                    string += self.prop_prereq[prop_name][0] + ' = \'' + self.prop_prereq[prop_name][1] + '\'\n' 
+                    string += self.prop_prereq[prop_name][0] + ' = '
+                    
+                    value = self.prop_prereq[prop_name][1]
+                    if isinstance(value,str):
+                        string += '"' + value + '"'
+                    else:
+                        string += str(value) + '\n' 
                 
             if prop_type == "enum" :
                 #string += "\n" + self.add_tab(tab_count) + 'col.label(text="' + prop_name + '")\n'
@@ -351,9 +372,10 @@ class DrawPanel(object):
         self.file.write(string)
     
     
-    def generate_code(self):
+    def generate_code(self,break_value = 4):
 
         self.file = open(self.address_to_save,'w')
+        self.break_column =  break_value
         
         string = "import bpy\n\n\n"
         string += 'FloatProperty = bpy.types.Scene.FloatProperty\n'

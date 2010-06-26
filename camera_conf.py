@@ -6,12 +6,13 @@ panel_code = DrawPanel('camera','PROPERTIES','WINDOW','data','Camera')
 panel_code.set_file_name('properties_yaf_camera_second.py')
 
 
-''' each property consists of five parts  - context, name, type, do_implement label'''
+''' each property consists of five parts  - context, name, type, do_implement, label'''
     
 properties = []
 
 ''' common properties '''
 properties.append(['scene','camera_type','enum',False,'Yafaray Camera'])
+properties.append(['scene','color_data','point',False,'Yafaray Camera Point'])
 panel_code.add_properties(properties)
 
 panel_code.add_enum_values('camera_type',['angular','orthographic','perspective','architect'])

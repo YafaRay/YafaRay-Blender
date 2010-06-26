@@ -22,8 +22,9 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
     def setInterface(self, yi):
         self.yi = yi
         self.yi.loadPlugins(PLUGIN_PATH)
-        self.yaf_object = yafObject(self.yi)
-        self.yaf_lamp = yafLight(self.yi)
+        self.yaf_object  = yafObject(self.yi)
+        self.yaf_lamp    = yafLight(self.yi)
+        self.yaf_world   = yafWorld(self.yi)
     
     def exportObjects(self):
         self.yaf_object.createCamera(self.yi, self.scene)
@@ -41,19 +42,21 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.yi.createIntegrator("volintegr")
         
         #some color in the background
-        worldProp = {"bg_type":"Single Color",
-                     "color":[0,0,255],
-                     "ibl":0,
-                     "ibl_samples":16,
-                     "power":1.0
-                    }
-        c = worldProp["color"]
-        self.yi.paramsSetColor("color", c[0], c[1], c[2])
-        self.yi.paramsSetBool("ibl", worldProp["ibl"])
-        self.yi.paramsSetInt("paramsSetBoolibl_samples", worldProp["ibl_samples"])
-        self.yi.paramsSetFloat("power", worldProp["power"])
-        self.yi.paramsSetString("type", "constant")
-        self.yi.createBackground("world_background")
+        #worldProp = {"bg_type":"Single Color",
+        #             "color":[0,0,255],
+        #             "ibl":0,
+        #             "ibl_samples":16,
+        #             "power":1.0
+        #            }
+        #c = worldProp["color"]
+        #self.yi.paramsSetColor("color", c[0], c[1], c[2])
+        #self.yi.paramsSetBool("ibl", worldProp["ibl"])
+        #self.yi.paramsSetInt("paramsSetBoolibl_samples", worldProp["ibl_samples"])
+        #self.yi.paramsSetFloat("power", worldProp["power"])
+        #self.yi.paramsSetString("type", "constant")
+        #self.yi.createBackground("world_background")
+        
+        self.yaf_world.exportWorld()
         # Render
         self.yi.paramsClearAll()
         self.yi.paramsSetString("camera_name", "cam")
