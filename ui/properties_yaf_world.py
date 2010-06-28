@@ -12,6 +12,7 @@ IntVectorProperty = bpy.types.Scene.IntVectorProperty
 
 EnumProperty(attr="bg_type",
 	items = (
+		("Type","Type","Background Type"),
 		("Gradient","Gradient",""),
 		("Texture","Texture",""),
 		("Sunsky","Sunsky",""),
@@ -36,7 +37,9 @@ IntProperty(attr="bg_light_samples")
 IntProperty(attr="bg_dsaltitude")
 BoolProperty(attr="bg_dsnight")
 FloatProperty(attr="bg_dsbright")
-FloatProperty(attr="bg_power")
+FloatProperty(attr="bg_power", default = 1.0)
+
+BoolProperty(attr="use_image", default = False)
 
 
 class YAF_PT_world(bpy.types.Panel):
@@ -46,6 +49,8 @@ class YAF_PT_world(bpy.types.Panel):
 	bl_region_type = 'WINDOW'
 	bl_context = 'world'
 	COMPAT_ENGINES =['YAFA_RENDER']
+	
+	
 
 
 	def poll(self, context):
@@ -53,10 +58,15 @@ class YAF_PT_world(bpy.types.Panel):
 		engine = context.scene.render.engine
 
 		import properties_world
+		import properties_texture
 
 		if (context.world and  (engine in self.COMPAT_ENGINES) ) :
 			try :
 				properties_world.unregister()
+			except: 
+				pass
+			try :
+				properties_texture.unregister()
 			except: 
 				pass
 		else:
@@ -64,16 +74,23 @@ class YAF_PT_world(bpy.types.Panel):
 				properties_world.register()
 			except: 
 				pass
+			
+			try :
+				properties_texture.register()
+			except: 
+				pass
 		return (context.world and  (engine in self.COMPAT_ENGINES) ) 
 
 
 	def draw(self, context):
+		
 
 		layout = self.layout
 		split = layout.split()
 		col = split.column()
-
-		col.prop_menu_enum(context.scene,"bg_type", text= "Yafaray Background")
+		
+		
+		col.prop(context.scene,"bg_type", text= "Background")
 
 		if context.scene.bg_type == 'Gradient':
 			col.prop(context.world,"horizon_color", text= "Horizon Color")
@@ -88,6 +105,18 @@ class YAF_PT_world(bpy.types.Panel):
 			col.prop(context.scene,"bg_IBL_samples", text= "IBL Samples")
 			col.prop(context.scene,"bg_rotation", text= "Rotation")
 
+			tex = context.scene.world.active_texture
+
+			col.template_ID(context.world,"active_texture",new="texture.new")
+			if tex is not None :
+				col.separator()
+				#col.prop(tex,"type",text = "Texture Type")
+				col.prop(context.scene,"use_image",text = "Use image as background")
+				if context.scene.use_image :
+					tex.type = 'IMAGE'
+					col.template_image(tex, "image", tex.image_user)
+			
+
 		if context.scene.bg_type == 'Sunsky':
 			col.prop(context.scene,"bg_turbidity", text= "Turbidity")
 			col.prop(context.scene,"bg_a_var", text= "HorBrght")
@@ -95,6 +124,9 @@ class YAF_PT_world(bpy.types.Panel):
 			col.prop(context.scene,"bg_c_var", text= "SunBrght")
 			col.prop(context.scene,"bg_d_var", text= "SunSize")
 			col.prop(context.scene,"bg_e_var", text= "Backlight")
+			col.operator("world.get_position",text = "Get Position")
+			col.operator("world.get_angle",text = "Get Angle")
+			col.operator("world.update_sun",text = "Update Sun")
 			col.prop(context.scene,"bg_from", text= "From")
 			col.prop(context.scene,"bg_add_sun", text= "Add Sun")
 			col.prop(context.scene,"bg_sun_power", text= "Sun Power")
@@ -108,6 +140,9 @@ class YAF_PT_world(bpy.types.Panel):
 			col.prop(context.scene,"bg_c_var", text= "Solar region intensity")
 			col.prop(context.scene,"bg_d_var", text= "Width of circumsolar region")
 			col.prop(context.scene,"bg_e_var", text= "Backscattered light")
+			col.operator("world.get_position",text = "Get Position")
+			col.operator("world.get_angle",text = "Get Angle")
+			col.operator("world.update_sun",text = "Update Sun")
 			col.prop(context.scene,"bg_from", text= "From")
 			col.prop(context.scene,"bg_dsaltitude", text= "Altitude")
 			col.prop(context.scene,"bg_add_sun", text= "Add Sun")

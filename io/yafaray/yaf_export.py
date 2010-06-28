@@ -7,6 +7,7 @@ import tempfile
 from yafaray.yaf_object import yafObject
 from yafaray.yaf_config import PLUGIN_PATH,PATH_TO_ADD
 from yafaray.yaf_light  import yafLight
+from yafaray.yaf_world  import yafWorld
 
 import sys
 sys.path.append(PATH_TO_ADD)
@@ -17,6 +18,7 @@ IDNAME = 'YAFA_RENDER'
 
 class YafaRayRenderEngine(bpy.types.RenderEngine):
     bl_idname = IDNAME
+    bl_preview = True
     bl_label = "YafaRay Render"
     
     def setInterface(self, yi):
@@ -70,6 +72,9 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
     # callback to render scene
     def render(self, scene):
         self.scene = scene
+        
+        print("the scene name is : " + scene.name)
+        
         self.setInterface(yafrayinterface.yafrayInterface_t())
         self.yi.startScene()
         self.exportObjects()
