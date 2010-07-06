@@ -1,6 +1,6 @@
 import bpy
 from  math import *
-import Mathutils
+import mathutils
 #import yafrayinterface
 
 class yafLight:
@@ -11,8 +11,9 @@ class yafLight:
 		yi = self.yi
 		
 		# get next free id from interface
+		
 		ID = yi.getNextFreeID()
-
+		
 		yi.startGeometry();
 
 		if not yi.startTriMesh(ID, 2+(nu-1)*nv, 2*(nu-1)*nv, False, False):
@@ -45,18 +46,19 @@ class yafLight:
 		return ID
 		
 		
-	def createLight(self, yi,lamp,matrix = None, lamp_mat = None,  dupliNum = None):
+	def createLight(self, yi,lamp_object, scene, matrix = None, lamp_mat = None, dupliNum = None):
 		
-		
-		name = lamp.name
+		lamp = lamp_object.data
+		#name = lamp.name
+		name = "spot"
 		if dupliNum != None:
 			name += str(dupliNum)
 		
 		
-		context = bpy.context
+		#context = bpy.context
 	
 		if matrix == None:
-			matrix = context.object.matrix
+			matrix = lamp_object.matrix
 		pos = matrix[3]
 		dir = matrix[2]
 		up = matrix[1]
@@ -64,12 +66,12 @@ class yafLight:
 		
 		yi.paramsClearAll()
 		#props = obj.properties["YafRay"]
-		lampType = context.scene.lamp_type
+		lampType = scene.lamp_type
 		power = lamp.energy
 		color = lamp.color
 		
 		#lamp = context.lamp
-		scene = context.scene
+		#scene = context.scene
 		
 		yi.paramsClearAll()
 		
@@ -85,16 +87,21 @@ class yafLight:
 			#radius = props["radius"]
 			radius = lamp.shadow_soft_size
 			power = 0.5*power*power/(radius * radius)
+
+			
+			#yi.paramsClearAll();
+
 			if  scene.create_geometry == True:
 				ID = self.makeSphere(24, 48, pos[0], pos[1], pos[2], radius, lamp_mat)
 				yi.paramsSetInt("object", ID)
-
-			yi.paramsSetString("type", "spherelight")
+				
 			#yi.paramsSetInt("samples", props["samples"])
+			yi.paramsSetString("type", "spherelight")
 			yi.paramsSetInt("samples", lamp.shadow_ray_samples)
 			
-			print(str(lamp.shadow_ray_samples))
+			#print(str(lamp.shadow_ray_samples))
 			yi.paramsSetFloat("radius", radius)
+			print("complete ")
 
 		elif lampType == "Spot":
 			#light = obj.getData()
@@ -138,10 +145,10 @@ class yafLight:
 			# the light's position as the centerpoint and transform it
 			# using its transformation matrix
 
-			point = Mathutils.Vector(-sizeX/2, -sizeY/2, 0, 1)
-			corner1 = Mathutils.Vector(-sizeX/2, sizeY/2, 0, 1)
-			corner2 = Mathutils.Vector(sizeX/2, sizeY/2, 0, 1)
-			corner3 = Mathutils.Vector(sizeX/2, -sizeY/2, 0, 1)
+			point = mathutils.Vector((-sizeX/2, -sizeY/2, 0))
+			corner1 = mathutils.Vector((-sizeX/2, sizeY/2, 0))
+			corner2 = mathutils.Vector((sizeX/2, sizeY/2, 0))
+			corner3 = mathutils.Vector((sizeX/2, -sizeY/2, 0))
 			point = matrix * point
 			corner1 = matrix * corner1
 			corner2 = matrix * corner2
@@ -185,7 +192,7 @@ class yafLight:
 	def createLights(self,yi,scene):
 		
 		objects = scene.objects
-		
-		for lamp in bpy.data.lamps :
-			self.createLight(yi,lamp)
+		for item in objects:
+			if item.type == 'LAMP':
+				self.createLight(yi,item,scene)
 				

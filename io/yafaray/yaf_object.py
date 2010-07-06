@@ -45,6 +45,8 @@ class yafObject(object):
         
         x = int(render.resolution_x * render.resolution_percentage * 0.01)
         y = int(render.resolution_y * render.resolution_percentage * 0.01)
+        
+        #print("I am in the camera creation code")
 
         yi.paramsClearAll()
 
@@ -138,7 +140,7 @@ class yafObject(object):
             matrix = obj.matrix
             me = obj.data
             me_materials = me.materials
-            mesh = obj.create_mesh(True, 'RENDER')   #mesh is created for an object here.
+            mesh = obj.create_mesh(scene,True, 'RENDER')   #mesh is created for an object here.
             #mesh_backup = mesh
         
             if matrix:
@@ -264,3 +266,87 @@ class yafObject(object):
             print("work is completed")
             bpy.data.meshes.remove(mesh)
         #del mesh
+
+
+    # write the object using the given transformation matrix (for duplis)
+    # if no matrix is given (usual case) use the object's matrix
+    
+    def writeObject(self, yi, obj, matrix = None):
+        
+        print("INFO: Exporting Object: " + obj.name)
+        
+        materialMap = {}
+        
+        #create a default material
+        yi.paramsClearAll()
+        yi.paramsSetString("type", "shinydiffusemat")
+        #print "INFO: Exporting Material: defaultMat"
+        ymat = self.yi.createMaterial("defaultMat")
+        materialMap["default"] = ymat
+
+        # Generate unique object ID
+        ID = yi.getNextFreeID()
+
+        isMeshlight = scene.ml_enable
+        isVolume = scene.vol_enable
+        isBGPL = scene.bgp_enable
+        
+        #more codes can be added in this part later
+        if isMeshlight:
+            
+            ml_matname = "ML_"
+            ml_matname += obj.name + "." + str(obj.__hash__())
+
+            yi.paramsClearAll();
+            yi.paramsSetString("type", "light_mat");
+            yi.paramsSetBool("double_sided", scene.ml_double_sided)
+            c = scene.ml_color
+            yi.paramsSetColor("color", c[0], c[1], c[2])
+            yi.paramsSetFloat("power", scene.ml_power)
+            ml_mat = yi.createMaterial(ml_matname);
+
+            materialMap[ml_matname] = ml_mat
+            
+            
+            # Export mesh light
+            yi.paramsClearAll()
+            yi.paramsSetString("type", "meshlight")
+            yi.paramsSetBool("double_sided", scene.ml_double_sided)
+            c = scene.ml_color
+            yi.paramsSetColor("color", c[0], c[1], c[2])
+            yi.paramsSetFloat("power", scene.ml_power)
+            yi.paramsSetInt("samples", scene.ml_samples)
+            yi.paramsSetInt("object", ID)
+            yi.createLight(obj.name + "." + str(obj.__hash__()) + "." + str(ID))
+        
+        # Export BGPortalLight DT
+        if isBGPL:
+            yi.paramsClearAll()
+            yi.paramsSetString("type", "bgPortalLight")
+            yi.paramsSetFloat("power", scene.bgp_power)
+            yi.paramsSetInt("samples", scene.bgp_samples)
+            yi.paramsSetInt("object", ID)
+            yi.paramsSetBool("with_caustic", scene.bgp_with_caustic)
+            yi.paramsSetBool("with_diffuse", scene.bgp_with_diffuse)
+            yi.paramsSetBool("photon_only", scene.bgp_photon_only)
+            yi.createLight(obj.name + "." + str(obj.__hash__()) + "." + str(ID))
+        
+        
+        # Object Material
+        if isMeshlight:
+            ymaterial = ml_mat
+        else:
+            if scene.gs_clay_render == True:
+                ymaterial = materialMap["default"]
+            elif obj.type == 'CURVE':
+                curve = obj.getData()
+                if len(curve.getMaterials()) != 0:
+                    mat = curve.getMaterials()[0]
+                    ymaterial = self.materialMap[mat]
+                else:
+                    ymaterial = self.materialMap["default"]
+            else:
+                if obj.getData().getMaterials():
+                    ymaterial = None
+                else:
+                    ymaterial = self.materialMap["default"]

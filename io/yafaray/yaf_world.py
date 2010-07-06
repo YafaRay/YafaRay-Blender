@@ -1,17 +1,17 @@
 import bpy
 from  math import *
-import Mathutils
+#import mathutils
 #import yafrayinterface
 
 class yafWorld:
         def __init__(self, interface):
                 self.yi = interface
                 
-        def exportWorld(self):
+        def exportWorld(self,scene):
                 yi = self.yi
 
-                context = bpy.context
-                scene   = context.scene
+                #context = bpy.context
+                #scene   = context.scene
                 world   = scene.world
         
 
@@ -63,15 +63,19 @@ class yafWorld:
                 elif bg_type == 'Gradient' :
                 
                     c = world.horizon_color
+                    print(str(c[0]) + ", " + str(c[1]) + ", " + str(c[2]))
                     yi.paramsSetColor("horizon_color", c[0], c[1], c[2])
                     
                     c = world.zenith_color
+                    print(str(c[0]) + ", " + str(c[1]) + ", " + str(c[2]))
                     yi.paramsSetColor("zenith_color", c[0], c[1], c[2])
                     
                     c = world.ambient_color
+                    print(str(c[0]) + ", " + str(c[1]) + ", " + str(c[2]))
                     yi.paramsSetColor("horizon_ground_color", c[0], c[1], c[2])
                     
                     c = scene.bg_zenith_ground_color
+                    print(str(c[0]) + ", " + str(c[1]) + ", " + str(c[2]))
                     yi.paramsSetColor("zenith_ground_color", c[0], c[1], c[2])
                     
                     yi.paramsSetFloat("power", scene.bg_power)
@@ -128,6 +132,7 @@ class yafWorld:
                 else:
                     c = world.horizon_color
                     yi.paramsSetColor("color", c[0], c[1], c[2])
+                    print(str(c[0]) + " " + str(c[1]) + " " + str(c[2]))
                     yi.paramsSetBool("ibl", 0)
                     yi.paramsSetInt("ibl_samples", 16)
                     yi.paramsSetFloat("power", scene.bg_power)
