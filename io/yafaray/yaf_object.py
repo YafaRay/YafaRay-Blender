@@ -278,14 +278,14 @@ class yafObject(object):
         materialMap = {}
         
         #create a default material
-        yi.paramsClearAll()
-        yi.paramsSetString("type", "shinydiffusemat")
+        self.yi.paramsClearAll()
+        self.yi.paramsSetString("type", "shinydiffusemat")
         #print "INFO: Exporting Material: defaultMat"
         ymat = self.yi.createMaterial("defaultMat")
         materialMap["default"] = ymat
 
         # Generate unique object ID
-        ID = yi.getNextFreeID()
+        ID = self.yi.getNextFreeID()
 
         isMeshlight = scene.ml_enable
         isVolume = scene.vol_enable
@@ -297,39 +297,39 @@ class yafObject(object):
             ml_matname = "ML_"
             ml_matname += obj.name + "." + str(obj.__hash__())
 
-            yi.paramsClearAll();
-            yi.paramsSetString("type", "light_mat");
-            yi.paramsSetBool("double_sided", scene.ml_double_sided)
+            self.yi.paramsClearAll();
+            self.yi.paramsSetString("type", "light_mat");
+            self.yi.paramsSetBool("double_sided", scene.ml_double_sided)
             c = scene.ml_color
-            yi.paramsSetColor("color", c[0], c[1], c[2])
-            yi.paramsSetFloat("power", scene.ml_power)
-            ml_mat = yi.createMaterial(ml_matname);
+            self.yi.paramsSetColor("color", c[0], c[1], c[2])
+            self.yi.paramsSetFloat("power", scene.ml_power)
+            ml_mat = self.yi.createMaterial(ml_matname);
 
             materialMap[ml_matname] = ml_mat
             
             
             # Export mesh light
-            yi.paramsClearAll()
-            yi.paramsSetString("type", "meshlight")
-            yi.paramsSetBool("double_sided", scene.ml_double_sided)
+            self.yi.paramsClearAll()
+            self.yi.paramsSetString("type", "meshlight")
+            self.yi.paramsSetBool("double_sided", scene.ml_double_sided)
             c = scene.ml_color
-            yi.paramsSetColor("color", c[0], c[1], c[2])
-            yi.paramsSetFloat("power", scene.ml_power)
-            yi.paramsSetInt("samples", scene.ml_samples)
-            yi.paramsSetInt("object", ID)
-            yi.createLight(obj.name + "." + str(obj.__hash__()) + "." + str(ID))
+            self.yi.paramsSetColor("color", c[0], c[1], c[2])
+            self.yi.paramsSetFloat("power", scene.ml_power)
+            self.yi.paramsSetInt("samples", scene.ml_samples)
+            self.yi.paramsSetInt("object", ID)
+            self.yi.createLight(obj.name + "." + str(obj.__hash__()) + "." + str(ID))
         
         # Export BGPortalLight DT
         if isBGPL:
-            yi.paramsClearAll()
-            yi.paramsSetString("type", "bgPortalLight")
-            yi.paramsSetFloat("power", scene.bgp_power)
-            yi.paramsSetInt("samples", scene.bgp_samples)
-            yi.paramsSetInt("object", ID)
-            yi.paramsSetBool("with_caustic", scene.bgp_with_caustic)
-            yi.paramsSetBool("with_diffuse", scene.bgp_with_diffuse)
-            yi.paramsSetBool("photon_only", scene.bgp_photon_only)
-            yi.createLight(obj.name + "." + str(obj.__hash__()) + "." + str(ID))
+            self.yi.paramsClearAll()
+            self.yi.paramsSetString("type", "bgPortalLight")
+            self.yi.paramsSetFloat("power", scene.bgp_power)
+            self.yi.paramsSetInt("samples", scene.bgp_samples)
+            self.yi.paramsSetInt("object", ID)
+            self.yi.paramsSetBool("with_caustic", scene.bgp_with_caustic)
+            self.yi.paramsSetBool("with_diffuse", scene.bgp_with_diffuse)
+            self.yi.paramsSetBool("photon_only", scene.bgp_photon_only)
+            self.yi.createLight(obj.name + "." + str(obj.__hash__()) + "." + str(ID))
         
         
         # Object Material

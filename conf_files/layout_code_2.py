@@ -326,7 +326,7 @@ class DrawPanel(object):
                     
                     value = self.prop_prereq[prop_name][1]
                     if isinstance(value,str):
-                        string += '"' + value + '"'
+                        string += '"' + value + '"\n'
                     else:
                         string += str(value) + '\n' 
                 
@@ -421,20 +421,20 @@ class DrawPanel(object):
         self.file.write(string)
     
     
-    def generate_code(self,break_value = 4):
+    def generate_code(self,context = 'Scene',break_value = 4):
 
         self.file = open(self.address_to_save,'w')
         self.break_column =  break_value
         
         string = "import bpy\n\n\n"
-        string += 'FloatProperty = bpy.types.Scene.FloatProperty\n'
-        string += 'IntProperty = bpy.types.Scene.IntProperty\n'
-        string += 'BoolProperty = bpy.types.Scene.BoolProperty\n'
-        string += 'CollectionProperty = bpy.types.Scene.CollectionProperty\n'
-        string += 'EnumProperty = bpy.types.Scene.EnumProperty\n'
-        string += 'FloatVectorProperty = bpy.types.Scene.FloatVectorProperty\n'
-        string += 'StringProperty = bpy.types.Scene.StringProperty\n'
-        string += 'IntVectorProperty = bpy.types.Scene.IntVectorProperty\n\n\n'
+        string += 'FloatProperty = bpy.types.' + context + '.FloatProperty\n'
+        string += 'IntProperty = bpy.types.' + context + '.IntProperty\n'
+        string += 'BoolProperty = bpy.types.' + context + '.BoolProperty\n'
+        string += 'CollectionProperty = bpy.types.' + context + '.CollectionProperty\n'
+        string += 'EnumProperty = bpy.types.' + context + '.EnumProperty\n'
+        string += 'FloatVectorProperty = bpy.types.' + context + '.FloatVectorProperty\n'
+        string += 'StringProperty = bpy.types.' + context + '.StringProperty\n'
+        string += 'IntVectorProperty = bpy.types.' + context + '.IntVectorProperty\n\n\n'
         
         self.file.write(string)
         string = ""
@@ -465,14 +465,14 @@ class DrawPanel(object):
 if __name__  == '__main__' :
     
     panel_code = DrawPanel('lamp','PROPERTIES','WINDOW','data','Lamp')
-    panel_code.set_file_name('panel_code_enum_handle.py')
+    panel_code.set_file_name('properties_yaf_lamp.py')
     
     ''' each property consists of five parts  - context, name, type, do_implement label'''
     
     properties = []
 
     
-    properties.append(['scene','lamp_type','enum',False,'Light Type'])
+    properties.append(['lamp','lamp_type','enum',False,'Light Type'])
     properties.append(['lamp','color','bpy_prop_array',True,'Color'])
     properties.append(['lamp','energy','float',True,'Power'])
     
@@ -480,30 +480,30 @@ if __name__  == '__main__' :
     
     panel_code.add_enum_values('lamp_type',['Area','Directional','MeshLight','Point','Sphere','Spot','Sun'])
     
-    panel_code.add_enum('lamp_type', 'Area', ['lamp','shadow_ray_samples','int',True,'Samples'])
+    panel_code.add_enum('lamp_type', 'Area', ['lamp','shadow_ray_samples_x','int',True,'Samples'])
     panel_code.add_enum('lamp_type', 'Area', ['lamp','size','float',True,'SizeX'])
     panel_code.add_enum('lamp_type', 'Area', ['lamp','size_y','float',True,'SizeY'])
-    panel_code.add_enum('lamp_type', 'Area', ['scene','create_geometry','bool',False,'Create Geometry'])
+    panel_code.add_enum('lamp_type', 'Area', ['lamp','create_geometry','bool',False,'Create Geometry'])
     
     
-    panel_code.add_enum('lamp_type', 'Directional', ['scene','infinite','bool',False,'Infinite'])
+    panel_code.add_enum('lamp_type', 'Directional', ['lamp','infinite','bool',False,'Infinite'])
     panel_code.add_enum('lamp_type', 'Directional', ['lamp','shadow_soft_size','float',True,'Radius']) #radius
     
     ''' we are keeping no option for MeshLight and Point here '''
     
     panel_code.add_enum('lamp_type', 'Sphere', ['lamp','shadow_soft_size','float',True,'Radius'])
     panel_code.add_enum('lamp_type', 'Sphere', ['lamp','shadow_ray_samples','int',True,'Samples'])
-    panel_code.add_enum('lamp_type', 'Sphere', ['scene','create_geometry','bool',False,'Create Geometry'])
+    panel_code.add_enum('lamp_type', 'Sphere', ['lamp','create_geometry','bool',False,'Create Geometry'])
     
     panel_code.add_enum('lamp_type', 'Spot', ['lamp','spot_blend','float',True,'Blend']) #blend
     panel_code.add_enum('lamp_type', 'Spot', ['lamp','spot_size','int',True,'Cone Angle']) #cone_angle
-    panel_code.add_enum('lamp_type', 'Spot', ['scene','spot_soft_shadows','bool',False,'Soft Shadow'])
-    panel_code.add_enum('lamp_type', 'Spot', ['scene','shadow_fuzzyness','float',False,'Shadow Fuzzyness'])
-    panel_code.add_enum('lamp_type', 'Spot', ['scene','photon_only','bool',False,'Photon Only'])
+    panel_code.add_enum('lamp_type', 'Spot', ['lamp','spot_soft_shadows','bool',False,'Soft Shadow'])
+    panel_code.add_enum('lamp_type', 'Spot', ['lamp','shadow_fuzzyness','float',False,'Shadow Fuzzyness'])
+    panel_code.add_enum('lamp_type', 'Spot', ['lamp','photon_only','bool',False,'Photon Only'])
     panel_code.add_enum('lamp_type', 'Spot', ['lamp','shadow_ray_samples','int',True,'Samples'])
     
     
-    panel_code.add_enum('lamp_type', 'Sun', ['scene','angle','int',False,'Angle'])
+    panel_code.add_enum('lamp_type', 'Sun', ['lamp','angle','int',False,'Angle'])
     panel_code.add_enum('lamp_type', 'Sun', ['lamp','shadow_ray_samples','int',True,'Samples'])
     
     ''' add constraints '''
@@ -513,10 +513,15 @@ if __name__  == '__main__' :
     
     panel_code.poll_unreg_module.append('properties_data_lamp')
     
-    panel_code.builtin_module_and_class_reg.append(['dummy_module','dummy_class'])
+    panel_code.builtin_module_and_class_reg.append(['properties_data_lamp','DATA_PT_preview'])
+    panel_code.builtin_module_and_class_reg.append(['properties_data_lamp','DATA_PT_context_lamp'])
     
-    panel_code.prop_prereq['spot_blend'] = ['dummy_name','dummy_value']
     
-
-    panel_code.generate_code()
+    #panel_code.prop_prereq['size_y']               = ['type','AREA']
+    #panel_code.prop_prereq['shadow_soft_size']     = ['type','SUN']
+    #panel_code.prop_prereq['shadow_ray_samples']   = ['type','POINT']
+    #panel_code.prop_prereq['spot_blend']           = ['type','SPOT']
+    #panel_code.prop_prereq['shadow_ray_samples']   = ['type','SUN']
+    
+    panel_code.generate_code(context = 'Lamp')
     

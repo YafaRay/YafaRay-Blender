@@ -49,8 +49,8 @@ class yafLight:
 	def createLight(self, yi,lamp_object, scene, matrix = None, lamp_mat = None, dupliNum = None):
 		
 		lamp = lamp_object.data
-		#name = lamp.name
-		name = "spot"
+		name = lamp_object.name
+		#name = "spot"
 		if dupliNum != None:
 			name += str(dupliNum)
 		
@@ -66,7 +66,7 @@ class yafLight:
 		
 		yi.paramsClearAll()
 		#props = obj.properties["YafRay"]
-		lampType = scene.lamp_type
+		lampType = lamp.lamp_type
 		power = lamp.energy
 		color = lamp.color
 		
@@ -91,7 +91,7 @@ class yafLight:
 			
 			#yi.paramsClearAll();
 
-			if  scene.create_geometry == True:
+			if  lamp.create_geometry == True:
 				ID = self.makeSphere(24, 48, pos[0], pos[1], pos[2], radius, lamp_mat)
 				yi.paramsSetInt("object", ID)
 				
@@ -110,22 +110,22 @@ class yafLight:
 			yi.paramsSetFloat("cone_angle", lamp.spot_size / 2)
 			yi.paramsSetFloat("blend", lamp.spot_blend)
 			yi.paramsSetPoint("to", to[0], to[1], to[2])
-			yi.paramsSetBool("soft_shadows", scene.spot_soft_shadows)
-			yi.paramsSetFloat("shadowFuzzyness", scene.shadow_fuzzyness)
-			yi.paramsSetBool("photon_only", scene.photon_only )
+			yi.paramsSetBool("soft_shadows", lamp.spot_soft_shadows)
+			yi.paramsSetFloat("shadowFuzzyness", lamp.shadow_fuzzyness)
+			yi.paramsSetBool("photon_only", lamp.photon_only )
 			yi.paramsSetInt("samples", lamp.shadow_ray_samples)
 			power = 0.5*power*power
 		
 		elif lampType == "Sun":
 			yi.paramsSetString("type", "sunlight")
 			yi.paramsSetInt("samples", lamp.shadow_ray_samples)
-			yi.paramsSetFloat("angle", scene.angle)
+			yi.paramsSetFloat("angle", lamp.angle)
 			yi.paramsSetPoint("direction", dir[0], dir[1], dir[2])
 
 		elif lampType == "Directional":
 			yi.paramsSetString("type", "directional")
 			#if props["infinite"] == True:
-			yi.paramsSetBool("infinite", scene.infinite)
+			yi.paramsSetBool("infinite", lamp.infinite)
 			yi.paramsSetFloat("radius", lamp.shadow_soft_size)
 			yi.paramsSetPoint("direction", dir[0], dir[1], dir[2])
 		
@@ -156,7 +156,7 @@ class yafLight:
 			
 			#print("point: ", point, corner1, corner2, corner3)
 			yi.paramsClearAll();
-			if scene.create_geometry  == True:
+			if lamp.create_geometry  == True:
 				ID = yi.getNextFreeID()
 				yi.startGeometry();
 				yi.startTriMesh(ID, 4, 2, False, False);
