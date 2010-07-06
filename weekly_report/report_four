@@ -1,0 +1,13 @@
+ui/properties_yaf_world.py => UI code for background settings are added.
+io/yafaray/yaf_world.py => yafarayinterface code for world settings are added.
+op/yafaray_operator.py => 3 operators are added for Sunsky and 
+Darktide's sunsky background settings. They can take sun lamp position  present 
+sun lamp, take lamp angle from present sun angle  and update the 3d view of the 
+sun lamp according to the UI buttons. 
+
+io/yafaray/yaf_export.py => bl_preview enabled,some dummy settings removed and world settings is handled now.
+layout_code_2.py => improved one
+
+io/yafaray/yaf_light.py => some problems are solved for area light and sphere light
+
+

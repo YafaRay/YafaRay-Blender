@@ -1,0 +1,18 @@
+Modified files :
+
+io/yafaray/yaf_object.py : added support for multiple meshes.
+
+layout_code_2.py : enhanced with register unregister functionality and better rna enum property handling
+
+Added files:
+
+camera_conf.py : property mapper and property specifier from yafaray to blender for yafaray camera
+
+ui/properties_yaf_camera.py : UI code for camera setting with addtion of custom rna properties. 
+
+For next week:
+
+* complete the yafarayinterface part for camera settings.
+* try to start with any other plugin  
+
+
