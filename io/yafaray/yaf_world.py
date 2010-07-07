@@ -15,7 +15,7 @@ class yafWorld:
                 world   = scene.world
         
 
-                bg_type = scene.bg_type
+                bg_type = world.bg_type
                 print("INFO: Exporting World, type: " + bg_type)
                 yi.paramsClearAll();
                 
@@ -31,7 +31,8 @@ class yafWorld:
                         if worldTex.type == 'IMAGE' and (worldTex.image is not None):
                             
                             yi.paramsSetString("type", "image")
-                            yi.paramsSetString("filename", worldTex.image.filename )
+                            #yi.paramsSetString("filename", worldTex.image.filename )
+                            yi.paramsSetString("filename", worldTex.image.filepath )
                             # exposure_adjust not restricted to integer range anymore
                             yi.paramsSetFloat("exposure_adjust", worldTex.brightness/2)  #this portion is edited
                             
@@ -53,12 +54,12 @@ class yafWorld:
                                 
                             yi.paramsSetString("type", "textureback");
                             yi.paramsSetString("texture", "world_texture");
-                            yi.paramsSetBool("ibl", scene.bg_use_IBL)
+                            yi.paramsSetBool("ibl", world.bg_use_IBL)
                             yi.paramsSetBool("with_caustic", True) #this 2 lines are temporary
                             yi.paramsSetBool("with_diffuse", True)
-                            yi.paramsSetInt("ibl_samples", scene.bg_IBL_samples)
-                            yi.paramsSetFloat("power", scene.bg_power);
-                            yi.paramsSetFloat("rotation", scene.bg_rotation)
+                            yi.paramsSetInt("ibl_samples", world.bg_IBL_samples)
+                            yi.paramsSetFloat("power", world.bg_power);
+                            yi.paramsSetFloat("rotation", world.bg_rotation)
                         
                 elif bg_type == 'Gradient' :
                 
@@ -74,59 +75,59 @@ class yafWorld:
                     print(str(c[0]) + ", " + str(c[1]) + ", " + str(c[2]))
                     yi.paramsSetColor("horizon_ground_color", c[0], c[1], c[2])
                     
-                    c = scene.bg_zenith_ground_color
+                    c = world.bg_zenith_ground_color
                     print(str(c[0]) + ", " + str(c[1]) + ", " + str(c[2]))
                     yi.paramsSetColor("zenith_ground_color", c[0], c[1], c[2])
                     
-                    yi.paramsSetFloat("power", scene.bg_power)
-                    yi.paramsSetBool("ibl", scene.bg_use_IBL)
-                    yi.paramsSetInt("ibl_samples", scene.bg_IBL_samples)
+                    yi.paramsSetFloat("power", world.bg_power)
+                    yi.paramsSetBool("ibl", world.bg_use_IBL)
+                    yi.paramsSetInt("ibl_samples", world.bg_IBL_samples)
                     yi.paramsSetString("type", "gradientback")
 
                 elif bg_type == 'Sunsky' :
                         
-                    f = scene.bg_from
+                    f = world.bg_from
                     yi.paramsSetPoint("from", f[0], f[1], f[2])
                     
-                    yi.paramsSetFloat("turbidity", scene.bg_turbidity)
+                    yi.paramsSetFloat("turbidity", world.bg_turbidity)
                     
-                    yi.paramsSetFloat("a_var", scene.bg_a_var)
-                    yi.paramsSetFloat("b_var", scene.bg_b_var)
-                    yi.paramsSetFloat("c_var", scene.bg_c_var)
-                    yi.paramsSetFloat("d_var", scene.bg_d_var)
-                    yi.paramsSetFloat("e_var", scene.bg_e_var)
+                    yi.paramsSetFloat("a_var", world.bg_a_var)
+                    yi.paramsSetFloat("b_var", world.bg_b_var)
+                    yi.paramsSetFloat("c_var", world.bg_c_var)
+                    yi.paramsSetFloat("d_var", world.bg_d_var)
+                    yi.paramsSetFloat("e_var", world.bg_e_var)
                     
-                    yi.paramsSetBool("add_sun", scene.bg_add_sun)
-                    yi.paramsSetFloat("sun_power", scene.bg_sun_power)
-                    yi.paramsSetBool("background_light", scene.bg_background_light)
-                    yi.paramsSetInt("light_samples", scene.bg_light_samples)
-                    yi.paramsSetFloat("power", scene.bg_power)
+                    yi.paramsSetBool("add_sun", world.bg_add_sun)
+                    yi.paramsSetFloat("sun_power", world.bg_sun_power)
+                    yi.paramsSetBool("background_light", world.bg_background_light)
+                    yi.paramsSetInt("light_samples", world.bg_light_samples)
+                    yi.paramsSetFloat("power", world.bg_power)
                     yi.paramsSetString("type", "sunsky")
                 
                 elif bg_type == "DarkTide's SunSky" :
                     
-                    f = scene.bg_from
+                    f = world.bg_from
                     yi.paramsSetPoint("from", f[0], f[1], f[2])
                     
-                    yi.paramsSetFloat("turbidity", scene.bg_turbidity)
-                    yi.paramsSetFloat("altitude", scene.bg_dsaltitude)
+                    yi.paramsSetFloat("turbidity", world.bg_turbidity)
+                    yi.paramsSetFloat("altitude", world.bg_dsaltitude)
                     
-                    yi.paramsSetFloat("a_var", scene.bg_a_var)
-                    yi.paramsSetFloat("b_var", scene.bg_b_var)
-                    yi.paramsSetFloat("c_var", scene.bg_c_var)
-                    yi.paramsSetFloat("d_var", scene.bg_d_var)
-                    yi.paramsSetFloat("e_var", scene.bg_e_var)
+                    yi.paramsSetFloat("a_var", world.bg_a_var)
+                    yi.paramsSetFloat("b_var", world.bg_b_var)
+                    yi.paramsSetFloat("c_var", world.bg_c_var)
+                    yi.paramsSetFloat("d_var", world.bg_d_var)
+                    yi.paramsSetFloat("e_var", world.bg_e_var)
                     
                     #yi.paramsSetBool("clamp_rgb", renderprops["clamp_rgb"])
-                    yi.paramsSetBool("add_sun", scene.bg_add_sun)
-                    yi.paramsSetFloat("sun_power", scene.bg_sun_power)
-                    yi.paramsSetBool("background_light", scene.bg_background_light)
+                    yi.paramsSetBool("add_sun", world.bg_add_sun)
+                    yi.paramsSetFloat("sun_power", world.bg_sun_power)
+                    yi.paramsSetBool("background_light", world.bg_background_light)
                     yi.paramsSetBool("with_caustic", True)
                     yi.paramsSetBool("with_diffuse", True)
-                    yi.paramsSetInt("light_samples", scene.bg_light_samples)
-                    yi.paramsSetFloat("power", scene.bg_power)
-                    yi.paramsSetFloat("bright", scene.bg_dsbright)
-                    yi.paramsSetBool("night", scene.bg_dsnight)
+                    yi.paramsSetInt("light_samples", world.bg_light_samples)
+                    yi.paramsSetFloat("power", world.bg_power)
+                    yi.paramsSetFloat("bright", world.bg_dsbright)
+                    yi.paramsSetBool("night", world.bg_dsnight)
                     yi.paramsSetString("type", "darksky")
                 
                 else:
@@ -135,7 +136,7 @@ class yafWorld:
                     print(str(c[0]) + " " + str(c[1]) + " " + str(c[2]))
                     yi.paramsSetBool("ibl", 0)
                     yi.paramsSetInt("ibl_samples", 16)
-                    yi.paramsSetFloat("power", scene.bg_power)
+                    yi.paramsSetFloat("power", world.bg_power)
                     yi.paramsSetString("type", "constant");
 
                 yi.createBackground("world_background")

@@ -85,21 +85,21 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
     # callback to render scene
     def render(self, scene):
-        self.scene = scene
-        
-        r = scene.render
-
-        # compute resolution
-        x= int(r.resolution_x*r.resolution_percentage*0.01)
-        y= int(r.resolution_y*r.resolution_percentage*0.01)
-        
-        self.setInterface(yafrayinterface.yafrayInterface_t())
-        
-        
         
         if scene.name != 'preview':
+            
+            self.scene = scene
+        
+            r = scene.render
+
+            # compute resolution
+            x= int(r.resolution_x*r.resolution_percentage*0.01)
+            y= int(r.resolution_y*r.resolution_percentage*0.01)
+        
+            self.setInterface(yafrayinterface.yafrayInterface_t())
+            
             print("the scene name is : " + scene.name )
-            print("the background type is : " + scene.bg_type)
+            #print("the background type is : " + scene.bg_type)
             
         
             self.yi.startScene()
@@ -124,6 +124,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.end_result(result)
             self.update_stats("", "Done!")
         #else:
+        #    print("This is for preview")
         #    self.yi.startScene()
         #    self.exportObjects()
         #    self.configureRender(x,y)

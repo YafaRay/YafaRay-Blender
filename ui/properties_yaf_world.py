@@ -1,18 +1,19 @@
 import bpy
 
 
-FloatProperty = bpy.types.Scene.FloatProperty
-IntProperty = bpy.types.Scene.IntProperty
-BoolProperty = bpy.types.Scene.BoolProperty
-CollectionProperty = bpy.types.Scene.CollectionProperty
-EnumProperty = bpy.types.Scene.EnumProperty
-FloatVectorProperty = bpy.types.Scene.FloatVectorProperty
-IntVectorProperty = bpy.types.Scene.IntVectorProperty
+FloatProperty = bpy.types.World.FloatProperty
+IntProperty = bpy.types.World.IntProperty
+BoolProperty = bpy.types.World.BoolProperty
+CollectionProperty = bpy.types.World.CollectionProperty
+EnumProperty = bpy.types.World.EnumProperty
+FloatVectorProperty = bpy.types.World.FloatVectorProperty
+StringProperty = bpy.types.World.StringProperty
+IntVectorProperty = bpy.types.World.IntVectorProperty
 
 
 EnumProperty(attr="bg_type",
 	items = (
-		("Type","Type","Background Type"),
+		("Yafaray Background","Yafaray Background",""),
 		("Gradient","Gradient",""),
 		("Texture","Texture",""),
 		("Sunsky","Sunsky",""),
@@ -24,17 +25,17 @@ BoolProperty(attr="bg_use_IBL")
 IntProperty(attr="bg_IBL_samples")
 IntProperty(attr="bg_rotation")
 FloatProperty(attr="bg_turbidity")
-IntProperty(attr="bg_a_var")
-IntProperty(attr="bg_b_var")
-IntProperty(attr="bg_c_var")
-IntProperty(attr="bg_d_var")
-IntProperty(attr="bg_e_var")
+FloatProperty(attr="bg_a_var")
+FloatProperty(attr="bg_b_var")
+FloatProperty(attr="bg_c_var")
+FloatProperty(attr="bg_d_var")
+FloatProperty(attr="bg_e_var")
 FloatVectorProperty(attr="bg_from",description = "Point Info", subtype = "XYZ", step = 10, precision = 3)
 BoolProperty(attr="bg_add_sun")
 FloatProperty(attr="bg_sun_power")
 BoolProperty(attr="bg_background_light")
 IntProperty(attr="bg_light_samples")
-IntProperty(attr="bg_dsaltitude")
+FloatProperty(attr="bg_dsaltitude")
 BoolProperty(attr="bg_dsnight")
 FloatProperty(attr="bg_dsbright")
 FloatProperty(attr="bg_power", default = 1.0)
@@ -49,8 +50,6 @@ class YAF_PT_world(bpy.types.Panel):
 	bl_region_type = 'WINDOW'
 	bl_context = 'world'
 	COMPAT_ENGINES =['YAFA_RENDER']
-	
-	
 
 
 	def poll(self, context):
@@ -58,6 +57,8 @@ class YAF_PT_world(bpy.types.Panel):
 		engine = context.scene.render.engine
 
 		import properties_world
+
+
 		import properties_texture
 
 		if (context.world and  (engine in self.COMPAT_ENGINES) ) :
@@ -65,17 +66,18 @@ class YAF_PT_world(bpy.types.Panel):
 				properties_world.unregister()
 			except: 
 				pass
+		else:
+			try:
+				properties_world.register()
+			except: 
+				pass
+		if (context.world and  (engine in self.COMPAT_ENGINES) ) :
 			try :
 				properties_texture.unregister()
 			except: 
 				pass
 		else:
 			try:
-				properties_world.register()
-			except: 
-				pass
-			
-			try :
 				properties_texture.register()
 			except: 
 				pass
@@ -83,79 +85,83 @@ class YAF_PT_world(bpy.types.Panel):
 
 
 	def draw(self, context):
-		
 
 		layout = self.layout
 		split = layout.split()
 		col = split.column()
-		
-		
-		col.prop(context.scene,"bg_type", text= "Background")
 
-		if context.scene.bg_type == 'Gradient':
+		col.prop(context.world,"bg_type", text= "Yafaray Background")
+
+		if context.world.bg_type == 'Gradient':
 			col.prop(context.world,"horizon_color", text= "Horizon Color")
 			context.world.real_sky = True
 			col.prop(context.world,"ambient_color", text= "Horizon Ground Color")
 			context.world.blend_sky = True
 			col.prop(context.world,"zenith_color", text= "Zenith Color")
-			col.prop(context.scene,"bg_zenith_ground_color", text= "Zenith Ground Color")
+			col.prop(context.world,"bg_zenith_ground_color", text= "Zenith Ground Color")
 
-		if context.scene.bg_type == 'Texture':
-			col.prop(context.scene,"bg_use_IBL", text= "Use IBL")
-			col.prop(context.scene,"bg_IBL_samples", text= "IBL Samples")
-			col.prop(context.scene,"bg_rotation", text= "Rotation")
-
-			tex = context.scene.world.active_texture
+		if context.world.bg_type == 'Texture':
+			col.prop(context.world,"bg_use_IBL", text= "Use IBL")
+			col.prop(context.world,"bg_IBL_samples", text= "IBL Samples")
+			col.prop(context.world,"bg_rotation", text= "Rotation")
+			
+			
 
 			col.template_ID(context.world,"active_texture",new="texture.new")
+			tex = context.scene.world.active_texture
 			if tex is not None :
 				col.separator()
 				#col.prop(tex,"type",text = "Texture Type")
-				col.prop(context.scene,"use_image",text = "Use image as background")
-				if context.scene.use_image :
+				col.prop(context.world,"use_image",text = "Use image as background")
+				if context.world.use_image :
 					tex.type = 'IMAGE'
-					col.template_image(tex, "image", tex.image_user)
-			
+					#print(tex.type)
+					try:
+						col.template_image(tex, "image", tex.image_user)
+					except:
+						pass
 
-		if context.scene.bg_type == 'Sunsky':
-			col.prop(context.scene,"bg_turbidity", text= "Turbidity")
-			col.prop(context.scene,"bg_a_var", text= "HorBrght")
-			col.prop(context.scene,"bg_b_var", text= "HorSprd")
-			col.prop(context.scene,"bg_c_var", text= "SunBrght")
-			col.prop(context.scene,"bg_d_var", text= "SunSize")
-			col.prop(context.scene,"bg_e_var", text= "Backlight")
+		if context.world.bg_type == 'Sunsky':
+			col.prop(context.world,"bg_turbidity", text= "Turbidity")
+			col.prop(context.world,"bg_a_var", text= "HorBrght")
+			col.prop(context.world,"bg_b_var", text= "HorSprd")
+			col.prop(context.world,"bg_c_var", text= "SunBrght")
+			col.prop(context.world,"bg_d_var", text= "SunSize")
+			col.prop(context.world,"bg_e_var", text= "Backlight")
 			col.operator("world.get_position",text = "Get Position")
 			col.operator("world.get_angle",text = "Get Angle")
 			col.operator("world.update_sun",text = "Update Sun")
-			col.prop(context.scene,"bg_from", text= "From")
-			col.prop(context.scene,"bg_add_sun", text= "Add Sun")
-			col.prop(context.scene,"bg_sun_power", text= "Sun Power")
-			col.prop(context.scene,"bg_background_light", text= "Skylight")
-			col.prop(context.scene,"bg_light_samples", text= "Samples")
+			col.prop(context.world,"bg_from", text= "From")
+			col.prop(context.world,"bg_add_sun", text= "Add Sun")
 
-		if context.scene.bg_type == 'Darktide\'s Sunsky':
-			col.prop(context.scene,"bg_turbidity", text= "Turbidity")
-			col.prop(context.scene,"bg_a_var", text= "Brightness of horizon gradient")
-			col.prop(context.scene,"bg_b_var", text= "Luminance of horizon")
-			col.prop(context.scene,"bg_c_var", text= "Solar region intensity")
-			col.prop(context.scene,"bg_d_var", text= "Width of circumsolar region")
-			col.prop(context.scene,"bg_e_var", text= "Backscattered light")
-			col.operator("world.get_position",text = "Get Position")
-			col.operator("world.get_angle",text = "Get Angle")
-			col.operator("world.update_sun",text = "Update Sun")
-			col.prop(context.scene,"bg_from", text= "From")
-			col.prop(context.scene,"bg_dsaltitude", text= "Altitude")
-			col.prop(context.scene,"bg_add_sun", text= "Add Sun")
-			col.prop(context.scene,"bg_sun_power", text= "Sun Power")
-			col.prop(context.scene,"bg_background_light", text= "Add Skylight")
-			col.prop(context.scene,"bg_dsnight", text= "Night")
-			col.prop(context.scene,"bg_dsbright", text= "Sky Brightness")
-			col.prop(context.scene,"bg_light_samples", text= "Samples")
+			col.prop(context.world,"bg_sun_power", text= "Sun Power")
+			col.prop(context.world,"bg_background_light", text= "Skylight")
 
-		if context.scene.bg_type == 'Single Color':
+			col.prop(context.world,"bg_light_samples", text= "Samples")
+
+		if context.world.bg_type == 'Darktide\'s Sunsky':
+			col.prop(context.world,"bg_turbidity", text= "Turbidity")
+			col.prop(context.world,"bg_a_var", text= "Brightness of horizon gradient")
+			col.prop(context.world,"bg_b_var", text= "Luminance of horizon")
+			col.prop(context.world,"bg_c_var", text= "Solar region intensity")
+			col.prop(context.world,"bg_d_var", text= "Width of circumsolar region")
+			col.prop(context.world,"bg_e_var", text= "Backscattered light")
+			col.prop(context.world,"bg_from", text= "From")
+			col.prop(context.world,"bg_dsaltitude", text= "Altitude")
+			col.prop(context.world,"bg_add_sun", text= "Add Sun")
+
+			col.prop(context.world,"bg_sun_power", text= "Sun Power")
+			col.prop(context.world,"bg_background_light", text= "Add Skylight")
+
+			col.prop(context.world,"bg_dsnight", text= "Night")
+
+			col.prop(context.world,"bg_dsbright", text= "Sky Brightness")
+			col.prop(context.world,"bg_light_samples", text= "Samples")
+
+		if context.world.bg_type == 'Single Color':
 			col.prop(context.world,"horizon_color", text= "Color")
 
-		col.prop(context.scene,"bg_power", text= "Multiplier for Background Color")
+		col.prop(context.world,"bg_power", text= "Multiplier for Background Color")
 
 
 from properties_world import WORLD_PT_preview
