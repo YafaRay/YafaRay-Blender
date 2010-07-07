@@ -1,14 +1,14 @@
 import bpy
 
 
-FloatProperty = bpy.types.Scene.FloatProperty
-IntProperty = bpy.types.Scene.IntProperty
-BoolProperty = bpy.types.Scene.BoolProperty
-CollectionProperty = bpy.types.Scene.CollectionProperty
-EnumProperty = bpy.types.Scene.EnumProperty
-FloatVectorProperty = bpy.types.Scene.FloatVectorProperty
-StringProperty = bpy.types.Scene.StringProperty
-IntVectorProperty = bpy.types.Scene.IntVectorProperty
+FloatProperty = bpy.types.Object.FloatProperty
+IntProperty = bpy.types.Object.IntProperty
+BoolProperty = bpy.types.Object.BoolProperty
+CollectionProperty = bpy.types.Object.CollectionProperty
+EnumProperty = bpy.types.Object.EnumProperty
+FloatVectorProperty = bpy.types.Object.FloatVectorProperty
+StringProperty = bpy.types.Object.StringProperty
+IntVectorProperty = bpy.types.Object.IntVectorProperty
 
 
 BoolProperty(attr="ml_enable")
@@ -64,7 +64,7 @@ class YAF_PT_object_light(bpy.types.Panel):
 				properties_object.register()
 			except: 
 				pass
-		return (True  and  (engine in self.COMPAT_ENGINES) ) 
+		return (context.object.type == 'MESH'  and  (engine in self.COMPAT_ENGINES) ) 
 
 
 	def draw(self, context):
@@ -73,43 +73,43 @@ class YAF_PT_object_light(bpy.types.Panel):
 		split = layout.split()
 		col = split.column()
 
-		col.prop(context.scene,"ml_enable", text= "Enable Meshlight", toggle = True)
+		col.prop(context.object,"ml_enable", text= "Enable Meshlight", toggle = True)
 
-		if context.scene.ml_enable:
-			col.prop(context.scene,"ml_color", text= "Meshlight Color")
-			col.prop(context.scene,"ml_power", text= "Power")
-			col.prop(context.scene,"ml_samples", text= "Samples")
-			col.prop(context.scene,"ml_double_sided", text= "Double Sided")
-
-
-		col.prop(context.scene,"bgp_enable", text= "Enable Bgportallight", toggle = True)
-
-		if context.scene.bgp_enable:
-			col.prop(context.scene,"bgp_power", text= "Power")
-			col.prop(context.scene,"bgp_samples", text= "Samples")
-			col.prop(context.scene,"bgp_with_caustic", text= "With Caustic")
-
-			col.prop(context.scene,"bgp_with_diffuse", text= "With Diffuse")
-
-			col.prop(context.scene,"bgp_photon_only", text= "Photons Only")
+		if context.object.ml_enable:
+			col.prop(context.object,"ml_color", text= "Meshlight Color")
+			col.prop(context.object,"ml_power", text= "Power")
+			col.prop(context.object,"ml_samples", text= "Samples")
+			col.prop(context.object,"ml_double_sided", text= "Double Sided")
 
 
-		col.prop(context.scene,"vol_enable", text= "Enable Volume", toggle = True)
+		col.prop(context.object,"bgp_enable", text= "Enable Bgportallight", toggle = True)
 
-		if context.scene.vol_enable:
-			col.prop(context.scene,"vol_region", text= "Volume Region")
+		if context.object.bgp_enable:
+			col.prop(context.object,"bgp_power", text= "Power")
+			col.prop(context.object,"bgp_samples", text= "Samples")
+			col.prop(context.object,"bgp_with_caustic", text= "With Caustic")
 
-			if context.scene.vol_region == 'ExpDensity Volume':
-				col.prop(context.scene,"vol_height", text= "Height")
-				col.prop(context.scene,"vol_steepness", text= "Steepness")
+			col.prop(context.object,"bgp_with_diffuse", text= "With Diffuse")
 
-			if context.scene.vol_region == 'Noise Volume':
-				col.prop(context.scene,"vol_sharpness", text= "Sharpness")
-				col.prop(context.scene,"vol_cover", text= "Cover")
-				col.prop(context.scene,"vol_density", text= "Density")
+			col.prop(context.object,"bgp_photon_only", text= "Photons Only")
 
-			col.prop(context.scene,"vol_absorp", text= "Absroption")
-			col.prop(context.scene,"vol_scatter", text= "Scatter")
+
+		col.prop(context.object,"vol_enable", text= "Enable Volume", toggle = True)
+
+		if context.object.vol_enable:
+			col.prop(context.object,"vol_region", text= "Volume Region")
+
+			if context.object.vol_region == 'ExpDensity Volume':
+				col.prop(context.object,"vol_height", text= "Height")
+				col.prop(context.object,"vol_steepness", text= "Steepness")
+
+			if context.object.vol_region == 'Noise Volume':
+				col.prop(context.object,"vol_sharpness", text= "Sharpness")
+				col.prop(context.object,"vol_cover", text= "Cover")
+				col.prop(context.object,"vol_density", text= "Density")
+
+			col.prop(context.object,"vol_absorp", text= "Absroption")
+			col.prop(context.object,"vol_scatter", text= "Scatter")
 
 
 
