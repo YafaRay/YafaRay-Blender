@@ -1,5 +1,5 @@
 import bpy
-from yafaray.yaf_properties import *
+#from yafaray.yaf_properties import *
 
 class yafObject(object):
     def __init__(self, yi):
@@ -11,7 +11,7 @@ class yafObject(object):
         print("INFO: Exporting Camera")
 
         camera = scene.camera
-        matrix = camera.matrix
+        matrix = camera.matrix_local # this change is recent
         render = scene.render
         
         #renderData = scene.getRenderingContext()
@@ -140,7 +140,7 @@ class yafObject(object):
         #        continue
         print("The id is : " + str(ID))
             
-        matrix = obj.matrix
+        matrix = obj.matrix_local #recent change
         me = obj.data
         me_materials = me.materials
         mesh = obj.create_mesh(scene,True, 'RENDER')   #mesh is created for an object here.

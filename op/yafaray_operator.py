@@ -1,5 +1,5 @@
 import bpy
-import Mathutils
+import mathutils
 
 class OBJECT_OT_get_position(bpy.types.Operator):
     bl_label = "From( get position )"
@@ -42,24 +42,24 @@ def sunPosAngle(mode="get", val="position"):
             print('Come to the main clause')
             if mode == 'get' :
                 if val == 'position' :
-                    location = Mathutils.Vector(active_object.location)
+                    location = mathutils.Vector(active_object.location)
                     if location.length:
                         point = location.copy().normalize()
                     scene.bg_from = point.copy()
                 
                 elif val == 'angle' :
-                    inv_matrix    = Mathutils.Matrix(active_object.matrix).copy().invert()
+                    inv_matrix    = mathutils.Matrix(active_object.matrix).copy().invert()
                     scene.bg_from = (inv_matrix[0][2],inv_matrix[1][2],inv_matrix[2][2])
             
             elif mode == 'update' :
                 
                 # get gui from vector and normalize it
-                bg_from = Mathutils.Vector(scene.bg_from)
+                bg_from = mathutils.Vector(scene.bg_from)
                 if bg_from.length:
                     bg_from.normalize()
             
                 # set location -----------------------------------
-                sundist = Mathutils.Vector(active_object.location).length
+                sundist = mathutils.Vector(active_object.location).length
                 active_object.location = sundist * bg_from
             
                 # compute and set rotation -----------------------
@@ -67,7 +67,7 @@ def sunPosAngle(mode="get", val="position"):
                 ang = 0.0
             
                 # set reference vector for angle to -z
-                vtrack = Mathutils.Vector(0, 0, -1)
+                vtrack = mathutils.Vector(0, 0, -1)
             
                 # compute sun ray direction from position
                 vray = bg_from.copy()
@@ -84,7 +84,7 @@ def sunPosAngle(mode="get", val="position"):
                 axis = vtrack.cross(vray).normalize()
             
                 # get quaternion representing rotation and get corresponding euler angles
-                quat = Mathutils.Quaternion(axis, ang)
+                quat = mathutils.Quaternion(axis, ang)
                 eul = quat.to_euler().unique()
                 
                 eulrad = []

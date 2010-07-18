@@ -101,8 +101,31 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             print("the scene name is : " + scene.name )
             #print("the background type is : " + scene.bg_type)
             
-        
+            #newly added part
+            #outputFile = self.getOutputFilename(frameNumber)
+                        
+            #format = self.yi.getImageFormatFromFullName(self.scene.properties["YafRay"]["Renderer"]["file_type"])
+            #outputFile += '.' + format
+            outputFile = tempfile.mktemp(suffix='.png')
+                        
+            self.yi.paramsClearAll()
+            self.yi.paramsSetString("type", 'png')
+            self.yi.paramsSetInt("width", x)
+            self.yi.paramsSetInt("height", y)
+            self.yi.paramsSetBool("alpha_channel", False)
+            self.yi.paramsSetBool("z_channel", True)
+                        
+            ih = self.yi.createImageHandler("outFile")
+            co = yafrayinterface.imageOutput_t(ih, outputFile)
+                        
+            self.yi.printInfo("Exporter: Rendering to file " + outputFile)
+                
             self.yi.startScene()
+            #end of added part
+                
+            #[co, outputFile]
+            #self.yi.startScene()
+            
             self.exportObjects()
             self.configureRender()
             
@@ -111,8 +134,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             lay = result.layers[0]
             
             # here we export blender scene and renders using yafaray
-            outputFile = tempfile.mktemp(suffix='.tga')
-            co = yafrayinterface.outTga_t(x, y, outputFile)
+            #outputFile = tempfile.mktemp(suffix='.tga')
+            #co = yafrayinterface.outTga_t(x, y, outputFile)
             
             self.update_stats("", "Rendering to %s" % outputFile)
             print("Rendering to %s" % outputFile)

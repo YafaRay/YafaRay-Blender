@@ -58,7 +58,7 @@ class yafLight:
 		#context = bpy.context
 	
 		if matrix == None:
-			matrix = lamp_object.matrix
+			matrix = lamp_object.matrix_local #this change is at 18.7.10
 		pos = matrix[3]
 		dir = matrix[2]
 		up = matrix[1]
