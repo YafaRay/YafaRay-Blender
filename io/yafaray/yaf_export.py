@@ -181,3 +181,19 @@ properties_render.RENDER_PT_dimensions.COMPAT_ENGINES.add(IDNAME)
 properties_render.RENDER_PT_output.COMPAT_ENGINES.add(IDNAME)
 del properties_render
 
+import properties_particle
+properties_particle.PARTICLE_PT_context_particles.COMPAT_ENGINES.add(IDNAME)
+properties_particle.PARTICLE_PT_emission.COMPAT_ENGINES.add(IDNAME)
+properties_particle.PARTICLE_PT_hair_dynamics.COMPAT_ENGINES.add(IDNAME)
+#properties_particle.PARTICLE_PT_cache.COMPAT_ENGINES.add(IDNAME)
+properties_particle.PARTICLE_PT_velocity.COMPAT_ENGINES.add(IDNAME)
+properties_particle.PARTICLE_PT_rotation.COMPAT_ENGINES.add(IDNAME)
+properties_particle.PARTICLE_PT_physics.COMPAT_ENGINES.add(IDNAME)
+properties_particle.PARTICLE_PT_boidbrain.COMPAT_ENGINES.add(IDNAME)
+properties_particle.PARTICLE_PT_render.COMPAT_ENGINES.add(IDNAME)
+properties_particle.PARTICLE_PT_draw.COMPAT_ENGINES.add(IDNAME)
+#properties_particle.PARTICLE_PT_children.COMPAT_ENGINES.add(IDNAME)
+properties_particle.PARTICLE_PT_force_fields.COMPAT_ENGINES.add(IDNAME)
+#properties_particle.PARTICLE_PT_vertexgroups.COMPAT_ENGINES.add(IDNAME)
+del properties_particle
+

@@ -1,4 +1,5 @@
 import bpy
+import time
 #from yafaray.yaf_properties import *
 
 class yafObject(object):
@@ -358,8 +359,74 @@ class yafObject(object):
         
         if isBGPL:
             self.writeMesh(yi, scene, obj, ID, ymat)
+            
+        elif obj.active_particle_system is not None:
+            self.writeParticlesObject(yi, scene, obj, ID)
+            
         else:
             self.writeMesh(yi, scene, obj, ID, ymat)
+
+    def writeParticlesObject(self, yi, scene, object, ID):
+        
+        renderEmitter = False
+        
+        if hasattr(object,'particle_systems') == False:
+            return
+
+        for pSys in object.particle_systems:
+            
+            if (pSys.settings.ren_as == 'PATH'):
+                # Export particles
+                #yi.printInfo("Exporter: Creating Particle System \"" + pSys.getName() + "\"")
+                tstart = time.time()
+                
+                # get particles material (keeps particles thikness too)
+                # TODO: clay particles uses at least materials thikness?
+                if object.active_material is not None:
+                    pmaterial = object.active_material
+                    
+                    if pmaterial.strand.blender_units :
+                        strandStart = pmaterial.strand.root_size
+                        strandEnd   = pmaterial.strand.tip_size
+                        strandShape = pmaterial.strand.shape
+                    else:
+                        # Blender unit conversion
+                        strandStart = pmaterial.strand.root_size/100
+                        strandEnd   = pmaterial.strand.tip_size/100
+                        strandShape = pmaterial.strand.shape
+                else:
+                    # No material assigned in blender, use default one
+                    pmaterial = "default"
+                    strandStart = 0.01
+                    strandEnd = 0.01
+                    strandShape = 0.0
+                    
+                # Workaround to API bug, getLoc() is empty for particles system > 1
+                # (object has more than one particle system assigned)
+                #pSys.getLoc()
+                # Workaround end
+                CID = yi.getNextFreeID()
+                yi.paramsClearAll()
+                yi.startGeometry()
+                yi.startCurveMesh(CID, len(pSys.particles))
+                for particle in pSys.particles:
+                    #for vertex in path:
+                    location = particle.location
+                    yi.addVertex(location[0], location[1], location[2])
+                    #this section will be changed after the material settings been exported
+                yi.endCurveMesh(self.materialMap["default"], strandStart, strandEnd, strandShape)
+                # TODO: keep object smooth
+                #yi.smoothMesh(0, 60.0)
+                yi.endGeometry()
+                yi.printInfo("Exporter: Particle creation time: " + str(time.time()-tstart))
+                
+                if (pSys.settings.emitter):
+                    renderEmitter = True
+        # We only need to render emitter object once
+        if renderEmitter:
+            ymat = self.materialMap["default"]
+            self.writeMesh(yi, scene, object, ID, ymat)
+    
     
     
     def writeMeshes(self,yi,scene,isSmooth = False):
