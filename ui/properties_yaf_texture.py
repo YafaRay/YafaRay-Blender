@@ -451,6 +451,288 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel):
             col.prop(tex, "default_value", text="DVar", slider=True
 
 
+class YAF_TextureTypePanel(YAF_TextureButtonsPanel):
+    COMPAT_ENGINES = {'YAFA_RENDER'}
+    def poll(self, context):
+        tex = context.texture
+        engine = context.scene.render.engine
+        #tex.type = self.tex_type
+        var = ((tex and tex.yaf_tex_type == self.tex_type and not tex.use_nodes) and (engine in self.COMPAT_ENGINES))
+        if var:
+                context.texture.type = self.tex_type
+        return var
+
+
+class YAF_TEXTURE_PT_clouds(YAF_TextureTypePanel):
+    bl_label = "Clouds"
+    tex_type = 'CLOUDS'
+    COMPAT_ENGINES = {'YAFA_RENDER'}
+
+    def draw(self, context):
+        layout = self.layout
+
+        tex = context.texture
+        
+        wide_ui = context.region.width > narrowui
+
+        #layout.prop(tex, "stype", expand=True)
+        layout.label(text="Noise:")
+        layout.prop(tex, "noise_type", text="Type", expand=True)
+        #if wide_ui:
+        #    layout.prop(tex, "noise_basis", text="Basis")
+        #else:
+        #    layout.prop(tex, "noise_basis", text="")
+
+        split = layout.split()
+
+        col = split.column()
+        col.prop(tex, "noise_size", text="Size")
+        col.prop(tex, "noise_depth", text="Depth")
+
+        #if wide_ui:
+        #    col = split.column()
+        #col.prop(tex, "nabla", text="Nabla")
+
+
+class YAF_TEXTURE_PT_wood(YAF_TextureTypePanel):
+    bl_label = "Wood"
+    tex_type = 'WOOD'
+    COMPAT_ENGINES = {'YAFA_RENDER'}
+
+    def draw(self, context):
+        layout = self.layout
+
+        tex = context.texture
+        wide_ui = context.region.width > narrowui
+
+        layout.prop(tex, "noisebasis2", expand=True)
+        if wide_ui:
+            layout.prop(tex, "stype", expand=True)
+        else:
+            layout.prop(tex, "stype", text="")
+
+        col = layout.column()
+        col.active = tex.stype in ('RINGNOISE', 'BANDNOISE')
+        col.label(text="Noise:")
+        col.row().prop(tex, "noise_type", text="Type", expand=True)
+        if wide_ui:
+            layout.prop(tex, "noise_basis", text="Basis")
+        else:
+            layout.prop(tex, "noise_basis", text="")
+
+        split = layout.split()
+        split.active = tex.stype in ('RINGNOISE', 'BANDNOISE')
+
+        col = split.column()
+        col.prop(tex, "noise_size", text="Size")
+        col.prop(tex, "turbulence")
+
+        #col = split.column()
+        #col.prop(tex, "nabla")
+
+
+class YAF_TEXTURE_PT_marble(YAF_TextureTypePanel):
+    bl_label = "Marble"
+    tex_type = 'MARBLE'
+    COMPAT_ENGINES = {'YAFA_RENDER'}
+
+    def draw(self, context):
+        layout = self.layout
+
+        tex = context.texture
+        wide_ui = context.region.width > narrowui
+
+        layout.prop(tex, "stype", expand=True)
+        layout.prop(tex, "noisebasis2", expand=True)
+        layout.label(text="Noise:")
+        layout.prop(tex, "noise_type", text="Type", expand=True)
+        if wide_ui:
+            layout.prop(tex, "noise_basis", text="Basis")
+        else:
+            layout.prop(tex, "noise_basis", text="")
+
+        split = layout.split()
+
+        col = split.column()
+        col.prop(tex, "noise_size", text="Size")
+        col.prop(tex, "noise_depth", text="Depth")
+
+        if wide_ui:
+            col = split.column()
+        col.prop(tex, "turbulence")
+        #col.prop(tex, "nabla")
+
+class YAF_TEXTURE_PT_blend(YAF_TextureTypePanel):
+    bl_label = "Blend"
+    tex_type = 'BLEND'
+    COMPAT_ENGINES = {'YAFA_RENDER'}
+
+    def draw(self, context):
+        layout = self.layout
+
+        tex = context.texture
+        wide_ui = context.region.width > narrowui
+
+        if wide_ui:
+            layout.prop(tex, "progression")
+        else:
+            layout.prop(tex, "progression", text="")
+        #
+        #sub = layout.row()
+        #
+        #sub.active = (tex.progression in ('LINEAR', 'QUADRATIC', 'EASING', 'RADIAL'))
+        #sub.prop(tex, "flip_axis", expand=True)
+
+
+
+class YAF_TEXTURE_PT_image(YAF_TextureTypePanel):
+    bl_label = "Image"
+    tex_type = 'IMAGE'
+    COMPAT_ENGINES = {'YAFA_RENDER'}
+
+    def draw(self, context):
+        layout = self.layout
+
+        tex = context.texture
+
+        layout.template_image(tex, "image", tex.image_user)
+
+
+def texture_filter_common(tex, layout):
+    layout.label(text="Filter:")
+    layout.prop(tex, "filter", text="")
+    if tex.mipmap and tex.filter in ('AREA', 'EWA', 'FELINE'):
+        if tex.filter == 'FELINE':
+            layout.prop(tex, "filter_probes", text="Probes")
+        else:
+            layout.prop(tex, "filter_eccentricity", text="Eccentricity")
+
+    layout.prop(tex, "filter_size")
+    layout.prop(tex, "filter_size_minimum")
+
+
+class YAF_TEXTURE_PT_musgrave(YAF_TextureTypePanel):
+    bl_label = "Musgrave"
+    tex_type = 'MUSGRAVE'
+    COMPAT_ENGINES = {'YAFA_RENDER'}
+    
+    def draw(self, context):
+        layout = self.layout
+
+        tex = context.texture
+        wide_ui = context.region.width > narrowui
+
+        if wide_ui:
+            layout.prop(tex, "musgrave_type")
+        else:
+            layout.prop(tex, "musgrave_type", text="")
+
+        split = layout.split()
+
+        col = split.column()
+        col.prop(tex, "highest_dimension", text="Dimension")
+        col.prop(tex, "lacunarity")
+        col.prop(tex, "octaves")
+
+        if wide_ui:
+            col = split.column()
+        if (tex.musgrave_type in ('HETERO_TERRAIN', 'RIDGED_MULTIFRACTAL', 'HYBRID_MULTIFRACTAL')):
+            col.prop(tex, "offset")
+        if (tex.musgrave_type in ('RIDGED_MULTIFRACTAL', 'HYBRID_MULTIFRACTAL')):
+            col.prop(tex, "gain")
+            col.prop(tex, "noise_intensity", text="Intensity")
+
+        layout.label(text="Noise:")
+
+        if wide_ui:
+            layout.prop(tex, "noise_basis", text="Basis")
+        else:
+            layout.prop(tex, "noise_basis", text="")
+
+        split = layout.split()
+
+        col = split.column()
+        col.prop(tex, "noise_size", text="Size")
+
+        if wide_ui:
+            col = split.column()
+        col.prop(tex, "nabla")
+
+
+class YAF_TEXTURE_PT_voronoi(YAF_TextureTypePanel):
+    bl_label = "Voronoi"
+    tex_type = 'VORONOI'
+    COMPAT_ENGINES = {'YAFA_RENDER'}
+
+    def draw(self, context):
+        layout = self.layout
+
+        tex = context.texture
+        wide_ui = context.region.width > narrowui
+
+        split = layout.split()
+
+        col = split.column()
+        col.label(text="Distance Metric:")
+        col.prop(tex, "distance_metric", text="")
+        sub = col.column()
+        sub.active = tex.distance_metric == 'MINKOVSKY'
+        sub.prop(tex, "minkovsky_exponent", text="Exponent")
+        col.label(text="Coloring:")
+        col.prop(tex, "coloring", text="")
+        col.prop(tex, "noise_intensity", text="Intensity")
+
+        if wide_ui:
+            col = split.column()
+        sub = col.column(align=True)
+        sub.label(text="Feature Weights:")
+        sub.prop(tex, "weight_1", text="1", slider=True)
+        sub.prop(tex, "weight_2", text="2", slider=True)
+        sub.prop(tex, "weight_3", text="3", slider=True)
+        sub.prop(tex, "weight_4", text="4", slider=True)
+
+        layout.label(text="Noise:")
+
+        split = layout.split()
+
+        col = split.column()
+        col.prop(tex, "noise_size", text="Size")
+
+        #if wide_ui:
+        #    col = split.column()
+        #col.prop(tex, "nabla")
+
+
+class YAF_TEXTURE_PT_distortednoise(YAF_TextureTypePanel):
+    bl_label = "Distorted Noise"
+    tex_type = 'DISTORTED_NOISE'
+    COMPAT_ENGINES = {'YAFA_RENDER'}
+
+    def draw(self, context):
+        layout = self.layout
+
+        tex = context.texture
+        wide_ui = context.region.width > narrowui
+
+        if wide_ui:
+            layout.prop(tex, "noise_distortion")
+            layout.prop(tex, "noise_basis", text="Basis")
+        else:
+            layout.prop(tex, "noise_distortion", text="")
+            layout.prop(tex, "noise_basis", text="")
+
+        split = layout.split()
+
+        col = split.column()
+        col.prop(tex, "distortion", text="Distortion")
+        col.prop(tex, "noise_size", text="Size")
+
+        #if wide_ui:
+        #    col = split.column()
+        #col.prop(tex, "nabla")
+
+
+
 classes = [
     #TEXTURE_MT_specials,
     #TEXTURE_MT_envmap_specials,
@@ -458,21 +740,21 @@ classes = [
     YAF_TEXTURE_PT_context_texture,
     YAF_TEXTURE_PT_preview,
 
-    #YAF_TEXTURE_PT_clouds, # Texture Type Panels
-    #YAF_TEXTURE_PT_wood,
-    #YAF_TEXTURE_PT_marble,
+    YAF_TEXTURE_PT_clouds, # Texture Type Panels
+    YAF_TEXTURE_PT_wood,
+    YAF_TEXTURE_PT_marble,
     ##TEXTURE_PT_magic,
-    #YAF_TEXTURE_PT_blend,
+    YAF_TEXTURE_PT_blend,
     ##YAF_TEXTURE_PT_stucci,
-    #YAF_TEXTURE_PT_image,
+    YAF_TEXTURE_PT_image,
     #YAF_TEXTURE_PT_image_sampling,
     #YAF_TEXTURE_PT_image_mapping,
     ##YAF_TEXTURE_PT_plugin,
     ##YAF_TEXTURE_PT_envmap,
     ##TEXTURE_PT_envmap_sampling,
-    #YAF_TEXTURE_PT_musgrave,
-    #YAF_TEXTURE_PT_voronoi,
-    #YAF_TEXTURE_PT_distortednoise,
+    YAF_TEXTURE_PT_musgrave,
+    YAF_TEXTURE_PT_voronoi,
+    YAF_TEXTURE_PT_distortednoise,
     ##TEXTURE_PT_voxeldata,
     ##TEXTURE_PT_pointdensity,
     ##TEXTURE_PT_pointdensity_turbulence,
