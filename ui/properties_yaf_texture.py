@@ -33,6 +33,7 @@ IntVectorProperty = bpy.types.Texture.IntVectorProperty
 
 EnumProperty(attr="yaf_tex_type",
         items = (
+                ("NONE","None",""),
                 ("BLEND","Blend",""),
                 ("CLOUDS","Clouds",""),
                 ("WOOD","Wood",""),
@@ -41,7 +42,7 @@ EnumProperty(attr="yaf_tex_type",
                 ("MUSGRAVE","Musgrave",""),
                 ("DISTORTED_NOISE","Distorted Noise",""),
                 ("IMAGE","Image",""),
-),default="CLOUDS")
+),default="NONE")
 
 
 from properties_material import active_node_mat
@@ -185,6 +186,10 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel):
                 else:
                     layout.prop(tex, "yaf_tex_type", text="")
                     #tex.type = tex.yaf_tex_type
+        
+
+
+
 
 class YAF_TEXTURE_PT_colors(YAF_TextureButtonsPanel):
     bl_label = "Colors"
@@ -448,7 +453,9 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel):
         col.prop(tex, "stencil")
 
         if type(idblock) in (bpy.types.Material, bpy.types.World):
-            col.prop(tex, "default_value", text="DVar", slider=True
+            col.prop(tex, "default_value", text="DVar", slider=True)
+
+# Texture Type Panels #
 
 
 class YAF_TextureTypePanel(YAF_TextureButtonsPanel):
@@ -611,6 +618,106 @@ def texture_filter_common(tex, layout):
     layout.prop(tex, "filter_size_minimum")
 
 
+class YAF_TEXTURE_PT_image_sampling(YAF_TextureTypePanel):
+    bl_label = "Image Sampling"
+    bl_default_closed = True
+    tex_type = 'IMAGE'
+    COMPAT_ENGINES = {'YAFA_RENDER'}
+
+    def draw(self, context):
+        layout = self.layout
+
+        tex = context.texture
+        # slot = context.texture_slot
+        wide_ui = context.region.width > narrowui
+
+        split = layout.split()
+
+        col = split.column()
+        col.label(text="Alpha:")
+        col.prop(tex, "use_alpha", text="Use")
+        col.prop(tex, "calculate_alpha", text="Calculate")
+        col.prop(tex, "invert_alpha", text="Invert")
+        col.separator()
+        col.prop(tex, "flip_axis", text="Flip X/Y Axis")
+
+        if wide_ui:
+            col = split.column()
+        else:
+            col.separator()
+        col.prop(tex, "normal_map")
+        row = col.row()
+        row.active = tex.normal_map
+        row.prop(tex, "normal_space", text="")
+
+        col.prop(tex, "mipmap")
+        row = col.row()
+        row.active = tex.mipmap
+        row.prop(tex, "mipmap_gauss")
+        col.prop(tex, "interpolation")
+
+        texture_filter_common(tex, col)
+
+
+class YAF_TEXTURE_PT_image_mapping(YAF_TextureTypePanel):
+    bl_label = "Image Mapping"
+    bl_default_closed = True
+    tex_type = 'IMAGE'
+    COMPAT_ENGINES = {'YAFA_RENDER'}
+
+    def draw(self, context):
+        layout = self.layout
+
+        tex = context.texture
+        wide_ui = context.region.width > narrowui
+
+        if wide_ui:
+            layout.prop(tex, "extension")
+        else:
+            layout.prop(tex, "extension", text="")
+
+        split = layout.split()
+
+        if tex.extension == 'REPEAT':
+            col = split.column(align=True)
+            col.label(text="Repeat:")
+            col.prop(tex, "repeat_x", text="X")
+            col.prop(tex, "repeat_y", text="Y")
+
+            if wide_ui:
+                col = split.column(align=True)
+            col.label(text="Mirror:")
+            col.prop(tex, "mirror_x", text="X")
+            col.prop(tex, "mirror_y", text="Y")
+            layout.separator()
+
+        elif tex.extension == 'CHECKER':
+            col = split.column(align=True)
+            row = col.row()
+            row.prop(tex, "checker_even", text="Even")
+            row.prop(tex, "checker_odd", text="Odd")
+
+            if wide_ui:
+                col = split.column()
+            col.prop(tex, "checker_distance", text="Distance")
+
+            layout.separator()
+
+        split = layout.split()
+
+        col = split.column(align=True)
+        #col.prop(tex, "crop_rectangle")
+        col.label(text="Crop Minimum:")
+        col.prop(tex, "crop_min_x", text="X")
+        col.prop(tex, "crop_min_y", text="Y")
+
+        if wide_ui:
+            col = split.column(align=True)
+        col.label(text="Crop Maximum:")
+        col.prop(tex, "crop_max_x", text="X")
+        col.prop(tex, "crop_max_y", text="Y")
+
+
 class YAF_TEXTURE_PT_musgrave(YAF_TextureTypePanel):
     bl_label = "Musgrave"
     tex_type = 'MUSGRAVE'
@@ -733,32 +840,33 @@ class YAF_TEXTURE_PT_distortednoise(YAF_TextureTypePanel):
 
 
 
+
 classes = [
     #TEXTURE_MT_specials,
     #TEXTURE_MT_envmap_specials,
 
     YAF_TEXTURE_PT_context_texture,
-    YAF_TEXTURE_PT_preview,
+    #YAF_TEXTURE_PT_preview,
 
     YAF_TEXTURE_PT_clouds, # Texture Type Panels
     YAF_TEXTURE_PT_wood,
     YAF_TEXTURE_PT_marble,
-    ##TEXTURE_PT_magic,
+    #TEXTURE_PT_magic,
     YAF_TEXTURE_PT_blend,
-    ##YAF_TEXTURE_PT_stucci,
+    #YAF_TEXTURE_PT_stucci,
     YAF_TEXTURE_PT_image,
-    #YAF_TEXTURE_PT_image_sampling,
-    #YAF_TEXTURE_PT_image_mapping,
-    ##YAF_TEXTURE_PT_plugin,
-    ##YAF_TEXTURE_PT_envmap,
-    ##TEXTURE_PT_envmap_sampling,
+    YAF_TEXTURE_PT_image_sampling,
+    YAF_TEXTURE_PT_image_mapping,
+    #YAF_TEXTURE_PT_plugin,
+    #YAF_TEXTURE_PT_envmap,
+    #TEXTURE_PT_envmap_sampling,
     YAF_TEXTURE_PT_musgrave,
     YAF_TEXTURE_PT_voronoi,
     YAF_TEXTURE_PT_distortednoise,
-    ##TEXTURE_PT_voxeldata,
-    ##TEXTURE_PT_pointdensity,
-    ##TEXTURE_PT_pointdensity_turbulence,
-    #
+    #TEXTURE_PT_voxeldata,
+    #TEXTURE_PT_pointdensity,
+    #TEXTURE_PT_pointdensity_turbulence,
+    
     YAF_TEXTURE_PT_colors,
     YAF_TEXTURE_PT_mapping,
     YAF_TEXTURE_PT_influence,
