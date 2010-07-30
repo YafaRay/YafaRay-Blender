@@ -16,6 +16,8 @@ from yafaray.yaf_light  import yafLight
 from yafaray.yaf_world  import yafWorld
 from yafaray.yaf_integrator import yafIntegrator
 from yafaray.yaf_general_AA import yafGeneralAA
+from yafaray.yaf_texture import yafTexture
+from yafaray.yaf_material import yafMaterial
 
 import sys
 sys.path.append(PATH_TO_ADD)
@@ -30,19 +32,78 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
     bl_label = "YafaRay Render"
     
     def setInterface(self, yi):
+        
+        self.materialMap = {}
+        self.materials   = set()
         self.yi = yi
         self.yi.loadPlugins(PLUGIN_PATH)
-        self.yaf_object  = yafObject(self.yi)
-        self.yaf_lamp    = yafLight(self.yi)
-        self.yaf_world   = yafWorld(self.yi)
+        self.yaf_object     = yafObject(self.yi, self.materialMap)
+        self.yaf_lamp       = yafLight(self.yi)
+        self.yaf_world      = yafWorld(self.yi)
         self.yaf_integrator = yafIntegrator(self.yi)
         self.yaf_general_aa = yafGeneralAA(self.yi)
+        self.yaf_texture    = yafTexture(self.yi)
+        self.yaf_material   = yafMaterial(self.yi, self.materialMap)
+        
     
     def exportObjects(self):
         self.yaf_object.createCamera(self.yi, self.scene)
-        self.yaf_object.writeMeshes(self.yi, self.scene)
         self.yaf_lamp.createLights(self.yi,self.scene)
         self.yaf_world.exportWorld(self.scene)
+        self.yaf_texture.createTextures(self.yi, self.scene)
+        self.exportMaterials()
+        self.yaf_object.writeMeshes(self.yi, self.scene)
+
+    def handleBlendMat(self, mat):
+
+        try:
+            mat1_name =  mat.mat_material_one
+            mat1      =  bpy.data.materials[mat1_name]
+            
+            mat2_name =  mat.mat_material_two
+            mat2      =  bpy.data.materials[mat2_name]
+        except:
+            self.yi.printWarning("Exporter: Problem with blend material" + mat.name + ". Could not find one of the two blended materials.")
+            return
+
+        if mat1.mat_type == 'blend':
+            self.handleBlendMat(mat1)
+        elif mat1 not in self.materials:
+            self.materials.add(mat1)
+            self.yaf_material.writeMaterial(mat1)
+
+        if mat2.mat_type == 'blend':
+            self.handleBlendMat(mat2)
+        elif mat2 not in self.materials:
+            self.materials.add(mat2)
+            self.yaf_material.writeMaterial(mat2)
+
+        if mat not in self.materials:
+            self.materials.add(mat)
+            self.yaf_material.writeMaterial(mat)
+
+    def exportMaterial(self,material):
+        if material:
+            if material.mat_type == 'blend':
+                # must make sure all materials used by a blend mat
+                # are written before the blend mat itself
+                self.handleBlendMat(material)
+            else:
+                self.materials.add(material)
+                self.yaf_material.writeMaterial(material)
+    
+    def exportMaterials(self):
+        self.yi.printInfo("Exporter: Processing Materials...")
+        self.materials = set()
+        self.yi.paramsClearAll()
+        self.yi.paramsSetString("type", "shinydiffusemat")
+        self.yi.printInfo("Exporter: Creating Material \"defaultMat\"")
+        ymat = self.yi.createMaterial("defaultMat")
+        self.materialMap["default"] = ymat
+        
+        for mat in bpy.data.materials:
+            if mat in self.materials : continue
+            self.exportMaterial(mat)
     
     #    , w, h
     def configureRender(self):

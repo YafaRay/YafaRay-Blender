@@ -3,9 +3,9 @@ import time
 #from yafaray.yaf_properties import *
 
 class yafObject(object):
-    def __init__(self, yi):
+    def __init__(self, yi, mMap):
         self.yi = yi
-        self.materialMap = {}
+        self.materialMap = mMap
 
     def createCamera(self,yi,scene,useView = False):
         
@@ -126,20 +126,9 @@ class yafObject(object):
     #extracts data from all the meshes of a scene    
     def writeMesh(self,yi,scene,obj,ID,ymat = None,isSmooth = False):
         
-        #num_ob = 0
-        #objects = scene.objects
-        #
+
         #print('I have come to this point')
-        
-        #scene = bpy.data.scenes[0]
-        #if ymat is None :
-        #    self.yi.paramsSetString("type", "shinydiffusemat")
-        #    ymat = self.yi.createMaterial("defaultMat")
-        
-        #for obj in objects:
-        #    if obj.type in ('LAMP', 'CAMERA', 'EMPTY', 'META', 'ARMATURE'):
-        #        continue
-        print("The id is : " + str(ID))
+        #print("The id is : " + str(ID))
             
         matrix = obj.matrix_local #recent change
         me = obj.data
@@ -188,17 +177,17 @@ class yafObject(object):
             for v in mesh.verts:
                 normCo = []
                 vert_count = vert_count + 1
-                print('I am here')
+                #print('I am here')
                 for i in range(3):
                     #print(v)
                     normCo.append(2 * (v.co[i] - bbMin[i]) / delta[i] - 1)
                 ov.append([normCo[0], normCo[1], normCo[2]])
         
         self.yi.paramsClearAll()
-        print('number of vertices ' + str(len(mesh.verts)) )
+        #print('number of vertices ' + str(len(mesh.verts)) )
         self.yi.startGeometry()
             
-        print('problem solved')
+        #print('problem solved')
             
         obType = 0
             
@@ -212,11 +201,11 @@ class yafObject(object):
             else:
                 count += 1
             
-        print("count is : " + str(count) + "number of faces : " + str( len(mesh.faces) ) )
+        #print("count is : " + str(count) + "number of faces : " + str( len(mesh.faces) ) )
             
             
         self.yi.startTriMesh(ID, len(mesh.verts), len(mesh.faces) , hasOrco, hasUV, obType)
-        print("The name of id is : " + str(ID) )
+        #print("The name of id is : " + str(ID) )
             
         ind = 0
         for v in mesh.verts:
@@ -238,32 +227,43 @@ class yafObject(object):
             if f.smooth == True:
                 isSmooth = True
                 
+            
+            # get the face material if none is provided to override
+            if ymat is None:
+                mat = mesh.data.materials[f.material_index]
+                if mat in self.materialMap:
+                    fmat = self.materialMap[mat]
+                else:
+                    fmat = self.materialMap["default"]
+            else:
+                fmat = ymat
+                
                 
             if mesh.active_uv_texture is not None :
                 co = mesh.active_uv_texture.data[index]
                 hasUV = True
-            #
-            #if hasUV == True and (co is not None) :
-            #    uv0 = yi.addUV(co.uv1[0], co.uv1[1])
-            #    uv1 = yi.addUV(co.uv2[0], co.uv2[1])
-            #    uv2 = yi.addUV(co.uv3[0], co.uv3[1])
-            #    yi.addTriangle(f.verts[0], f.verts[1], f.verts[2], uv0, uv1, uv2, ymat)
-            #    print("with uv case 1")
-            #
-            #else:
-            self.yi.addTriangle(f.verts[0], f.verts[1], f.verts[2],ymat)
-            print("without uv case 1")
+            
+            if hasUV == True and (co is not None) :
+                uv0 = yi.addUV(co.uv1[0], co.uv1[1])
+                uv1 = yi.addUV(co.uv2[0], co.uv2[1])
+                uv2 = yi.addUV(co.uv3[0], co.uv3[1])
+                yi.addTriangle(f.verts[0], f.verts[1], f.verts[2], uv0, uv1, uv2, ymat)
+                print("with uv case 1")
+            
+            else:
+                self.yi.addTriangle(f.verts[0], f.verts[1], f.verts[2],fmat)
+                print("without uv case 1")
                 
             #print("trying to locate error " + str(index))
         
             if len(f.verts) == 4:
-                #if hasUV == True and (co is not None):
-                #    uv3 = yi.addUV(co.uv4[0], co.uv4[1])
-                #    yi.addTriangle(f.verts[2], f.verts[3], f.verts[0], uv2, uv3, uv0, ymat)
-                #    print("with uv case 2")
-                #else:
-                self.yi.addTriangle(f.verts[2], f.verts[3], f.verts[0],ymat)
-                print("without uv case 2")
+                if hasUV == True and (co is not None):
+                    uv3 = yi.addUV(co.uv4[0], co.uv4[1])
+                    yi.addTriangle(f.verts[2], f.verts[3], f.verts[0], uv2, uv3, uv0, ymat)
+                    print("with uv case 2")
+                else:
+                    self.yi.addTriangle(f.verts[2], f.verts[3], f.verts[0],fmat)
+                    print("without uv case 2")
                     
         self.yi.endTriMesh()
         
@@ -271,7 +271,7 @@ class yafObject(object):
             self.yi.smoothMesh(0, mesh.autosmooth_angle)
         
         self.yi.endGeometry()
-        print("work is completed")
+        #print("work is completed")
         bpy.data.meshes.remove(mesh)
         #del mesh
 
@@ -283,7 +283,7 @@ class yafObject(object):
         
         print("INFO: Exporting Object: " + obj.name)
         
-        materialMap = {}
+        #materialMap = {}
         
         #create a default material
         self.yi.paramsClearAll()
@@ -299,18 +299,18 @@ class yafObject(object):
         #more codes can be added in this part later
         if isMeshlight:
             
-            #ml_matname = "ML_"
-            #ml_matname += obj.name + "." + str(obj.__hash__())
-            #
-            #yi.paramsClearAll();
-            #yi.paramsSetString("type", "light_mat");
-            #yi.paramsSetBool("double_sided", scene.ml_double_sided)
-            #c = scene.ml_color
-            #yi.paramsSetColor("color", c[0], c[1], c[2])
-            #yi.paramsSetFloat("power", scene.ml_power)
-            #ml_mat = yi.createMaterial(ml_matname);
-            #
-            #materialMap[ml_matname] = ml_mat
+            ml_matname = "ML_"
+            ml_matname += obj.name + "." + str(obj.__hash__())
+            
+            yi.paramsClearAll();
+            yi.paramsSetString("type", "light_mat");
+            yi.paramsSetBool("double_sided", obj.ml_double_sided)
+            c = obj.ml_color
+            yi.paramsSetColor("color", c[0], c[1], c[2])
+            yi.paramsSetFloat("power", obj.ml_power)
+            ml_mat = yi.createMaterial(ml_matname);
+            
+            self.materialMap[ml_matname] = ml_mat
             
             
             # Export mesh light
@@ -338,33 +338,34 @@ class yafObject(object):
         
         
         # Object Material
-        #if isMeshlight:
-        #    ymaterial = ml_mat
-        #else:
-        #    if scene.gs_clay_render == True:
-        #        ymaterial = materialMap["default"]
-        #    elif obj.type == 'CURVE':
-        #        curve = obj.data
-        #        if len(curve.materials) != 0:
-        #            mat = curve.materials[0]
-        #            ymaterial = self.materialMap[mat]
-        #        else:
-        #            ymaterial = self.materialMap["default"]
-        #    else:
-        #        if obj.getData().getMaterials():
-        #            ymaterial = None
-        #        else:
-        #            ymaterial = self.materialMap["default"]
+        if isMeshlight:
+            ymaterial = ml_mat
+        else:
+            if scene.gs_clay_render == True:
+                ymaterial = self.materialMap["default"]
+            elif obj.type == 'CURVE':
+                curve = obj.data
+                if len(curve.materials) > 0:
+                    mat = curve.materials[0]
+                    ymaterial = self.materialMap[mat]
+                else:
+                    ymaterial = self.materialMap["default"]
+            else:
+                if obj.data.materials is not None:
+                    mat = obj.data.materials[0]
+                    ymaterial = self.materialMap[mat]
+                else:
+                    ymaterial = self.materialMap["default"]
 
         
         if isBGPL:
-            self.writeMesh(yi, scene, obj, ID, ymat)
+            self.writeMesh(yi, scene, obj, ID, ymaterial)
             
         elif obj.active_particle_system is not None:
             self.writeParticlesObject(yi, scene, obj, ID)
             
         else:
-            self.writeMesh(yi, scene, obj, ID, ymat)
+            self.writeMesh(yi, scene, obj, ID, ymaterial)
 
     def writeParticlesObject(self, yi, scene, object, ID):
         
@@ -414,7 +415,10 @@ class yafObject(object):
                     location = particle.location
                     yi.addVertex(location[0], location[1], location[2])
                     #this section will be changed after the material settings been exported
-                yi.endCurveMesh(self.materialMap["default"], strandStart, strandEnd, strandShape)
+                if self.materialMap[pmaterial]:
+                    yi.endCurveMesh(self.materialMap[pmaterial], strandStart, strandEnd, strandShape)
+                else:
+                    yi.endCurveMesh(self.materialMap["default"], strandStart, strandEnd, strandShape)
                 # TODO: keep object smooth
                 #yi.smoothMesh(0, 60.0)
                 yi.endGeometry()
@@ -433,10 +437,10 @@ class yafObject(object):
         
         objects = scene.objects
         self.yi.paramsClearAll()
-        self.yi.paramsSetString("type", "shinydiffusemat")
-        
-        ymat = self.yi.createMaterial("defaultMat")
-        self.materialMap["default"] = ymat
+        #self.yi.paramsSetString("type", "shinydiffusemat")
+        #
+        #ymat = self.yi.createMaterial("defaultMat")
+        #self.materialMap["default"] = ymat
         
         for obj in objects:
             if obj.type in ('LAMP', 'CAMERA', 'EMPTY', 'META', 'ARMATURE'):
