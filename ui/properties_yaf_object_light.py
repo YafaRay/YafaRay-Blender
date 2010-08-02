@@ -29,6 +29,8 @@ EnumProperty(attr="vol_region",
 		("ExpDensity Volume","ExpDensity Volume",""),
 		("Noise Volume","Noise Volume",""),
 		("Uniform Volume","Uniform Volume",""),
+		#("Grid Volume","Grid Volume",""),
+		("Sky Volume","Sky Volume",""),
 ),default="Uniform Volume")
 FloatProperty(attr="vol_height")
 FloatProperty(attr="vol_steepness")
@@ -37,6 +39,23 @@ FloatProperty(attr="vol_cover")
 FloatProperty(attr="vol_density")
 FloatProperty(attr="vol_absorp")
 FloatProperty(attr="vol_scatter")
+FloatProperty(attr="vol_l_e", default = 0.0, min = -1.0, max = 1.0, soft_min = -1.0, soft_max = 1.0)
+FloatProperty(attr="vol_g", default = 0.0, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
+
+#volume Integrator
+#EnumProperty(attr="v_int_type",
+#	items = (
+#		("Volume Integrator","Volume Integrator",""),
+#		("None","None",""),
+#		("Single Scatter","Single Scatter",""),
+#		("Sky","Sky",""),
+#),default="Sky")
+#FloatProperty(attr="v_int_step_size")
+#BoolProperty(attr="v_int_adaptive")
+#BoolProperty(attr="v_int_optimize")
+#IntProperty(attr="v_int_attgridres")
+#FloatProperty(attr="v_int_scale")
+#FloatProperty(attr="v_int_alpha")
 
 
 class YAF_PT_object_light(bpy.types.Panel):
@@ -110,6 +129,26 @@ class YAF_PT_object_light(bpy.types.Panel):
 
 			col.prop(context.object,"vol_absorp", text= "Absroption")
 			col.prop(context.object,"vol_scatter", text= "Scatter")
+			col.prop(context.object,"vol_g", text= "Phase Coefficient")
+			col.prop(context.object,"vol_l_e", text= "Emitted Light")
+		
+		
+		
+		#col.prop(context.object,"v_int_type", text= "Volume Integrator")
+		#
+		#if context.object.v_int_type == 'None':
+		#	col.prop(context.object,"v_int_step_size", text= "Step Size")
+		#
+		#if context.object.v_int_type == 'Single Scatter':
+		#	col.prop(context.object,"v_int_adaptive", text= "Adaptive")
+		#
+		#	col.prop(context.object,"v_int_optimize", text= "Optimize")
+		#
+		#	col.prop(context.object,"v_int_attgridres", text= "Att. grid resolution")
+		#
+		#if context.object.v_int_type == 'Sky':
+		#	col.prop(context.object,"v_int_scale", text= "Scale")
+		#	col.prop(context.object,"v_int_alpha", text= "Alpha")
 
 
 

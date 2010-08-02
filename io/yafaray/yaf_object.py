@@ -360,6 +360,10 @@ class yafObject(object):
         
         if isBGPL:
             self.writeMesh(yi, scene, obj, ID, ymaterial)
+        
+        elif isVolume:
+            self.writeVolumeObject(yi, scene, obj, ID, ymaterial)
+            #self.writeMesh(yi, scene, obj, ID, ymaterial)
             
         elif obj.active_particle_system is not None:
             self.writeParticlesObject(yi, scene, obj, ID)
@@ -430,6 +434,92 @@ class yafObject(object):
         if renderEmitter:
             ymat = self.materialMap["default"]
             self.writeMesh(yi, scene, object, ID, ymat)
+
+    def writeVolumeObject(self, yi, scene, obj, ID, ymaterial = None):
+
+        
+        matrix = obj.matrix_local #recent change
+        me = obj.data
+        me_materials = me.materials
+        
+        if scene is None:
+            print("scene is None ...")
+        else:
+            print(str(scene))
+        mesh = obj.create_mesh(scene,True, 'RENDER')   #mesh is created for an object here.
+        
+            
+        if matrix:
+            mesh.transform(matrix)
+        else:
+            return
+        
+        yi.paramsClearAll()
+        
+        
+        if obj.vol_region == 'ExpDensity Volume':
+            yi.paramsSetString("type", "ExpDensityVolume")
+            yi.paramsSetFloat("a", obj.vol_height)
+            yi.paramsSetFloat("b", obj.vol_steepness)
+        
+        elif obj.vol_region == 'Uniform Volume':
+            yi.paramsSetString("type", "UniformVolume");
+        
+        elif obj.vol_region == 'Noise Volume':
+            
+            texture = obj.data.materials[0].texture_slots[0].texture
+            
+            if texture.yaf_tex_type != 'DISTORTED_NOISE':
+                yi.printWarning("Exporter: No noise texture set on the object, NoiseVolume won't be created")
+                return
+        
+            yi.paramsSetString("type", "NoiseVolume");
+            yi.paramsSetFloat("sharpness", obj.vol_sharpness)
+            yi.paramsSetFloat("cover", obj.vol_cover)
+            yi.paramsSetFloat("density", obj.vol_density)
+            yi.paramsSetString("texture", texture.name)
+        
+        elif obj.vol_region == 'Grid Volume':
+            yi.paramsSetString("type", "GridVolume");
+        
+        elif obj.vol_region == 'Sky Volume':
+            yi.paramsSetString("type", "SkyVolume");
+        
+        yi.paramsSetFloat("sigma_a", obj.vol_absorp)
+        yi.paramsSetFloat("sigma_s", obj.vol_scatter)
+        yi.paramsSetFloat("l_e", obj.vol_l_e)
+        yi.paramsSetFloat("g", obj.vol_g)
+        yi.paramsSetInt("attgridScale", bpy.context.scene.world.v_int_attgridres)
+        
+        
+        min = [1e10, 1e10, 1e10]
+        max = [-1e10, -1e10, -1e10]
+        vertLoc =[]
+        for v in mesh.verts:
+            print("Scanning vertices ... ")
+            vertLoc.append(v.co[0])
+            vertLoc.append(v.co[1])
+            vertLoc.append(v.co[2])
+            
+            if vertLoc[0] < min[0]: min[0] = vertLoc[0]
+            if vertLoc[1] < min[1]: min[1] = vertLoc[1]
+            if vertLoc[2] < min[2]: min[2] = vertLoc[2]
+            if vertLoc[0] > max[0]: max[0] = vertLoc[0]
+            if vertLoc[1] > max[1]: max[1] = vertLoc[1]
+            if vertLoc[2] > max[2]: max[2] = vertLoc[2]
+            
+            vertLoc = []
+                
+        yi.paramsSetFloat("minX", min[0])
+        yi.paramsSetFloat("minY", min[1])
+        yi.paramsSetFloat("minZ", min[2])
+        yi.paramsSetFloat("maxX", max[0])
+        yi.paramsSetFloat("maxY", max[1])
+        yi.paramsSetFloat("maxZ", max[2])
+        
+        yi.createVolumeRegion(obj.name + "." + str(obj.__hash__()) + "." + str(ID))
+        return
+
     
     
     

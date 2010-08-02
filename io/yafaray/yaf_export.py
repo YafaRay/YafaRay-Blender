@@ -54,6 +54,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.exportMaterials()
         self.yaf_object.writeMeshes(self.yi, self.scene)
 
+
+
     def handleBlendMat(self, mat):
 
         try:
@@ -113,6 +115,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         #self.yi.createIntegrator("default")
         self.yaf_integrator.exportIntegrator(self.scene)
         self.yaf_general_aa.exportGeneralAA(self.scene)
+        #self.exportVolumeIntegrator()
         
         #self.yi.paramsClearAll()
         #self.yi.paramsSetString("type", "none")
