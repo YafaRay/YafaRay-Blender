@@ -21,8 +21,8 @@ EnumProperty(attr="mat_type",
 		("rough_glass","Rough Glass",""),
 		("blend","Blend",""),
 ),default="shinydiffusemat")
-FloatVectorProperty(attr="mat_color",description = "Color Settings", subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
-FloatVectorProperty(attr="mat_mirror_color",description = "Color Settings", subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
+FloatVectorProperty(attr="mat_color",description = "Color Settings", default = (0.2,0.3,0.8),subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
+FloatVectorProperty(attr="mat_mirror_color",description = "Color Settings",default = (0.8,0.3,0.2), subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
 FloatProperty(attr="mat_diffuse_reflect", min = 0.0, max = 1.0, default = 1.0, step = 1, precision = 2, soft_min = 0.0, soft_max = 1.0)
 FloatProperty(attr="mat_mirror_strength", min = 0.0, max = 1.0, default = 0.0, step = 1, precision = 2, soft_min = 0.0, soft_max = 1.0)
 FloatProperty(attr="mat_transparency", min = 0.0, max = 1.0, default = 0.0, step = 1, precision = 2, soft_min = 0.0, soft_max = 1.0)
@@ -36,8 +36,8 @@ EnumProperty(attr="mat_brdf_type",
 		("Oren-Nayar","Oren-Nayar",""),
 		("Normal (Lambert)","Normal (Lambert)",""),
 ),default="Normal(Lambert)")
-FloatVectorProperty(attr="mat_diff_color",description = "Color Settings", subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
-FloatVectorProperty(attr="mat_glossy_color",description = "Color Settings", subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
+FloatVectorProperty(attr="mat_diff_color",description = "Color Settings", subtype = "COLOR",default = (0.4,0.4,0.8), step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
+FloatVectorProperty(attr="mat_glossy_color",description = "Color Settings", subtype = "COLOR", default = (0.2,0.8,0.4),step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
 FloatProperty(attr="mat_glossy_reflect", min = 0.0, max = 1.0, default = 0.0, step = 1, precision = 2, soft_min = 0.0, soft_max = 1.0)
 FloatProperty(attr="mat_exp_u", min = 1.0, max = 5000.0, default = 50.0, step = 10, precision = 2, soft_min = 1.0, soft_max = 500.0)
 FloatProperty(attr="mat_exp_v", min = 1.0, max = 5000.0, default = 50.0, step = 10, precision = 2, soft_min = 1.0, soft_max = 500.0)
@@ -47,9 +47,9 @@ BoolProperty(attr="mat_as_diffuse")
 #FloatVectorProperty(attr="mat_anisotropic",description = "Color Settings", subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
 BoolProperty(attr="mat_anisotropic")
 FloatProperty(attr="mat_ior", min = 1.0, max = 30.0, default = 1.0, step = 10, precision = 2, soft_min = 1.0, soft_max = 30.0)
-FloatVectorProperty(attr="mat_absorp_color",description = "Color Settings", subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
+FloatVectorProperty(attr="mat_absorp_color",description = "Color Settings", subtype = "COLOR",default = (0.2,0.6,0.5), step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
 FloatProperty(attr="mat_absorp_distance", min = 1.0, max = 100.0, default = 1.0, step = 3, precision = 2, soft_min = 1.0, soft_max = 100.0)
-FloatVectorProperty(attr="mat_filter_color",description = "Color Settings", subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
+FloatVectorProperty(attr="mat_filter_color",description = "Color Settings", subtype = "COLOR", default = (0.9,0.1,0.6),step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
 FloatProperty(attr="mat_dispersion_power", min = 0.0, max = 1000.0, default = 0.0, step = 20, precision = 2, soft_min = 0.0, soft_max = 1000.0)
 BoolProperty(attr="mat_fake_shadows")
 FloatProperty(attr="mat_blend_value", min = 0.0, max = 1.0, default = 0.3, step = 1, precision = 2, soft_min = 0.0, soft_max = 1.0)
@@ -82,7 +82,7 @@ class YAF_PT_material(bpy.types.Panel):
 				properties_material.register()
 			except: 
 				pass
-		return (context.material and  (engine in self.COMPAT_ENGINES) ) 
+		return ( (context.material or context.object) and  (engine in self.COMPAT_ENGINES) ) 
 
 
 	def draw(self, context):
@@ -98,11 +98,11 @@ class YAF_PT_material(bpy.types.Panel):
 		split = col.split(percentage=0.65)
 		if ob:
 			split.template_ID(ob, "active_material", new="material.new")
-			row = split.row()
-			if slot:
-				row.prop(slot, "link", text="")
-			else:
-				row.label()
+			#row = split.row()
+			#if slot:
+			#	row.prop(slot, "link", text="")
+			#else:
+			#	row.label()
 		elif mat:
 			split.template_ID(space, "pin_id")
 			split.separator()
@@ -115,6 +115,7 @@ class YAF_PT_material(bpy.types.Panel):
 		if context.material.mat_type == 'shinydiffusemat':
 			col.prop(context.material,"mat_color", text= "Color")
 			col.prop(context.material,"mat_mirror_color", text= "Mirror Color")
+			col.separator()
 			col.prop(context.material,"mat_diffuse_reflect", text= "Diffuse Reflection", slider = True)
 			col.prop(context.material,"mat_specular_reflect", text= "Specular Reflection", slider = True)
 			col.prop(context.material,"mat_mirror_strength", text= "Mirror Strength", slider = True)
@@ -131,6 +132,7 @@ class YAF_PT_material(bpy.types.Panel):
 		if context.material.mat_type == 'glossy':
 			col.prop(context.material,"mat_diff_color", text= "Diffuse Color")
 			col.prop(context.material,"mat_glossy_color", text= "Glossy Color")
+			col.separator()
 			col.prop(context.material,"mat_diffuse_reflect", text= "Diffuse Reflection", slider = True)
 			col.prop(context.material,"mat_glossy_reflect", text= "Glossy Reflection", slider = True)
 			col.prop(context.material,"mat_exp_u", text= "Exponent U", slider = True)
@@ -145,6 +147,7 @@ class YAF_PT_material(bpy.types.Panel):
 		if context.material.mat_type == 'coated_glossy':
 			col.prop(context.material,"mat_diff_color", text= "Diffuse Color")
 			col.prop(context.material,"mat_glossy_color", text= "Glossy Color")
+			col.separator()
 			col.prop(context.material,"mat_diffuse_reflect", text= "Diffuse Reflection", slider = True)
 			col.prop(context.material,"mat_glossy_reflect", text= "Glossy Reflection", slider = True)
 			col.prop(context.material,"mat_exp_u", text= "Exponent U", slider = True)
@@ -157,10 +160,11 @@ class YAF_PT_material(bpy.types.Panel):
 
 		if context.material.mat_type == 'glass':
 			col.prop(context.material,"mat_absorp_color", text= "Absorption Color")
-			col.prop(context.material,"mat_absorp_distance", text= "Absorption Distance", slider = True)
 			col.prop(context.material,"mat_filter_color", text= "Filter Color")
 			col.prop(context.material,"mat_mirror_color", text= "Absorption Color")
+			col.separator()
 			col.prop(context.material,"mat_ior", text= "IOR", slider = True)
+			col.prop(context.material,"mat_absorp_distance", text= "Absorption Distance", slider = True)
 			col.prop(context.material,"mat_transmit_filter", text= "Transmit Filter", slider = True)
 			col.prop(context.material,"mat_dispersion_power", text= "Dispersion Power", slider = True)
 			#col.prop(context.material,"mat_exponent", text= "Exponent", slider = True)
@@ -168,9 +172,10 @@ class YAF_PT_material(bpy.types.Panel):
 		
 		if context.material.mat_type == 'rough_glass':
 			col.prop(context.material,"mat_absorp_color", text= "Absorption Color")
-			col.prop(context.material,"mat_absorp_distance", text= "Absorption Distance", slider = True)
 			col.prop(context.material,"mat_filter_color", text= "Filter Color")
 			col.prop(context.material,"mat_mirror_color", text= "Absorption Color")
+			col.separator()
+			col.prop(context.material,"mat_absorp_distance", text= "Absorption Distance", slider = True)
 			col.prop(context.material,"mat_ior", text= "IOR", slider = True)
 			col.prop(context.material,"mat_transmit_filter", text= "Transmit Filter", slider = True)
 			col.prop(context.material,"mat_dispersion_power", text= "Dispersion Power", slider = True)

@@ -111,47 +111,32 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
     def configureRender(self):
         # Integrators
         self.yi.paramsClearAll()
-        #self.yi.paramsSetString("type", "directlighting")
-        #self.yi.createIntegrator("default")
         self.yaf_integrator.exportIntegrator(self.scene)
         self.yaf_general_aa.exportGeneralAA(self.scene)
-        #self.exportVolumeIntegrator()
+    
+    
+    def decideOutputFileName(self, output_path, filetype):
         
-        #self.yi.paramsClearAll()
-        #self.yi.paramsSetString("type", "none")
-        #self.yi.createIntegrator("volintegr")
+        if filetype == 'PNG':
+            filetype = 'png'
+        elif filetype == 'TARGA':
+            filetype = 'tga'
+        elif filetype == 'OPEN_EXR':
+            filetype = 'exr'
+        else:
+            filetype = 'png'
+        extension = '.' + filetype
+        outputFile = tempfile.mktemp(suffix = extension, dir = output_path)
         
-        #some color in the background
-        #worldProp = {"bg_type":"Single Color",
-        #             "color":[0,0,255],
-        #             "ibl":0,
-        #             "ibl_samples":16,
-        #             "power":1.0
-        #            }
-        #c = worldProp["color"]
-        #self.yi.paramsSetColor("color", c[0], c[1], c[2])
-        #self.yi.paramsSetBool("ibl", worldProp["ibl"])
-        #self.yi.paramsSetInt("paramsSetBoolibl_samples", worldProp["ibl_samples"])
-        #self.yi.paramsSetFloat("power", worldProp["power"])
-        #self.yi.paramsSetString("type", "constant")
-        #self.yi.createBackground("world_background")
-        
-        
-        # Render
-        #self.yi.paramsClearAll()
-        #self.yi.paramsSetString("camera_name", "cam")
-        #self.yi.paramsSetString("integrator_name", "default")
-        #self.yi.paramsSetString("volintegrator_name", "volintegr")
-        #self.yi.paramsSetString("background_name", "world_background")
-        #
-        #self.yi.paramsSetInt("width", w)
-        #self.yi.paramsSetInt("height", h)
+        return outputFile,filetype
+
 
     # callback to render scene
     def render(self, scene):
         
         if scene.name != 'preview':
             
+            scene.set_frame(scene.frame_current)
             self.scene = scene
         
             r = scene.render
@@ -163,17 +148,13 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.setInterface(yafrayinterface.yafrayInterface_t())
             
             print("the scene name is : " + scene.name )
-            #print("the background type is : " + scene.bg_type)
+
             
-            #newly added part
-            #outputFile = self.getOutputFilename(frameNumber)
-                        
-            #format = self.yi.getImageFormatFromFullName(self.scene.properties["YafRay"]["Renderer"]["file_type"])
-            #outputFile += '.' + format
-            outputFile = tempfile.mktemp(suffix='.png')
+            
+            outputFile,file_type = self.decideOutputFileName(r.output_path, r.file_format)
                         
             self.yi.paramsClearAll()
-            self.yi.paramsSetString("type", 'png')
+            self.yi.paramsSetString("type", file_type)
             self.yi.paramsSetInt("width", x)
             self.yi.paramsSetInt("height", y)
             self.yi.paramsSetBool("alpha_channel", False)
@@ -185,10 +166,6 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.yi.printInfo("Exporter: Rendering to file " + outputFile)
                 
             self.yi.startScene()
-            #end of added part
-                
-            #[co, outputFile]
-            #self.yi.startScene()
             
             self.exportObjects()
             self.configureRender()
