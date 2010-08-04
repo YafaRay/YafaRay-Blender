@@ -107,7 +107,7 @@ class yafLight:
 			#light = obj.getData()
 			yi.paramsSetString("type", "spotlight")
 			#print "spot ", light.getSpotSize()
-			yi.paramsSetFloat("cone_angle", lamp.spot_size / 2)
+			yi.paramsSetFloat("cone_angle", (lamp.spot_size * 57.29577))
 			yi.paramsSetFloat("blend", lamp.spot_blend)
 			yi.paramsSetPoint("to", to[0], to[1], to[2])
 			yi.paramsSetBool("soft_shadows", lamp.spot_soft_shadows)

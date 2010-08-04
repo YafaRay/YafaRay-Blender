@@ -98,6 +98,7 @@ class YAF_PT_lamp(bpy.types.Panel):
 			col.prop(context.lamp,"spot_size", text= "Cone Angle")
 			col.prop(context.lamp,"shadow_ray_samples", text= "Samples")
 			col.prop(context.lamp,"spot_blend", text= "Blend")
+			col.prop(context.lamp,"distance", text= "Distance")
 
 			col.prop(context.lamp,"shadow_fuzzyness", text= "Shadow Fuzzyness")
 			col = split.column()
