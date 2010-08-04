@@ -166,8 +166,8 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel):
         if wide_ui:
             col = split.column()
 
-        if not space.pin_id:
-            col.prop(space, "brush_texture", text="Brush", toggle=True)
+        #if not space.pin_id:
+        #    col.prop(space, "brush_texture", text="Brush", toggle=True)
 
         if tex:
             split = layout.split(percentage=0.2)
@@ -237,7 +237,7 @@ class YAF_TextureSlotPanel(YAF_TextureButtonsPanel):
 
 
 class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel):
-    bl_label = "Mapping"
+    bl_label = "YafaRay Mapping (Map Input)"
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
     def poll(self, context):
@@ -334,7 +334,7 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel):
 
 
 class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel):
-    bl_label = "Influence"
+    bl_label = "YafaRay Influence (Map To)"
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
     def poll(self, context):
@@ -371,89 +371,102 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel):
 
                 col = split.column()
                 col.label(text="Diffuse:")
-                factor_but(col, tex.map_diffuse, "map_diffuse", "diffuse_factor", "Intensity")
-                factor_but(col, tex.map_colordiff, "map_colordiff", "colordiff_factor", "Color")
-                factor_but(col, tex.map_alpha, "map_alpha", "alpha_factor", "Alpha")
-                factor_but(col, tex.map_translucency, "map_translucency", "translucency_factor", "Translucency")
-
+                #factor_but(col, tex.map_diffuse, "map_diffuse", "diffuse_factor", "Intensity")
+                #factor_but(col, tex.map_colordiff, "map_colordiff", "colordiff_factor", "Color")
+                col.prop(tex,"map_colordiff", text = 'Color Diffuse')
+                #factor_but(col, tex.map_alpha, "map_alpha", "alpha_factor", "Alpha")
+                col.prop(tex,"map_alpha", text = 'Map Alpha')
+                #factor_but(col, tex.map_translucency, "map_translucency", "translucency_factor", "Translucency")
+                col.prop(tex,"map_translucency", text = 'Map Translucency')
+                
+                col.separator()
                 col.label(text="Specular:")
-                factor_but(col, tex.map_specular, "map_specular", "specular_factor", "Intensity")
-                factor_but(col, tex.map_colorspec, "map_colorspec", "colorspec_factor", "Color")
-                factor_but(col, tex.map_hardness, "map_hardness", "hardness_factor", "Hardness")
+                #factor_but(col, tex.map_specular, "map_specular", "specular_factor", "Intensity")
+                col.prop(tex,"map_specular", text = 'Map Specular')
+                #factor_but(col, tex.map_colorspec, "map_colorspec", "colorspec_factor", "Color")
+                #factor_but(col, tex.map_hardness, "map_hardness", "hardness_factor", "Hardness")
+                col.prop(tex,"colorspec_factor", text = 'Color', slider = True)
+                col.prop(tex,"hardness_factor", text = 'Hardness', slider = True)
 
-                if wide_ui:
-                    col = split.column()
+                #if wide_ui:
+                #    col = split.column()
+                col.separator()
                 col.label(text="Shading:")
-                factor_but(col, tex.map_ambient, "map_ambient", "ambient_factor", "Ambient")
-                factor_but(col, tex.map_emit, "map_emit", "emit_factor", "Emit")
-                factor_but(col, tex.map_mirror, "map_mirror", "mirror_factor", "Mirror")
-                factor_but(col, tex.map_raymir, "map_raymir", "raymir_factor", "Ray Mirror")
+                #factor_but(col, tex.map_ambient, "map_ambient", "ambient_factor", "Ambient")
+                #factor_but(col, tex.map_emit, "map_emit", "emit_factor", "Emit")
+                #factor_but(col, tex.map_mirror, "map_mirror", "mirror_factor", "Mirror")
+                col.prop(tex,"map_mirror", text = 'Mirror')
+                #factor_but(col, tex.map_raymir, "map_raymir", "raymir_factor", "Ray Mirror")
+                col.prop(tex,"map_raymir", text = 'Ray Mirror')
 
+                col.separator()
                 col.label(text="Geometry:")
                 # XXX replace 'or' when displacement is fixed to not rely on normal influence value.
                 factor_but(col, (tex.map_normal or tex.map_displacement), "map_normal", "normal_factor", "Normal")
-                factor_but(col, tex.map_warp, "map_warp", "warp_factor", "Warp")
-                factor_but(col, tex.map_displacement, "map_displacement", "displacement_factor", "Displace")
+                #factor_but(col, tex.map_warp, "map_warp", "warp_factor", "Warp")
+                #factor_but(col, tex.map_displacement, "map_displacement", "displacement_factor", "Displace")
 
                 #sub = col.column()
                 #sub.active = tex.map_translucency or tex.map_emit or tex.map_alpha or tex.map_raymir or tex.map_hardness or tex.map_ambient or tex.map_specularity or tex.map_reflection or tex.map_mirror
                 #sub.prop(tex, "default_value", text="Amount", slider=True)
-            elif idblock.type == 'VOLUME':
-                split = layout.split()
+            #elif idblock.type == 'VOLUME':
+            #    split = layout.split()
+            #
+            #    col = split.column()
+            #    factor_but(col, tex.map_density, "map_density", "density_factor", "Density")
+            #    factor_but(col, tex.map_emission, "map_emission", "emission_factor", "Emission")
+            #    factor_but(col, tex.map_scattering, "map_scattering", "scattering_factor", "Scattering")
+            #    factor_but(col, tex.map_reflection, "map_reflection", "reflection_factor", "Reflection")
+            #
+            #    if wide_ui:
+            #        col = split.column()
+            #        col.label(text=" ")
+            #    factor_but(col, tex.map_coloremission, "map_coloremission", "coloremission_factor", "Emission Color")
+            #    factor_but(col, tex.map_colortransmission, "map_colortransmission", "colortransmission_factor", "Transmission Color")
+            #    factor_but(col, tex.map_colorreflection, "map_colorreflection", "colorreflection_factor", "Reflection Color")
 
-                col = split.column()
-                factor_but(col, tex.map_density, "map_density", "density_factor", "Density")
-                factor_but(col, tex.map_emission, "map_emission", "emission_factor", "Emission")
-                factor_but(col, tex.map_scattering, "map_scattering", "scattering_factor", "Scattering")
-                factor_but(col, tex.map_reflection, "map_reflection", "reflection_factor", "Reflection")
+        #elif type(idblock) == bpy.types.Lamp:
+        #    split = layout.split()
+        #
+        #    col = split.column()
+        #    factor_but(col, tex.map_color, "map_color", "color_factor", "Color")
+        #
+        #    if wide_ui:
+        #        col = split.column()
+        #    factor_but(col, tex.map_shadow, "map_shadow", "shadow_factor", "Shadow")
+        #
+        #elif type(idblock) == bpy.types.World:
+        #    split = layout.split()
+        #
+        #    col = split.column()
+        #    factor_but(col, tex.map_blend, "map_blend", "blend_factor", "Blend")
+        #    factor_but(col, tex.map_horizon, "map_horizon", "horizon_factor", "Horizon")
+        #
+        #    if wide_ui:
+        #        col = split.column()
+        #    factor_but(col, tex.map_zenith_up, "map_zenith_up", "zenith_up_factor", "Zenith Up")
+        #    factor_but(col, tex.map_zenith_down, "map_zenith_down", "zenith_down_factor", "Zenith Down")
 
-                if wide_ui:
-                    col = split.column()
-                    col.label(text=" ")
-                factor_but(col, tex.map_coloremission, "map_coloremission", "coloremission_factor", "Emission Color")
-                factor_but(col, tex.map_colortransmission, "map_colortransmission", "colortransmission_factor", "Transmission Color")
-                factor_but(col, tex.map_colorreflection, "map_colorreflection", "colorreflection_factor", "Reflection Color")
+        #layout.separator()
 
-        elif type(idblock) == bpy.types.Lamp:
-            split = layout.split()
-
-            col = split.column()
-            factor_but(col, tex.map_color, "map_color", "color_factor", "Color")
-
-            if wide_ui:
-                col = split.column()
-            factor_but(col, tex.map_shadow, "map_shadow", "shadow_factor", "Shadow")
-
-        elif type(idblock) == bpy.types.World:
-            split = layout.split()
-
-            col = split.column()
-            factor_but(col, tex.map_blend, "map_blend", "blend_factor", "Blend")
-            factor_but(col, tex.map_horizon, "map_horizon", "horizon_factor", "Horizon")
-
-            if wide_ui:
-                col = split.column()
-            factor_but(col, tex.map_zenith_up, "map_zenith_up", "zenith_up_factor", "Zenith Up")
-            factor_but(col, tex.map_zenith_down, "map_zenith_down", "zenith_down_factor", "Zenith Down")
-
-        layout.separator()
-
-        split = layout.split()
-
-        col = split.column()
+        #split = layout.split()
+        #
+        #col = split.column()
+        col.separator()
+        col.label(text="Others:")
         col.prop(tex, "blend_type", text="Blend")
         col.prop(tex, "rgb_to_intensity")
         sub = col.column()
         sub.active = tex.rgb_to_intensity
         sub.prop(tex, "color", text="")
 
-        if wide_ui:
-            col = split.column()
+        #if wide_ui:
+        #    col = split.column()
         col.prop(tex, "negate", text="Negative")
         col.prop(tex, "stencil")
 
         if type(idblock) in (bpy.types.Material, bpy.types.World):
-            col.prop(tex, "default_value", text="DVar", slider=True)
+            col.prop(tex, "default_value", text="Default Value", slider=True)
 
 # Texture Type Panels #
 
@@ -593,7 +606,7 @@ class YAF_TEXTURE_PT_blend(YAF_TextureTypePanel):
 
 
 class YAF_TEXTURE_PT_image(YAF_TextureTypePanel):
-    bl_label = "Image"
+    bl_label = "Map Image"
     tex_type = 'IMAGE'
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
