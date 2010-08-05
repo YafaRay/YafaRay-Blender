@@ -1,4 +1,5 @@
 import bpy
+import math
 import mathutils
 
 class OBJECT_OT_get_position(bpy.types.Operator):
@@ -36,25 +37,29 @@ def sunPosAngle(mode="get", val="position"):
     world          = bpy.context.scene.world
     scene          = bpy.context.scene
     
+    
+    
     if active_object :
+        
         if active_object.type == 'LAMP' and active_object.data.type == 'SUN':  #the second condition may also be bpy.context.scene.lamp_type
             warningMessage = False
-            print('Come to the main clause')
+            
             if mode == 'get' :
                 if val == 'position' :
                     location = mathutils.Vector(active_object.location)
                     if location.length:
                         point = location.copy().normalize()
-                    scene.bg_from = point.copy()
+                    print(str(point))
+                    world.bg_from = point.copy()
                 
                 elif val == 'angle' :
-                    inv_matrix    = mathutils.Matrix(active_object.matrix).copy().invert()
-                    scene.bg_from = (inv_matrix[0][2],inv_matrix[1][2],inv_matrix[2][2])
+                    inv_matrix    = mathutils.Matrix(active_object.matrix_local).copy().invert()
+                    world.bg_from = (inv_matrix[0][2],inv_matrix[1][2],inv_matrix[2][2])
             
             elif mode == 'update' :
                 
                 # get gui from vector and normalize it
-                bg_from = mathutils.Vector(scene.bg_from)
+                bg_from = mathutils.Vector(world.bg_from)
                 if bg_from.length:
                     bg_from.normalize()
             
@@ -67,7 +72,7 @@ def sunPosAngle(mode="get", val="position"):
                 ang = 0.0
             
                 # set reference vector for angle to -z
-                vtrack = mathutils.Vector(0, 0, -1)
+                vtrack = mathutils.Vector((0, 0, -1))
             
                 # compute sun ray direction from position
                 vray = bg_from.copy()
