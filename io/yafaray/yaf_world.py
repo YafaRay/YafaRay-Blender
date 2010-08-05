@@ -104,8 +104,9 @@ class yafWorld:
                     yi.paramsSetFloat("power", world.bg_power)
                     yi.paramsSetString("type", "sunsky")
                 
-                elif bg_type == "DarkTide's SunSky" :
+                elif bg_type == "Darktide's Sunsky":
                     
+                    #print('proper portion executed .... darktide\'s sunsky ')
                     f = world.bg_from
                     yi.paramsSetPoint("from", f[0], f[1], f[2])
                     
@@ -131,6 +132,7 @@ class yafWorld:
                     yi.paramsSetString("type", "darksky")
                 
                 else:
+                    #print('proper portion Single Color' )
                     c = world.horizon_color
                     yi.paramsSetColor("color", c[0], c[1], c[2])
                     print(str(c[0]) + " " + str(c[1]) + " " + str(c[2]))

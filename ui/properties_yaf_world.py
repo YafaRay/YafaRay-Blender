@@ -71,16 +71,16 @@ class YAF_PT_world(bpy.types.Panel):
 				properties_world.register()
 			except: 
 				pass
-		if (context.world and  (engine in self.COMPAT_ENGINES) ) :
-			try :
-				properties_texture.unregister()
-			except: 
-				pass
-		else:
-			try:
-				properties_texture.register()
-			except: 
-				pass
+		#if (context.world and  (engine in self.COMPAT_ENGINES) ) :
+		#	try :
+		#		properties_texture.unregister()
+		#	except: 
+		#		pass
+		#else:
+		#	try:
+		#		properties_texture.register()
+		#	except: 
+		#		pass
 		return (context.world and  (engine in self.COMPAT_ENGINES) ) 
 
 
@@ -146,6 +146,11 @@ class YAF_PT_world(bpy.types.Panel):
 			col.prop(context.world,"bg_c_var", text= "Solar region intensity")
 			col.prop(context.world,"bg_d_var", text= "Width of circumsolar region")
 			col.prop(context.world,"bg_e_var", text= "Backscattered light")
+			
+			col.operator("world.get_position",text = "Get Position")
+			col.operator("world.get_angle",text = "Get Angle")
+			col.operator("world.update_sun",text = "Update Sun")
+			
 			col.prop(context.world,"bg_from", text= "From")
 			col.prop(context.world,"bg_dsaltitude", text= "Altitude")
 			col.prop(context.world,"bg_add_sun", text= "Add Sun")
