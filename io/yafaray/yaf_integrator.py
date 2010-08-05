@@ -61,7 +61,7 @@ class yafIntegrator:
                 yi.paramsSetString("type", "pathtracing");
                 yi.paramsSetInt("path_samples", scene.intg_path_samples)
                 yi.paramsSetInt("bounces", scene.intg_bounces)
-                yi.paramsSetBool("no_recursive", scene.intg_no_recursionS)
+                yi.paramsSetBool("no_recursive", scene.intg_no_recursion)
                         
                 caus_type = scene.intg_caustic_method
                 photons = False;
