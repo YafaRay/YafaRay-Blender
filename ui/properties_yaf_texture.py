@@ -405,6 +405,19 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel):
                 factor_but(col, (tex.map_normal or tex.map_displacement), "map_normal", "normal_factor", "Normal")
                 #factor_but(col, tex.map_warp, "map_warp", "warp_factor", "Warp")
                 #factor_but(col, tex.map_displacement, "map_displacement", "displacement_factor", "Displace")
+                
+                col.separator()
+                col.label(text="Others:")
+                col.prop(tex, "blend_type", text="Blend")
+                col.prop(tex, "rgb_to_intensity")
+                sub = col.column()
+                sub.active = tex.rgb_to_intensity
+                sub.prop(tex, "color", text="")
+
+                #if wide_ui:
+                #    col = split.column()
+                col.prop(tex, "negate", text="Negative")
+                col.prop(tex, "stencil")
 
                 #sub = col.column()
                 #sub.active = tex.map_translucency or tex.map_emit or tex.map_alpha or tex.map_raymir or tex.map_hardness or tex.map_ambient or tex.map_specularity or tex.map_reflection or tex.map_mirror
@@ -452,20 +465,11 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel):
         #split = layout.split()
         #
         #col = split.column()
-        col.separator()
-        col.label(text="Others:")
-        col.prop(tex, "blend_type", text="Blend")
-        col.prop(tex, "rgb_to_intensity")
-        sub = col.column()
-        sub.active = tex.rgb_to_intensity
-        sub.prop(tex, "color", text="")
 
-        #if wide_ui:
-        #    col = split.column()
-        col.prop(tex, "negate", text="Negative")
-        col.prop(tex, "stencil")
 
         if type(idblock) in (bpy.types.Material, bpy.types.World):
+            split = layout.split()
+            col = split.column()
             col.prop(tex, "default_value", text="Default Value", slider=True)
 
 # Texture Type Panels #
