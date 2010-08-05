@@ -351,7 +351,8 @@ class yafObject(object):
                 else:
                     ymaterial = self.materialMap["default"]
             else:
-                if obj.data.materials is not None:
+                #print("material length :" + str(len(obj.data.materials)))
+                if len(obj.data.materials):
                     mat = obj.data.materials[0]
                     ymaterial = self.materialMap[mat]
                 else:
