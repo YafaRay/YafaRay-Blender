@@ -20,21 +20,21 @@ EnumProperty(attr="intg_light_method",
 		("Bidirectional","Bidirectional",""),
 ),default="Direct Lighting")
 BoolProperty(attr="intg_use_caustics")
-IntProperty(attr="intg_photons")
-IntProperty(attr="intg_caustic_mix")
-IntProperty(attr="intg_caustic_depth")
-FloatProperty(attr="intg_caustic_radius")
+IntProperty(attr="intg_photons", default = 100000)
+IntProperty(attr="intg_caustic_mix", default = 100)
+IntProperty(attr="intg_caustic_depth", default = 10)
+FloatProperty(attr="intg_caustic_radius", default = 0.25)
 BoolProperty(attr="intg_use_AO")
-IntProperty(attr="intg_AO_samples")
-FloatProperty(attr="intg_AO_distance")
+IntProperty(attr="intg_AO_samples", default = 32)
+FloatProperty(attr="intg_AO_distance", default = 1.0)
 FloatVectorProperty(attr="intg_AO_color",description = "Color Settings", subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
 IntProperty(attr="intg_bounces", min = 4, default = 4, soft_min = 4)
-FloatProperty(attr="intg_diffuse_radius")
+FloatProperty(attr="intg_diffuse_radius", default = 1.0)
 IntProperty(attr="intg_cPhotons")
-IntProperty(attr="intg_search")
-BoolProperty(attr="intg_final_gather")
-IntProperty(attr="intg_fg_bounces")
-IntProperty(attr="intg_fg_samples")
+IntProperty(attr="intg_search", default = 1000)
+BoolProperty(attr="intg_final_gather", default = True)
+IntProperty(attr="intg_fg_bounces", default = 100)
+IntProperty(attr="intg_fg_samples", default = 100)
 BoolProperty(attr="intg_show_map")
 BoolProperty(attr="intg_use_bg")
 EnumProperty(attr="intg_caustic_method",
@@ -45,7 +45,7 @@ EnumProperty(attr="intg_caustic_method",
 		("Path+Photon","Path+Photon",""),
 		("Photon","Photon",""),
 ),default="None")
-IntProperty(attr="intg_path_samples")
+IntProperty(attr="intg_path_samples", default = 32)
 BoolProperty(attr="intg_no_recursion")
 EnumProperty(attr="intg_debug_type",
 	items = (
