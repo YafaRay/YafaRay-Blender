@@ -229,14 +229,16 @@ class yafObject(object):
                 
             
             # get the face material if none is provided to override
-            if ymat is None:
-                mat = mesh.data.materials[f.material_index]
-                if mat in self.materialMap:
-                    fmat = self.materialMap[mat]
-                else:
-                    fmat = self.materialMap["default"]
-            else:
+            #if ymat is None:
+            mat = mesh.materials[f.material_index]
+            if mat in self.materialMap:
+                fmat = self.materialMap[mat]
+            elif ymat:
                 fmat = ymat
+            else:
+                fmat = self.materialMap["default"]
+            #else:
+            #    fmat = ymat
                 
                 
             if mesh.active_uv_texture is not None :
