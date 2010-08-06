@@ -18,10 +18,11 @@ class yafGeneralAA:
                 
             cam_data = None
             
-            for item in bpy.context.selected_objects:
-                if item.type == 'CAMERA':
-                    cam_data = item.data
-                    break
+            if len(scene.objects):
+                for item in scene.objects:
+                    if item.type == 'CAMERA':
+                        cam_data = item.data
+                        break
             
             # Shift only available if camera is selected
             if not cam_data:
