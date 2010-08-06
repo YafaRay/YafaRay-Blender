@@ -1,7 +1,13 @@
 import bpy
 from  math import *
+import re
+import os
 #import mathutils
 #import yafrayinterface
+
+def get_image_filename(filepath):
+	path = filepath.replace('//',os.path.expanduser('~')+'/',1)
+	return os.path.abspath(path)
 
 class yafWorld:
         def __init__(self, interface):
@@ -32,7 +38,7 @@ class yafWorld:
                             
                             yi.paramsSetString("type", "image")
                             #yi.paramsSetString("filename", worldTex.image.filename )
-                            yi.paramsSetString("filename", worldTex.image.filepath )
+                            yi.paramsSetString("filename", get_image_filename(worldTex.image.filepath) )
                             # exposure_adjust not restricted to integer range anymore
                             yi.paramsSetFloat("exposure_adjust", worldTex.brightness/2)  #this portion is edited
                             
