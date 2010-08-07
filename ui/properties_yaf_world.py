@@ -99,6 +99,7 @@ class YAF_PT_world(bpy.types.Panel):
 			context.world.blend_sky = True
 			col.prop(context.world,"zenith_color", text= "Zenith Color")
 			col.prop(context.world,"bg_zenith_ground_color", text= "Zenith Ground Color")
+			col.prop(context.world,"bg_use_IBL", text= "Use IBL")
 
 		if context.world.bg_type == 'Texture':
 			col.prop(context.world,"bg_use_IBL", text= "Use IBL")
@@ -165,6 +166,7 @@ class YAF_PT_world(bpy.types.Panel):
 
 		if context.world.bg_type == 'Single Color':
 			col.prop(context.world,"horizon_color", text= "Color")
+			col.prop(context.world,"bg_use_IBL", text= "Use IBL")
 
 		col.prop(context.world,"bg_power", text= "Multiplier for Background Color")
 

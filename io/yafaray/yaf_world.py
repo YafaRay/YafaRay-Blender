@@ -142,7 +142,7 @@ class yafWorld:
                     c = world.horizon_color
                     yi.paramsSetColor("color", c[0], c[1], c[2])
                     print(str(c[0]) + " " + str(c[1]) + " " + str(c[2]))
-                    yi.paramsSetBool("ibl", 0)
+                    yi.paramsSetBool("ibl", world.bg_use_IBL)
                     yi.paramsSetInt("ibl_samples", 16)
                     yi.paramsSetFloat("power", world.bg_power)
                     yi.paramsSetString("type", "constant");
