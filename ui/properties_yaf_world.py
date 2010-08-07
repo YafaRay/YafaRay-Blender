@@ -40,6 +40,10 @@ BoolProperty(attr="bg_dsnight")
 FloatProperty(attr="bg_dsbright", default = 1.0)
 FloatProperty(attr="bg_power", default = 1.0)
 
+FloatProperty(attr="bg_exposure", default = 1.0)
+BoolProperty(attr="bg_clamp_rgb")
+BoolProperty(attr="bg_gamma_enc")
+
 BoolProperty(attr="use_image", default = False)
 
 
@@ -163,6 +167,9 @@ class YAF_PT_world(bpy.types.Panel):
 
 			col.prop(context.world,"bg_dsbright", text= "Sky Brightness")
 			col.prop(context.world,"bg_light_samples", text= "Samples")
+			col.prop(context.world,"bg_exposure", text= "Exposure")
+			col.prop(context.world,"bg_clamp_rgb", text= "Clamp RGB")
+			col.prop(context.world,"bg_gamma_enc", text= "Gamma Encoding")
 
 		if context.world.bg_type == 'Single Color':
 			col.prop(context.world,"horizon_color", text= "Color")

@@ -135,6 +135,9 @@ class yafWorld:
                     yi.paramsSetFloat("power", world.bg_power)
                     yi.paramsSetFloat("bright", world.bg_dsbright)
                     yi.paramsSetBool("night", world.bg_dsnight)
+                    yi.paramsSetFloat("exposure", world.bg_exposure)
+                    yi.paramsSetBool("clamp_rgb", world.bg_clamp_rgb)
+                    yi.paramsSetBool("gamma_enc", world.bg_gamma_enc)
                     yi.paramsSetString("type", "darksky")
                 
                 else:
