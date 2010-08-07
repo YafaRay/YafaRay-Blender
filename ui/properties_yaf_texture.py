@@ -654,26 +654,26 @@ class YAF_TEXTURE_PT_image_sampling(YAF_TextureTypePanel):
         col.label(text="Alpha:")
         col.prop(tex, "use_alpha", text="Use")
         col.prop(tex, "calculate_alpha", text="Calculate")
-        col.prop(tex, "invert_alpha", text="Invert")
-        col.separator()
+        #col.prop(tex, "invert_alpha", text="Invert")
+        #col.separator()
         col.prop(tex, "flip_axis", text="Flip X/Y Axis")
-
-        if wide_ui:
-            col = split.column()
-        else:
-            col.separator()
+        #
+        #if wide_ui:
+        #    col = split.column()
+        #else:
+        #    col.separator()
         col.prop(tex, "normal_map")
-        row = col.row()
-        row.active = tex.normal_map
-        row.prop(tex, "normal_space", text="")
+        #row = col.row()
+        #row.active = tex.normal_map
+        #row.prop(tex, "normal_space", text="")
 
-        col.prop(tex, "mipmap")
-        row = col.row()
-        row.active = tex.mipmap
-        row.prop(tex, "mipmap_gauss")
-        col.prop(tex, "interpolation")
-
-        texture_filter_common(tex, col)
+        #col.prop(tex, "mipmap")
+        #row = col.row()
+        #row.active = tex.mipmap
+        #row.prop(tex, "mipmap_gauss")
+        #col.prop(tex, "interpolation")
+        #
+        #texture_filter_common(tex, col)
 
 
 class YAF_TEXTURE_PT_image_mapping(YAF_TextureTypePanel):
@@ -701,12 +701,12 @@ class YAF_TEXTURE_PT_image_mapping(YAF_TextureTypePanel):
             col.prop(tex, "repeat_x", text="X")
             col.prop(tex, "repeat_y", text="Y")
 
-            if wide_ui:
-                col = split.column(align=True)
-            col.label(text="Mirror:")
-            col.prop(tex, "mirror_x", text="X")
-            col.prop(tex, "mirror_y", text="Y")
-            layout.separator()
+            #if wide_ui:
+            #    col = split.column(align=True)
+            #col.label(text="Mirror:")
+            #col.prop(tex, "mirror_x", text="X")
+            #col.prop(tex, "mirror_y", text="Y")
+            #layout.separator()
 
         elif tex.extension == 'CHECKER':
             col = split.column(align=True)
@@ -714,9 +714,9 @@ class YAF_TEXTURE_PT_image_mapping(YAF_TextureTypePanel):
             row.prop(tex, "checker_even", text="Even")
             row.prop(tex, "checker_odd", text="Odd")
 
-            if wide_ui:
-                col = split.column()
-            col.prop(tex, "checker_distance", text="Distance")
+            #if wide_ui:
+            #    col = split.column()
+            #col.prop(tex, "checker_distance", text="Distance")
 
             layout.separator()
 
