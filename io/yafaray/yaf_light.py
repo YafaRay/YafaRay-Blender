@@ -129,8 +129,22 @@ class yafLight:
 			yi.paramsSetFloat("radius", lamp.shadow_soft_size)
 			yi.paramsSetPoint("direction", dir[0], dir[1], dir[2])
 		
+		elif lampType == "IES":
+			
+			yi.paramsSetString("type", "ieslight")
+			yi.paramsSetPoint("to", to[0], to[1], to[2])
+			import os
+			if lamp.ies_file != "" and not os.path.exists(lamp.ies_file):
+				return False
+			
+			yi.paramsSetString("file", lamp.ies_file)
+			yi.paramsSetInt("samples", lamp.ies_samples)
+			yi.paramsSetBool("soft_shadows", lamp.ies_soft_shadows)
+			yi.paramsSetFloat("cone_angle", lamp.ies_cone_angle)
+			
+		
 		elif lampType == "Area":
-			yi.paramsSetString("type", "arealight")
+			#yi.paramsSetString("type", "arealight")
 			#areaLight = obj.getData()
 			#sizeX = areaLight.getAreaSizeX()
 			#sizeY = areaLight.getAreaSizeY()

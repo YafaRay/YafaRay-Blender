@@ -16,11 +16,12 @@ EnumProperty(attr="lamp_type",
 		("Light Type","Light Type",""),
 		("Area","Area",""),
 		("Directional","Directional",""),
-		("MeshLight","MeshLight",""),
+		#("MeshLight","MeshLight",""),
 		("Point","Point",""),
 		("Sphere","Sphere",""),
 		("Spot","Spot",""),
 		("Sun","Sun",""),
+		("IES","IES",""),
 ),default="Sun")
 BoolProperty(attr="create_geometry")
 BoolProperty(attr="infinite")
@@ -30,6 +31,10 @@ BoolProperty(attr="photon_only")
 IntProperty(attr="angle",
 		max = 80,
 		min = 0)
+StringProperty(attr="ies_file",subtype = 'FILE_PATH')
+IntProperty(attr="ies_samples", default = 1000)
+FloatProperty(attr="ies_cone_angle", default = 10.0)
+BoolProperty(attr="ies_soft_shadows")
 
 
 class YAF_PT_lamp(bpy.types.Panel):
@@ -79,19 +84,19 @@ class YAF_PT_lamp(bpy.types.Panel):
 			col.prop(context.lamp,"create_geometry", text= "Create Geometry")
 
 
-		if context.lamp.lamp_type == 'Directional':
+		elif context.lamp.lamp_type == 'Directional':
 			context.lamp.type = 'SUN'
 			col.prop(context.lamp,"shadow_soft_size", text= "Radius")
 			col.prop(context.lamp,"infinite", text= "Infinite")
 
-		if context.lamp.lamp_type == 'Sphere':
+		elif context.lamp.lamp_type == 'Sphere':
 			context.lamp.type = 'POINT'
 			col.prop(context.lamp,"shadow_soft_size", text= "Radius")
 			col.prop(context.lamp,"shadow_ray_samples", text= "Samples")
 			col.prop(context.lamp,"create_geometry", text= "Create Geometry")
 
 
-		if context.lamp.lamp_type == 'Spot':
+		elif context.lamp.lamp_type == 'Spot':
 			
 			context.lamp.type = 'SPOT'
 			
@@ -105,13 +110,23 @@ class YAF_PT_lamp(bpy.types.Panel):
 			col.prop(context.lamp,"photon_only", text= "Photon Only")
 			col.prop(context.lamp,"spot_soft_shadows", text= "Soft Shadow")
 			
-
-			
-
-		if context.lamp.lamp_type == 'Sun':
+		elif context.lamp.lamp_type == 'Sun':
 			context.lamp.type = 'SUN'
 			col.prop(context.lamp,"angle", text= "Angle")
 			col.prop(context.lamp,"shadow_ray_samples", text= "Samples")
+		
+		elif context.lamp.lamp_type == 'Point':
+			context.lamp.type = 'POINT'
+			
+		
+		elif context.lamp.lamp_type == 'IES':
+			col.prop(context.lamp,"ies_file",text = "IES File")
+			col.prop(context.lamp,"ies_samples",text = "IES Samples")
+			col.prop(context.lamp,"ies_cone_angle",text = "IES Cone Angle")
+			col.prop(context.lamp,"ies_soft_shadows",text = "IES Soft Shadows")
+
+
+
 
 		col.prop(context.lamp,"color", text= "Color")
 		col.prop(context.lamp,"energy", text= "Power")
