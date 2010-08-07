@@ -239,61 +239,64 @@ class yafTexture:
 		
 		elif tex.yaf_tex_type == 'IMAGE':
 			
-			ima = tex.image
-			if ima is not None:
+			#ima = tex.image
+			##print(str(ima))
+			#if ima is not None:
 				# get image full path
-				imagefile = get_image_filename(image.filepath)
-				yi.printInfo("Exporter: Creating Texture: \"" + name + "\" type IMAGE: " + imagefile)
-				# remember image to avoid duplicates later if also in imagetex
-				# (formerly done by removing from imagetex, but need image/material link)
-				#	dupimg.insert(ima);
-				yi.paramsSetString("type", "image")
-				yi.paramsSetString("filename", imagefile)
+				#imagefile = get_image_filename(ima.filepath)
+			import os
+			if tex.tex_file_name != "" and not os.path.exists(tex.tex_file_name):
+				yi.printInfo("Exporter: No valid texture image supplied.")
+				return False
 			
-			#	yG->paramsSetString("interpolate", (tex->imaflag & TEX_INTERPOL) ? "bilinear" : "none");
-				#the part is blank now
-				#yi.paramsSetFloat("gamma", gamma)
-				yi.paramsSetBool("use_alpha", tex.use_alpha)
-				yi.paramsSetBool("calc_alpha", tex.calculate_alpha)
-				yi.paramsSetBool("normalmap", tex.normal_map)
+			
+			yi.printInfo("Exporter: Creating Texture: \"" + name + "\" type IMAGE: " + tex.tex_file_name)
+
+			yi.paramsSetString("type", "image")
+			yi.paramsSetString("filename", tex.tex_file_name)
+				#yi.paramsSetString("filename", imagefile)
+
+			yi.paramsSetBool("use_alpha", tex.use_alpha)
+			yi.paramsSetBool("calc_alpha", tex.calculate_alpha)
+			yi.paramsSetBool("normalmap", tex.normal_map)
 						
-				# repeat
-				repeat_x = 1
-				repeat_y = 1
+			# repeat
+			repeat_x = 1
+			repeat_y = 1
 				
-				if tex.extension == 'REPEAT':
-					repeat_x = tex.repeat_x
-					repeat_y = tex.repeat_y
+			if tex.extension == 'REPEAT':
+				repeat_x = tex.repeat_x
+				repeat_y = tex.repeat_y
 				
-				yi.paramsSetInt("xrepeat", repeat_x)
-				yi.paramsSetInt("yrepeat", repeat_y)
+			yi.paramsSetInt("xrepeat", repeat_x)
+			yi.paramsSetInt("yrepeat", repeat_y)
 						
-				# clipping
-				ext = tex.extension
+			# clipping
+			ext = tex.extension
 				
-				#print tex.getExtend()
-				if ext == 'EXTEND':
-					yi.paramsSetString("clipping", "extend")
-				elif ext == 'CLIP':
-					yi.paramsSetString("clipping", "clip")
-				elif ext == 'CLIP_CUBE':
-					yi.paramsSetString("clipping", "clipcube")
-				elif ext == "CHECKER": #Blender.Texture.ExtendModes.CHECKER:
-					yi.paramsSetString("clipping", "checker")
-					yi.paramsSetBool("even_tiles", tex.checker_even)
-					yi.paramsSetBool("odd_tiles", tex.checker_odd)
-				else:
-					yi.paramsSetString("clipping", "repeat")
+			#print tex.getExtend()
+			if ext == 'EXTEND':
+				yi.paramsSetString("clipping", "extend")
+			elif ext == 'CLIP':
+				yi.paramsSetString("clipping", "clip")
+			elif ext == 'CLIP_CUBE':
+				yi.paramsSetString("clipping", "clipcube")
+			elif ext == "CHECKER": #Blender.Texture.ExtendModes.CHECKER:
+				yi.paramsSetString("clipping", "checker")
+				yi.paramsSetBool("even_tiles", tex.checker_even)
+				yi.paramsSetBool("odd_tiles", tex.checker_odd)
+			else:
+				yi.paramsSetString("clipping", "repeat")
 				
-				# crop min/max
-				yi.paramsSetFloat("cropmin_x", tex.crop_min_x)
-				yi.paramsSetFloat("cropmin_y", tex.crop_min_y) 
-				yi.paramsSetFloat("cropmax_x", tex.crop_max_x)
-				yi.paramsSetFloat("cropmax_y", tex.crop_max_y)
+			# crop min/max
+			yi.paramsSetFloat("cropmin_x", tex.crop_min_x)
+			yi.paramsSetFloat("cropmin_y", tex.crop_min_y) 
+			yi.paramsSetFloat("cropmax_x", tex.crop_max_x)
+			yi.paramsSetFloat("cropmax_y", tex.crop_max_y)
 				
-				# rot90 flag
-				#if tex.rot90 != 0:
-				yi.paramsSetBool("rot90", tex.flip_axis)
+			# rot90 flag
+			#if tex.rot90 != 0:
+			yi.paramsSetBool("rot90", tex.flip_axis)
 		yi.createTexture(name)
 	
 	def createTextures(self,yi,scene):

@@ -44,6 +44,8 @@ EnumProperty(attr="yaf_tex_type",
                 ("IMAGE","Image",""),
 ),default="NONE")
 
+StringProperty(attr='tex_file_name', subtype = 'FILE_PATH')
+
 
 from properties_material import active_node_mat
 
@@ -619,7 +621,8 @@ class YAF_TEXTURE_PT_image(YAF_TextureTypePanel):
 
         tex = context.texture
 
-        layout.template_image(tex, "image", tex.image_user)
+        #layout.template_image(tex, "image", tex.image_user)
+        layout.prop(tex,"tex_file_name", text = "Image File Path")
 
 
 def texture_filter_common(tex, layout):
