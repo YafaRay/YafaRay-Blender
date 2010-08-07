@@ -230,9 +230,14 @@ class yafObject(object):
             
             # get the face material if none is provided to override
             #if ymat is None:
-            mat = mesh.materials[f.material_index]
-            if mat in self.materialMap:
-                fmat = self.materialMap[mat]
+            if len(mesh.materials):
+                mat = mesh.materials[f.material_index]
+                if mat in self.materialMap:
+                    fmat = self.materialMap[mat]
+                elif ymat:
+                    fmat = ymat
+                else:
+                    fmat = self.materialMap["default"]
             elif ymat:
                 fmat = ymat
             else:
@@ -524,7 +529,13 @@ class yafObject(object):
         return
 
     
-    
+    def returnActiveLayers(self,object):
+        active_layers = []
+        
+        for index,layer in enumerate(object.layers):
+            if layer:
+                active_layers.append(index)
+        return active_layers
     
     def writeMeshes(self,yi,scene,isSmooth = False):
         
@@ -539,5 +550,10 @@ class yafObject(object):
             if obj.type in ('LAMP', 'CAMERA', 'EMPTY', 'META', 'ARMATURE'):
                 continue
             else:
-                self.writeObject(yi,scene,obj)
+                active_layers  = self.returnActiveLayers(obj)
+                if len(active_layers):
+                    for layer in active_layers:
+                        if scene.layers[layer]:
+                            self.writeObject(yi,scene,obj)
+                            break
         
