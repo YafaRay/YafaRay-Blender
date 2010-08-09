@@ -79,20 +79,29 @@ class YAF_PT_camera(bpy.types.Panel):
 		split = layout.split()
 		col = split.column()
 
-		col.prop(bpy.data,"cameras",text = "Available cameras")
+		camera = context.camera
+
+			
+		#col.prop(bpy.data,"cameras",text = "Available cameras")
 		col.prop(context.camera,"camera_type", text= "Yafaray Camera")
 
 		if context.camera.camera_type == 'angular':
-			context.camera.type = "PERSP"
+			
+			if camera.type != 'PERSP':
+				camera.type = 'PERSP'	
+			#context.camera.type = "PERSP"
 			col.prop(context.camera,"lens", text= "Angle")
 			col.prop(context.camera,"max_angle", text= "Max Angle")
 			col.prop(context.camera,"mirrored", text= "Mirrored")
-
+			
 			col.prop(context.camera,"circular", text= "Circular")
+			
 
 
 		if context.camera.camera_type == 'orthographic':
-			context.camera.type = "ORTHO"
+			#context.camera.type = "ORTHO"
+			if camera.type != 'ORTHO':
+				camera.type = 'ORTHO'
 			col.prop(context.camera,"ortho_scale", text= "Scale")
 
 		if context.camera.camera_type == 'perspective':
@@ -104,7 +113,9 @@ class YAF_PT_camera(bpy.types.Panel):
 			#col = split.column()
 			col.prop(context.camera,"bokeh_bias", text= "Bokeh Bias")
 
-			context.camera.type = "PERSP"
+			#context.camera.type = "PERSP"
+			if camera.type != 'PERSP':
+				camera.type = 'PERSP'
 			col.prop(context.camera,"lens", text= "Focal Length")
 
 		if context.camera.camera_type == 'architect':
@@ -116,7 +127,9 @@ class YAF_PT_camera(bpy.types.Panel):
 			#col = split.column()
 			col.prop(context.camera,"bokeh_bias", text= "Bokeh Bias")
 
-			context.camera.type = "PERSP"
+			#context.camera.type = "PERSP"
+			if camera.type != 'PERSP':
+				camera.type = 'PERSP'
 			col.prop(context.camera,"lens", text= "Focal Length")
 
 		col.prop(context.camera,"color_data", text= "Yafaray Camera Point")

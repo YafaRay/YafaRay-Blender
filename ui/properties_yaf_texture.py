@@ -485,7 +485,8 @@ class YAF_TextureTypePanel(YAF_TextureButtonsPanel):
         #tex.type = self.tex_type
         var = ((tex and tex.yaf_tex_type == self.tex_type and not tex.use_nodes) and (engine in self.COMPAT_ENGINES))
         if var:
-                context.texture.type = self.tex_type
+                if context.texture.type != self.tex_type:
+                        context.texture.type = self.tex_type
         return var
 
 

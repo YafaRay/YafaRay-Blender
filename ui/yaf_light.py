@@ -77,7 +77,9 @@ class YAF_PT_lamp(bpy.types.Panel):
 		col = row.column()
 
 		if context.lamp.lamp_type == 'Area':
-			context.lamp.type = 'AREA'
+			
+			if context.lamp.type != 'AREA':
+				context.lamp.type = 'AREA'
 			col.prop(context.lamp,"shadow_ray_samples_x", text= "Samples")
 			col.prop(context.lamp,"size", text= "SizeX")
 			col.prop(context.lamp,"size_y", text= "SizeY")
@@ -85,12 +87,14 @@ class YAF_PT_lamp(bpy.types.Panel):
 
 
 		elif context.lamp.lamp_type == 'Directional':
-			context.lamp.type = 'SUN'
+			if context.lamp.type != 'SUN':
+				context.lamp.type = 'SUN'
 			col.prop(context.lamp,"shadow_soft_size", text= "Radius")
 			col.prop(context.lamp,"infinite", text= "Infinite")
 
 		elif context.lamp.lamp_type == 'Sphere':
-			context.lamp.type = 'POINT'
+			if context.lamp.type != 'POINT':
+				context.lamp.type = 'POINT'
 			col.prop(context.lamp,"shadow_soft_size", text= "Radius")
 			col.prop(context.lamp,"shadow_ray_samples", text= "Samples")
 			col.prop(context.lamp,"create_geometry", text= "Create Geometry")
@@ -98,7 +102,8 @@ class YAF_PT_lamp(bpy.types.Panel):
 
 		elif context.lamp.lamp_type == 'Spot':
 			
-			context.lamp.type = 'SPOT'
+			if context.lamp.type != 'SPOT':
+				context.lamp.type = 'SPOT'
 			
 			col.prop(context.lamp,"spot_size", text= "Cone Angle")
 			col.prop(context.lamp,"shadow_ray_samples", text= "Samples")
@@ -111,12 +116,16 @@ class YAF_PT_lamp(bpy.types.Panel):
 			col.prop(context.lamp,"spot_soft_shadows", text= "Soft Shadow")
 			
 		elif context.lamp.lamp_type == 'Sun':
-			context.lamp.type = 'SUN'
+			
+			if context.lamp.type != 'SUN':
+				context.lamp.type = 'SUN'
 			col.prop(context.lamp,"angle", text= "Angle")
 			col.prop(context.lamp,"shadow_ray_samples", text= "Samples")
 		
 		elif context.lamp.lamp_type == 'Point':
-			context.lamp.type = 'POINT'
+			
+			if context.lamp.type != 'POINT':
+				context.lamp.type = 'POINT'
 			
 		
 		elif context.lamp.lamp_type == 'IES':
