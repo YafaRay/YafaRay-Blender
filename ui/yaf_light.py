@@ -78,9 +78,9 @@ class YAF_PT_lamp(bpy.types.Panel):
 
 		if context.lamp.lamp_type == 'Area':
 			
+			col.prop(context.lamp,"shadow_ray_samples_x", text= "Samples")
 			if context.lamp.type != 'AREA':
 				context.lamp.type = 'AREA'
-			col.prop(context.lamp,"shadow_ray_samples_x", text= "Samples")
 			col.prop(context.lamp,"size", text= "SizeX")
 			col.prop(context.lamp,"size_y", text= "SizeY")
 			col.prop(context.lamp,"create_geometry", text= "Create Geometry")

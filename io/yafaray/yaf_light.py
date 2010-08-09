@@ -152,8 +152,9 @@ class yafLight:
 			sizeX = lamp.size
 			sizeY = lamp.size_y
 
-			matrix = matrix.__copy__()
-			matrix.transpose()
+			matrix = lamp_object.matrix_world.__copy__()
+			#lamp_object.transform(matrix)
+			#matrix.transpose()
 
 			# generate an untransformed rectangle in the XY plane with
 			# the light's position as the centerpoint and transform it
@@ -173,7 +174,7 @@ class yafLight:
 			if lamp.create_geometry  == True:
 				ID = yi.getNextFreeID()
 				yi.startGeometry();
-				yi.startTriMesh(ID, 4, 2, False, False);
+				yi.startTriMesh(ID, 4, 2, False, False, 0);
 
 				yi.addVertex(point[0], point[1], point[2]);
 				yi.addVertex(corner1[0], corner1[1], corner1[2]);
@@ -205,8 +206,12 @@ class yafLight:
 	
 	def createLights(self,yi,scene):
 		
+		yi.paramsClearAll()
+		yi.paramsSetString("type", "null")
+		ymat = yi.createMaterial("lampmat")
+		
 		objects = scene.objects
 		for item in objects:
 			if item.type == 'LAMP':
-				self.createLight(yi,item,scene)
+				self.createLight(yi,item,scene,lamp_mat = ymat)
 				
