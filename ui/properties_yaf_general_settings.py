@@ -29,7 +29,7 @@ EnumProperty(attr="gs_tile_order",
 		("Linear","Linear",""),
 		("Random","Random",""),
 ),default="Random")
-BoolProperty(attr="gs_auto_threads")
+BoolProperty(attr="gs_auto_threads", default = True)
 BoolProperty(attr="gs_clay_render")
 BoolProperty(attr="gs_draw_params")
 StringProperty(attr="gs_custom_string")
@@ -39,6 +39,7 @@ BoolProperty(attr="gs_premult")
 BoolProperty(attr="gs_transp_shad")
 BoolProperty(attr="gs_clamp_rgb")
 BoolProperty(attr="gs_show_sam_pix")
+BoolProperty(attr="gs_z_channel")
 
 
 class YAF_PT_general_settings(bpy.types.Panel):
@@ -64,7 +65,9 @@ class YAF_PT_general_settings(bpy.types.Panel):
 
 		col.prop(context.scene,"gs_ray_depth", text= "Ray Depth")
 		col.prop(context.scene,"gs_shadow_depth", text= "Shadow Depth")
-		col.prop(context.scene,"gs_threads", text= "Threads")
+		if not context.scene.gs_auto_threads:
+			col.prop(context.scene,"gs_threads", text= "Threads")
+		
 		col.prop(context.scene,"gs_gamma", text= "Gamma")
 		col.prop(context.scene,"gs_gamma_input", text= "Gamma Input")
 		col.prop(context.scene,"gs_tile_size", text= "Tile Size")
@@ -85,10 +88,11 @@ class YAF_PT_general_settings(bpy.types.Panel):
 
 		col.prop(context.scene,"gs_clamp_rgb", text= "Clamp RGB")
 
-		col.prop(context.scene,"gs_show_sam_pix", text= "Show Sam Pix")
+		#col.prop(context.scene,"gs_show_sam_pix", text= "Show Sam Pix")
 		
 		col.prop(context.scene,"gs_draw_params", text= "Draw Params")
-
+		
+		col.prop(context.scene,"gs_z_channel", text= "Render Z-buffer")
 		if context.scene.gs_draw_params:
 			row = layout.row()	
 			row.prop(context.scene,"gs_custom_string", text= "Custom String")

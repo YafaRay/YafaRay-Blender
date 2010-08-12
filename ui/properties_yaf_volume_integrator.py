@@ -18,7 +18,7 @@ EnumProperty(attr="v_int_type",
 		("Single Scatter","Single Scatter",""),
 		#("Sky","Sky",""),
 ),default="None")
-FloatProperty(attr="v_int_step_size")
+FloatProperty(attr="v_int_step_size", precision = 3)
 BoolProperty(attr="v_int_adaptive")
 BoolProperty(attr="v_int_optimize")
 IntProperty(attr="v_int_attgridres")
