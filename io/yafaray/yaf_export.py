@@ -3,7 +3,7 @@ import os
 import time
 import tempfile
 
-import subprocess
+
 import sys
 
 
@@ -126,10 +126,13 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         else:
             filetype = 'png'
         extension = '.' + filetype
-        outputFile = tempfile.mktemp(suffix = extension, dir = output_path)
+        output = tempfile.mktemp(dir = output_path)
+        outputFile = output + extension
         
-        return outputFile,filetype
-
+        return outputFile,output,filetype
+    
+    def dummy(self):
+        return self.yaf_general_aa.getRenderCoords(self.scene)
 
     # callback to render scene
     def render(self, scene):
@@ -140,6 +143,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.scene = scene
         
             r = scene.render
+ 
 
             # compute resolution
             x= int(r.resolution_x*r.resolution_percentage*0.01)
@@ -147,18 +151,29 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         
             self.setInterface(yafrayinterface.yafrayInterface_t())
             
-            print("the scene name is : " + scene.name )
+            #[sizeX, sizeY, bStartX, bStartY, bsizeX, bsizeY,cam_data] = self.dummy()
+            #
+            #if r.use_border and cam_data :
+            #    x = bsizeX
+            #    y = bsizeY
+            #else:
+            #    x = sizeX
+            #    y = sizeY
+            #
+            #print("from render function : x = " + str(x) + "  y = "  + str(y) )
+            
+            #print("the scene name is : " + scene.name )
 
             
             
-            outputFile,file_type = self.decideOutputFileName(r.output_path, r.file_format)
+            outputFile,output,file_type = self.decideOutputFileName(r.output_path, r.file_format)
                         
             self.yi.paramsClearAll()
             self.yi.paramsSetString("type", file_type)
             self.yi.paramsSetInt("width", x)
             self.yi.paramsSetInt("height", y)
             self.yi.paramsSetBool("alpha_channel", False)
-            self.yi.paramsSetBool("z_channel", True)
+            self.yi.paramsSetBool("z_channel", scene.gs_z_channel)
                         
             ih = self.yi.createImageHandler("outFile")
             co = yafrayinterface.imageOutput_t(ih, outputFile)
@@ -167,8 +182,10 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 
             self.yi.startScene()
             
+            
             self.exportObjects()
             self.configureRender()
+            
             
             # get a render result to write into
             result = self.begin_result(0, 0, x, y)
@@ -181,9 +198,12 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.update_stats("", "Rendering to %s" % outputFile)
             print("Rendering to %s" % outputFile)
             
-            self.yi.render(co) 
-            lay.load_from_file(outputFile)
+            self.yi.render(co)
             
+            if scene.gs_z_channel:
+                lay.load_from_file(output + '_zbuffer.' + file_type)
+            else:
+                lay.load_from_file(outputFile)
             # done
             self.end_result(result)
             self.update_stats("", "Done!")
