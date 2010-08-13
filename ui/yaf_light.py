@@ -130,7 +130,8 @@ class YAF_PT_lamp(bpy.types.Panel):
 		
 		elif context.lamp.lamp_type == 'IES':
 			col.prop(context.lamp,"ies_file",text = "IES File")
-			col.prop(context.lamp,"ies_samples",text = "IES Samples")
+			if context.lamp.ies_soft_shadows:
+				col.prop(context.lamp,"ies_samples",text = "IES Samples")
 			col.prop(context.lamp,"ies_cone_angle",text = "IES Cone Angle")
 			col.prop(context.lamp,"ies_soft_shadows",text = "IES Soft Shadows")
 

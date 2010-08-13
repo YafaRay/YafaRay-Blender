@@ -42,7 +42,7 @@ FloatProperty(attr="bg_power", default = 1.0)
 
 FloatProperty(attr="bg_exposure", default = 1.0)
 BoolProperty(attr="bg_clamp_rgb")
-BoolProperty(attr="bg_gamma_enc")
+BoolProperty(attr="bg_gamma_enc", default = True)
 
 BoolProperty(attr="use_image", default = False)
 

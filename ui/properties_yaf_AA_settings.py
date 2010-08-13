@@ -18,7 +18,7 @@ IntProperty(attr="AA_inc_samples",
 IntProperty(attr="AA_passes",
 		default = 1)
 FloatProperty(attr="AA_threshold",
-		default = 0.05)
+		default = 0.05, precision = 4)
 FloatProperty(attr="AA_pixelwidth",
 		default = 1.5)
 EnumProperty(attr="AA_filter_type",
@@ -46,14 +46,18 @@ class YAF_PT_AA_settings(bpy.types.Panel):
 
 
 	def draw(self, context):
-
+		
+		self.list = [1,2,4,5]
 		layout = self.layout
 		split = layout.split()
 		col = split.column()
 
 		col.prop(context.scene,"AA_min_samples", text= "AA Samples")
-		col.prop(context.scene,"AA_inc_samples", text= "AA Inc. Samples")
+
 		col.prop(context.scene,"AA_passes", text= "AA Passes")
+		if context.scene.AA_passes > 1:
+			col.prop(context.scene,"AA_inc_samples", text= "AA Inc. Samples")
+		
 		col = split.column()
 		col.prop(context.scene,"AA_threshold", text= "AA Threshold")
 		col.prop(context.scene,"AA_pixelwidth", text= "AA Pixelwidth")
