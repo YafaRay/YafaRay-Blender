@@ -127,7 +127,7 @@ class yafMaterial:
                 elif mtex.texture.yaf_texture_coordinates == 'STRESS'    :          yi.paramsSetString("texco", "stress")
                 elif mtex.texture.yaf_texture_coordinates == 'TANGENT'   :          yi.paramsSetString("texco", "tangent")
                 
-                elif mtex.texture_yaf_texture_coordinates == 'OBJECT'    :
+                elif mtex.texture.yaf_texture_coordinates == 'OBJECT'    :
                         
                         yi.paramsSetString("texco", "transformed")
                         

@@ -26,13 +26,13 @@ EnumProperty(attr="lamp_type",
 BoolProperty(attr="create_geometry")
 BoolProperty(attr="infinite")
 BoolProperty(attr="spot_soft_shadows")
-FloatProperty(attr="shadow_fuzzyness")
+FloatProperty(attr="shadow_fuzzyness", default = 1.0)
 BoolProperty(attr="photon_only")
 IntProperty(attr="angle",
 		max = 80,
 		min = 0)
 StringProperty(attr="ies_file",subtype = 'FILE_PATH')
-IntProperty(attr="ies_samples", default = 1000)
+IntProperty(attr="yaf_samples", default = 16)
 FloatProperty(attr="ies_cone_angle", default = 10.0)
 BoolProperty(attr="ies_soft_shadows")
 
@@ -75,10 +75,12 @@ class YAF_PT_lamp(bpy.types.Panel):
 		row = layout.row()
 		split = row.split()
 		col = row.column()
+		
+		#context.lamp.shadow_ray_samples = 16
 
 		if context.lamp.lamp_type == 'Area':
 			
-			col.prop(context.lamp,"shadow_ray_samples_x", text= "Samples")
+			col.prop(context.lamp,"yaf_samples", text= "Samples")
 			if context.lamp.type != 'AREA':
 				context.lamp.type = 'AREA'
 			col.prop(context.lamp,"size", text= "SizeX")
@@ -96,7 +98,7 @@ class YAF_PT_lamp(bpy.types.Panel):
 			if context.lamp.type != 'POINT':
 				context.lamp.type = 'POINT'
 			col.prop(context.lamp,"shadow_soft_size", text= "Radius")
-			col.prop(context.lamp,"shadow_ray_samples", text= "Samples")
+			col.prop(context.lamp,"yaf_samples", text= "Samples")
 			col.prop(context.lamp,"create_geometry", text= "Create Geometry")
 
 
@@ -106,21 +108,22 @@ class YAF_PT_lamp(bpy.types.Panel):
 				context.lamp.type = 'SPOT'
 			
 			col.prop(context.lamp,"spot_size", text= "Cone Angle")
-			col.prop(context.lamp,"shadow_ray_samples", text= "Samples")
+			col.prop(context.lamp,"spot_soft_shadows", text= "Soft Shadow")
+			
+			if context.lamp.spot_soft_shadows:
+				col.prop(context.lamp,"yaf_samples", text= "Samples")
+				col.prop(context.lamp,"shadow_fuzzyness", text= "Shadow Fuzzyness")
 			col.prop(context.lamp,"spot_blend", text= "Blend")
 			col.prop(context.lamp,"distance", text= "Distance")
-
-			col.prop(context.lamp,"shadow_fuzzyness", text= "Shadow Fuzzyness")
-			col = split.column()
 			col.prop(context.lamp,"photon_only", text= "Photon Only")
-			col.prop(context.lamp,"spot_soft_shadows", text= "Soft Shadow")
+			
 			
 		elif context.lamp.lamp_type == 'Sun':
 			
 			if context.lamp.type != 'SUN':
 				context.lamp.type = 'SUN'
 			col.prop(context.lamp,"angle", text= "Angle")
-			col.prop(context.lamp,"shadow_ray_samples", text= "Samples")
+			col.prop(context.lamp,"yaf_samples", text= "Samples")
 		
 		elif context.lamp.lamp_type == 'Point':
 			
@@ -131,7 +134,7 @@ class YAF_PT_lamp(bpy.types.Panel):
 		elif context.lamp.lamp_type == 'IES':
 			col.prop(context.lamp,"ies_file",text = "IES File")
 			if context.lamp.ies_soft_shadows:
-				col.prop(context.lamp,"ies_samples",text = "IES Samples")
+				col.prop(context.lamp,"yaf_samples",text = "IES Samples")
 			col.prop(context.lamp,"ies_cone_angle",text = "IES Cone Angle")
 			col.prop(context.lamp,"ies_soft_shadows",text = "IES Soft Shadows")
 

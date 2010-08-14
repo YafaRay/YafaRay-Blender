@@ -34,6 +34,7 @@ IntVectorProperty = bpy.types.Texture.IntVectorProperty
 EnumProperty(attr="yaf_tex_type",
         items = (
                 ("TEXTURE_TYPE","Texture Type",""),
+                ("NONE","None",""),
                 ("BLEND","Blend",""),
                 ("CLOUDS","Clouds",""),
                 ("WOOD","Wood",""),
@@ -42,7 +43,7 @@ EnumProperty(attr="yaf_tex_type",
                 ("MUSGRAVE","Musgrave",""),
                 ("DISTORTED_NOISE","Distorted Noise",""),
                 ("IMAGE","Image",""),
-),default="CLOUDS")
+),default="NONE")
 
 EnumProperty(attr="yaf_texture_coordinates",
         items = (
