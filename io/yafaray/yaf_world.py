@@ -70,19 +70,19 @@ class yafWorld:
                 elif bg_type == 'Gradient' :
                 
                     c = world.horizon_color
-                    print(str(c[0]) + ", " + str(c[1]) + ", " + str(c[2]))
+                    #print(str(c[0]) + ", " + str(c[1]) + ", " + str(c[2]))
                     yi.paramsSetColor("horizon_color", c[0], c[1], c[2])
                     
                     c = world.zenith_color
-                    print(str(c[0]) + ", " + str(c[1]) + ", " + str(c[2]))
+                    #print(str(c[0]) + ", " + str(c[1]) + ", " + str(c[2]))
                     yi.paramsSetColor("zenith_color", c[0], c[1], c[2])
                     
                     c = world.ambient_color
-                    print(str(c[0]) + ", " + str(c[1]) + ", " + str(c[2]))
+                    #print(str(c[0]) + ", " + str(c[1]) + ", " + str(c[2]))
                     yi.paramsSetColor("horizon_ground_color", c[0], c[1], c[2])
                     
                     c = world.bg_zenith_ground_color
-                    print(str(c[0]) + ", " + str(c[1]) + ", " + str(c[2]))
+                    #print(str(c[0]) + ", " + str(c[1]) + ", " + str(c[2]))
                     yi.paramsSetColor("zenith_ground_color", c[0], c[1], c[2])
                     
                     yi.paramsSetFloat("power", world.bg_power)
@@ -144,7 +144,7 @@ class yafWorld:
                     #print('proper portion Single Color' )
                     c = world.horizon_color
                     yi.paramsSetColor("color", c[0], c[1], c[2])
-                    print(str(c[0]) + " " + str(c[1]) + " " + str(c[2]))
+                    #print(str(c[0]) + " " + str(c[1]) + " " + str(c[2]))
                     yi.paramsSetBool("ibl", world.bg_use_IBL)
                     yi.paramsSetInt("ibl_samples", 16)
                     yi.paramsSetFloat("power", world.bg_power)

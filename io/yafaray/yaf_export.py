@@ -150,21 +150,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             y= int(r.resolution_y*r.resolution_percentage*0.01)
         
             self.setInterface(yafrayinterface.yafrayInterface_t())
-            
-            #[sizeX, sizeY, bStartX, bStartY, bsizeX, bsizeY,cam_data] = self.dummy()
-            #
-            #if r.use_border and cam_data :
-            #    x = bsizeX
-            #    y = bsizeY
-            #else:
-            #    x = sizeX
-            #    y = sizeY
-            #
-            #print("from render function : x = " + str(x) + "  y = "  + str(y) )
-            
-            #print("the scene name is : " + scene.name )
-
-            
+                        
             
             outputFile,output,file_type = self.decideOutputFileName(r.output_path, r.file_format)
                         
@@ -192,8 +178,6 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             lay = result.layers[0]
             
             # here we export blender scene and renders using yafaray
-            #outputFile = tempfile.mktemp(suffix='.tga')
-            #co = yafrayinterface.outTga_t(x, y, outputFile)
             
             self.update_stats("", "Rendering to %s" % outputFile)
             print("Rendering to %s" % outputFile)

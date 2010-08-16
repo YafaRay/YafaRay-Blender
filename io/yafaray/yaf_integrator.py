@@ -65,6 +65,7 @@ class yafIntegrator:
                         
                 caus_type = scene.intg_caustic_method
                 photons = False;
+                #print("Caustic type is :" + caus_type )
                 if caus_type == "None":
                         yi.paramsSetString("caustic_type", "none");
                 elif caus_type == "Path":

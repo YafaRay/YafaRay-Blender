@@ -77,7 +77,7 @@ class yafLight:
 		
 		
 		print("INFO: Exporting Lamp:" + str(name) +  " type: " + str(lampType) )
-		print("work started ... ")
+		#print("work started ... ")
 		
 		if lampType == "Point":
 			yi.paramsSetString("type", "pointlight")
@@ -101,7 +101,7 @@ class yafLight:
 			
 			#print(str(lamp.shadow_ray_samples))
 			yi.paramsSetFloat("radius", radius)
-			print("complete ")
+			#print("complete ")
 
 		elif lampType == "Spot":
 			#light = obj.getData()
