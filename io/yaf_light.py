@@ -77,7 +77,7 @@ class yafLight:
 		
 		
 		print("INFO: Exporting Lamp:" + str(name) +  " type: " + str(lampType) )
-		print("work started ... ")
+		#print("work started ... ")
 		
 		if lampType == "Point":
 			yi.paramsSetString("type", "pointlight")
@@ -97,11 +97,11 @@ class yafLight:
 				
 			#yi.paramsSetInt("samples", props["samples"])
 			yi.paramsSetString("type", "spherelight")
-			yi.paramsSetInt("samples", lamp.shadow_ray_samples)
+			yi.paramsSetInt("samples", lamp.yaf_samples)
 			
 			#print(str(lamp.shadow_ray_samples))
 			yi.paramsSetFloat("radius", radius)
-			print("complete ")
+			#print("complete ")
 
 		elif lampType == "Spot":
 			#light = obj.getData()
@@ -113,12 +113,12 @@ class yafLight:
 			yi.paramsSetBool("soft_shadows", lamp.spot_soft_shadows)
 			yi.paramsSetFloat("shadowFuzzyness", lamp.shadow_fuzzyness)
 			yi.paramsSetBool("photon_only", lamp.photon_only )
-			yi.paramsSetInt("samples", lamp.shadow_ray_samples)
+			yi.paramsSetInt("samples", lamp.yaf_samples)
 			power = 0.5*power*power
 		
 		elif lampType == "Sun":
 			yi.paramsSetString("type", "sunlight")
-			yi.paramsSetInt("samples", lamp.shadow_ray_samples)
+			yi.paramsSetInt("samples", lamp.yaf_samples)
 			yi.paramsSetFloat("angle", lamp.angle)
 			yi.paramsSetPoint("direction", dir[0], dir[1], dir[2])
 
@@ -138,7 +138,7 @@ class yafLight:
 				return False
 			
 			yi.paramsSetString("file", lamp.ies_file)
-			yi.paramsSetInt("samples", lamp.ies_samples)
+			yi.paramsSetInt("samples", lamp.yaf_samples)
 			yi.paramsSetBool("soft_shadows", lamp.ies_soft_shadows)
 			yi.paramsSetFloat("cone_angle", lamp.ies_cone_angle)
 			
@@ -188,7 +188,7 @@ class yafLight:
 
 			
 			yi.paramsSetString("type", "arealight");
-			yi.paramsSetInt("samples", lamp.shadow_ray_samples_x)
+			yi.paramsSetInt("samples", lamp.yaf_samples)
 			
 			yi.paramsSetPoint("corner", point[0], point[1], point[2]);
 			yi.paramsSetPoint("point1", corner1[0], corner1[1], corner1[2]);

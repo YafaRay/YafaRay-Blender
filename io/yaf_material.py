@@ -117,17 +117,17 @@ class yafMaterial:
                 #'UV'  'GLOBAL' 'ORCO' , 'WINDOW', 'NORMAL' 'REFLECTION' 'STICKY' 'STRESS' 'TANGENT'
                 # texture coordinates, have to disable 'sticky' in Blender
                 yi.paramsSetString("texco", "orco")
-                if mtex.texture_coordinates == 'UV'          :          yi.paramsSetString("texco", "uv")
-                elif mtex.texture_coordinates == 'GLOBAL'    :          yi.paramsSetString("texco", "global")
-                elif mtex.texture_coordinates == 'ORCO'      :          yi.paramsSetString("texco", "orco")
-                elif mtex.texture_coordinates == 'WINDOW'    :          yi.paramsSetString("texco", "window")
-                elif mtex.texture_coordinates == 'NORMAL'    :          yi.paramsSetString("texco", "normal")
-                elif mtex.texture_coordinates == 'REFLECTION':          yi.paramsSetString("texco", "reflect")
-                elif mtex.texture_coordinates == 'STICKY'    :          yi.paramsSetString("texco", "stick")
-                elif mtex.texture_coordinates == 'STRESS'    :          yi.paramsSetString("texco", "stress")
-                elif mtex.texture_coordinates == 'TANGENT'   :          yi.paramsSetString("texco", "tangent")
+                if mtex.texture.yaf_texture_coordinates == 'UV'          :          yi.paramsSetString("texco", "uv")
+                elif mtex.texture.yaf_texture_coordinates == 'GLOBAL'    :          yi.paramsSetString("texco", "global")
+                elif mtex.texture.yaf_texture_coordinates == 'ORCO'      :          yi.paramsSetString("texco", "orco")
+                elif mtex.texture.yaf_texture_coordinates == 'WINDOW'    :          yi.paramsSetString("texco", "window")
+                elif mtex.texture.yaf_texture_coordinates == 'NORMAL'    :          yi.paramsSetString("texco", "normal")
+                elif mtex.texture.yaf_texture_coordinates == 'REFLECTION':          yi.paramsSetString("texco", "reflect")
+                elif mtex.texture.yaf_texture_coordinates == 'STICKY'    :          yi.paramsSetString("texco", "stick")
+                elif mtex.texture.yaf_texture_coordinates == 'STRESS'    :          yi.paramsSetString("texco", "stress")
+                elif mtex.texture.yaf_texture_coordinates == 'TANGENT'   :          yi.paramsSetString("texco", "tangent")
                 
-                elif mtex.texture_coordinates == 'OBJECT'    :
+                elif mtex.texture.yaf_texture_coordinates == 'OBJECT'    :
                         
                         yi.paramsSetString("texco", "transformed")
                         

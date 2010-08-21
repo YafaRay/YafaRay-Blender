@@ -33,6 +33,7 @@ IntVectorProperty = bpy.types.Texture.IntVectorProperty
 
 EnumProperty(attr="yaf_tex_type",
         items = (
+                ("TEXTURE_TYPE","Texture Type",""),
                 ("NONE","None",""),
                 ("BLEND","Blend",""),
                 ("CLOUDS","Clouds",""),
@@ -43,6 +44,20 @@ EnumProperty(attr="yaf_tex_type",
                 ("DISTORTED_NOISE","Distorted Noise",""),
                 ("IMAGE","Image",""),
 ),default="NONE")
+
+EnumProperty(attr="yaf_texture_coordinates",
+        items = (
+                ("TEXTURE_COORDINATES","Texture Co-Ordinates",""),
+                ("GLOBAL","Global",""),
+                ("ORCO","Orco",""),
+                ("WINDOW","Window",""),
+                ("NORMAL","Normal",""),
+                ("REFLECTION","Reflection",""),
+                ("STICKY","Sticky",""),
+                ("STRESS","Stress",""),
+                ("TANGENT","Tangent",""),
+                ("OBJECT","Object",""),
+),default="GLOBAL")
 
 StringProperty(attr='tex_file_name', subtype = 'FILE_PATH')
 
@@ -193,36 +208,36 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel):
 
 
 
-class YAF_TEXTURE_PT_colors(YAF_TextureButtonsPanel):
-    bl_label = "Colors"
-    bl_default_closed = True
-    COMPAT_ENGINES = {'YAFA_RENDER'}
-
-    def draw(self, context):
-        layout = self.layout
-
-        tex = context.texture
-        wide_ui = context.region.width > narrowui
-
-        layout.prop(tex, "use_color_ramp", text="Ramp")
-        if tex.use_color_ramp:
-            layout.template_color_ramp(tex, "color_ramp", expand=True)
-
-        split = layout.split()
-
-        col = split.column()
-        col.label(text="RGB Multiply:")
-        sub = col.column(align=True)
-        sub.prop(tex, "factor_red", text="R")
-        sub.prop(tex, "factor_green", text="G")
-        sub.prop(tex, "factor_blue", text="B")
-
-        if wide_ui:
-            col = split.column()
-        col.label(text="Adjust:")
-        col.prop(tex, "brightness")
-        col.prop(tex, "contrast")
-        col.prop(tex, "saturation")
+#class YAF_TEXTURE_PT_colors(YAF_TextureButtonsPanel):
+#    bl_label = "Colors"
+#    bl_default_closed = True
+#    COMPAT_ENGINES = {'YAFA_RENDER'}
+#
+#    def draw(self, context):
+#        layout = self.layout
+#
+#        tex = context.texture
+#        wide_ui = context.region.width > narrowui
+#
+#        layout.prop(tex, "use_color_ramp", text="Ramp")
+#        if tex.use_color_ramp:
+#            layout.template_color_ramp(tex, "color_ramp", expand=True)
+#
+#        split = layout.split()
+#
+#        col = split.column()
+#        col.label(text="RGB Multiply:")
+#        sub = col.column(align=True)
+#        sub.prop(tex, "factor_red", text="R")
+#        sub.prop(tex, "factor_green", text="G")
+#        sub.prop(tex, "factor_blue", text="B")
+#
+#        if wide_ui:
+#            col = split.column()
+#        col.label(text="Adjust:")
+#        col.prop(tex, "brightness")
+#        col.prop(tex, "contrast")
+#        col.prop(tex, "saturation")
 
 # Texture Slot Panels #
 
@@ -267,17 +282,19 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel):
             col = split.column()
             col.label(text="Coordinates:")
             col = split.column()
-            col.prop(tex, "texture_coordinates", text="")
+            col.prop(context.texture, "yaf_texture_coordinates", text="")
+            texture = context.texture
+            #tex.texture_coordinates = context.texture.yaf_texture_coordinates
 
-            if tex.texture_coordinates == 'ORCO':
-                """
-                ob = context.object
-                if ob and ob.type == 'MESH':
-                    split = layout.split(percentage=0.3)
-                    split.label(text="Mesh:")
-                    split.prop(ob.data, "texco_mesh", text="")
-                """
-            elif tex.texture_coordinates == 'UV':
+            #if tex.texture_coordinates == 'ORCO':
+            #    """
+            #    ob = context.object
+            #    if ob and ob.type == 'MESH':
+            #        split = layout.split(percentage=0.3)
+            #        split.label(text="Mesh:")
+            #        split.prop(ob.data, "texco_mesh", text="")
+            #    """
+            if texture.yaf_texture_coordinates == 'UV':
                 split = layout.split(percentage=0.3)
                 split.label(text="Layer:")
                 ob = context.object
@@ -286,7 +303,7 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel):
                 else:
                     split.prop(tex, "uv_layer", text="")
 
-            elif tex.texture_coordinates == 'OBJECT':
+            elif texture.yaf_texture_coordinates == 'OBJECT':
                 split = layout.split(percentage=0.3)
                 split.label(text="Object:")
                 split.prop(tex, "object", text="")
@@ -308,9 +325,9 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel):
                 split = layout.split()
 
                 col = split.column()
-                if tex.texture_coordinates in ('ORCO', 'UV'):
+                if texture.yaf_texture_coordinates in ('ORCO', 'UV'):
                     col.prop(tex, "from_dupli")
-                elif tex.texture_coordinates == 'OBJECT':
+                elif texture.yaf_texture_coordinates == 'OBJECT':
                     col.prop(tex, "from_original")
                 elif wide_ui:
                     col.label()
@@ -888,7 +905,7 @@ classes = [
     #TEXTURE_PT_pointdensity,
     #TEXTURE_PT_pointdensity_turbulence,
     
-    YAF_TEXTURE_PT_colors,
+    #YAF_TEXTURE_PT_colors,
     YAF_TEXTURE_PT_mapping,
     YAF_TEXTURE_PT_influence,
 
