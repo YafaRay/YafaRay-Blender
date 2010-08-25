@@ -2,25 +2,19 @@ import bpy
 import os
 import time
 import tempfile
-
-
 import sys
-
-
 import platform
 
 #from yafaray import yafrayinterface
-from yafaray.yaf_object import yafObject
-from yafaray.yaf_config import PLUGIN_PATH,PATH_TO_ADD
-from yafaray.yaf_light  import yafLight
-from yafaray.yaf_world  import yafWorld
-from yafaray.yaf_integrator import yafIntegrator
-from yafaray.yaf_general_AA import yafGeneralAA
-from yafaray.yaf_texture import yafTexture
-from yafaray.yaf_material import yafMaterial
+from yaf_object import yafObject
+from yafaray import PLUGIN_PATH
+from yaf_light  import yafLight
+from yaf_world  import yafWorld
+from yaf_integrator import yafIntegrator
+from yaf_general_AA import yafGeneralAA
+from yaf_texture import yafTexture
+from yaf_material import yafMaterial
 
-import sys
-sys.path.append(PATH_TO_ADD)
 import yafrayinterface
 
 #this is the name of our Render
@@ -32,7 +26,6 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
     bl_label = "YafaRay Render"
     
     def setInterface(self, yi):
-        
         self.materialMap = {}
         self.materials   = set()
         self.yi = yi
@@ -44,7 +37,6 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.yaf_general_aa = yafGeneralAA(self.yi)
         self.yaf_texture    = yafTexture(self.yi)
         self.yaf_material   = yafMaterial(self.yi, self.materialMap)
-        
     
     def exportObjects(self):
         self.yaf_object.createCamera(self.yi, self.scene)
@@ -54,10 +46,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.exportMaterials()
         self.yaf_object.writeMeshes(self.yi, self.scene)
 
-
-
     def handleBlendMat(self, mat):
-
         try:
             mat1_name =  mat.mat_material_one
             mat1      =  bpy.data.materials[mat1_name]
@@ -113,10 +102,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.yi.paramsClearAll()
         self.yaf_integrator.exportIntegrator(self.scene)
         self.yaf_general_aa.exportGeneralAA(self.scene)
-    
-    
+
     def decideOutputFileName(self, output_path, filetype):
-        
         if filetype == 'PNG':
             filetype = 'png'
         elif filetype == 'TARGA':
@@ -136,109 +123,107 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
     # callback to render scene
     def render(self, scene):
-        
-        if scene.name != 'preview':
+        self.update_stats("", "Setting up render")
             
-            scene.set_frame(scene.frame_current)
-            self.scene = scene
-        
-            r = scene.render
- 
+        scene.set_frame(scene.frame_current)
+        self.scene = scene
+        r = scene.render
 
-            # compute resolution
-            x= int(r.resolution_x*r.resolution_percentage*0.01)
-            y= int(r.resolution_y*r.resolution_percentage*0.01)
+        # compute resolution
+        x= int(r.resolution_x*r.resolution_percentage*0.01)
+        y= int(r.resolution_y*r.resolution_percentage*0.01)
+    
+        self.setInterface(yafrayinterface.yafrayInterface_t())
         
-            self.setInterface(yafrayinterface.yafrayInterface_t())
-                        
-            
-            outputFile,output,file_type = self.decideOutputFileName(r.output_path, r.file_format)
-                        
-            self.yi.paramsClearAll()
-            self.yi.paramsSetString("type", file_type)
-            self.yi.paramsSetInt("width", x)
-            self.yi.paramsSetInt("height", y)
-            self.yi.paramsSetBool("alpha_channel", False)
-            self.yi.paramsSetBool("z_channel", scene.gs_z_channel)
-                        
-            ih = self.yi.createImageHandler("outFile")
-            co = yafrayinterface.imageOutput_t(ih, outputFile)
-                        
-            self.yi.printInfo("Exporter: Rendering to file " + outputFile)
+        outputFile,output,file_type = self.decideOutputFileName(r.output_path, r.file_format)
+                    
+        self.yi.paramsClearAll()
+        self.yi.paramsSetString("type", file_type)
+        self.yi.paramsSetInt("width", x)
+        self.yi.paramsSetInt("height", y)
+        self.yi.paramsSetBool("alpha_channel", False)
+        self.yi.paramsSetBool("z_channel", scene.gs_z_channel)
+                    
+        self.yi.startScene()
+        self.exportObjects()
+        self.configureRender()
+        
+        tag = ""
+        progress = 0.0;
+        def prog_callback(command, *args):
+            global tag, progress
+            if command == "tag":
+                tag = args[0]
+            elif command == "progress":
+                progress = args[0]
+            self.update_stats("", "%s - %.2f %%" % (tag, progress))
+        
+        def tile_callback(command, *args):
+            if command == "flushArea":
+                x0, y0, x1, y1, tile = args
+                res = self.begin_result(x0, y0, x1-x0, y1-y0)
+                try:
+                    res.layers[0].rect = tile
+                except BaseException as e:
+                    print("Exception in tile callback:", e)
+                    print(args, len(tile))
+                self.end_result(res)
                 
-            self.yi.startScene()
-            
-            
-            self.exportObjects()
-            self.configureRender()
-            
-            
-            # get a render result to write into
-            result = self.begin_result(0, 0, x, y)
-            lay = result.layers[0]
-            
-            # here we export blender scene and renders using yafaray
-            
-            self.update_stats("", "Rendering to %s" % outputFile)
-            print("Rendering to %s" % outputFile)
-            
-            self.yi.render(co)
-            
-            if scene.gs_z_channel:
-                lay.load_from_file(output + '_zbuffer.' + file_type)
-            else:
-                lay.load_from_file(outputFile)
-            # done
-            self.end_result(result)
-            self.update_stats("", "Done!")
-        #else:
-        #    print("This is for preview")
-        #    self.yi.startScene()
-        #    self.exportObjects()
-        #    self.configureRender(x,y)
-        #    
-        #    # get a render result to write into
-        #    result = self.begin_result(0, 0, x, y)
-        #    lay = result.layers[0]
-        #    
-        #    # here we export blender scene and renders using yafaray
-        #    outputFile = tempfile.mktemp(suffix='.tga')
-        #    co = yafrayinterface.outTga_t(x, y, outputFile)
-        #    
-        #    self.update_stats("", "Rendering to %s" % outputFile)
-        #    print("Rendering to %s" % outputFile)
-        #    
-        #    self.yi.render(co) 
-        #    lay.load_from_file(outputFile)
-        #    
-        #    # done
-        #    self.end_result(result)
-        #    self.update_stats("", "Done!")
-
+        self.yi.paramsSetString("type", file_type)
+        ih = self.yi.createImageHandler("outFile")
+        co = yafrayinterface.imageOutput_t(ih, outputFile)
+                        
+        self.yi.printInfo("Exporter: Rendering to file " + outputFile)
+                    
+        # get a render result to write into
+        result = self.begin_result(0, 0, x, y)
+        lay = result.layers[0]
         
-
+        # here we export blender scene and renders using yafaray
+        
+        self.update_stats("", "Rendering to %s" % outputFile)
+        print("Rendering to %s" % outputFile)
+        
+        self.yi.render(co)
+        
+        if scene.gs_z_channel:
+            lay.load_from_file(output + '_zbuffer.' + file_type)
+        else:
+            lay.load_from_file(outputFile)
+        # done
+        self.end_result(result)
+        #import threading
+        #t = threading.Thread(target=self.yi.render, args=(x, y, tile_callback, prog_callback))
+        #t.start()
+        #
+        #while t.isAlive() and not self.test_break():
+        #    time.sleep(0.2)
+        #    
+        #if t.isAlive():
+        #    self.update_stats("", "Aborting...")
+        #    self.yi.abort()
+        #    t.join()
+        #    self.update_stats("", "Render is aborted")
+        #    return
+            
+        self.update_stats("", "Done!")
 
 # Use some of the existing buttons.
-import properties_render
-properties_render.RENDER_PT_render.COMPAT_ENGINES.add(IDNAME)
-properties_render.RENDER_PT_dimensions.COMPAT_ENGINES.add(IDNAME)
-#properties_render.RENDER_PT_antialiasing.COMPAT_ENGINES.add(IDNAME)
-properties_render.RENDER_PT_output.COMPAT_ENGINES.add(IDNAME)
-del properties_render
+import properties_render, properties_particle
 
-import properties_particle
-properties_particle.PARTICLE_PT_context_particles.COMPAT_ENGINES.add(IDNAME)
-properties_particle.PARTICLE_PT_emission.COMPAT_ENGINES.add(IDNAME)
-properties_particle.PARTICLE_PT_hair_dynamics.COMPAT_ENGINES.add(IDNAME)
-#properties_particle.PARTICLE_PT_cache.COMPAT_ENGINES.add(IDNAME)
-properties_particle.PARTICLE_PT_velocity.COMPAT_ENGINES.add(IDNAME)
-properties_particle.PARTICLE_PT_rotation.COMPAT_ENGINES.add(IDNAME)
-properties_particle.PARTICLE_PT_physics.COMPAT_ENGINES.add(IDNAME)
-properties_particle.PARTICLE_PT_boidbrain.COMPAT_ENGINES.add(IDNAME)
-properties_particle.PARTICLE_PT_render.COMPAT_ENGINES.add(IDNAME)
-properties_particle.PARTICLE_PT_draw.COMPAT_ENGINES.add(IDNAME)
-#properties_particle.PARTICLE_PT_children.COMPAT_ENGINES.add(IDNAME)
-properties_particle.PARTICLE_PT_force_fields.COMPAT_ENGINES.add(IDNAME)
-#properties_particle.PARTICLE_PT_vertexgroups.COMPAT_ENGINES.add(IDNAME)
-del properties_particle
-
+for panel in [properties_render.RENDER_PT_render,
+              properties_render.RENDER_PT_dimensions,
+              properties_render.RENDER_PT_output,
+              properties_particle.PARTICLE_PT_context_particles,
+              properties_particle.PARTICLE_PT_emission,
+              properties_particle.PARTICLE_PT_hair_dynamics,
+              properties_particle.PARTICLE_PT_velocity,
+              properties_particle.PARTICLE_PT_rotation,
+              properties_particle.PARTICLE_PT_physics,
+              properties_particle.PARTICLE_PT_boidbrain,
+              properties_particle.PARTICLE_PT_render,
+              properties_particle.PARTICLE_PT_draw,
+              properties_particle.PARTICLE_PT_force_fields]:
+    panel.COMPAT_ENGINES.add(IDNAME)
+    
+del properties_render, properties_particle

@@ -8,3 +8,9 @@ import properties_yaf_volume_integrator
 import properties_yaf_world
 import properties_yaf_AA_settings
 import yaf_light
+
+#try:
+#    import yaf_properties
+#except Exception as e:
+#    import sys, traceback
+#    traceback.print_exception(*sys.exc_info())
