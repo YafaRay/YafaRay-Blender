@@ -1,45 +1,36 @@
 import bpy
 
+from bpy.props import PointerProperty, StringProperty, BoolProperty, EnumProperty, IntProperty, FloatProperty, FloatVectorProperty, CollectionProperty
 
-FloatProperty = bpy.types.Scene.FloatProperty
-IntProperty = bpy.types.Scene.IntProperty
-BoolProperty = bpy.types.Scene.BoolProperty
-CollectionProperty = bpy.types.Scene.CollectionProperty
-EnumProperty = bpy.types.Scene.EnumProperty
-FloatVectorProperty = bpy.types.Scene.FloatVectorProperty
-StringProperty = bpy.types.Scene.StringProperty
-IntVectorProperty = bpy.types.Scene.IntVectorProperty
-
-
-IntProperty(attr="gs_ray_depth",
+bpy.types.Scene.gs_ray_depth=IntProperty(name="gs_ray_depth",
+        default = 2)
+bpy.types.Scene.gs_shadow_depth=IntProperty(name="gs_shadow_depth",
 		default = 2)
-IntProperty(attr="gs_shadow_depth",
-		default = 2)
-IntProperty(attr="gs_threads",
+bpy.types.Scene.gs_threads=IntProperty(name="gs_threads",
 		default = 1)
-FloatProperty(attr="gs_gamma",
+bpy.types.Scene.gs_gamma=FloatProperty(name="gs_gamma",
 		default = 1.8)
-FloatProperty(attr="gs_gamma_input",
+bpy.types.Scene.gs_gamma_input=FloatProperty(name="gs_gamma_input",
 		default = 1.8)
-IntProperty(attr="gs_tile_size",
+bpy.types.Scene.gs_tile_size=IntProperty(name="gs_tile_size",
 		default = 32)
-EnumProperty(attr="gs_tile_order",
+bpy.types.Scene.gs_tile_order=EnumProperty(name="gs_tile_order",
 	items = (
 		("Tile order","Tile order",""),
 		("Linear","Linear",""),
 		("Random","Random",""),
 ),default="Random")
-BoolProperty(attr="gs_auto_threads", default = True)
-BoolProperty(attr="gs_clay_render")
-BoolProperty(attr="gs_draw_params")
-StringProperty(attr="gs_custom_string")
-BoolProperty(attr="gs_auto_save")
-BoolProperty(attr="gs_auto_alpha")
-BoolProperty(attr="gs_premult")
-BoolProperty(attr="gs_transp_shad")
-BoolProperty(attr="gs_clamp_rgb")
-BoolProperty(attr="gs_show_sam_pix")
-BoolProperty(attr="gs_z_channel")
+bpy.types.Scene.gs_auto_threads=BoolProperty(name="gs_auto_threads", default = True)
+bpy.types.Scene.gs_clay_render=BoolProperty(name="gs_clay_render")
+bpy.types.Scene.gs_draw_params=BoolProperty(name="gs_draw_params")
+bpy.types.Scene.gs_custom_string=StringProperty(name="gs_custom_string")
+bpy.types.Scene.gs_auto_save=BoolProperty(name="gs_auto_save")
+bpy.types.Scene.gs_auto_alpha=BoolProperty(name="gs_auto_alpha")
+bpy.types.Scene.gs_premult=BoolProperty(name="gs_premult")
+bpy.types.Scene.gs_transp_shad=BoolProperty(name="gs_transp_shad")
+bpy.types.Scene.gs_clamp_rgb=BoolProperty(name="gs_clamp_rgb")
+bpy.types.Scene.gs_show_sam_pix=BoolProperty(name="gs_show_sam_pix")
+bpy.types.Scene.gs_z_channel=BoolProperty(name="gs_z_channel")
 
 
 class YAF_PT_general_settings(bpy.types.Panel):

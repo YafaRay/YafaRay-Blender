@@ -21,17 +21,9 @@ import bpy
 from rna_prop_ui import PropertyPanel
 
 narrowui = bpy.context.user_preferences.view.properties_width_check
+from bpy.props import PointerProperty, StringProperty, BoolProperty, EnumProperty, IntProperty, FloatProperty, FloatVectorProperty, CollectionProperty
 
-FloatProperty = bpy.types.Texture.FloatProperty
-IntProperty = bpy.types.Texture.IntProperty
-BoolProperty = bpy.types.Texture.BoolProperty
-CollectionProperty = bpy.types.Texture.CollectionProperty
-EnumProperty = bpy.types.Texture.EnumProperty
-FloatVectorProperty = bpy.types.Texture.FloatVectorProperty
-StringProperty = bpy.types.Texture.StringProperty
-IntVectorProperty = bpy.types.Texture.IntVectorProperty
-
-EnumProperty(attr="yaf_tex_type",
+bpy.types.Scene.yaf_tex_type=EnumProperty(name="yaf_tex_type",
         items = (
                 ("TEXTURE_TYPE","Texture Type",""),
                 ("NONE","None",""),
@@ -45,7 +37,7 @@ EnumProperty(attr="yaf_tex_type",
                 ("IMAGE","Image",""),
 ),default="NONE")
 
-EnumProperty(attr="yaf_texture_coordinates",
+bpy.types.Scene.yaf_texture_coordinates=EnumProperty(name="yaf_texture_coordinates",
         items = (
                 ("TEXTURE_COORDINATES","Texture Co-Ordinates",""),
                 ("GLOBAL","Global",""),
@@ -59,7 +51,7 @@ EnumProperty(attr="yaf_texture_coordinates",
                 ("OBJECT","Object",""),
 ),default="GLOBAL")
 
-StringProperty(attr='tex_file_name', subtype = 'FILE_PATH')
+bpy.types.Scene.tex_file_name=StringProperty(name='tex_file_name', subtype = 'FILE_PATH')
 
 
 from properties_material import active_node_mat

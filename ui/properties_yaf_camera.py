@@ -1,28 +1,19 @@
 import bpy
 
+from bpy.props import PointerProperty, StringProperty, BoolProperty, EnumProperty, IntProperty, FloatProperty, FloatVectorProperty, CollectionProperty
 
-FloatProperty = bpy.types.Camera.FloatProperty
-IntProperty = bpy.types.Camera.IntProperty
-BoolProperty = bpy.types.Camera.BoolProperty
-CollectionProperty = bpy.types.Camera.CollectionProperty
-EnumProperty = bpy.types.Camera.EnumProperty
-FloatVectorProperty = bpy.types.Camera.FloatVectorProperty
-StringProperty = bpy.types.Camera.StringProperty
-IntVectorProperty = bpy.types.Camera.IntVectorProperty
+bpy.types.Camera.camera_type = EnumProperty(name="Yafaray Camera",
+	description="",
+    items=(("angular","angular","angular"),
+           ("orthographic","orthographic","ortho"),
+           ("perspective","perspective","pers"),
+           ("architect","architect","architect")),
+    default="architect")
 
-
-EnumProperty(attr="camera_type",
-	items = (
-		("Yafaray Camera","Yafaray Camera",""),
-		("angular","angular",""),
-		("orthographic","orthographic",""),
-		("perspective","perspective",""),
-		("architect","architect",""),
-),default="architect")
-FloatProperty(attr="max_angle")
-BoolProperty(attr="mirrored")
-BoolProperty(attr="circular")
-EnumProperty(attr="bokeh_type",
+bpy.types.Camera.max_angle=FloatProperty(name="max_angle")
+bpy.types.Camera.mirrored=BoolProperty(name="mirrored")
+bpy.types.Camera.circular=BoolProperty(name="circular")
+bpy.types.Camera.bokeh_type=EnumProperty(name="bokeh_type",
 	items = (
 		("Bokeh Type","Bokeh Type",""),
 		("Disk2","Disk2",""),
@@ -33,16 +24,17 @@ EnumProperty(attr="bokeh_type",
 		("Ring","Ring",""),
 		("Disk1","Disk1",""),
 ),default="Disk1")
-FloatProperty(attr="aperture")
-FloatProperty(attr="bokeh_rotation")
-EnumProperty(attr="bokeh_bias",
+
+bpy.types.Camera.aperture=FloatProperty(name="aperture")
+bpy.types.Camera.bokeh_rotation=FloatProperty(name="bokeh_rotation")
+bpy.types.Camera.bokeh_bias=EnumProperty(name="bokeh_bias",
 	items = (
 		("Bokeh Bias","Bokeh Bias",""),
 		("Uniform","Uniform",""),
 		("Center","Center",""),
 		("Edge","Edge",""),
 ),default="Edge")
-FloatVectorProperty(attr="color_data",description = "Point Info", subtype = "XYZ", step = 10, precision = 3)
+bpy.types.Camera.color_data=FloatVectorProperty(name="color_data",description = "Point Info", subtype = "XYZ", step = 10, precision = 3)
 
 
 class YAF_PT_camera(bpy.types.Panel):

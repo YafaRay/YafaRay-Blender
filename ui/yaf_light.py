@@ -1,17 +1,8 @@
 import bpy
 
+from bpy.props import PointerProperty, StringProperty, BoolProperty, EnumProperty, IntProperty, FloatProperty, FloatVectorProperty, CollectionProperty
 
-FloatProperty = bpy.types.Lamp.FloatProperty
-IntProperty = bpy.types.Lamp.IntProperty
-BoolProperty = bpy.types.Lamp.BoolProperty
-CollectionProperty = bpy.types.Lamp.CollectionProperty
-EnumProperty = bpy.types.Lamp.EnumProperty
-FloatVectorProperty = bpy.types.Lamp.FloatVectorProperty
-StringProperty = bpy.types.Lamp.StringProperty
-IntVectorProperty = bpy.types.Lamp.IntVectorProperty
-
-
-EnumProperty(attr="lamp_type",
+bpy.types.Scene.lamp_type=EnumProperty(name="lamp_type",
 	items = (
 		("Light Type","Light Type",""),
 		("Area","Area",""),
@@ -23,19 +14,18 @@ EnumProperty(attr="lamp_type",
 		("Sun","Sun",""),
 		("IES","IES",""),
 ),default="Sun")
-BoolProperty(attr="create_geometry")
-BoolProperty(attr="infinite")
-BoolProperty(attr="spot_soft_shadows")
-FloatProperty(attr="shadow_fuzzyness", default = 1.0)
-BoolProperty(attr="photon_only")
-IntProperty(attr="angle",
+bpy.types.Scene.create_geometry=BoolProperty(name="create_geometry")
+bpy.types.Scene.infinite=BoolProperty(name="infinite")
+bpy.types.Scene.spot_soft_shadows=BoolProperty(name="spot_soft_shadows")
+bpy.types.Scene.shadow_fuzzyness=FloatProperty(name="shadow_fuzzyness", default = 1.0)
+bpy.types.Scene.photon_only=BoolProperty(name="photon_only")
+bpy.types.Scene.angle=IntProperty(name="angle",
 		max = 80,
 		min = 0)
-StringProperty(attr="ies_file",subtype = 'FILE_PATH')
-IntProperty(attr="yaf_samples", default = 16)
-FloatProperty(attr="ies_cone_angle", default = 10.0)
-BoolProperty(attr="ies_soft_shadows")
-
+bpy.types.Scene.ies_file=StringProperty(name="ies_file",subtype = 'FILE_PATH')
+bpy.types.Scene.yaf_samples=IntProperty(name="yaf_samples", default = 16)
+bpy.types.Scene.ies_cone_angle=FloatProperty(name="ies_cone_angle", default = 10.0)
+bpy.types.Scene.ies_soft_shadows=BoolProperty(name="ies_soft_shadows")
 
 class YAF_PT_lamp(bpy.types.Panel):
 
