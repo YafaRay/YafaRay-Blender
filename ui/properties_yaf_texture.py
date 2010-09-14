@@ -23,7 +23,7 @@ from rna_prop_ui import PropertyPanel
 narrowui = bpy.context.user_preferences.view.properties_width_check
 from bpy.props import PointerProperty, StringProperty, BoolProperty, EnumProperty, IntProperty, FloatProperty, FloatVectorProperty, CollectionProperty
 
-bpy.types.Scene.yaf_tex_type=EnumProperty(name="yaf_tex_type",
+bpy.types.Texture.yaf_tex_type=EnumProperty(name="yaf_tex_type",
         items = (
                 ("TEXTURE_TYPE","Texture Type",""),
                 ("NONE","None",""),
@@ -37,7 +37,7 @@ bpy.types.Scene.yaf_tex_type=EnumProperty(name="yaf_tex_type",
                 ("IMAGE","Image",""),
 ),default="NONE")
 
-bpy.types.Scene.yaf_texture_coordinates=EnumProperty(name="yaf_texture_coordinates",
+bpy.types.Texture.yaf_texture_coordinates=EnumProperty(name="yaf_texture_coordinates",
         items = (
                 ("TEXTURE_COORDINATES","Texture Co-Ordinates",""),
                 ("GLOBAL","Global",""),
@@ -51,7 +51,7 @@ bpy.types.Scene.yaf_texture_coordinates=EnumProperty(name="yaf_texture_coordinat
                 ("OBJECT","Object",""),
 ),default="GLOBAL")
 
-bpy.types.Scene.tex_file_name=StringProperty(name='tex_file_name', subtype = 'FILE_PATH')
+bpy.types.Texture.tex_file_name=StringProperty(name='tex_file_name', subtype = 'FILE_PATH')
 
 
 from properties_material import active_node_mat

@@ -2,7 +2,7 @@ import bpy
 
 from bpy.props import PointerProperty, StringProperty, BoolProperty, EnumProperty, IntProperty, FloatProperty, FloatVectorProperty, CollectionProperty
 
-bpy.types.Scene.lamp_type=EnumProperty(name="lamp_type",
+bpy.types.Lamp.lamp_type=EnumProperty(name="lamp_type",
 	items = (
 		("Light Type","Light Type",""),
 		("Area","Area",""),
@@ -14,18 +14,18 @@ bpy.types.Scene.lamp_type=EnumProperty(name="lamp_type",
 		("Sun","Sun",""),
 		("IES","IES",""),
 ),default="Sun")
-bpy.types.Scene.create_geometry=BoolProperty(name="create_geometry")
-bpy.types.Scene.infinite=BoolProperty(name="infinite")
-bpy.types.Scene.spot_soft_shadows=BoolProperty(name="spot_soft_shadows")
-bpy.types.Scene.shadow_fuzzyness=FloatProperty(name="shadow_fuzzyness", default = 1.0)
-bpy.types.Scene.photon_only=BoolProperty(name="photon_only")
-bpy.types.Scene.angle=IntProperty(name="angle",
+bpy.types.Lamp.create_geometry=BoolProperty(name="create_geometry")
+bpy.types.Lamp.infinite=BoolProperty(name="infinite")
+bpy.types.Lamp.spot_soft_shadows=BoolProperty(name="spot_soft_shadows")
+bpy.types.Lamp.shadow_fuzzyness=FloatProperty(name="shadow_fuzzyness", default = 1.0)
+bpy.types.Lamp.photon_only=BoolProperty(name="photon_only")
+bpy.types.Lamp.angle=IntProperty(name="angle",
 		max = 80,
 		min = 0)
-bpy.types.Scene.ies_file=StringProperty(name="ies_file",subtype = 'FILE_PATH')
-bpy.types.Scene.yaf_samples=IntProperty(name="yaf_samples", default = 16)
-bpy.types.Scene.ies_cone_angle=FloatProperty(name="ies_cone_angle", default = 10.0)
-bpy.types.Scene.ies_soft_shadows=BoolProperty(name="ies_soft_shadows")
+bpy.types.Lamp.ies_file=StringProperty(name="ies_file",subtype = 'FILE_PATH')
+bpy.types.Lamp.yaf_samples=IntProperty(name="yaf_samples", default = 16)
+bpy.types.Lamp.ies_cone_angle=FloatProperty(name="ies_cone_angle", default = 10.0)
+bpy.types.Lamp.ies_soft_shadows=BoolProperty(name="ies_soft_shadows")
 
 class YAF_PT_lamp(bpy.types.Panel):
 

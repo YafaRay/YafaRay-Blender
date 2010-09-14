@@ -2,7 +2,7 @@ import bpy
 
 from bpy.props import PointerProperty, StringProperty, BoolProperty, EnumProperty, IntProperty, FloatProperty, FloatVectorProperty, CollectionProperty
 
-EnumProperty(name="bg_type",
+bpy.types.World.bg_type=EnumProperty(name="bg_type",
 	items = (
 		("Yafaray Background","Yafaray Background",""),
 		("Gradient","Gradient",""),
@@ -11,31 +11,31 @@ EnumProperty(name="bg_type",
 		("Darktide's Sunsky","Darktide's Sunsky",""),
 		("Single Color","Single Color",""),
 ),default="Single Color")
-FloatVectorProperty(name="bg_zenith_ground_color",description = "Color Settings", subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
-BoolProperty(name="bg_use_IBL")
-IntProperty(name="bg_IBL_samples", default = 16)
-FloatProperty(name="bg_rotation", default = 0.0)
-FloatProperty(name="bg_turbidity", default = 3.0)
-FloatProperty(name="bg_a_var", default = 1.0)
-FloatProperty(name="bg_b_var", default = 1.0)
-FloatProperty(name="bg_c_var", default = 1.0)
-FloatProperty(name="bg_d_var", default = 1.0)
-FloatProperty(name="bg_e_var", default = 1.0)
-FloatVectorProperty(name="bg_from",description = "Point Info", subtype = "XYZ", step = 10, precision = 3)
-BoolProperty(name="bg_add_sun")
-FloatProperty(name="bg_sun_power", default = 1.0)
-BoolProperty(name="bg_background_light")
-IntProperty(name="bg_light_samples", default = 8)
-FloatProperty(name="bg_dsaltitude", default = 0.0)
-BoolProperty(name="bg_dsnight")
-FloatProperty(name="bg_dsbright", default = 1.0)
-FloatProperty(name="bg_power", default = 1.0)
+bpy.types.World.bg_zenith_ground_color=FloatVectorProperty(name="bg_zenith_ground_color",description = "Color Settings", subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
+bpy.types.World.bg_use_IBL=BoolProperty(name="bg_use_IBL")
+bpy.types.World.bg_IBL_samples=IntProperty(name="bg_IBL_samples", default = 16)
+bpy.types.World.bg_rotation=FloatProperty(name="bg_rotation", default = 0.0)
+bpy.types.World.bg_turbidity=FloatProperty(name="bg_turbidity", default = 3.0)
+bpy.types.World.bg_a_var=FloatProperty(name="bg_a_var", default = 1.0)
+bpy.types.World.bg_b_var=FloatProperty(name="bg_b_var", default = 1.0)
+bpy.types.World.bg_c_var=FloatProperty(name="bg_c_var", default = 1.0)
+bpy.types.World.bg_d_var=FloatProperty(name="bg_d_var", default = 1.0)
+bpy.types.World.bg_e_var=FloatProperty(name="bg_e_var", default = 1.0)
+bpy.types.World.bg_from=FloatVectorProperty(name="bg_from",description = "Point Info", subtype = "XYZ", step = 10, precision = 3)
+bpy.types.World.bg_add_sun=BoolProperty(name="bg_add_sun")
+bpy.types.World.bg_sun_power=FloatProperty(name="bg_sun_power", default = 1.0)
+bpy.types.World.bg_background_light=BoolProperty(name="bg_background_light")
+bpy.types.World.bg_light_samples=IntProperty(name="bg_light_samples", default = 8)
+bpy.types.World.bg_dsaltitude=FloatProperty(name="bg_dsaltitude", default = 0.0)
+bpy.types.World.bg_dsnight=BoolProperty(name="bg_dsnight")
+bpy.types.World.bg_sdbright=FloatProperty(name="bg_dsbright", default = 1.0)
+bpy.types.World.bg_power=FloatProperty(name="bg_power", default = 1.0)
 
-FloatProperty(name="bg_exposure", default = 1.0)
-BoolProperty(name="bg_clamp_rgb")
-BoolProperty(name="bg_gamma_enc", default = True)
+bpy.types.World.bg_exposure=FloatProperty(name="bg_exposure", default = 1.0)
+bpy.types.World.bg_clamp_rgb=BoolProperty(name="bg_clamp_rgb")
+bpy.types.World.bg_gamma_enc=BoolProperty(name="bg_gamma_enc", default = True)
 
-BoolProperty(name="use_image", default = False)
+bpy.types.World.use_image=BoolProperty(name="use_image", default = False)
 
 
 class YAF_PT_world(bpy.types.Panel):

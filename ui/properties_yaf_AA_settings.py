@@ -1,27 +1,18 @@
 import bpy
 
+from bpy.props import PointerProperty, StringProperty, BoolProperty, EnumProperty, IntProperty, FloatProperty, FloatVectorProperty, CollectionProperty
 
-FloatProperty = bpy.types.Scene.FloatProperty
-IntProperty = bpy.types.Scene.IntProperty
-BoolProperty = bpy.types.Scene.BoolProperty
-CollectionProperty = bpy.types.Scene.CollectionProperty
-EnumProperty = bpy.types.Scene.EnumProperty
-FloatVectorProperty = bpy.types.Scene.FloatVectorProperty
-StringProperty = bpy.types.Scene.StringProperty
-IntVectorProperty = bpy.types.Scene.IntVectorProperty
-
-
-IntProperty(attr="AA_min_samples",
+bpy.types.Scene.AA_min_samples=IntProperty(name="AA_min_samples",
 		default = 1)
-IntProperty(attr="AA_inc_samples",
+bpy.types.Scene.AA_inc_samples=IntProperty(name="AA_inc_samples",
 		default = 1)
-IntProperty(attr="AA_passes",
+bpy.types.Scene.AA_passes=IntProperty(name="AA_passes",
 		default = 1)
-FloatProperty(attr="AA_threshold",
+bpy.types.Scene.AA_threshold=FloatProperty(name="AA_threshold",
 		default = 0.05, precision = 4)
-FloatProperty(attr="AA_pixelwidth",
+bpy.types.Scene.AA_pixelwidth=FloatProperty(name="AA_pixelwidth",
 		default = 1.5)
-EnumProperty(attr="AA_filter_type",
+bpy.types.Scene.AA_filter_type=EnumProperty(name="AA_filter_type",
 	items = (
 		("AA Filter Type","AA Filter Type",""),
 		("Box","Box",""),

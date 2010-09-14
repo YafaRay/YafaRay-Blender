@@ -1,30 +1,22 @@
 import bpy
 
+from bpy.props import PointerProperty, StringProperty, BoolProperty, EnumProperty, IntProperty, FloatProperty, FloatVectorProperty, CollectionProperty
 
-FloatProperty = bpy.types.World.FloatProperty
-IntProperty = bpy.types.World.IntProperty
-BoolProperty = bpy.types.World.BoolProperty
-CollectionProperty = bpy.types.World.CollectionProperty
-EnumProperty = bpy.types.World.EnumProperty
-FloatVectorProperty = bpy.types.World.FloatVectorProperty
-StringProperty = bpy.types.World.StringProperty
-IntVectorProperty = bpy.types.World.IntVectorProperty
-
-
-EnumProperty(attr="v_int_type",
+bpy.types.World.v_int_type=EnumProperty(name="v_int_type",
 	items = (
 		("Volume Integrator","Volume Integrator",""),
 		("None","None",""),
 		("Single Scatter","Single Scatter",""),
 		#("Sky","Sky",""),
 ),default="None")
-FloatProperty(attr="v_int_step_size", precision = 3)
-BoolProperty(attr="v_int_adaptive")
-BoolProperty(attr="v_int_optimize")
-IntProperty(attr="v_int_attgridres")
-FloatProperty(attr="v_int_scale")
-FloatProperty(attr="v_int_alpha")
-FloatProperty(attr="v_int_dsturbidity")
+
+bpy.types.World.v_int_step_size=FloatProperty(name="v_int_step_size", precision = 3)
+bpy.types.World.v_int_adaptive=BoolProperty(name="v_int_adaptive")
+bpy.types.World.v_int_optimize=BoolProperty(name="v_int_optimize")
+bpy.types.World.v_int_attgridres=IntProperty(name="v_int_attgridres")
+bpy.types.World.v_int_scale=FloatProperty(name="v_int_scale")
+bpy.types.World.v_int_alpha=FloatProperty(name="v_int_alpha")
+bpy.types.World.v_int_dsturbidity=FloatProperty(name="v_int_dsturbidity")
 
 class YAF_PT_vol_integrator(bpy.types.Panel):
 

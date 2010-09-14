@@ -2,19 +2,19 @@ import bpy
 
 from bpy.props import PointerProperty, StringProperty, BoolProperty, EnumProperty, IntProperty, FloatProperty, FloatVectorProperty, CollectionProperty
 
-bpy.types.Scene.ml_enable=BoolProperty(name="ml_enable")
-bpy.types.Scene.ml_color=FloatVectorProperty(name="ml_color",description = "Color Settings", subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
-bpy.types.Scene.ml_power=FloatProperty(name="ml_power")
-bpy.types.Scene.ml_samples=IntProperty(name="ml_samples")
-bpy.types.Scene.ml_double_sided=BoolProperty(name="ml_double_sided")
-bpy.types.Scene.bgp_enable=BoolProperty(name="bgp_enable")
-bpy.types.Scene.bgp_power=FloatProperty(name="bgp_power")
-bpy.types.Scene.bgp_samples=IntProperty(name="bgp_samples")
-bpy.types.Scene.bgp_with_caustic=BoolProperty(name="bgp_with_caustic")
-bpy.types.Scene.bgp_with_diffuse=BoolProperty(name="bgp_with_diffuse")
-bpy.types.Scene.bgp_photon_only=BoolProperty(name="bgp_photon_only")
-bpy.types.Scene.vol_enable=BoolProperty(name="vol_enable")
-bpy.types.Scene.vol_region=EnumProperty(name="vol_region",
+bpy.types.Object.ml_enable=BoolProperty(name="ml_enable")
+bpy.types.Object.ml_color=FloatVectorProperty(name="ml_color",description = "Color Settings", subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
+bpy.types.Object.ml_power=FloatProperty(name="ml_power")
+bpy.types.Object.ml_samples=IntProperty(name="ml_samples")
+bpy.types.Object.ml_double_sided=BoolProperty(name="ml_double_sided")
+bpy.types.Object.bgp_enable=BoolProperty(name="bgp_enable")
+bpy.types.Object.bgp_power=FloatProperty(name="bgp_power")
+bpy.types.Object.bgp_samples=IntProperty(name="bgp_samples")
+bpy.types.Object.bgp_with_caustic=BoolProperty(name="bgp_with_caustic")
+bpy.types.Object.bgp_with_diffuse=BoolProperty(name="bgp_with_diffuse")
+bpy.types.Object.bgp_photon_only=BoolProperty(name="bgp_photon_only")
+bpy.types.Object.vol_enable=BoolProperty(name="vol_enable")
+bpy.types.Object.vol_region=EnumProperty(name="vol_region",
 	items = (
 		("Volume Region","Volume Region",""),
 		("ExpDensity Volume","ExpDensity Volume",""),
@@ -23,15 +23,15 @@ bpy.types.Scene.vol_region=EnumProperty(name="vol_region",
 		#("Grid Volume","Grid Volume",""),
 		("Sky Volume","Sky Volume",""),
 ),default="Uniform Volume")
-bpy.types.Scene.vol_height=FloatProperty(name="vol_height")
-bpy.types.Scene.vol_steepness=FloatProperty(name="vol_steepness")
-bpy.types.Scene.vol_sharpness=FloatProperty(name="vol_sharpness")
-bpy.types.Scene.vol_cover=FloatProperty(name="vol_cover")
-bpy.types.Scene.vol_Density=FloatProperty(name="vol_density")
-bpy.types.Scene.vol_absorp=FloatProperty(name="vol_absorp")
-bpy.types.Scene.vol_scatter=FloatProperty(name="vol_scatter")
-bpy.types.Scene.vol_l_e=FloatProperty(name="vol_l_e", default = 0.0, min = -1.0, max = 1.0, soft_min = -1.0, soft_max = 1.0)
-bpy.types.Scene.vol_g=FloatProperty(name="vol_g", default = 0.0, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
+bpy.types.Object.vol_height=FloatProperty(name="vol_height")
+bpy.types.Object.vol_steepness=FloatProperty(name="vol_steepness")
+bpy.types.Object.vol_sharpness=FloatProperty(name="vol_sharpness")
+bpy.types.Object.vol_cover=FloatProperty(name="vol_cover")
+bpy.types.Object.vol_Density=FloatProperty(name="vol_density")
+bpy.types.Object.vol_absorp=FloatProperty(name="vol_absorp")
+bpy.types.Object.vol_scatter=FloatProperty(name="vol_scatter")
+bpy.types.Object.vol_l_e=FloatProperty(name="vol_l_e", default = 0.0, min = -1.0, max = 1.0, soft_min = -1.0, soft_max = 1.0)
+bpy.types.Object.vol_g=FloatProperty(name="vol_g", default = 0.0, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
 
 #volume Integrator
 #EnumProperty(attr="v_int_type",
