@@ -39,92 +39,92 @@ bpy.types.Camera.color_data=FloatVectorProperty(name="color_data",description = 
 
 class YAF_PT_camera(bpy.types.Panel):
 
-	bl_label = 'Camera'
-	bl_space_type = 'PROPERTIES'
-	bl_region_type = 'WINDOW'
-	bl_context = 'data'
-	COMPAT_ENGINES =['YAFA_RENDER']
+        bl_label = 'Camera'
+        bl_space_type = 'PROPERTIES'
+        bl_region_type = 'WINDOW'
+        bl_context = 'data'
+        COMPAT_ENGINES =['YAFA_RENDER']
+
+        @classmethod
+        def poll(self, context):
+
+            engine = context.scene.render.engine
+
+            import properties_data_camera
+
+            if (context.camera and  (engine in self.COMPAT_ENGINES) ) :
+                try :
+                    properties_data_camera.unregister()
+                except: 
+                    pass
+            else:
+                try:
+                    properties_data_camera.register()
+                except: 
+                    pass
+            return (context.camera and  (engine in self.COMPAT_ENGINES) ) 
 
 
-	def poll(self, context):
+        def draw(self, context):
 
-		engine = context.scene.render.engine
+            layout = self.layout
+            split = layout.split()
+            col = split.column()
 
-		import properties_data_camera
-
-		if (context.camera and  (engine in self.COMPAT_ENGINES) ) :
-			try :
-				properties_data_camera.unregister()
-			except: 
-				pass
-		else:
-			try:
-				properties_data_camera.register()
-			except: 
-				pass
-		return (context.camera and  (engine in self.COMPAT_ENGINES) ) 
-
-
-	def draw(self, context):
-
-		layout = self.layout
-		split = layout.split()
-		col = split.column()
-
-		camera = context.camera
+            camera = context.camera
 
 			
-		#col.prop(bpy.data,"cameras",text = "Available cameras")
-		col.prop(context.camera,"camera_type", text= "Yafaray Camera")
+            #col.prop(bpy.data,"cameras",text = "Available cameras")
+            col.prop(context.camera,"camera_type", text= "Yafaray Camera")
 
-		if context.camera.camera_type == 'angular':
+            if context.camera.camera_type == 'angular':
 			
-			if camera.type != 'PERSP':
-				camera.type = 'PERSP'	
-			#context.camera.type = "PERSP"
-			col.prop(context.camera,"lens", text= "Angle")
-			col.prop(context.camera,"max_angle", text= "Max Angle")
-			col.prop(context.camera,"mirrored", text= "Mirrored")
+                if camera.type != 'PERSP':
+                    camera.type = 'PERSP'	
+                #context.camera.type = "PERSP"
+                col.prop(context.camera,"lens", text= "Angle")
+                col.prop(context.camera,"max_angle", text= "Max Angle")
+                col.prop(context.camera,"mirrored", text= "Mirrored")
 			
-			col.prop(context.camera,"circular", text= "Circular")
+                col.prop(context.camera,"circular", text= "Circular")
 			
 
 
-		if context.camera.camera_type == 'orthographic':
-			#context.camera.type = "ORTHO"
-			if camera.type != 'ORTHO':
-				camera.type = 'ORTHO'
-			col.prop(context.camera,"ortho_scale", text= "Scale")
+            if context.camera.camera_type == 'orthographic':
+                #context.camera.type = "ORTHO"
+                if camera.type != 'ORTHO':
+                    camera.type = 'ORTHO'
+                col.prop(context.camera,"ortho_scale", text= "Scale")
 
-		if context.camera.camera_type == 'perspective':
-			col.prop(context.camera,"bokeh_type", text= "Bokeh Type")
+            if context.camera.camera_type == 'perspective':
+                col.prop(context.camera,"bokeh_type", text= "Bokeh Type")
 
-			col.prop(context.camera,"aperture", text= "Aperture")
-			col.prop(context.camera,"dof_distance", text= "DOF distance")
-			col.prop(context.camera,"bokeh_rotation", text= "Bokeh Rotation")
-			#col = split.column()
-			col.prop(context.camera,"bokeh_bias", text= "Bokeh Bias")
+                col.prop(context.camera,"aperture", text= "Aperture")
+                col.prop(context.camera,"dof_distance", text= "DOF distance")
+                col.prop(context.camera,"bokeh_rotation", text= "Bokeh Rotation")
+                #col = split.column()
+                col.prop(context.camera,"bokeh_bias", text= "Bokeh Bias")
 
-			#context.camera.type = "PERSP"
-			if camera.type != 'PERSP':
-				camera.type = 'PERSP'
-			col.prop(context.camera,"lens", text= "Focal Length")
+                #context.camera.type = "PERSP"
+                if camera.type != 'PERSP':
+                    camera.type = 'PERSP'
+                col.prop(context.camera,"lens", text= "Focal Length")
 
-		if context.camera.camera_type == 'architect':
-			col.prop(context.camera,"bokeh_type", text= "Bokeh Type")
+            if context.camera.camera_type == 'architect':
+                col.prop(context.camera,"bokeh_type", text= "Bokeh Type")
 
-			col.prop(context.camera,"aperture", text= "Aperture")
-			col.prop(context.camera,"dof_distance", text= "DOF distance")
-			col.prop(context.camera,"bokeh_rotation", text= "Bokeh Rotation")
-			#col = split.column()
-			col.prop(context.camera,"bokeh_bias", text= "Bokeh Bias")
+                col.prop(context.camera,"aperture", text= "Aperture")
+                col.prop(context.camera,"dof_distance", text= "DOF distance")
+                col.prop(context.camera,"bokeh_rotation", text= "Bokeh Rotation")
+                #col = split.column()
+                col.prop(context.camera,"bokeh_bias", text= "Bokeh Bias")
 
-			#context.camera.type = "PERSP"
-			if camera.type != 'PERSP':
-				camera.type = 'PERSP'
-			col.prop(context.camera,"lens", text= "Focal Length")
+                #context.camera.type = "PERSP"
+                if camera.type != 'PERSP':
+                    camera.type = 'PERSP'
+                col.prop(context.camera,"lens", text= "Focal Length")
 
-		col.prop(context.camera,"color_data", text= "Yafaray Camera Point")
+            col.prop(context.camera,"color_data", text= "Yafaray Camera Point")
 
 
 from properties_data_camera import DATA_PT_context_camera

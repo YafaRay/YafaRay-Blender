@@ -35,58 +35,58 @@ bpy.types.Scene.gs_z_channel=BoolProperty(name="gs_z_channel")
 
 class YAF_PT_general_settings(bpy.types.Panel):
 
-	bl_label = 'General Settings'
-	bl_space_type = 'PROPERTIES'
-	bl_region_type = 'WINDOW'
-	bl_context = 'render'
-	COMPAT_ENGINES =['YAFA_RENDER']
+        bl_label = 'General Settings'
+        bl_space_type = 'PROPERTIES'
+        bl_region_type = 'WINDOW'
+        bl_context = 'render'
+        COMPAT_ENGINES =['YAFA_RENDER']
+
+        @classmethod
+        def poll(self, context):
+
+            engine = context.scene.render.engine
+            return (True  and  (engine in self.COMPAT_ENGINES) ) 
 
 
-	def poll(self, context):
+        def draw(self, context):
 
-		engine = context.scene.render.engine
-		return (True  and  (engine in self.COMPAT_ENGINES) ) 
+            layout = self.layout
+            split = layout.split()
+            col = split.column()
 
+            col.prop(context.scene,"gs_ray_depth", text= "Ray Depth")
+            col.prop(context.scene,"gs_shadow_depth", text= "Shadow Depth")
+            if not context.scene.gs_auto_threads:
+                col.prop(context.scene,"gs_threads", text= "Threads")
+            
+            col.prop(context.scene,"gs_gamma", text= "Gamma")
+            col.prop(context.scene,"gs_gamma_input", text= "Gamma Input")
+            col.prop(context.scene,"gs_tile_size", text= "Tile Size")
+            col.prop(context.scene,"gs_tile_order", text= "Tile order")
 
-	def draw(self, context):
+            col.prop(context.scene,"gs_auto_threads", text= "Auto Threads")
 
-		layout = self.layout
-		split = layout.split()
-		col = split.column()
+            col = split.column()
+            col.prop(context.scene,"gs_clay_render", text= "Clay Render")
 
-		col.prop(context.scene,"gs_ray_depth", text= "Ray Depth")
-		col.prop(context.scene,"gs_shadow_depth", text= "Shadow Depth")
-		if not context.scene.gs_auto_threads:
-			col.prop(context.scene,"gs_threads", text= "Threads")
-		
-		col.prop(context.scene,"gs_gamma", text= "Gamma")
-		col.prop(context.scene,"gs_gamma_input", text= "Gamma Input")
-		col.prop(context.scene,"gs_tile_size", text= "Tile Size")
-		col.prop(context.scene,"gs_tile_order", text= "Tile order")
+            col.prop(context.scene,"gs_auto_save", text= "Auto Save")
 
-		col.prop(context.scene,"gs_auto_threads", text= "Auto Threads")
+            col.prop(context.scene,"gs_auto_alpha", text= "Auto Alpha")
 
-		col = split.column()
-		col.prop(context.scene,"gs_clay_render", text= "Clay Render")
+            col.prop(context.scene,"gs_premult", text= "Premult")
 
-		col.prop(context.scene,"gs_auto_save", text= "Auto Save")
+            col.prop(context.scene,"gs_transp_shad", text= "Transp. Shadow")
 
-		col.prop(context.scene,"gs_auto_alpha", text= "Auto Alpha")
+            col.prop(context.scene,"gs_clamp_rgb", text= "Clamp RGB")
 
-		col.prop(context.scene,"gs_premult", text= "Premult")
-
-		col.prop(context.scene,"gs_transp_shad", text= "Transp. Shadow")
-
-		col.prop(context.scene,"gs_clamp_rgb", text= "Clamp RGB")
-
-		#col.prop(context.scene,"gs_show_sam_pix", text= "Show Sam Pix")
-		
-		col.prop(context.scene,"gs_draw_params", text= "Draw Params")
-		
-		col.prop(context.scene,"gs_z_channel", text= "Render Z-buffer")
-		if context.scene.gs_draw_params:
-			row = layout.row()	
-			row.prop(context.scene,"gs_custom_string", text= "Custom String")
+            #col.prop(context.scene,"gs_show_sam_pix", text= "Show Sam Pix")
+            
+            col.prop(context.scene,"gs_draw_params", text= "Draw Params")
+            
+            col.prop(context.scene,"gs_z_channel", text= "Render Z-buffer")
+            if context.scene.gs_draw_params:
+                row = layout.row()	
+                row.prop(context.scene,"gs_custom_string", text= "Custom String")
 
 
 

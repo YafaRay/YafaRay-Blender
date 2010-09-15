@@ -51,95 +51,95 @@ bpy.types.Object.vol_g=FloatProperty(name="vol_g", default = 0.0, min = 0.0, max
 
 class YAF_PT_object_light(bpy.types.Panel):
 
-	bl_label = 'Object Light'
-	bl_space_type = 'PROPERTIES'
-	bl_region_type = 'WINDOW'
-	bl_context = 'object'
-	COMPAT_ENGINES =['YAFA_RENDER']
+        bl_label = 'Object Light'
+        bl_space_type = 'PROPERTIES'
+        bl_region_type = 'WINDOW'
+        bl_context = 'object'
+        COMPAT_ENGINES =['YAFA_RENDER']
+
+        @classmethod
+        def poll(self, context):
+
+            engine = context.scene.render.engine
+
+            import properties_object
+
+            if (True  and  (engine in self.COMPAT_ENGINES) ) :
+                try :
+                    properties_object.unregister()
+                except: 
+                    pass
+            else:
+                try:
+                    properties_object.register()
+                except: 
+                    pass
+            return (context.object.type == 'MESH'  and  (engine in self.COMPAT_ENGINES) ) 
 
 
-	def poll(self, context):
+        def draw(self, context):
 
-		engine = context.scene.render.engine
+            layout = self.layout
+            split = layout.split()
+            col = split.column()
 
-		import properties_object
+            col.prop(context.object,"ml_enable", text= "Enable Meshlight", toggle = True)
 
-		if (True  and  (engine in self.COMPAT_ENGINES) ) :
-			try :
-				properties_object.unregister()
-			except: 
-				pass
-		else:
-			try:
-				properties_object.register()
-			except: 
-				pass
-		return (context.object.type == 'MESH'  and  (engine in self.COMPAT_ENGINES) ) 
+            if context.object.ml_enable:
+                col.prop(context.object,"ml_color", text= "Meshlight Color")
+                col.prop(context.object,"ml_power", text= "Power")
+                col.prop(context.object,"ml_samples", text= "Samples")
+                col.prop(context.object,"ml_double_sided", text= "Double Sided")
 
 
-	def draw(self, context):
+            col.prop(context.object,"bgp_enable", text= "Enable Bgportallight", toggle = True)
 
-		layout = self.layout
-		split = layout.split()
-		col = split.column()
+            if context.object.bgp_enable:
+                col.prop(context.object,"bgp_power", text= "Power")
+                col.prop(context.object,"bgp_samples", text= "Samples")
+                col.prop(context.object,"bgp_with_caustic", text= "With Caustic")
 
-		col.prop(context.object,"ml_enable", text= "Enable Meshlight", toggle = True)
+                col.prop(context.object,"bgp_with_diffuse", text= "With Diffuse")
 
-		if context.object.ml_enable:
-			col.prop(context.object,"ml_color", text= "Meshlight Color")
-			col.prop(context.object,"ml_power", text= "Power")
-			col.prop(context.object,"ml_samples", text= "Samples")
-			col.prop(context.object,"ml_double_sided", text= "Double Sided")
+                col.prop(context.object,"bgp_photon_only", text= "Photons Only")
 
 
-		col.prop(context.object,"bgp_enable", text= "Enable Bgportallight", toggle = True)
+            col.prop(context.object,"vol_enable", text= "Enable Volume", toggle = True)
 
-		if context.object.bgp_enable:
-			col.prop(context.object,"bgp_power", text= "Power")
-			col.prop(context.object,"bgp_samples", text= "Samples")
-			col.prop(context.object,"bgp_with_caustic", text= "With Caustic")
+            if context.object.vol_enable:
+                col.prop(context.object,"vol_region", text= "Volume Region")
 
-			col.prop(context.object,"bgp_with_diffuse", text= "With Diffuse")
+                if context.object.vol_region == 'ExpDensity Volume':
+                    col.prop(context.object,"vol_height", text= "Height")
+                    col.prop(context.object,"vol_steepness", text= "Steepness")
 
-			col.prop(context.object,"bgp_photon_only", text= "Photons Only")
+                if context.object.vol_region == 'Noise Volume':
+                    col.prop(context.object,"vol_sharpness", text= "Sharpness")
+                    col.prop(context.object,"vol_cover", text= "Cover")
+                    col.prop(context.object,"vol_density", text= "Density")
 
-
-		col.prop(context.object,"vol_enable", text= "Enable Volume", toggle = True)
-
-		if context.object.vol_enable:
-			col.prop(context.object,"vol_region", text= "Volume Region")
-
-			if context.object.vol_region == 'ExpDensity Volume':
-				col.prop(context.object,"vol_height", text= "Height")
-				col.prop(context.object,"vol_steepness", text= "Steepness")
-
-			if context.object.vol_region == 'Noise Volume':
-				col.prop(context.object,"vol_sharpness", text= "Sharpness")
-				col.prop(context.object,"vol_cover", text= "Cover")
-				col.prop(context.object,"vol_density", text= "Density")
-
-			col.prop(context.object,"vol_absorp", text= "Absroption")
-			col.prop(context.object,"vol_scatter", text= "Scatter")
-			col.prop(context.object,"vol_g", text= "Phase Coefficient")
-			col.prop(context.object,"vol_l_e", text= "Emitted Light")
-		
-		
-		
-		#col.prop(context.object,"v_int_type", text= "Volume Integrator")
-		#
-		#if context.object.v_int_type == 'None':
-		#	col.prop(context.object,"v_int_step_size", text= "Step Size")
-		#
-		#if context.object.v_int_type == 'Single Scatter':
-		#	col.prop(context.object,"v_int_adaptive", text= "Adaptive")
-		#
-		#	col.prop(context.object,"v_int_optimize", text= "Optimize")
-		#
-		#	col.prop(context.object,"v_int_attgridres", text= "Att. grid resolution")
-		#
-		#if context.object.v_int_type == 'Sky':
-		#	col.prop(context.object,"v_int_scale", text= "Scale")
-		#	col.prop(context.object,"v_int_alpha", text= "Alpha")
+                col.prop(context.object,"vol_absorp", text= "Absroption")
+                col.prop(context.object,"vol_scatter", text= "Scatter")
+                col.prop(context.object,"vol_g", text= "Phase Coefficient")
+                col.prop(context.object,"vol_l_e", text= "Emitted Light")
+            
+            
+            
+            #col.prop(context.object,"v_int_type", text= "Volume Integrator")
+            #
+            #if context.object.v_int_type == 'None':
+            #	col.prop(context.object,"v_int_step_size", text= "Step Size")
+            #
+            #if context.object.v_int_type == 'Single Scatter':
+            #	col.prop(context.object,"v_int_adaptive", text= "Adaptive")
+            #
+            #	col.prop(context.object,"v_int_optimize", text= "Optimize")
+            #
+            #	col.prop(context.object,"v_int_attgridres", text= "Att. grid resolution")
+            #
+            #if context.object.v_int_type == 'Sky':
+            #	col.prop(context.object,"v_int_scale", text= "Scale")
+            #	col.prop(context.object,"v_int_alpha", text= "Alpha")
 
 
 

@@ -20,42 +20,42 @@ bpy.types.World.v_int_dsturbidity=FloatProperty(name="v_int_dsturbidity")
 
 class YAF_PT_vol_integrator(bpy.types.Panel):
 
-	bl_label = 'YafaRay Volume Integrator'
-	bl_space_type = 'PROPERTIES'
-	bl_region_type = 'WINDOW'
-	bl_context = 'world'
-	COMPAT_ENGINES =['YAFA_RENDER']
+        bl_label = 'YafaRay Volume Integrator'
+        bl_space_type = 'PROPERTIES'
+        bl_region_type = 'WINDOW'
+        bl_context = 'world'
+        COMPAT_ENGINES =['YAFA_RENDER']
+
+        @classmethod
+        def poll(self, context):
+
+            engine = context.scene.render.engine
+            return (context.world and  (engine in self.COMPAT_ENGINES) ) 
 
 
-	def poll(self, context):
+        def draw(self, context):
 
-		engine = context.scene.render.engine
-		return (context.world and  (engine in self.COMPAT_ENGINES) ) 
+            layout = self.layout
+            split = layout.split()
+            col = split.column()
 
+            col.prop(context.world,"v_int_type", text= "Volume Integrator")
 
-	def draw(self, context):
+            if context.world.v_int_type == 'None':
+                col.prop(context.world,"v_int_step_size", text= "Step Size")
 
-		layout = self.layout
-		split = layout.split()
-		col = split.column()
+            if context.world.v_int_type == 'Single Scatter':
+                col.prop(context.world,"v_int_step_size", text= "Step Size")
+                col.prop(context.world,"v_int_attgridres", text= "Att. grid resolution")
+                col.prop(context.world,"v_int_adaptive", text= "Adaptive")
+                col.prop(context.world,"v_int_optimize", text= "Optimize")
+                
 
-		col.prop(context.world,"v_int_type", text= "Volume Integrator")
-
-		if context.world.v_int_type == 'None':
-			col.prop(context.world,"v_int_step_size", text= "Step Size")
-
-		if context.world.v_int_type == 'Single Scatter':
-			col.prop(context.world,"v_int_step_size", text= "Step Size")
-			col.prop(context.world,"v_int_attgridres", text= "Att. grid resolution")
-			col.prop(context.world,"v_int_adaptive", text= "Adaptive")
-			col.prop(context.world,"v_int_optimize", text= "Optimize")
-			
-
-		#if context.world.v_int_type == 'Sky':
-		#	col.prop(context.world,"v_int_step_size", text= "Step Size")
-		#	col.prop(context.world,"v_int_dsturbidity", text= "Turbidity")
-		#	col.prop(context.world,"v_int_scale", text= "Scale")
-		#	col.prop(context.world,"v_int_alpha", text= "Alpha")
+            #if context.world.v_int_type == 'Sky':
+            #	col.prop(context.world,"v_int_step_size", text= "Step Size")
+            #	col.prop(context.world,"v_int_dsturbidity", text= "Turbidity")
+            #	col.prop(context.world,"v_int_scale", text= "Scale")
+            #	col.prop(context.world,"v_int_alpha", text= "Alpha")
 
 
 

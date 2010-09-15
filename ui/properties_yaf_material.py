@@ -56,7 +56,7 @@ class YAF_PT_material(bpy.types.Panel):
         bl_context = 'material'
         COMPAT_ENGINES =['YAFA_RENDER']
 
-
+        @classmethod
         def poll(self, context):
 
                 engine = context.scene.render.engine
