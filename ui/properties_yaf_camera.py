@@ -1,19 +1,28 @@
 import bpy
 
-from bpy.props import PointerProperty, StringProperty, BoolProperty, EnumProperty, IntProperty, FloatProperty, FloatVectorProperty, CollectionProperty
+"""
+bpy.types.Camera.FloatProperty()
+bpy.types.Camera.IntProperty()
+bpy.types.Camera.BoolProperty()
+bpy.types.Camera.CollectionProperty()
+bpy.types.Camera.EnumProperty()
+bpy.types.Camera.FloatVectorProperty()
+bpy.types.Camera.StringProperty()
+bpy.types.Camera.IntVectorProperty()
+"""
 
-bpy.types.Camera.camera_type = EnumProperty(name="Yafaray Camera",
-	description="",
-    items=(("angular","angular","angular"),
-           ("orthographic","orthographic","ortho"),
-           ("perspective","perspective","pers"),
-           ("architect","architect","architect")),
-    default="architect")
-
-bpy.types.Camera.max_angle=FloatProperty(name="max_angle")
-bpy.types.Camera.mirrored=BoolProperty(name="mirrored")
-bpy.types.Camera.circular=BoolProperty(name="circular")
-bpy.types.Camera.bokeh_type=EnumProperty(name="bokeh_type",
+bpy.types.Camera.camera_type = bpy.props.EnumProperty(attr="camera_type",
+	items = (
+		("Yafaray Camera","Yafaray Camera",""),
+		("angular","angular",""),
+		("orthographic","orthographic",""),
+		("perspective","perspective",""),
+		("architect","architect",""),
+),default="architect")
+bpy.types.Camera.max_angle = bpy.props.FloatProperty(attr="max_angle")
+bpy.types.Camera.mirrored = bpy.props.BoolProperty(attr="mirrored")
+bpy.types.Camera.circular = bpy.props.BoolProperty(attr="circular")
+bpy.types.Camera.bokeh_type = bpy.props.EnumProperty(attr="bokeh_type",
 	items = (
 		("Bokeh Type","Bokeh Type",""),
 		("Disk2","Disk2",""),
@@ -24,29 +33,28 @@ bpy.types.Camera.bokeh_type=EnumProperty(name="bokeh_type",
 		("Ring","Ring",""),
 		("Disk1","Disk1",""),
 ),default="Disk1")
-
-bpy.types.Camera.aperture=FloatProperty(name="aperture")
-bpy.types.Camera.bokeh_rotation=FloatProperty(name="bokeh_rotation")
-bpy.types.Camera.bokeh_bias=EnumProperty(name="bokeh_bias",
+bpy.types.Camera.aperture = bpy.props.FloatProperty(attr="aperture")
+bpy.types.Camera.bokeh_rotation = bpy.props.FloatProperty(attr="bokeh_rotation")
+bpy.types.Camera.bokeh_bias = bpy.props.EnumProperty(attr="bokeh_bias",
 	items = (
 		("Bokeh Bias","Bokeh Bias",""),
 		("Uniform","Uniform",""),
 		("Center","Center",""),
 		("Edge","Edge",""),
 ),default="Edge")
-bpy.types.Camera.color_data=FloatVectorProperty(name="color_data",description = "Point Info", subtype = "XYZ", step = 10, precision = 3)
+bpy.types.Camera.color_data = bpy.props.FloatVectorProperty(attr="color_data",description = "Point Info", subtype = "XYZ", step = 10, precision = 3)
 
 
 class YAF_PT_camera(bpy.types.Panel):
 
-        bl_label = 'Camera'
-        bl_space_type = 'PROPERTIES'
-        bl_region_type = 'WINDOW'
-        bl_context = 'data'
-        COMPAT_ENGINES =['YAFA_RENDER']
+	bl_label = 'Camera'
+	bl_space_type = 'PROPERTIES'
+	bl_region_type = 'WINDOW'
+	bl_context = 'data'
+	COMPAT_ENGINES =['YAFA_RENDER']
 
-        @classmethod
-        def poll(self, context):
+	@classmethod
+	def poll(self, context):
 
             engine = context.scene.render.engine
 

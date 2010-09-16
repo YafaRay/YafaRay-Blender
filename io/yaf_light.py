@@ -66,7 +66,7 @@ class yafLight:
 		
 		yi.paramsClearAll()
 		#props = obj.properties["YafRay"]
-		lampType = lamp.lamp_type
+		lampType = lamp.type
 		power = lamp.energy
 		color = lamp.color
 		
@@ -79,7 +79,7 @@ class yafLight:
 		print("INFO: Exporting Lamp:" + str(name) +  " type: " + str(lampType) )
 		#print("work started ... ")
 		
-		if lampType == "Point":
+		if lampType == "POINT":
 			yi.paramsSetString("type", "pointlight")
 			power = 0.5 * power * power
 
@@ -103,7 +103,7 @@ class yafLight:
 			yi.paramsSetFloat("radius", radius)
 			#print("complete ")
 
-		elif lampType == "Spot":
+		elif lampType == "SPOT":
 			#light = obj.getData()
 			yi.paramsSetString("type", "spotlight")
 			#print "spot ", light.getSpotSize()
@@ -116,7 +116,7 @@ class yafLight:
 			yi.paramsSetInt("samples", lamp.yaf_samples)
 			power = 0.5*power*power
 		
-		elif lampType == "Sun":
+		elif lampType == "SUN":
 			yi.paramsSetString("type", "sunlight")
 			yi.paramsSetInt("samples", lamp.yaf_samples)
 			yi.paramsSetFloat("angle", lamp.angle)
@@ -143,7 +143,7 @@ class yafLight:
 			yi.paramsSetFloat("cone_angle", lamp.ies_cone_angle)
 			
 		
-		elif lampType == "Area":
+		elif lampType == "AREA":
 			#yi.paramsSetString("type", "arealight")
 			#areaLight = obj.getData()
 			#sizeX = areaLight.getAreaSizeX()

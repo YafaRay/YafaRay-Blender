@@ -77,7 +77,7 @@ panel_code.builtin_module_and_class_reg.append(['properties_world','WORLD_PT_pre
 panel_code.builtin_module_and_class_reg.append(['properties_world','WORLD_PT_context_world'])
 
 panel_code.prop_prereq['zenith_color'] = ['blend_sky',True]
-panel_code.prop_prereq['ambient_color'] = ['real_sky',True]
+panel_code.prop_prereq['ambient_color'] = ['use_sky_real',True]
 
 panel_code.generate_code(context = 'World', break_value = 15)
 

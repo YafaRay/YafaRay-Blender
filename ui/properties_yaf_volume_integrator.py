@@ -1,14 +1,30 @@
 import bpy
 
-from bpy.props import PointerProperty, StringProperty, BoolProperty, EnumProperty, IntProperty, FloatProperty, FloatVectorProperty, CollectionProperty
+"""
+FloatProperty = bpy.types.World.FloatProperty
+IntProperty = bpy.types.World.IntProperty
+BoolProperty = bpy.types.World.BoolProperty
+CollectionProperty = bpy.types.World.CollectionProperty
+EnumProperty = bpy.types.World.EnumProperty
+FloatVectorProperty = bpy.types.World.FloatVectorProperty
+StringProperty = bpy.types.World.StringProperty
+IntVectorProperty = bpy.types.World.IntVectorProperty
+"""
 
-bpy.types.World.v_int_type=EnumProperty(name="v_int_type",
+bpy.types.World.v_int_type = bpy.props.EnumProperty(attr="v_int_type",
 	items = (
 		("Volume Integrator","Volume Integrator",""),
 		("None","None",""),
 		("Single Scatter","Single Scatter",""),
 		#("Sky","Sky",""),
 ),default="None")
+bpy.types.World.v_int_step_size = bpy.props.FloatProperty(attr="v_int_step_size", precision = 3)
+bpy.types.World.v_int_adaptive = bpy.props.BoolProperty(attr="v_int_adaptive")
+bpy.types.World.v_int_optimize = bpy.props.BoolProperty(attr="v_int_optimize")
+bpy.types.World.v_int_attgridres = bpy.props.IntProperty(attr="v_int_attgridres")
+bpy.types.World.v_int_scale = bpy.props.FloatProperty(attr="v_int_scale")
+bpy.types.World.v_int_alpha = bpy.props.FloatProperty(attr="v_int_alpha")
+bpy.types.World.v_int_dsturbidity = bpy.props.FloatProperty(attr="v_int_dsturbidity")
 
 bpy.types.World.v_int_step_size=FloatProperty(name="v_int_step_size", precision = 3)
 bpy.types.World.v_int_adaptive=BoolProperty(name="v_int_adaptive")
@@ -20,14 +36,8 @@ bpy.types.World.v_int_dsturbidity=FloatProperty(name="v_int_dsturbidity")
 
 class YAF_PT_vol_integrator(bpy.types.Panel):
 
-        bl_label = 'YafaRay Volume Integrator'
-        bl_space_type = 'PROPERTIES'
-        bl_region_type = 'WINDOW'
-        bl_context = 'world'
-        COMPAT_ENGINES =['YAFA_RENDER']
-
-        @classmethod
-        def poll(self, context):
+	@classmethod
+	def poll(self, context):
 
             engine = context.scene.render.engine
             return (context.world and  (engine in self.COMPAT_ENGINES) ) 

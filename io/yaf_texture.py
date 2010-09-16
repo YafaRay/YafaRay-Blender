@@ -51,10 +51,10 @@ class yafTexture:
 			yi.printInfo("Exporter: Creating Texture: \"" + name + "\" type CLOUDS")
 			yi.paramsSetString("type", "clouds")
 			
-			noise_size = tex.noise_size
-			if  noise_size > 0: noise_size = 1.0/noise_size
+			noise_scale = tex.noise_scale
+			if  noise_scale > 0: noise_scale = 1.0/noise_scale
 			
-			yi.paramsSetFloat("size", noise_size)
+			yi.paramsSetFloat("size", noise_scale)
 			
 			if tex.noise_type == 'HARD_NOISE' :
 				hard = True

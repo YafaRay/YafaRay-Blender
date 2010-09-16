@@ -125,7 +125,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
     def render(self, scene):
         self.update_stats("", "Setting up render")
             
-        scene.set_frame(scene.frame_current)
+        scene.frame_set(scene.frame_current)
         self.scene = scene
         r = scene.render
 
@@ -135,7 +135,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
     
         self.setInterface(yafrayinterface.yafrayInterface_t())
         
-        outputFile,output,file_type = self.decideOutputFileName(r.output_path, r.file_format)
+        outputFile,output,file_type = self.decideOutputFileName(r.filepath, r.file_format)
                     
         self.yi.paramsClearAll()
         self.yi.paramsSetString("type", file_type)
@@ -170,8 +170,9 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.end_result(res)
                 
         self.yi.paramsSetString("type", file_type)
+        self.yi.paramsSetBool("drawParams", True)
         ih = self.yi.createImageHandler("outFile")
-        co = yafrayinterface.imageOutput_t(ih, outputFile)
+        co = yafrayinterface.imageOutput_t(ih, str(outputFile), 0, 0)
                         
         self.yi.printInfo("Exporter: Rendering to file " + outputFile)
                     
