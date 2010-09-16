@@ -8,9 +8,10 @@ sys.path.append(BIN_PATH)
 if sys.platform == 'win32':
     # preload some dlls so users do not have to mess about with path
     import ctypes
-    for dll in ['Iex','Half','IlmThread','IlmImf','mingwm10',
-                'libfreetype-6','iconv','libxml2','libtiff-3',
-                'libyafaraycore', 'libyafarayplugin']:
+    # for dll in ['Iex','Half','IlmThread','IlmImf','mingwm10',
+                # 'libfreetype-6','iconv','libxml2','libtiff-3',
+                # 'libyafaraycore', 'libyafarayplugin']:
+    for dll in ['zlib1','libxml2','pthreadVC2','yafaraycore','yafarayplugin']:
         try:
             ctypes.cdll.LoadLibrary(os.path.join(BIN_PATH, dll))
         except Exception as e:
