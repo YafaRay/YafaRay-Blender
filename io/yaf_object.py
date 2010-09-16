@@ -357,7 +357,7 @@ class yafObject(object):
             self.writeVolumeObject(yi, scene, obj, ID, ymaterial)
             #self.writeMesh(yi, scene, obj, ID, ymaterial)
             
-        elif obj.particle_systems is not None:
+        elif type(obj.particle_systems)==bpy.types.ParticleSystems:
             self.writeParticlesObject(yi, scene, obj, ID)
             
         else:
