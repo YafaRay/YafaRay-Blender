@@ -257,8 +257,8 @@ class yafTexture:
 				#yi.paramsSetString("filename", imagefile)
 
 			yi.paramsSetBool("use_alpha", tex.use_alpha)
-			yi.paramsSetBool("calc_alpha", tex.calculate_alpha)
-			yi.paramsSetBool("normalmap", tex.normal_map)
+			yi.paramsSetBool("calc_alpha", tex.use_calculate_alpha)
+			yi.paramsSetBool("normalmap", tex.use_normal_map)
 						
 			# repeat
 			repeat_x = 1
@@ -296,7 +296,7 @@ class yafTexture:
 				
 			# rot90 flag
 			#if tex.rot90 != 0:
-			yi.paramsSetBool("rot90", tex.flip_axis)
+			yi.paramsSetBool("rot90", tex.use_flip_axis)
 		yi.createTexture(name)
 	
 	def createTextures(self,yi,scene):

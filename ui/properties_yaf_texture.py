@@ -565,7 +565,7 @@ class YAF_TEXTURE_PT_wood(YAF_TextureTypePanel):
             layout.prop(tex, "wood_type", text="")
 
         col = layout.column()
-        col.active = tex.stype in ('RINGNOISE', 'BANDNOISE')
+        col.active = tex.wood_type in ('RINGNOISE', 'BANDNOISE')
         col.label(text="Noise:")
         col.row().prop(tex, "noise_type", text="Type", expand=True)
         if wide_ui:
@@ -574,7 +574,7 @@ class YAF_TEXTURE_PT_wood(YAF_TextureTypePanel):
             layout.prop(tex, "noise_basis", text="")
 
         split = layout.split()
-        split.active = tex.stype in ('RINGNOISE', 'BANDNOISE')
+        split.active = tex.wood_type in ('RINGNOISE', 'BANDNOISE')
 
         col = split.column()
         col.prop(tex, "noise_size", text="Size")
@@ -683,16 +683,16 @@ class YAF_TEXTURE_PT_image_sampling(YAF_TextureTypePanel):
         col = split.column()
         col.label(text="Alpha:")
         col.prop(tex, "use_alpha", text="Use")
-        col.prop(tex, "calculate_alpha", text="Calculate")
+        col.prop(tex, "use_calculate_alpha", text="Calculate")
         #col.prop(tex, "invert_alpha", text="Invert")
         #col.separator()
-        col.prop(tex, "flip_axis", text="Flip X/Y Axis")
+        col.prop(tex, "use_flip_axis", text="Flip X/Y Axis")
         #
         #if wide_ui:
         #    col = split.column()
         #else:
         #    col.separator()
-        col.prop(tex, "normal_map")
+        col.prop(tex, "use_normal_map")
         #row = col.row()
         #row.active = tex.normal_map
         #row.prop(tex, "normal_space", text="")

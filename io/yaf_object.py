@@ -230,14 +230,14 @@ class yafObject(object):
                 
                 
             if len(mesh.uv_textures) > 0:
-                co = mesh.active_uv_texture.data[index]
+                co = mesh.uv_textures.active.data[index]
                 hasUV = True
             
             if hasUV == True and (co is not None) :
                 uv0 = yi.addUV(co.uv1[0], co.uv1[1])
                 uv1 = yi.addUV(co.uv2[0], co.uv2[1])
                 uv2 = yi.addUV(co.uv3[0], co.uv3[1])
-                yi.addTriangle(f.verts[0], f.verts[1], f.verts[2], uv0, uv1, uv2, ymat)
+                yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2, ymat)
                 #print("with uv case 1")
             
             else:
@@ -487,7 +487,7 @@ class yafObject(object):
         min = [1e10, 1e10, 1e10]
         max = [-1e10, -1e10, -1e10]
         vertLoc =[]
-        for v in mesh.verts:
+        for v in mesh.vertices:
             #print("Scanning vertices ... ")
             vertLoc.append(v.co[0])
             vertLoc.append(v.co[1])

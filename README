@@ -1,8 +1,1 @@
-Notes: 
-
-- Need to enable bgportallight for each mesh objects, else they're not visible. Select object, Object properties-> Object Light -> Enable Bgportallight. writeObject() in io/yaf_object.py
-
-- Texture properties not updated
-
---
-zoyd
+Yafaray exporter for Blender 2.54
