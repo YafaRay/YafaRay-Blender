@@ -20,7 +20,6 @@ class yafWorld:
                 #scene   = context.scene
                 world   = scene.world
         
-
                 bg_type = world.bg_type
                 print("INFO: Exporting World, type: " + bg_type)
                 yi.paramsClearAll();
@@ -146,7 +145,7 @@ class yafWorld:
                     yi.paramsSetColor("color", c[0], c[1], c[2])
                     #print(str(c[0]) + " " + str(c[1]) + " " + str(c[2]))
                     yi.paramsSetBool("ibl", world.bg_use_IBL)
-                    yi.paramsSetInt("ibl_samples", 16)
+                    yi.paramsSetInt("ibl_samples", world.bg_IBL_samples)
                     yi.paramsSetFloat("power", world.bg_power)
                     yi.paramsSetString("type", "constant");
 

@@ -125,7 +125,7 @@ class YAF_TEXTURE_PT_preview(YAF_TextureButtonsPanel):
 
 
 class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel):
-    bl_label = ""
+    bl_label = "Yafaray Textures"
     bl_show_header = False
     COMPAT_ENGINES = {'YAFA_RENDER'}
     count = 0

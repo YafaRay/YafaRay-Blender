@@ -12,22 +12,23 @@ IntVectorProperty = bpy.types.Scene.IntVectorProperty
 """
 
 bpy.types.Scene.AA_min_samples = bpy.props.IntProperty(attr="AA_min_samples",
-		default = 1)
+		min = 1, default = 1)
 bpy.types.Scene.AA_inc_samples = bpy.props.IntProperty(attr="AA_inc_samples",
-		default = 1)
+		min = 1, default = 1)
 bpy.types.Scene.AA_passes = bpy.props.IntProperty(attr="AA_passes",
-		default = 1)
+		min = 1, default = 1)
 bpy.types.Scene.AA_threshold = bpy.props.FloatProperty(attr="AA_threshold",
-		default = 0.05, precision = 4)
+		min = 0.0, max = 1.0, default = 0.05, precision = 4)
 bpy.types.Scene.AA_pixelwidth = bpy.props.FloatProperty(attr="AA_pixelwidth",
-		default = 1.5)
+		min = 1, default = 1.5)
 bpy.types.Scene.AA_filter_type = bpy.props.EnumProperty(attr="AA_filter_type",
 	items = (
 		("AA Filter Type","AA Filter Type",""),
 		("Box","Box",""),
 		("Mitchell","Mitchell",""),
 		("Gauss","Gauss",""),
-),default="Gauss")
+		("Lanczos","Lanczos",""),
+),default="Box")
 
 
 class YAF_PT_AA_settings(bpy.types.Panel):
@@ -50,20 +51,17 @@ class YAF_PT_AA_settings(bpy.types.Panel):
 		self.list = [1,2,4,5]
 		layout = self.layout
 		split = layout.split()
+
 		col = split.column()
-
+		col.prop(context.scene,"AA_filter_type", text= "Filter Type")
 		col.prop(context.scene,"AA_min_samples", text= "AA Samples")
+		col.prop(context.scene,"AA_pixelwidth", text= "AA Pixelwidth")
 
+		col = split.column()
 		col.prop(context.scene,"AA_passes", text= "AA Passes")
 		if context.scene.AA_passes > 1:
 			col.prop(context.scene,"AA_inc_samples", text= "AA Inc. Samples")
-		
-		col = split.column()
-		col.prop(context.scene,"AA_threshold", text= "AA Threshold")
-		col.prop(context.scene,"AA_pixelwidth", text= "AA Pixelwidth")
-		col.prop(context.scene,"AA_filter_type", text= "AA Filter Type")
-
-
+			col.prop(context.scene,"AA_threshold", text= "AA Threshold")
 
 
 classes = [
