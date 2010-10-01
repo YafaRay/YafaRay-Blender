@@ -151,12 +151,13 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         tag = ""
         progress = 0.0;
         def prog_callback(command, *args):
-            global tag, progress
-            if command == "tag":
-                tag = args[0]
-            elif command == "progress":
-                progress = args[0]
-            self.update_stats("", "%s - %.2f %%" % (tag, progress))
+            pass
+#            global tag, progress
+#            if command == "tag":
+#                tag = args[0]
+#            elif command == "progress":
+#                progress = args[0]
+#            self.update_stats("", "%s - %.2f %%" % (tag, progress))
         
         def tile_callback(command, *args):
             if command == "flushArea":
@@ -182,30 +183,30 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         
         # here we export blender scene and renders using yafaray
         
-        self.update_stats("", "Rendering to %s" % outputFile)
-        print("Rendering to %s" % outputFile)
-        
-        self.yi.render(co)
-        
-        if scene.gs_z_channel:
-            lay.load_from_file(output + '_zbuffer.' + file_type)
-        else:
-            lay.load_from_file(outputFile)
+#        self.update_stats("", "Rendering to %s" % outputFile)
+#        print("Rendering to %s" % outputFile)
+#        
+#        self.yi.render(co)
+#        
+#        if scene.gs_z_channel:
+#            lay.load_from_file(output + '_zbuffer.' + file_type)
+#        else:
+#            lay.load_from_file(outputFile)
         # done
-        self.end_result(result)
-        #import threading
-        #t = threading.Thread(target=self.yi.render, args=(x, y, tile_callback, prog_callback))
-        #t.start()
-        #
-        #while t.isAlive() and not self.test_break():
-        #    time.sleep(0.2)
-        #    
-        #if t.isAlive():
-        #    self.update_stats("", "Aborting...")
-        #    self.yi.abort()
-        #    t.join()
-        #    self.update_stats("", "Render is aborted")
-        #    return
+#        self.end_result(result)
+        import threading
+        t = threading.Thread(target=self.yi.render, args=(x, y, tile_callback, prog_callback))
+        t.start()
+        
+        while t.isAlive() and not self.test_break():
+            time.sleep(0.2)
+            
+        if t.isAlive():
+            self.update_stats("", "Aborting...")
+            self.yi.abort()
+            t.join()
+            self.update_stats("", "Render is aborted")
+            return
             
         self.update_stats("", "Done!")
 
