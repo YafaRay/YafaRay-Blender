@@ -10,7 +10,7 @@ if sys.platform == 'win32':
     import ctypes
     # for dll in ['Iex','Half','IlmThread','IlmImf','mingwm10',
                 # 'libfreetype-6','iconv','libxml2','libtiff-3',
-                # 'libyafaraycore', 'libyafarayplugin']:
+                # 'libyafaraycore', 'libyafarayplugin']:# Test varius...
     for dll in ['zlib1','libxml2','pthreadVC2','yafaraycore','yafarayplugin']:
         try:
             ctypes.cdll.LoadLibrary(os.path.join(BIN_PATH, dll))
