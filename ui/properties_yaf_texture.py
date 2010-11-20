@@ -789,9 +789,9 @@ class YAF_TEXTURE_PT_musgrave(YAF_TextureTypePanel):
         split = layout.split()
 
         col = split.column()
-        #col.prop(tex, "highest_dimension", text="Dimension") #//--- povman -->
-        col.prop(tex, "lacunarity")
-        col.prop(tex, "octaves")
+        col.prop(tex, "dimension_max", text="Dimension") 
+        col.prop(tex, "lacunarity", text="Lacunarity")
+        col.prop(tex, "octaves", text="Octaves")
 
         if wide_ui:
             col = split.column()
@@ -811,7 +811,7 @@ class YAF_TEXTURE_PT_musgrave(YAF_TextureTypePanel):
         split = layout.split()
 
         col = split.column()
-        #col.prop(tex, "noise_size", text="Size") #//--- povman -->
+        col.prop(tex, "noise_scale", text="Size") 
 
         if wide_ui:
             col = split.column()
@@ -837,8 +837,8 @@ class YAF_TEXTURE_PT_voronoi(YAF_TextureTypePanel):
         sub = col.column()
         sub.active = tex.distance_metric == 'MINKOVSKY'
         sub.prop(tex, "minkovsky_exponent", text="Exponent")
-        #col.label(text="Coloring:")
-        col.prop(tex, "coloring", text="")
+        col.label(text="Coloring:")
+        col.prop(tex, "color_mode", text="")
         col.prop(tex, "noise_intensity", text="Intensity")
 
         if wide_ui:
@@ -855,7 +855,7 @@ class YAF_TEXTURE_PT_voronoi(YAF_TextureTypePanel):
         split = layout.split()
 
         col = split.column()
-        #col.prop(tex, "noise_size", text="Size") #//--- povman -->
+        col.prop(tex, "noise_scale", text="Size") 
 
         #if wide_ui:
         #    col = split.column()

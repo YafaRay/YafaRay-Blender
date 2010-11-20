@@ -117,16 +117,16 @@ class yafTexture:
 			yi.paramsSetInt("depth", tex.noise_depth)
 			yi.paramsSetFloat("turbulence", tex.turbulence)
 			
-			noise_scale = tex.noise_scale
-			if  noise_scale > 0:
-				noise_scale = 1.0/noise_scale
+			noise_size = tex.noise_scale
+			if  noise_size > 0:
+				noise_size = 1.0/noise_size
 			
 			if tex.noise_type == 'HARD_NOISE' :
 				hard = True
 			else:
 				hard = False
 				
-			yi.paramsSetFloat("size", noise_scale)
+			yi.paramsSetFloat("size", noise_size) # atento pedrin
 			yi.paramsSetBool("hard", hard )
 			
 			sharp = 4.0
@@ -154,11 +154,11 @@ class yafTexture:
 			yi.printInfo("Exporter: Creating Texture: \"" + name + "\" type VORONOI")
 			yi.paramsSetString("type", "voronoi")
 			
-			if tex.coloring == 'POSITION':
+			if tex.color_mode == 'POSITION':
 				ts = "col1" 
-			elif tex.coloring  == 'POSITION_OUTLINE':
+			elif tex.color_mode  == 'POSITION_OUTLINE':
 				ts = "col2"
-			elif tex.coloring  == 'POSITION_OUTLINE_INTENSITY':
+			elif tex.color_mode  == 'POSITION_OUTLINE_INTENSITY':
 				ts = "col3"
 			else:
 				ts = "int"
@@ -173,7 +173,7 @@ class yafTexture:
 			yi.paramsSetFloat("mk_exponent", tex.minkovsky_exponent)
 			yi.paramsSetFloat("intensity", tex.noise_intensity)
 			
-			noise_size = tex.noise_size
+			noise_size = tex.noise_scale
 			if  noise_size > 0:
 				noise_size = 1.0/noise_size
 			yi.paramsSetFloat("size", noise_size)
@@ -211,11 +211,11 @@ class yafTexture:
 			
 			yi.paramsSetString("musgrave_type", ts)
 			yi.paramsSetString("noise_type", noise2string(tex.noise_basis))
-		#	yi.paramsSetFloat("H", tex.highest_dimension)
+			yi.paramsSetFloat("H", tex.dimension_max)
 			yi.paramsSetFloat("lacunarity", tex.lacunarity)
 			yi.paramsSetFloat("octaves", tex.octaves)
 
-			noise_size = tex.noise_size
+			noise_size = tex.noise_scale
 			if  noise_size > 0:
 				noise_size = 1.0/noise_size
 			yi.paramsSetFloat("size", noise_size)
@@ -229,10 +229,10 @@ class yafTexture:
 			
 			yi.paramsSetFloat("distort", tex.distortion)
 			
-			noise_scale = tex.noise_scale
-			if  noise_scale > 0:
-				noise_scale = 1.0/noise_scale
-			yi.paramsSetFloat("size", noise_scale)
+			noise_size = tex.noise_scale
+			if  noise_size > 0:
+				noise_size = 1.0/noise_size
+			yi.paramsSetFloat("size", noise_size)
 			
 			yi.paramsSetString("noise_type1", noise2string(tex.noise_basis))
 			yi.paramsSetString("noise_type2", noise2string(tex.noise_distortion))
