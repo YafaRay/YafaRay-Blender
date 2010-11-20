@@ -22,7 +22,7 @@ bpy.types.World.bg_type = bpy.props.EnumProperty(attr="bg_type",
 ),default="Single Color")
 bpy.types.World.bg_zenith_ground_color = bpy.props.FloatVectorProperty(attr="bg_zenith_ground_color",description = "Color Settings", subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
 bpy.types.World.bg_use_IBL = bpy.props.BoolProperty(attr="bg_use_IBL")
-bpy.types.World.bg_IBL_samples = bpy.props.IntProperty(attr="bg_IBL_samples", min = 1, default = 16)
+bpy.types.World.bg_IBL_samples = bpy.props.IntProperty(attr="bg_IBL_samples", default = 16)
 bpy.types.World.bg_rotation = bpy.props.FloatProperty(attr="bg_rotation", default = 0.0)
 bpy.types.World.bg_turbidity = bpy.props.FloatProperty(attr="bg_turbidity", default = 3.0)
 bpy.types.World.bg_a_var = bpy.props.FloatProperty(attr="bg_a_var", default = 1.0)
@@ -94,20 +94,16 @@ class YAF_PT_world(bpy.types.Panel):
 		split = layout.split()
 		col = split.column()
 
-
 		col.prop(context.world,"bg_type", text= "Yafaray Background")
 
 		if context.world.bg_type == 'Gradient':
 			col.prop(context.world,"horizon_color", text= "Horizon Color")
-			#context.world.use_sky_real = True
+			context.world.use_sky_real = True
 			col.prop(context.world,"ambient_color", text= "Horizon Ground Color")
-			#context.world.blend_sky = True
+			context.world.blend_sky = True
 			col.prop(context.world,"zenith_color", text= "Zenith Color")
 			col.prop(context.world,"bg_zenith_ground_color", text= "Zenith Ground Color")
 			col.prop(context.world,"bg_use_IBL", text= "Use IBL")
-			if context.world.bg_use_IBL:
-			    col.prop(context.world,"bg_IBL_samples", text= "IBL Samples")
-			    col.prop(context.world,"bg_power", text= "Multiplier for Background Color")
 
 		if context.world.bg_type == 'Texture':
 			col.prop(context.world,"bg_use_IBL", text= "Use IBL")
@@ -178,9 +174,8 @@ class YAF_PT_world(bpy.types.Panel):
 		if context.world.bg_type == 'Single Color':
 			col.prop(context.world,"horizon_color", text= "Color")
 			col.prop(context.world,"bg_use_IBL", text= "Use IBL")
-			if context.world.bg_use_IBL:
-			    col.prop(context.world,"bg_IBL_samples", text= "IBL Samples")
-			    col.prop(context.world,"bg_power", text= "Multiplier for Background Color")
+
+		col.prop(context.world,"bg_power", text= "Multiplier for Background Color")
 
 
 from properties_world import WORLD_PT_preview

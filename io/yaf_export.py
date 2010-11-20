@@ -4,16 +4,18 @@ import time
 import tempfile
 import sys
 import platform
-
+#added path complet "from yafaray.io" //----/ povman /--->
 #from yafaray import yafrayinterface
-from yaf_object import yafObject
+
+from yafaray.io.yaf_object import yafObject
 from yafaray import PLUGIN_PATH
-from yaf_light  import yafLight
-from yaf_world  import yafWorld
-from yaf_integrator import yafIntegrator
-from yaf_general_AA import yafGeneralAA
-from yaf_texture import yafTexture
-from yaf_material import yafMaterial
+from yafaray.io.yaf_light  import yafLight 
+from yafaray.io.yaf_world  import yafWorld
+from yafaray.io.yaf_integrator import yafIntegrator
+from yafaray.io.yaf_general_AA import yafGeneralAA
+from yafaray.io.yaf_texture import yafTexture
+from yafaray.io.yaf_material import yafMaterial
+
 
 import yafrayinterface
 
@@ -116,7 +118,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         output = tempfile.mktemp(dir = output_path)
         outputFile = output + extension
         
-        return outputFile,output,filetype
+        return outputFile,output,filetype 
     
     def dummy(self):
         return self.yaf_general_aa.getRenderCoords(self.scene)
@@ -152,12 +154,12 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         progress = 0.0;
         def prog_callback(command, *args):
             pass
-#            global tag, progress
-#            if command == "tag":
-#                tag = args[0]
-#            elif command == "progress":
-#                progress = args[0]
-#            self.update_stats("", "%s - %.2f %%" % (tag, progress))
+        #    global tag, progress #//----/ comment /----->
+        #    if command == "tag":
+        #        tag = args[0]
+        #    elif command == "progress":
+        #        progress = args[0]
+        #    self.update_stats("", "%s - %.2f %%" % (tag, progress)) # //------>
         
         def tile_callback(command, *args):
             if command == "flushArea":
@@ -173,7 +175,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.yi.paramsSetString("type", file_type)
         self.yi.paramsSetBool("drawParams", True)
         ih = self.yi.createImageHandler("outFile")
-        co = yafrayinterface.imageOutput_t(ih, str(outputFile), 0, 0)
+        #co = yafrayinterface.imageOutput_t(ih, str(outputFile), 0, 0)# error wrong number of args
+        co = yafrayinterface.imageOutput_t(ih, str(outputFile)) # correct format ?
                         
         self.yi.printInfo("Exporter: Rendering to file " + outputFile)
                     
@@ -183,32 +186,35 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         
         # here we export blender scene and renders using yafaray
         
-#        self.update_stats("", "Rendering to %s" % outputFile)
-#        print("Rendering to %s" % outputFile)
+        self.update_stats("", "Rendering to %s" % outputFile)
+        print("Rendering to %s" % outputFile)
 #        
-#        self.yi.render(co)
+        self.yi.render(co)
 #        
-#        if scene.gs_z_channel:
-#            lay.load_from_file(output + '_zbuffer.' + file_type)
-#        else:
-#            lay.load_from_file(outputFile)
+        if scene.gs_z_channel:
+            lay.load_from_file(output + '_zbuffer.' + file_type)
+        else:
+            lay.load_from_file(outputFile)
         # done
-#        self.end_result(result)
+        self.end_result(result)
+"""
         import threading
         t = threading.Thread(target=self.yi.render, args=(x, y, tile_callback, prog_callback))
+        #t = threading.Thread(target=self.yi.render, args=(x, y, tile_callback, prog_callback))#org values
         t.start()
-        
+#        
         while t.isAlive() and not self.test_break():
             time.sleep(0.2)
-            
+#            
         if t.isAlive():
             self.update_stats("", "Aborting...")
             self.yi.abort()
             t.join()
             self.update_stats("", "Render is aborted")
             return
-            
-        self.update_stats("", "Done!")
+#
+"""
+    #    self.update_stats("", "Done!")
 
 # Use some of the existing buttons.
 import properties_render, properties_particle

@@ -1,13 +1,15 @@
-import properties_yaf_camera
-import properties_yaf_general_settings
-import properties_yaf_integrator
-import properties_yaf_material
-import properties_yaf_object_light
-import properties_yaf_texture
-import properties_yaf_volume_integrator
-import properties_yaf_world
-import properties_yaf_AA_settings
-import yaf_light
+#This file is part of Yafaray exporter for Blender
+
+from yafaray.ui import properties_yaf_camera
+from yafaray.ui import properties_yaf_general_settings
+from yafaray.ui import properties_yaf_integrator
+from yafaray.ui import properties_yaf_material
+from yafaray.ui import properties_yaf_object_light
+from yafaray.ui import properties_yaf_texture
+from yafaray.ui import properties_yaf_volume_integrator
+from yafaray.ui import properties_yaf_world
+from yafaray.ui import properties_yaf_AA_settings
+from yafaray.ui import yaf_light
 
 #try:
 #    import yaf_properties

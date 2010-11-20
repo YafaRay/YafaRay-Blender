@@ -1,7 +1,8 @@
 import bpy
-import yaf_export
+#//----/ added path complet /------>
+from yafaray.io import yaf_export
 #from yafaray import yaf_properties
-import yaf_object
+from yafaray.io import yaf_object
 
 # register engine and panels
 classes = [

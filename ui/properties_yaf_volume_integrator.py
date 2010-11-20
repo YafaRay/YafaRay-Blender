@@ -49,15 +49,14 @@ class YAF_PT_vol_integrator(bpy.types.Panel):
 
 		col.prop(context.world,"v_int_type", text= "Volume Integrator")
 
-#		if context.world.v_int_type == 'None':
-#			col.prop(context.world,"v_int_step_size", text= "Step Size")
+		if context.world.v_int_type == 'None':
+			col.prop(context.world,"v_int_step_size", text= "Step Size")
 
 		if context.world.v_int_type == 'Single Scatter':
 			col.prop(context.world,"v_int_step_size", text= "Step Size")
+			col.prop(context.world,"v_int_attgridres", text= "Att. grid resolution")
 			col.prop(context.world,"v_int_adaptive", text= "Adaptive")
 			col.prop(context.world,"v_int_optimize", text= "Optimize")
-			if context.world.v_int_optimize:
-			    col.prop(context.world,"v_int_attgridres", text= "Att. grid resolution")
 			
 
 		#if context.world.v_int_type == 'Sky':
