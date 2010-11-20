@@ -117,32 +117,32 @@ class yafTexture:
 			yi.paramsSetInt("depth", tex.noise_depth)
 			yi.paramsSetFloat("turbulence", tex.turbulence)
 			
-			noise_size = tex.noise_size
-			if  noise_size > 0:
-				noise_size = 1.0/noise_size
+			noise_scale = tex.noise_scale
+			if  noise_scale > 0:
+				noise_scale = 1.0/noise_scale
 			
 			if tex.noise_type == 'HARD_NOISE' :
 				hard = True
 			else:
 				hard = False
 				
-			yi.paramsSetFloat("size", noise_size)
+			yi.paramsSetFloat("size", noise_scale)
 			yi.paramsSetBool("hard", hard )
 			
 			sharp = 4.0
-			if tex.stype == 'SOFT':
+			if tex.marble_type == 'SOFT':
 				sharp = 2.0
-			elif tex.stype == 'SHARP':
+			elif tex.marble_type == 'SHARP':
 				sharp = 4.0
-			elif tex.stype == 'SHARPER':
+			elif tex.marble_type == 'SHARPER':
 				sharp = 8.0
 			
 			yi.paramsSetFloat("sharpness", sharp)
 			yi.paramsSetString("noise_type", noise2string(tex.noise_basis) )
 			
-			if tex.noisebasis2 == 'SAW'  :
+			if tex.noisebasis_2 == 'SAW'  :
 				ts="saw"
-			elif tex.noisebasis2 == 'TRI':
+			elif tex.noisebasis_2 == 'TRI':
 				ts="tri"
 			else:
 				ts = "sin"
@@ -211,7 +211,7 @@ class yafTexture:
 			
 			yi.paramsSetString("musgrave_type", ts)
 			yi.paramsSetString("noise_type", noise2string(tex.noise_basis))
-			yi.paramsSetFloat("H", tex.highest_dimension)
+		#	yi.paramsSetFloat("H", tex.highest_dimension)
 			yi.paramsSetFloat("lacunarity", tex.lacunarity)
 			yi.paramsSetFloat("octaves", tex.octaves)
 
@@ -229,10 +229,10 @@ class yafTexture:
 			
 			yi.paramsSetFloat("distort", tex.distortion)
 			
-			noise_size = tex.noise_size
-			if  noise_size > 0:
-				noise_size = 1.0/noise_size
-			yi.paramsSetFloat("size", noise_size)
+			noise_scale = tex.noise_scale
+			if  noise_scale > 0:
+				noise_scale = 1.0/noise_scale
+			yi.paramsSetFloat("size", noise_scale)
 			
 			yi.paramsSetString("noise_type1", noise2string(tex.noise_basis))
 			yi.paramsSetString("noise_type2", noise2string(tex.noise_distortion))

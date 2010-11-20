@@ -59,10 +59,10 @@ bpy.types.Texture.yaf_texture_coordinates = bpy.props.EnumProperty(attr="yaf_tex
                 ("STRESS","Stress",""),
                 ("TANGENT","Tangent",""),
                 ("OBJECT","Object",""),
+                ("UV","UV",""),
 ),default="GLOBAL")
 
 bpy.types.Texture.tex_file_name = bpy.props.StringProperty(attr='tex_file_name', subtype = 'FILE_PATH')
-
 
 from properties_material import active_node_mat
 
@@ -84,6 +84,7 @@ def context_tex_datablock(context):
     return idblock
 
 class YAF_TextureButtonsPanel(bpy.types.Panel):
+    bl_label = "Texture "
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "texture"
@@ -125,7 +126,7 @@ class YAF_TEXTURE_PT_preview(YAF_TextureButtonsPanel):
 
 
 class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel):
-    bl_label = "Yafaray Textures"
+    bl_label = " "
     bl_show_header = False
     COMPAT_ENGINES = {'YAFA_RENDER'}
     count = 0
@@ -141,7 +142,7 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel):
 
     def draw(self, context):
         
-        #import properties_texture
+        import properties_texture
         #
         #try :
         #        properties_world.unregister()
@@ -210,43 +211,44 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel):
         
 
 
+"""
+# povman ------>
+class YAF_TEXTURE_PT_colors(YAF_TextureButtonsPanel):
+    bl_label = "Colors"
+    bl_default_closed = True
+    COMPAT_ENGINES = {'YAFA_RENDER'}
 
+    def draw(self, context):
+        layout = self.layout
 
-#class YAF_TEXTURE_PT_colors(YAF_TextureButtonsPanel):
-#    bl_label = "Colors"
-#    bl_default_closed = True
-#    COMPAT_ENGINES = {'YAFA_RENDER'}
-#
-#    def draw(self, context):
-#        layout = self.layout
-#
-#        tex = context.texture
-#        wide_ui = context.region.width > narrowui
-#
-#        layout.prop(tex, "use_color_ramp", text="Ramp")
-#        if tex.use_color_ramp:
-#            layout.template_color_ramp(tex, "color_ramp", expand=True)
-#
-#        split = layout.split()
-#
-#        col = split.column()
-#        col.label(text="RGB Multiply:")
-#        sub = col.column(align=True)
-#        sub.prop(tex, "factor_red", text="R")
-#        sub.prop(tex, "factor_green", text="G")
-#        sub.prop(tex, "factor_blue", text="B")
-#
-#        if wide_ui:
-#            col = split.column()
-#        col.label(text="Adjust:")
-#        col.prop(tex, "brightness")
-#        col.prop(tex, "contrast")
-#        col.prop(tex, "saturation")
+        tex = context.texture
+        wide_ui = context.region.width > narrowui
+
+        layout.prop(tex, "use_color_ramp", text="Ramp")
+        if tex.use_color_ramp:
+            layout.template_color_ramp(tex, "color_ramp", expand=True)
+
+        split = layout.split()
+
+        col = split.column()
+        col.label(text="RGB Multiply:")
+        sub = col.column(align=True)
+        sub.prop(tex, "factor_red", text="R")
+        sub.prop(tex, "factor_green", text="G")
+        sub.prop(tex, "factor_blue", text="B")
+
+        if wide_ui:
+            col = split.column()
+        col.label(text="Adjust:")
+        #col.prop(tex, "brightness") # povman ---->
+        col.prop(tex, "contrast")
+        col.prop(tex, "saturation")
 
 # Texture Slot Panels #
 
-
+"""
 class YAF_TextureSlotPanel(YAF_TextureButtonsPanel):
+    bl_label = "povman 1 "
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
     @classmethod
@@ -305,8 +307,8 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel):
                 split.label(text="Layer:")
                 ob = context.object
                 if ob and ob.type == 'MESH':
-                    split.prop_object(tex, "uv_layer", ob.data, "uv_textures", text="")
-                else:
+                #    split.prop_object(tex, "uv_layer", ob.data, "uv_textures", text="")
+                #else:
                     split.prop(tex, "uv_layer", text="")
 
             elif texture.yaf_texture_coordinates == 'OBJECT':
@@ -502,6 +504,7 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel):
 
 
 class YAF_TextureTypePanel(YAF_TextureButtonsPanel):
+    bl_label = " povman 2"
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
     @classmethod
@@ -527,12 +530,14 @@ class YAF_TEXTURE_PT_clouds(YAF_TextureTypePanel):
         tex = context.texture
         
         wide_ui = context.region.width > narrowui
-
+        #layout.label(text="Cloud:")
+        layout.prop(tex, "cloud_type", text="Cloud", expand=True)
+        
         #layout.prop(tex, "stype", expand=True)
         layout.label(text="Noise:")
         layout.prop(tex, "noise_type", text="Type", expand=True)
-        #if wide_ui:
-        #    layout.prop(tex, "noise_basis", text="Basis")
+        if wide_ui:
+            layout.prop(tex, "noise_basis", text="Basis")
         #else:
         #    layout.prop(tex, "noise_basis", text="")
 
@@ -558,7 +563,7 @@ class YAF_TEXTURE_PT_wood(YAF_TextureTypePanel):
         tex = context.texture
         wide_ui = context.region.width > narrowui
 
-        layout.prop(tex, "noisebasis2", expand=True)
+        #layout.prop(tex, "noisebasis2", expand=True)
         if wide_ui:
             layout.prop(tex, "wood_type", expand=True)
         else:
@@ -577,7 +582,7 @@ class YAF_TEXTURE_PT_wood(YAF_TextureTypePanel):
         split.active = tex.wood_type in ('RINGNOISE', 'BANDNOISE')
 
         col = split.column()
-        col.prop(tex, "noise_size", text="Size")
+        #col.prop(tex, "noise_size", text="Size") # //---- povman
         col.prop(tex, "turbulence")
 
         #col = split.column()
@@ -595,8 +600,8 @@ class YAF_TEXTURE_PT_marble(YAF_TextureTypePanel):
         tex = context.texture
         wide_ui = context.region.width > narrowui
 
-        layout.prop(tex, "stype", expand=True)
-        layout.prop(tex, "noisebasis2", expand=True)
+        layout.prop(tex, "marble_type", expand=True) 
+        layout.prop(tex, "noisebasis_2", expand=True) 
         layout.label(text="Noise:")
         layout.prop(tex, "noise_type", text="Type", expand=True)
         if wide_ui:
@@ -607,12 +612,12 @@ class YAF_TEXTURE_PT_marble(YAF_TextureTypePanel):
         split = layout.split()
 
         col = split.column()
-        col.prop(tex, "noise_size", text="Size")
+        col.prop(tex, "noise_scale", text="Size")
         col.prop(tex, "noise_depth", text="Depth")
 
         if wide_ui:
             col = split.column()
-        col.prop(tex, "turbulence")
+        col.prop(tex, "turbulence", text="Turbulence")
         #col.prop(tex, "nabla")
 
 class YAF_TEXTURE_PT_blend(YAF_TextureTypePanel):
@@ -741,8 +746,8 @@ class YAF_TEXTURE_PT_image_mapping(YAF_TextureTypePanel):
         elif tex.extension == 'CHECKER':
             col = split.column(align=True)
             row = col.row()
-            row.prop(tex, "checker_even", text="Even")
-            row.prop(tex, "checker_odd", text="Odd")
+            #row.prop(tex, "checker_even", text="Even") #//--- povman -->
+            #row.prop(tex, "checker_odd", text="Odd") #//--- povman -->
 
             #if wide_ui:
             #    col = split.column()
@@ -784,7 +789,7 @@ class YAF_TEXTURE_PT_musgrave(YAF_TextureTypePanel):
         split = layout.split()
 
         col = split.column()
-        col.prop(tex, "highest_dimension", text="Dimension")
+        #col.prop(tex, "highest_dimension", text="Dimension") #//--- povman -->
         col.prop(tex, "lacunarity")
         col.prop(tex, "octaves")
 
@@ -806,7 +811,7 @@ class YAF_TEXTURE_PT_musgrave(YAF_TextureTypePanel):
         split = layout.split()
 
         col = split.column()
-        col.prop(tex, "noise_size", text="Size")
+        #col.prop(tex, "noise_size", text="Size") #//--- povman -->
 
         if wide_ui:
             col = split.column()
@@ -832,7 +837,7 @@ class YAF_TEXTURE_PT_voronoi(YAF_TextureTypePanel):
         sub = col.column()
         sub.active = tex.distance_metric == 'MINKOVSKY'
         sub.prop(tex, "minkovsky_exponent", text="Exponent")
-        col.label(text="Coloring:")
+        #col.label(text="Coloring:")
         col.prop(tex, "coloring", text="")
         col.prop(tex, "noise_intensity", text="Intensity")
 
@@ -850,7 +855,7 @@ class YAF_TEXTURE_PT_voronoi(YAF_TextureTypePanel):
         split = layout.split()
 
         col = split.column()
-        col.prop(tex, "noise_size", text="Size")
+        #col.prop(tex, "noise_size", text="Size") #//--- povman -->
 
         #if wide_ui:
         #    col = split.column()
@@ -879,7 +884,7 @@ class YAF_TEXTURE_PT_distortednoise(YAF_TextureTypePanel):
 
         col = split.column()
         col.prop(tex, "distortion", text="Distortion")
-        col.prop(tex, "noise_size", text="Size")
+        col.prop(tex, "noise_scale", text="Size") 
 
         #if wide_ui:
         #    col = split.column()
