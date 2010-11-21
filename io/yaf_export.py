@@ -4,8 +4,6 @@ import time
 import tempfile
 import sys
 import platform
-#added path complet "from yafaray.io" //----/ povman /--->
-#from yafaray import yafrayinterface
 
 from yafaray.io.yaf_object import yafObject
 from yafaray import PLUGIN_PATH
@@ -127,7 +125,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
     def render(self, scene):
         self.update_stats("", "Setting up render")
             
-        scene.frame_set(scene.frame_current)
+        #scene.frame_set(scene.frame_current)
         self.scene = scene
         r = scene.render
 
@@ -200,7 +198,6 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 """
         import threading
         t = threading.Thread(target=self.yi.render, args=(x, y, tile_callback, prog_callback))
-        #t = threading.Thread(target=self.yi.render, args=(x, y, tile_callback, prog_callback))#org values
         t.start()
 #        
         while t.isAlive() and not self.test_break():

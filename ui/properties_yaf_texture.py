@@ -212,7 +212,7 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel):
 
 
 """
-# povman ------>
+
 class YAF_TEXTURE_PT_colors(YAF_TextureButtonsPanel):
     bl_label = "Colors"
     bl_default_closed = True
@@ -563,7 +563,7 @@ class YAF_TEXTURE_PT_wood(YAF_TextureTypePanel):
         tex = context.texture
         wide_ui = context.region.width > narrowui
 
-        #layout.prop(tex, "noisebasis2", expand=True)
+        layout.prop(tex, "noisebasis_2", expand=True)
         if wide_ui:
             layout.prop(tex, "wood_type", expand=True)
         else:
@@ -582,7 +582,7 @@ class YAF_TEXTURE_PT_wood(YAF_TextureTypePanel):
         split.active = tex.wood_type in ('RINGNOISE', 'BANDNOISE')
 
         col = split.column()
-        #col.prop(tex, "noise_size", text="Size") # //---- povman
+        col.prop(tex, "noise_scale", text="Size") 
         col.prop(tex, "turbulence")
 
         #col = split.column()
@@ -601,7 +601,7 @@ class YAF_TEXTURE_PT_marble(YAF_TextureTypePanel):
         wide_ui = context.region.width > narrowui
 
         layout.prop(tex, "marble_type", expand=True) 
-        layout.prop(tex, "noisebasis_2", expand=True) 
+        #layout.prop(tex, "noisebasis_2", expand=True) 
         layout.label(text="Noise:")
         layout.prop(tex, "noise_type", text="Type", expand=True)
         if wide_ui:
@@ -652,7 +652,7 @@ class YAF_TEXTURE_PT_image(YAF_TextureTypePanel):
         layout = self.layout
 
         tex = context.texture
-
+        tex.use_map_specular
         #layout.template_image(tex, "image", tex.image_user)
         layout.prop(tex,"tex_file_name", text = "Image File Path")
 

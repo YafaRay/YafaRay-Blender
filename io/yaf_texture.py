@@ -51,10 +51,10 @@ class yafTexture:
 			yi.printInfo("Exporter: Creating Texture: \"" + name + "\" type CLOUDS")
 			yi.paramsSetString("type", "clouds")
 			
-			noise_scale = tex.noise_scale
-			if  noise_scale > 0: noise_scale = 1.0/noise_scale
+			noise_size = tex.noise_scale
+			if  noise_size > 0: noise_size = 1.0/noise_size
 			
-			yi.paramsSetFloat("size", noise_scale)
+			yi.paramsSetFloat("size", noise_size)
 			
 			if tex.noise_type == 'HARD_NOISE' :
 				hard = True
@@ -76,10 +76,10 @@ class yafTexture:
 			noise_size = 0.25
 			hard       = True
 			
-			if tex.stype == 'BANDNOISE' or tex.stype == 'RINGNOISE':
+			if tex.wood_type == 'BANDNOISE' or tex.wood_type == 'RINGNOISE':
 				
 				turb = tex.turbulence
-				noise_size = tex.noise_size
+				noise_size = tex.noise_scale
 				
 				if  noise_size > 0:
 					noise_size = 1.0/noise_size
@@ -92,7 +92,7 @@ class yafTexture:
 			
 			ts = "bands"
 			
-			if tex.stype == 'RINGS' or tex.stype == 'RINGNOISE':
+			if tex.wood_type == 'RINGS' or tex.wood_type == 'RINGNOISE':
 				ts = "rings"
 			
 			yi.paramsSetString("wood_type", ts )
@@ -100,9 +100,9 @@ class yafTexture:
 			
 			# shape parameter
 			
-			if tex.noisebasis2 == 'SAW'  :
+			if tex.noise_basis == 'SAW'  :
 				ts="saw"
-			elif tex.noisebasis2 == 'TRI':
+			elif tex.noise_basis == 'TRI':
 				ts="tri"
 			else:
 				ts = "sin"
@@ -126,7 +126,7 @@ class yafTexture:
 			else:
 				hard = False
 				
-			yi.paramsSetFloat("size", noise_size) # atento pedrin
+			yi.paramsSetFloat("size", noise_size)
 			yi.paramsSetBool("hard", hard )
 			
 			sharp = 4.0
@@ -239,11 +239,11 @@ class yafTexture:
 		
 		elif tex.yaf_tex_type == 'IMAGE':
 			
-			#ima = tex.image
-			##print(str(ima))
-			#if ima is not None:
-				# get image full path
-				#imagefile = get_image_filename(ima.filepath)
+			ima = tex.tex_file_name
+			#print(str(ima))
+			if ima is not None:
+				#get image full path
+				imagefile = get_image_filename(ima.filepath)
 			import os
 			if tex.tex_file_name != "" and not os.path.exists(tex.tex_file_name):
 				yi.printInfo("Exporter: No valid texture image supplied.")
