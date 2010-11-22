@@ -39,23 +39,26 @@ class yafWorld:
                             #yi.paramsSetString("filename", worldTex.image.filename )
                             yi.paramsSetString("filename", get_image_filename(worldTex.image.filepath) )
                             # exposure_adjust not restricted to integer range anymore
-                            yi.paramsSetFloat("exposure_adjust", worldTex.brightness/2)  #this portion is edited
+                            #yi.paramsSetFloat("exposure_adjust", worldTex.bright/2)  #this portion is edited
+                            yi.paramsSetFloat("exposure_adjust", 0.4)
                             
-                            if worldTex.interpolation == True:
-                                yi.paramsSetString("interpolate", "bilinear")
-                            else:
-                                yi.paramsSetString("interpolate", "none")
+                            #if worldTex.interpolation == True:
+                            #    yi.paramsSetString("interpolate", "bilinear")
+                            #else:
+                            #    yi.paramsSetString("interpolate", "none")
+                            
                             yi.createTexture("world_texture")
                                 
                             # Export the actual background
-                            texco = world.texture_slots[world.active_texture_index].texture_coordinates
+                            #texco = world.texture_slots[world.active_texture_index].texture_coordinates
                             
                             yi.paramsClearAll();
+                           
+                            #if texco == 'ANGMAP':
+                            #    yi.paramsSetString("mapping", "probe");
+                            #elif texco == 'SPHERE':
                             
-                            if texco == 'ANGMAP':
-                                yi.paramsSetString("mapping", "probe");
-                            elif texco == 'SPHERE':
-                                yi.paramsSetString("mapping", "sphere");
+                            yi.paramsSetString("mapping", "sphere");
                                 
                             yi.paramsSetString("type", "textureback");
                             yi.paramsSetString("texture", "world_texture");

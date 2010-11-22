@@ -334,7 +334,7 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel):
 
                 col = split.column()
                 if texture.yaf_texture_coordinates in ('ORCO', 'UV'):
-                    col.prop(tex, "from_dupli")
+                    col.prop(tex, "use_from_dupli")
                 elif texture.yaf_texture_coordinates == 'OBJECT':
                     col.prop(tex, "from_original")
                 elif wide_ui:
@@ -652,8 +652,8 @@ class YAF_TEXTURE_PT_image(YAF_TextureTypePanel):
         layout = self.layout
 
         tex = context.texture
-        tex.use_map_specular
-        #layout.template_image(tex, "image", tex.image_user)
+        #tex.map_colorspec
+        layout.template_image(tex, "image", tex.image_user)
         layout.prop(tex,"tex_file_name", text = "Image File Path")
 
 
