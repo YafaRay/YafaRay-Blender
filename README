@@ -7,5 +7,5 @@ Downloading and extract at Blender/2.55/scripts/addons/yafaray directory
 This will create a dir /bin/plugins containing the necessary files.
 We need to test it and report errors found.
 Thanks.
-FROM LINUX:
+FOR LINUX:
 TODO
