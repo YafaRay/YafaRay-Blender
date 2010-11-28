@@ -54,7 +54,6 @@ class yafLight:
 		if dupliNum != None:
 			name += str(dupliNum)
 		
-		
 		#context = bpy.context
 	
 		if matrix == None:

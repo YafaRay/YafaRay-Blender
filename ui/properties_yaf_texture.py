@@ -123,6 +123,7 @@ class YAF_TEXTURE_PT_preview(YAF_TextureButtonsPanel):
             layout.template_preview(tex, parent=idblock, slot=slot)
         else:
             layout.template_preview(tex, slot=slot)
+            
 
 
 class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel):
@@ -142,7 +143,7 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel):
 
     def draw(self, context):
         
-        import properties_texture
+        #import properties_texture
         #
         #try :
         #        properties_world.unregister()
@@ -164,10 +165,10 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel):
 
             row.template_list(idblock, "texture_slots", idblock, "active_texture_index", rows=2)
 
-            #col = row.column(align=True)
-            #col.operator("texture.slot_move", text="", icon='TRIA_UP').type = 'UP'
-            #col.operator("texture.slot_move", text="", icon='TRIA_DOWN').type = 'DOWN'
-            #col.menu("TEXTURE_MT_specials", icon='DOWNARROW_HLT', text="")
+            col = row.column(align=True)
+            col.operator("texture.slot_move", text="", icon='TRIA_UP').type = 'UP'
+            col.operator("texture.slot_move", text="", icon='TRIA_DOWN').type = 'DOWN'
+            col.menu("TEXTURE_MT_specials", icon='DOWNARROW_HLT', text="")
 
         if wide_ui:
             split = layout.split(percentage=0.65)
@@ -189,7 +190,7 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel):
             col = split.column()
 
         #if not space.pin_id:
-        #    col.prop(space, "brush_texture", text="Brush", toggle=True)
+        #    col.prop(space, "show_brush_texture", text="Brush", toggle=True)
 
         if tex:
             split = layout.split(percentage=0.2)
@@ -248,7 +249,7 @@ class YAF_TEXTURE_PT_colors(YAF_TextureButtonsPanel):
 
 """
 class YAF_TextureSlotPanel(YAF_TextureButtonsPanel):
-    bl_label = "povman 1 "
+    bl_label = ""
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
     @classmethod
@@ -284,30 +285,32 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel):
         tex = context.texture_slot
         # textype = context.texture
         wide_ui = context.region.width > narrowui
-
+       
         if type(idblock) != bpy.types.Brush:
             split = layout.split(percentage=0.3)
             col = split.column()
             col.label(text="Coordinates:")
             col = split.column()
-            col.prop(context.texture, "yaf_texture_coordinates", text="")
-            texture = context.texture
-            #tex.texture_coordinates = context.texture.yaf_texture_coordinates
+            col.prop(context.texture, "yaf_texture_coordinates", text="") # 2.55 on
+            texture = context.texture # 2.55 on
+            tex.texture_coords = context.texture.yaf_texture_coordinates # 2.55 on
 
-            #if tex.texture_coordinates == 'ORCO':
+            if tex.texture_coords == 'ORCO':
             #    """
-            #    ob = context.object
-            #    if ob and ob.type == 'MESH':
-            #        split = layout.split(percentage=0.3)
-            #        split.label(text="Mesh:")
-            #        split.prop(ob.data, "texco_mesh", text="")
+                ob = context.object
+                if ob and ob.type == 'MESH':
+                    split = layout.split(percentage=0.3)
+                    split.label(text="Mesh:")
+                    split.prop(ob.data, "texco_mesh", text="")
             #    """
             if texture.yaf_texture_coordinates == 'UV':
                 split = layout.split(percentage=0.3)
                 split.label(text="Layer:")
                 ob = context.object
                 if ob and ob.type == 'MESH':
+                #    split.prop(tex, "uv_layer", ob.data, "uv_textures", text="")
                 #    split.prop_object(tex, "uv_layer", ob.data, "uv_textures", text="")
+                
                 #else:
                     split.prop(tex, "uv_layer", text="")
 
@@ -336,7 +339,7 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel):
                 if texture.yaf_texture_coordinates in ('ORCO', 'UV'):
                     col.prop(tex, "use_from_dupli")
                 elif texture.yaf_texture_coordinates == 'OBJECT':
-                    col.prop(tex, "from_original")
+                    col.prop(tex, "use_from_original")
                 elif wide_ui:
                     col.label()
 
@@ -399,40 +402,40 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel):
 
                 col = split.column()
                 col.label(text="Diffuse:")
-                #factor_but(col, tex.map_diffuse, "map_diffuse", "diffuse_factor", "Intensity")
-                #factor_but(col, tex.map_colordiff, "map_colordiff", "colordiff_factor", "Color")
-                col.prop(tex,"use_map_diffuse", text = 'Color Diffuse')
-                #factor_but(col, tex.map_alpha, "map_alpha", "alpha_factor", "Alpha")
-                col.prop(tex,"use_map_alpha", text = 'Map Alpha')
-                #factor_but(col, tex.map_translucency, "map_translucency", "translucency_factor", "Translucency")
+                factor_but(col, tex.use_map_diffuse, "use_map_diffuse", "diffuse_factor", "Intensity")
+                factor_but(col, tex.use_map_color_diffuse, "use_map_color_diffuse", "diffuse_color_factor", "Color")
+                #col.prop(tex,"use_map_diffuse", text = 'Color Diffuse')
+                factor_but(col, tex.use_map_alpha, "use_map_alpha", "alpha_factor", "Alpha")
+                #col.prop(tex,"use_map_alpha", text = 'Map Alpha')
+                factor_but(col, tex.use_map_translucency, "use_map_translucency", "translucency_factor", "Translucency")
                 col.prop(tex,"use_map_translucency", text = 'Map Translucency')
                 
                 col.separator()
                 col.label(text="Specular:")
-                #factor_but(col, tex.map_specular, "map_specular", "specular_factor", "Intensity")
-                col.prop(tex,"use_map_specular", text = 'Map Specular')
-                #factor_but(col, tex.map_colorspec, "map_colorspec", "colorspec_factor", "Color")
-                #factor_but(col, tex.map_hardness, "map_hardness", "hardness_factor", "Hardness")
-                col.prop(tex,"specular_color_factor", text = 'Color', slider = True)
-                col.prop(tex,"hardness_factor", text = 'Hardness', slider = True)
+                factor_but(col, tex.use_map_specular, "use_map_specular", "specular_factor", "Intensity")
+                #col.prop(tex,"use_map_specular", text = 'Map Specular')
+                factor_but(col, tex.use_map_color_spec, "use_map_color_spec", "specular_color_factor", "Color")
+                factor_but(col, tex.use_map_hardness, "use_map_hardness", "hardness_factor", "Hardness")
+                #col.prop(tex,"specular_color_factor", text = 'Color', slider = True)
+                #col.prop(tex,"hardness_factor", text = 'Hardness', slider = True)
 
-                #if wide_ui:
-                #    col = split.column()
+                if wide_ui:
+                    col = split.column()
                 col.separator()
                 col.label(text="Shading:")
-                #factor_but(col, tex.map_ambient, "map_ambient", "ambient_factor", "Ambient")
-                #factor_but(col, tex.map_emit, "map_emit", "emit_factor", "Emit")
-                #factor_but(col, tex.map_mirror, "map_mirror", "mirror_factor", "Mirror")
-                col.prop(tex,"use_map_mirror", text = 'Mirror')
-                #factor_but(col, tex.map_raymir, "map_raymir", "raymir_factor", "Ray Mirror")
-                col.prop(tex,"use_map_raymir", text = 'Ray Mirror')
+                factor_but(col, tex.use_map_ambient, "use_map_ambient", "ambient_factor", "Ambient")
+                factor_but(col, tex.use_map_emit, "use_map_emit", "emit_factor", "Emit")
+                factor_but(col, tex.use_map_mirror, "use_map_mirror", "mirror_factor", "Mirror")
+                #col.prop(tex,"use_map_mirror", text = 'Mirror')
+                factor_but(col, tex.use_map_raymir, "use_map_raymir", "raymir_factor", "Ray Mirror")
+                #col.prop(tex,"use_map_raymir", text = 'Ray Mirror')
 
                 col.separator()
                 col.label(text="Geometry:")
                 # XXX replace 'or' when displacement is fixed to not rely on normal influence value.
                 factor_but(col, (tex.use_map_normal or tex.use_map_displacement), "use_map_normal", "normal_factor", "Normal")
-                #factor_but(col, tex.map_warp, "map_warp", "warp_factor", "Warp")
-                #factor_but(col, tex.map_displacement, "map_displacement", "displacement_factor", "Displace")
+                factor_but(col, tex.use_map_warp, "use_map_warp", "warp_factor", "Warp")
+                factor_but(col, tex.use_map_displacement, "use_map_displacement", "displacement_factor", "Displace")
                 
                 col.separator()
                 col.label(text="Others:")
@@ -447,52 +450,52 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel):
                 col.prop(tex, "invert", text="Negative")
                 col.prop(tex, "use_stencil")
 
-                #sub = col.column()
-                #sub.active = tex.map_translucency or tex.map_emit or tex.map_alpha or tex.map_raymir or tex.map_hardness or tex.map_ambient or tex.map_specularity or tex.map_reflection or tex.map_mirror
-                #sub.prop(tex, "default_value", text="Amount", slider=True)
-            #elif idblock.type == 'VOLUME':
-            #    split = layout.split()
+                sub = col.column()
+                sub.active = tex.use_map_translucency or tex.use_map_emit or tex.use_map_alpha or tex.use_map_raymir or tex.use_map_hardness or tex.use_map_ambient or tex.use_map_color_spec or tex.use_map_reflect or tex.use_map_mirror
+                sub.prop(tex, "default_value", text="Amount", slider=True)
+            elif idblock.type == 'VOLUME':
+                split = layout.split()
+            
+                col = split.column()
+                factor_but(col, tex.use_map_density, "use_map_density", "density_factor", "Density")
+                factor_but(col, tex.use_map_emission, "use_map_emission", "emission_factor", "Emission")
+                factor_but(col, tex.use_map_scatter, "use_map_scatter", "scattering_factor", "Scattering")
+                factor_but(col, tex.use_map_reflect, "use_map_reflect", "reflection_factor", "Reflection")
             #
-            #    col = split.column()
-            #    factor_but(col, tex.map_density, "map_density", "density_factor", "Density")
-            #    factor_but(col, tex.map_emission, "map_emission", "emission_factor", "Emission")
-            #    factor_but(col, tex.map_scattering, "map_scattering", "scattering_factor", "Scattering")
-            #    factor_but(col, tex.map_reflection, "map_reflection", "reflection_factor", "Reflection")
-            #
-            #    if wide_ui:
-            #        col = split.column()
-            #        col.label(text=" ")
-            #    factor_but(col, tex.map_coloremission, "map_coloremission", "coloremission_factor", "Emission Color")
-            #    factor_but(col, tex.map_colortransmission, "map_colortransmission", "colortransmission_factor", "Transmission Color")
-            #    factor_but(col, tex.map_colorreflection, "map_colorreflection", "colorreflection_factor", "Reflection Color")
+                if wide_ui:
+                    col = split.column()
+                    col.label(text=" ")
+                factor_but(col, tex.use_map_color_emission, "use_map_color_emission", "coloremission_factor", "Emission Color")
+                factor_but(col, tex.use_map_color_transmission, "use_map_color_transmission", "colortransmission_factor", "Transmission Color")
+                factor_but(col, tex.use_map_color_reflection, "use_map_color_reflection", "colorreflection_factor", "Reflection Color")
 
-        #elif type(idblock) == bpy.types.Lamp:
-        #    split = layout.split()
+        elif type(idblock) == bpy.types.Lamp:
+            split = layout.split()
+        #    
+            col = split.column()
+            factor_but(col, tex.use_map_color, "use_map_color", "color_factor", "Color")
         #
-        #    col = split.column()
-        #    factor_but(col, tex.map_color, "map_color", "color_factor", "Color")
+            if wide_ui:
+                col = split.column()
+            factor_but(col, tex.use_map_shadow, "use_map_shadow", "shadow_factor", "Shadow")
         #
-        #    if wide_ui:
-        #        col = split.column()
-        #    factor_but(col, tex.map_shadow, "map_shadow", "shadow_factor", "Shadow")
+        elif type(idblock) == bpy.types.World:
+            split = layout.split()
         #
-        #elif type(idblock) == bpy.types.World:
-        #    split = layout.split()
+            col = split.column()
+            factor_but(col, tex.use_map_blend, "use_map_blend", "blend_factor", "Blend")
+            factor_but(col, tex.use_map_horizon, "use_map_horizon", "horizon_factor", "Horizon")
         #
-        #    col = split.column()
-        #    factor_but(col, tex.map_blend, "map_blend", "blend_factor", "Blend")
-        #    factor_but(col, tex.map_horizon, "map_horizon", "horizon_factor", "Horizon")
-        #
-        #    if wide_ui:
-        #        col = split.column()
-        #    factor_but(col, tex.map_zenith_up, "map_zenith_up", "zenith_up_factor", "Zenith Up")
-        #    factor_but(col, tex.map_zenith_down, "map_zenith_down", "zenith_down_factor", "Zenith Down")
+            if wide_ui:
+                col = split.column()
+            factor_but(col, tex.use_map_zenith_up, "use_map_zenith_up", "zenith_up_factor", "Zenith Up")
+            factor_but(col, tex.use_map_zenith_down, "use_map_zenith_down", "zenith_down_factor", "Zenith Down")
 
-        #layout.separator()
+        layout.separator()
 
-        #split = layout.split()
+        split = layout.split()
         #
-        #col = split.column()
+        col = split.column()
 
 
         if type(idblock) in (bpy.types.Material, bpy.types.World):
@@ -511,7 +514,7 @@ class YAF_TextureTypePanel(YAF_TextureButtonsPanel):
     def poll(self, context):
         tex = context.texture
         engine = context.scene.render.engine
-        #tex.type = self.tex_type
+        tex.type = self.tex_type
         var = ((tex and tex.yaf_tex_type == self.tex_type and not tex.use_nodes) and (engine in self.COMPAT_ENGINES))
         if var:
                 if context.texture.type != self.tex_type:
@@ -530,16 +533,14 @@ class YAF_TEXTURE_PT_clouds(YAF_TextureTypePanel):
         tex = context.texture
         
         wide_ui = context.region.width > narrowui
-        #layout.label(text="Cloud:")
         layout.prop(tex, "cloud_type", text="Cloud", expand=True)
         
-        #layout.prop(tex, "stype", expand=True)
         layout.label(text="Noise:")
         layout.prop(tex, "noise_type", text="Type", expand=True)
         if wide_ui:
             layout.prop(tex, "noise_basis", text="Basis")
-        #else:
-        #    layout.prop(tex, "noise_basis", text="")
+        else:
+            layout.prop(tex, "noise_basis", text="")
 
         split = layout.split()
 
@@ -652,22 +653,22 @@ class YAF_TEXTURE_PT_image(YAF_TextureTypePanel):
         layout = self.layout
 
         tex = context.texture
-        #tex.map_colorspec
+        #tex.map_color_spec
         layout.template_image(tex, "image", tex.image_user)
-        layout.prop(tex,"tex_file_name", text = "Image File Path")
+        #layout.prop(tex,"tex_file_name", text = "Image File Path")
 
 
 def texture_filter_common(tex, layout):
     layout.label(text="Filter:")
-    layout.prop(tex, "filter", text="")
-    if tex.mipmap and tex.filter in ('AREA', 'EWA', 'FELINE'):
-        if tex.filter == 'FELINE':
+    layout.prop(tex, "filter_type", text="")
+    if tex.use_mipmap and tex.filter_type in ('AREA', 'EWA', 'FELINE'):
+        if tex.filter_type == 'FELINE':
             layout.prop(tex, "filter_probes", text="Probes")
         else:
             layout.prop(tex, "filter_eccentricity", text="Eccentricity")
 
     layout.prop(tex, "filter_size")
-    layout.prop(tex, "filter_size_minimum")
+    layout.prop(tex, "use_filter_size_min")
 
 
 class YAF_TEXTURE_PT_image_sampling(YAF_TextureTypePanel):
@@ -689,26 +690,26 @@ class YAF_TEXTURE_PT_image_sampling(YAF_TextureTypePanel):
         col.label(text="Alpha:")
         col.prop(tex, "use_alpha", text="Use")
         col.prop(tex, "use_calculate_alpha", text="Calculate")
-        #col.prop(tex, "invert_alpha", text="Invert")
-        #col.separator()
+        col.prop(tex, "invert_alpha", text="Invert")
+        col.separator()
         col.prop(tex, "use_flip_axis", text="Flip X/Y Axis")
         #
-        #if wide_ui:
-        #    col = split.column()
-        #else:
-        #    col.separator()
+        if wide_ui:
+            col = split.column()
+        else:
+            col.separator()
         col.prop(tex, "use_normal_map")
-        #row = col.row()
-        #row.active = tex.normal_map
-        #row.prop(tex, "normal_space", text="")
+        row = col.row()
+        row.active = tex.use_normal_map
+        row.prop(tex, "normal_space", text="")
 
-        #col.prop(tex, "mipmap")
-        #row = col.row()
-        #row.active = tex.mipmap
-        #row.prop(tex, "mipmap_gauss")
-        #col.prop(tex, "interpolation")
+        col.prop(tex, "use_mipmap")
+        row = col.row()
+        row.active = tex.use_mipmap
+        row.prop(tex, "use_mipmap_gauss")
+        col.prop(tex, "use_interpolation")
         #
-        #texture_filter_common(tex, col)
+        texture_filter_common(tex, col)
 
 
 class YAF_TEXTURE_PT_image_mapping(YAF_TextureTypePanel):
@@ -736,22 +737,22 @@ class YAF_TEXTURE_PT_image_mapping(YAF_TextureTypePanel):
             col.prop(tex, "repeat_x", text="X")
             col.prop(tex, "repeat_y", text="Y")
 
-            #if wide_ui:
-            #    col = split.column(align=True)
-            #col.label(text="Mirror:")
-            #col.prop(tex, "mirror_x", text="X")
-            #col.prop(tex, "mirror_y", text="Y")
-            #layout.separator()
+            if wide_ui:
+                col = split.column(align=True)
+            col.label(text="Mirror:")
+            col.prop(tex, "use_mirror_x", text="X")
+            col.prop(tex, "use_mirror_y", text="Y")
+            layout.separator()
 
         elif tex.extension == 'CHECKER':
             col = split.column(align=True)
             row = col.row()
-            #row.prop(tex, "checker_even", text="Even") #//--- povman -->
-            #row.prop(tex, "checker_odd", text="Odd") #//--- povman -->
+            row.prop(tex, "use_checker_even", text="Even")
+            row.prop(tex, "use_checker_odd", text="Odd")
 
-            #if wide_ui:
-            #    col = split.column()
-            #col.prop(tex, "checker_distance", text="Distance")
+            if wide_ui:
+                col = split.column()
+            col.prop(tex, "checker_distance", text="Distance")
 
             layout.separator()
 

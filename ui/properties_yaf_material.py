@@ -21,8 +21,8 @@ bpy.types.Material.mat_type = bpy.props.EnumProperty(attr="mat_type",
 		("rough_glass","Rough Glass",""),
 		("blend","Blend",""),
 ),default="shinydiffusemat")
-bpy.types.Material.mat_color = bpy.props.FloatVectorProperty(attr="mat_color",description = "Color Settings", default = (0.2,0.3,0.8),subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
-bpy.types.Material.mat_mirror_color = bpy.props.FloatVectorProperty(attr="mat_mirror_color",description = "Color Settings",default = (0.8,0.3,0.2), subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
+bpy.types.Material.mat_color = bpy.props.FloatVectorProperty(attr="mat_color",description = "Color Settings", default = (0.7,0.7,0.7),subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
+bpy.types.Material.mat_mirror_color = bpy.props.FloatVectorProperty(attr="mat_mirror_color",description = "Color Settings",default = (0.7,0.7,0.7), subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
 bpy.types.Material.mat_diffuse_reflect = bpy.props.FloatProperty(attr="mat_diffuse_reflect", min = 0.0, max = 1.0, default = 1.0, step = 1, precision = 2, soft_min = 0.0, soft_max = 1.0)
 bpy.types.Material.mat_mirror_strength = bpy.props.FloatProperty(attr="mat_mirror_strength", min = 0.0, max = 1.0, default = 0.0, step = 1, precision = 2, soft_min = 0.0, soft_max = 1.0)
 bpy.types.Material.mat_transparency = bpy.props.FloatProperty(attr="mat_transparency", min = 0.0, max = 1.0, default = 0.0, step = 1, precision = 2, soft_min = 0.0, soft_max = 1.0)
@@ -36,8 +36,8 @@ bpy.types.Material.mat_brdf_type = bpy.props.EnumProperty(attr="mat_brdf_type",
 		("Oren-Nayar","Oren-Nayar",""),
 		("Normal (Lambert)","Normal (Lambert)",""),
 ),default="Normal(Lambert)")
-bpy.types.Material.mat_diff_color = bpy.props.FloatVectorProperty(attr="mat_diff_color",description = "Color Settings", subtype = "COLOR",default = (0.4,0.4,0.8), step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
-bpy.types.Material.mat_glossy_color = bpy.props.FloatVectorProperty(attr="mat_glossy_color",description = "Color Settings", subtype = "COLOR", default = (0.2,0.8,0.4),step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
+bpy.types.Material.mat_diff_color = bpy.props.FloatVectorProperty(attr="mat_diff_color",description = "Color Settings", subtype = "COLOR",default = (0.7,0.7,0.7), step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
+bpy.types.Material.mat_glossy_color = bpy.props.FloatVectorProperty(attr="mat_glossy_color",description = "Color Settings", subtype = "COLOR", default = (0.7,0.7,0.7),step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
 bpy.types.Material.mat_glossy_reflect = bpy.props.FloatProperty(attr="mat_glossy_reflect", min = 0.0, max = 1.0, default = 0.0, step = 1, precision = 2, soft_min = 0.0, soft_max = 1.0)
 bpy.types.Material.mat_exp_u = bpy.props.FloatProperty(attr="mat_exp_u", min = 1.0, max = 5000.0, default = 50.0, step = 10, precision = 2, soft_min = 1.0, soft_max = 500.0)
 bpy.types.Material.mat_exp_v = bpy.props.FloatProperty(attr="mat_exp_v", min = 1.0, max = 5000.0, default = 50.0, step = 10, precision = 2, soft_min = 1.0, soft_max = 500.0)
@@ -47,9 +47,9 @@ bpy.types.Material.mat_as_diffuse = bpy.props.BoolProperty(attr="mat_as_diffuse"
 #FloatVectorProperty(attr="mat_anisotropic",description = "Color Settings", subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
 bpy.types.Material.mat_anisotropic = bpy.props.BoolProperty(attr="mat_anisotropic")
 bpy.types.Material.mat_ior = bpy.props.FloatProperty(attr="mat_ior", min = 1.0, max = 30.0, default = 1.0, step = 10, precision = 2, soft_min = 1.0, soft_max = 30.0)
-bpy.types.Material.mat_absorp_color = bpy.props.FloatVectorProperty(attr="mat_absorp_color",description = "Color Settings", subtype = "COLOR",default = (0.2,0.6,0.5), step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
+bpy.types.Material.mat_absorp_color = bpy.props.FloatVectorProperty(attr="mat_absorp_color",description = "Color Settings", subtype = "COLOR",default = (0.7,0.7,0.5), step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
 bpy.types.Material.mat_absorp_distance = bpy.props.FloatProperty(attr="mat_absorp_distance", min = 1.0, max = 100.0, default = 1.0, step = 3, precision = 2, soft_min = 1.0, soft_max = 100.0)
-bpy.types.Material.mat_filter_color = bpy.props.FloatVectorProperty(attr="mat_filter_color",description = "Color Settings", subtype = "COLOR", default = (0.9,0.1,0.6),step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
+bpy.types.Material.mat_filter_color = bpy.props.FloatVectorProperty(attr="mat_filter_color",description = "Color Settings", subtype = "COLOR", default = (0.7,0.7,0.6),step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
 bpy.types.Material.mat_dispersion_power = bpy.props.FloatProperty(attr="mat_dispersion_power", min = 0.0, max = 1000.0, default = 0.0, step = 20, precision = 2, soft_min = 0.0, soft_max = 1000.0)
 bpy.types.Material.mat_fake_shadows = bpy.props.BoolProperty(attr="mat_fake_shadows")
 bpy.types.Material.mat_blend_value = bpy.props.FloatProperty(attr="mat_blend_value", min = 0.0, max = 1.0, default = 0.3, step = 1, precision = 2, soft_min = 0.0, soft_max = 1.0)

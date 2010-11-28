@@ -100,7 +100,7 @@ class YAF_PT_world(bpy.types.Panel):
 			col.prop(context.world,"horizon_color", text= "Horizon Color")
 			context.world.use_sky_real = True
 			col.prop(context.world,"ambient_color", text= "Horizon Ground Color")
-			context.world.blend_sky = True
+			context.world.use_sky_blend = True
 			col.prop(context.world,"zenith_color", text= "Zenith Color")
 			col.prop(context.world,"bg_zenith_ground_color", text= "Zenith Ground Color")
 			col.prop(context.world,"bg_use_IBL", text= "Use IBL")

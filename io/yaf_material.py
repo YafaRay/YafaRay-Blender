@@ -305,6 +305,7 @@ class yafMaterial:
                         yi.paramsSetString("diffuse_brdf", "oren_nayar")
                         yi.paramsSetFloat("sigma", mat.mat_sigma)
                 
+                
                 ymat = yi.createMaterial(self.namehash(mat))
                 self.materialMap[mat] = ymat
 

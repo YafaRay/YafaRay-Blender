@@ -211,7 +211,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             return
 #
 """
-    #    self.update_stats("", "Done!")
+        #self.update_stats("", "Done!")
 
 # Use some of the existing buttons.
 import properties_render, properties_particle
