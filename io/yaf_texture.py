@@ -239,11 +239,11 @@ class yafTexture:
 		
 		elif tex.yaf_tex_type == 'IMAGE':
 			
-			ima = tex.tex_file_name
-			print(str(ima))
-			if ima is not None:
+			#ima = tex.tex_file_name
+			#print(str(ima))
+			#if ima is not None:
 				# get image full path
-				imagefile = get_image_filename(ima)
+			#	imagefile = get_image_filename(ima)
 			import os
 			if tex.tex_file_name != "" and not os.path.exists(tex.tex_file_name):
 				yi.printInfo("Exporter: No valid texture image supplied.")
@@ -252,9 +252,9 @@ class yafTexture:
 			yi.printInfo("Exporter: Creating Texture: \"" + name + "\" type IMAGE: " + tex.tex_file_name)
 
 			yi.paramsSetString("type", "image")
-			#yi.paramsSetString("filename", tex.tex_file_name)
-			yi.paramsSetString("filename", imagefile)
-			print(str(imagefile))
+			yi.paramsSetString("filename", tex.tex_file_name)
+			#yi.paramsSetString("filename", imagefile)
+			#print(str(imagefile))
 
 			yi.paramsSetBool("use_alpha", tex.use_alpha)
 			yi.paramsSetBool("calc_alpha", tex.use_calculate_alpha)

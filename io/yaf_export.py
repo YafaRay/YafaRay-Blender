@@ -151,13 +151,13 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         tag = ""
         progress = 0.0;
         def prog_callback(command, *args):
-        #    pass
-            global tag, progress #//----/ comment /----->
-            if command == "tag":
-                tag = args[0]
-            elif command == "progress":
-                progress = args[0]
-            self.update_stats("", "%s - %.2f %%" % (tag, progress)) # //------>
+            pass
+        #    global tag, progress #//----/ comment /----->
+        #    if command == "tag":
+        #        tag = args[0]
+        #    elif command == "progress":
+        #        progress = args[0]
+        #    self.update_stats("", "%s - %.2f %%" % (tag, progress)) # //------>
         
         def tile_callback(command, *args):
             if command == "flushArea":
@@ -211,7 +211,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             return
 #
 """
-        #self.update_stats("", "Done!")
+    #        self.update_stats("", "Done!")
 
 # Use some of the existing buttons.
 import properties_render, properties_particle
