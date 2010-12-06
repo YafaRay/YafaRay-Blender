@@ -10,8 +10,10 @@ FloatVectorProperty = bpy.types.Material.FloatVectorProperty
 StringProperty = bpy.types.Material.StringProperty
 IntVectorProperty = bpy.types.Material.IntVectorProperty
 """
+#from bpy.props import *
+#Material = bpy.types.Material
 
-bpy.types.Material.mat_type = bpy.props.EnumProperty(attr="mat_type",
+Material.mat_type = EnumProperty(attr="mat_type",
 	items = (
 		("Material Types","Material Types",""),
 		("shinydiffusemat","Shinydiffusemat",""),
@@ -224,8 +226,8 @@ class YAF_PT_material(bpy.types.Panel):
                        var2 = tuple(values)
                        
                        #if not hasattr(context.material,'mat_material_one') :
-                       EnumProperty(attr="mat_material_one", items = var, default = item.name)
-                       EnumProperty(attr="mat_material_two", items = var2, default = item.name)
+                       Material.mat_material_one = EnumProperty(attr="mat_material_one", items = var, default = item.name)
+                       Material.mat_material_two = EnumProperty(attr="mat_material_two", items = var2, default = item.name)
                        
                        col.prop(context.material,"mat_material_one", text= "Material One")
                        col.prop(context.material,"mat_material_two", text= "Material Two")
