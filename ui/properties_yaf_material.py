@@ -10,8 +10,8 @@ FloatVectorProperty = bpy.types.Material.FloatVectorProperty
 StringProperty = bpy.types.Material.StringProperty
 IntVectorProperty = bpy.types.Material.IntVectorProperty
 """
-#from bpy.props import *
-#Material = bpy.types.Material
+from bpy.props import *
+Material = bpy.types.Material
 
 Material.mat_type = EnumProperty(attr="mat_type",
 	items = (
