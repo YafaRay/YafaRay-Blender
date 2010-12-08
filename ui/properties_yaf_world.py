@@ -30,8 +30,8 @@ World.bg_c_var =            FloatProperty(attr="bg_c_var", default = 1.0)
 World.bg_d_var =            FloatProperty(attr="bg_d_var", default = 1.0)
 World.bg_e_var =            FloatProperty(attr="bg_e_var", default = 1.0)
 World.bg_from =             FloatVectorProperty(attr="bg_from",
-                                                   description = "Point Info", subtype = "XYZ",
-                                                   step = 10, precision = 3)
+                                                  description = "Point Info", subtype = "XYZ",
+                                                  step = 10, precision = 3)
 World.bg_add_sun =          BoolProperty(attr="bg_add_sun")
 World.bg_sun_power =        FloatProperty(attr="bg_sun_power", default = 1.0)
 World.bg_background_light = BoolProperty(attr="bg_background_light")
