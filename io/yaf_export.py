@@ -5,17 +5,17 @@ import tempfile
 import sys
 import platform
 
-#from yafaray import yafrayinterface
-from yaf_object import yafObject
-from yafaray import PLUGIN_PATH
-from yaf_light  import yafLight
-from yaf_world  import yafWorld
-from yaf_integrator import yafIntegrator
-from yaf_general_AA import yafGeneralAA
-from yaf_texture import yafTexture
-from yaf_material import yafMaterial
-
 import yafrayinterface
+from yafaray.io.yaf_object import yafObject
+from yafaray import PLUGIN_PATH
+from yafaray.io.yaf_light  import yafLight
+from yafaray.io.yaf_world  import yafWorld
+from yafaray.io.yaf_integrator import yafIntegrator
+from yafaray.io.yaf_general_AA import yafGeneralAA
+from yafaray.io.yaf_texture import yafTexture
+from yafaray.io.yaf_material import yafMaterial
+
+#import yafrayinterface
 
 #this is the name of our Render
 IDNAME = 'YAFA_RENDER'
@@ -151,7 +151,6 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         tag = ""
         progress = 0.0;
         def prog_callback(command, *args):
-#            pass
             global tag, progress
             if command == "tag":
                 tag = args[0]
@@ -173,9 +172,9 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.yi.paramsSetString("type", file_type)
         #self.yi.paramsSetBool("drawParams", True)
         ih = self.yi.createImageHandler("outFile")
-        #co = yafrayinterface.imageOutput_t(ih, str(outputFile), 0, 0) # for tuga3d
-        co = yafrayinterface.imageOutput_t(ih, str(outputFile))#, 0, 0)
-              
+        #co = yafrayinterface.imageOutput_t(ih, str(outputFile), 0, 0)
+        co = yafrayinterface.imageOutput_t(ih, str(outputFile))# working
+                        
         self.yi.printInfo("Exporter: Rendering to file " + outputFile)
                     
         # get a render result to write into
@@ -186,29 +185,29 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         
         self.update_stats("", "Rendering to %s" % outputFile)
         print("Rendering to %s" % outputFile)
-#        
+        
         self.yi.render(co)
-#        
+        
         if scene.gs_z_channel:
             lay.load_from_file(output + '_zbuffer.' + file_type)
         else:
             lay.load_from_file(outputFile)
         # done
         self.end_result(result)
-#        import threading
-#        t = threading.Thread(target=self.yi.render, args=(x, y, tile_callback, prog_callback))
-#        t.start()
-#        
-#        while t.isAlive() and not self.test_break():
-#            time.sleep(0.2)
-#            
-#        if t.isAlive():
-#            self.update_stats("", "Aborting...")
-#            self.yi.abort()
-#            t.join()
-#            self.update_stats("", "Render is aborted")
-#            return
-#            
+        #import threading
+        #t = threading.Thread(target=self.yi.render, args=(x, y, tile_callback, prog_callback))
+        #t.start()
+        #
+        #while t.isAlive() and not self.test_break():
+        #    time.sleep(0.2)
+        #    
+        #if t.isAlive():
+        #    self.update_stats("", "Aborting...")
+        #    self.yi.abort()
+        #    t.join()
+        #    self.update_stats("", "Render is aborted")
+        #    return
+            
         self.update_stats("", "Done!")
 
 # Use some of the existing buttons.
@@ -230,3 +229,4 @@ for panel in [properties_render.RENDER_PT_render,
     panel.COMPAT_ENGINES.add(IDNAME)
     
 del properties_render, properties_particle
+
