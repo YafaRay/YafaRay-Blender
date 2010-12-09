@@ -5,6 +5,7 @@ import os
 #import mathutils
 #import yafrayinterface
 
+
 def get_image_filename(filepath):
 	path = filepath.replace('//',os.path.expanduser('~')+'/',1)
 	return os.path.abspath(path)
@@ -39,17 +40,19 @@ class yafWorld:
                             #yi.paramsSetString("filename", worldTex.image.filename )
                             yi.paramsSetString("filename", get_image_filename(worldTex.image.filepath) )
                             # exposure_adjust not restricted to integer range anymore
-                            yi.paramsSetFloat("exposure_adjust", worldTex.brightness/2)  #this portion is edited
+                            #yi.paramsSetFloat("exposure_adjust", worldTex.bright/2)  #this portion is edited
+                            yi.paramsSetFloat("exposure_adjust", world.bg_exposure)
                             
-                            if worldTex.interpolation == True:
+                            if worldTex.use_interpolation == True:
                                 yi.paramsSetString("interpolate", "bilinear")
                             else:
                                 yi.paramsSetString("interpolate", "none")
+                            
                             yi.createTexture("world_texture")
                                 
                             # Export the actual background
-                            texco = world.texture_slots[world.active_texture_index].texture_coordinates
-                            
+                            #texco = world.texture_slots[world.active_texture_index].texture_coords
+                            texco = world.texture_slots[world.active_texture_index].texture_coords
                             yi.paramsClearAll();
                             
                             if texco == 'ANGMAP':
