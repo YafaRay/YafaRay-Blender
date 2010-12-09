@@ -1,11 +1,12 @@
 Yafaray exporter for Blender 2.55
 FOR WIN32:
-This exporter need the package of Yafaray from Kerbox/github;
-http://cloud.github.com/downloads/Kerbox/yafaray_exporter/YafaRay_0.1.2beta_win32.zip
+You must download the  binaries files for YafaRay win32;
+https://github.com/downloads/povmaniaco/yafaray_exporter/binarys_for_yaf_export.zip
 
 Downloading and extract at Blender/2.55/scripts/addons/yafaray directory
 This will create a dir /bin/plugins containing the necessary files.
 It is not necessary to install YafaRay.
+
 We need to test it and report errors found.
 Thanks.
 FOR LINUX:
