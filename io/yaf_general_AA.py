@@ -130,7 +130,6 @@ class yafGeneralAA:
             elif scene.gs_tile_order =="Random":
                 yi.paramsSetString("tiles_order", "random")
                 
-            #yi.paramsSetBool("z_channel", True)
             yi.paramsSetBool("z_channel", scene.gs_z_channel)
             yi.paramsSetBool("drawParams", scene.gs_draw_params)
             yi.paramsSetString("customString", scene.gs_custom_string)
