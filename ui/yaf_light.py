@@ -1,17 +1,14 @@
+"""
+This file is part of Yafaray Exporter
+"""
 import bpy
+narrowui = 300
 
-"""
-FloatProperty = bpy.types.Lamp.FloatProperty
-IntProperty = bpy.types.Lamp.IntProperty
-BoolProperty = bpy.types.Lamp.BoolProperty
-CollectionProperty = bpy.types.Lamp.CollectionProperty
-EnumProperty = bpy.types.Lamp.EnumProperty
-FloatVectorProperty = bpy.types.Lamp.FloatVectorProperty
-StringProperty = bpy.types.Lamp.StringProperty
-IntVectorProperty = bpy.types.Lamp.IntVectorProperty
-"""
+#import types and props ---->
+from bpy.props import *
+Lamp = bpy.types.Lamp
 
-bpy.types.Lamp.lamp_type = bpy.props.EnumProperty(attr="lamp_type",
+Lamp.lamp_type = EnumProperty(attr="lamp_type",
 	items = (
 		("Light Type","Light Type",""),
 		("Area","Area",""),
@@ -23,18 +20,18 @@ bpy.types.Lamp.lamp_type = bpy.props.EnumProperty(attr="lamp_type",
 		("Sun","Sun",""),
 		("IES","IES",""),
 ),default="Sun")
-bpy.types.Lamp.create_geometry = bpy.props.BoolProperty(attr="create_geometry")
-bpy.types.Lamp.infinite = bpy.props.BoolProperty(attr="infinite")
-bpy.types.Lamp.spot_soft_shadows = bpy.props.BoolProperty(attr="spot_soft_shadows")
-bpy.types.Lamp.shadow_fuzzyness = bpy.props.FloatProperty(attr="shadow_fuzzyness", default = 1.0)
-bpy.types.Lamp.photon_only = bpy.props.BoolProperty(attr="photon_only")
-bpy.types.Lamp.angle = bpy.props.IntProperty(attr="angle",
+Lamp.create_geometry = BoolProperty(attr="create_geometry")
+Lamp.infinite = BoolProperty(attr="infinite")
+Lamp.spot_soft_shadows = BoolProperty(attr="spot_soft_shadows")
+Lamp.shadow_fuzzyness = FloatProperty(attr="shadow_fuzzyness", default = 1.0)
+Lamp.photon_only = BoolProperty(attr="photon_only")
+Lamp.angle = IntProperty(attr="angle",
 		max = 80,
 		min = 0)
-bpy.types.Lamp.ies_file = bpy.props.StringProperty(attr="ies_file",subtype = 'FILE_PATH')
-bpy.types.Lamp.yaf_samples = bpy.props.IntProperty(attr="yaf_samples", default = 16)
-bpy.types.Lamp.ies_cone_angle = bpy.props.FloatProperty(attr="ies_cone_angle", default = 10.0)
-bpy.types.Lamp.ies_soft_shadows = bpy.props.BoolProperty(attr="ies_soft_shadows")
+Lamp.ies_file = StringProperty(attr="ies_file",subtype = 'FILE_PATH')
+Lamp.yaf_samples = IntProperty(attr="yaf_samples", default = 16)
+Lamp.ies_cone_angle = FloatProperty(attr="ies_cone_angle", default = 10.0)
+Lamp.ies_soft_shadows = BoolProperty(attr="ies_soft_shadows")
 
 
 class YAF_PT_lamp(bpy.types.Panel):
@@ -74,7 +71,7 @@ class YAF_PT_lamp(bpy.types.Panel):
 		col.prop(context.lamp,"type", text= "Light Type")
 		row = layout.row()
 		split = row.split()
-		col = row.column()
+		col = split.column() # row.column = org
 		
 		#context.lamp.shadow_ray_samples = 16
 
@@ -91,8 +88,8 @@ class YAF_PT_lamp(bpy.types.Panel):
 		elif context.lamp.type == 'Directional':
 			if context.lamp.type != 'SUN':
 				context.lamp.type = 'SUN'
-			col.prop(context.lamp,"shadow_soft_size", text= "Radius")
-			col.prop(context.lamp,"infinite", text= "Infinite")
+			row.prop(context.lamp,"shadow_soft_size", text= "Radius")
+			row.prop(context.lamp,"infinite", text= "Infinite")
 
 		elif context.lamp.type == 'Sphere':
 			if context.lamp.type != 'POINT':
@@ -170,3 +167,4 @@ def unregister():
 
 if __name__ == "__main__":
 	register()
+
