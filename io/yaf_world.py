@@ -51,6 +51,7 @@ class yafWorld:
                             yi.createTexture("world_texture")
                                 
                             # Export the actual background
+                            #texco = world.texture_slots[world.active_texture_index].texture_coords
                             texco = world.texture_slots[world.active_texture_index].texture_coords
                             yi.paramsClearAll();
                             
