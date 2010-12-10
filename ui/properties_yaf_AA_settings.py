@@ -1,33 +1,30 @@
 import bpy
+from bpy.props import *
+Scene = bpy.types.Scene
 
-"""
-FloatProperty = bpy.types.Scene.FloatProperty
-IntProperty = bpy.types.Scene.IntProperty
-BoolProperty = bpy.types.Scene.BoolProperty
-CollectionProperty = bpy.types.Scene.CollectionProperty
-EnumProperty = bpy.types.Scene.EnumProperty
-FloatVectorProperty = bpy.types.Scene.FloatVectorProperty
-StringProperty = bpy.types.Scene.StringProperty
-IntVectorProperty = bpy.types.Scene.IntVectorProperty
-"""
 
-bpy.types.Scene.AA_min_samples = bpy.props.IntProperty(attr="AA_min_samples",
-		default = 1)
-bpy.types.Scene.AA_inc_samples = bpy.props.IntProperty(attr="AA_inc_samples",
-		default = 1)
-bpy.types.Scene.AA_passes = bpy.props.IntProperty(attr="AA_passes",
-		default = 1)
-bpy.types.Scene.AA_threshold = bpy.props.FloatProperty(attr="AA_threshold",
-		default = 0.05, precision = 4)
-bpy.types.Scene.AA_pixelwidth = bpy.props.FloatProperty(attr="AA_pixelwidth",
-		default = 1.5)
-bpy.types.Scene.AA_filter_type = bpy.props.EnumProperty(attr="AA_filter_type",
-	items = (
-		("AA Filter Type","AA Filter Type",""),
-		("Box","Box",""),
-		("Mitchell","Mitchell",""),
-		("Gauss","Gauss",""),
-),default="Gauss")
+Scene.AA_min_samples = IntProperty(attr="AA_min_samples",
+                        description = "Minin samples for pase",
+                        default = 1)
+Scene.AA_inc_samples = IntProperty(attr="AA_inc_samples",
+                        description = "Increment samples per passes",
+                        default = 1)
+Scene.AA_passes =      IntProperty(attr="AA_passes",
+                        description = "Number of passes",
+                        default = 1)
+Scene.AA_threshold =   FloatProperty(attr="AA_threshold",
+                        description = "",
+                        default = 0.05, precision = 4)
+Scene.AA_pixelwidth =  FloatProperty(attr="AA_pixelwidth",
+                        description = "",
+                        default = 1.5)
+Scene.AA_filter_type = EnumProperty(attr="AA_filter_type",
+                    items = (
+                    ("AA Filter Type","AA Filter Type",""),
+                    ("Box","Box",""),
+                    ("Mitchell","Mitchell",""),
+                    ("Gauss","Gauss",""),
+                    ),default="Gauss")
 
 
 class YAF_PT_AA_settings(bpy.types.Panel):
@@ -40,24 +37,19 @@ class YAF_PT_AA_settings(bpy.types.Panel):
 
 	@classmethod
 	def poll(self, context):
-
 		engine = context.scene.render.engine
 		return (True  and  (engine in self.COMPAT_ENGINES) ) 
 
 
 	def draw(self, context):
-		
-		self.list = [1,2,4,5]
+
 		layout = self.layout
 		split = layout.split()
 		col = split.column()
 
 		col.prop(context.scene,"AA_min_samples", text= "AA Samples")
-
+		col.prop(context.scene,"AA_inc_samples", text= "AA Inc. Samples")
 		col.prop(context.scene,"AA_passes", text= "AA Passes")
-		if context.scene.AA_passes > 1:
-			col.prop(context.scene,"AA_inc_samples", text= "AA Inc. Samples")
-		
 		col = split.column()
 		col.prop(context.scene,"AA_threshold", text= "AA Threshold")
 		col.prop(context.scene,"AA_pixelwidth", text= "AA Pixelwidth")
