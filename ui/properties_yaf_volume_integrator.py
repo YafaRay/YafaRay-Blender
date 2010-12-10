@@ -1,30 +1,21 @@
 import bpy
+from bpy.props import *
+World = bpy.types.World
 
-"""
-FloatProperty = bpy.types.World.FloatProperty
-IntProperty = bpy.types.World.IntProperty
-BoolProperty = bpy.types.World.BoolProperty
-CollectionProperty = bpy.types.World.CollectionProperty
-EnumProperty = bpy.types.World.EnumProperty
-FloatVectorProperty = bpy.types.World.FloatVectorProperty
-StringProperty = bpy.types.World.StringProperty
-IntVectorProperty = bpy.types.World.IntVectorProperty
-"""
-
-bpy.types.World.v_int_type = bpy.props.EnumProperty(attr="v_int_type",
+World.v_int_type = EnumProperty(attr="v_int_type",
 	items = (
 		("Volume Integrator","Volume Integrator",""),
 		("None","None",""),
 		("Single Scatter","Single Scatter",""),
 		#("Sky","Sky",""),
 ),default="None")
-bpy.types.World.v_int_step_size = bpy.props.FloatProperty(attr="v_int_step_size", precision = 3)
-bpy.types.World.v_int_adaptive = bpy.props.BoolProperty(attr="v_int_adaptive")
-bpy.types.World.v_int_optimize = bpy.props.BoolProperty(attr="v_int_optimize")
-bpy.types.World.v_int_attgridres = bpy.props.IntProperty(attr="v_int_attgridres")
-bpy.types.World.v_int_scale = bpy.props.FloatProperty(attr="v_int_scale")
-bpy.types.World.v_int_alpha = bpy.props.FloatProperty(attr="v_int_alpha")
-bpy.types.World.v_int_dsturbidity = bpy.props.FloatProperty(attr="v_int_dsturbidity")
+World.v_int_step_size =   FloatProperty(attr="v_int_step_size", precision = 3)
+World.v_int_adaptive =    BoolProperty(attr="v_int_adaptive")
+World.v_int_optimize =    BoolProperty(attr="v_int_optimize")
+World.v_int_attgridres =  IntProperty(attr="v_int_attgridres")
+World.v_int_scale =       FloatProperty(attr="v_int_scale")
+World.v_int_alpha =       FloatProperty(attr="v_int_alpha")
+World.v_int_dsturbidity = FloatProperty(attr="v_int_dsturbidity")
 
 class YAF_PT_vol_integrator(bpy.types.Panel):
 
@@ -49,14 +40,15 @@ class YAF_PT_vol_integrator(bpy.types.Panel):
 
 		col.prop(context.world,"v_int_type", text= "Volume Integrator")
 
-		if context.world.v_int_type == 'None':
-			col.prop(context.world,"v_int_step_size", text= "Step Size")
+		#if context.world.v_int_type == 'None':
+		#	col.prop(context.world,"v_int_step_size", text= "Step Size")
 
 		if context.world.v_int_type == 'Single Scatter':
 			col.prop(context.world,"v_int_step_size", text= "Step Size")
 			col.prop(context.world,"v_int_attgridres", text= "Att. grid resolution")
-			col.prop(context.world,"v_int_adaptive", text= "Adaptive")
-			col.prop(context.world,"v_int_optimize", text= "Optimize")
+			row = layout.row()
+			row.prop(context.world,"v_int_adaptive", text= "Adaptive")
+			row.prop(context.world,"v_int_optimize", text= "Optimize")
 			
 
 		#if context.world.v_int_type == 'Sky':
@@ -86,3 +78,4 @@ def unregister():
 
 if __name__ == "__main__":
 	register()
+
