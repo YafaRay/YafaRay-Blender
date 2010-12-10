@@ -1,78 +1,29 @@
-import sys, os, threading, time
-
-PLUGIN_PATH = os.path.join(__path__[0], 'bin', 'plugins')
-BIN_PATH = os.path.join(__path__[0], 'bin')
-
-sys.path.append(BIN_PATH)
-
-if sys.platform == 'win32':
-    # preload some dlls so users do not have to mess about with path
-    import ctypes
-    # for dll in ['Iex','Half','IlmThread','IlmImf','mingwm10',
-                # 'libfreetype-6','iconv','libxml2','libtiff-3',
-                # 'libyafaraycore', 'libyafarayplugin']:# Test varius...
-    for dll in ['zlib1','libxml2','pthreadVC2','yafaraycore','yafarayplugin']:
-        try:
-            ctypes.cdll.LoadLibrary(os.path.join(BIN_PATH, dll))
-        except Exception as e:
-            print("ERROR: Failed to load library " + dll + ", " + repr(e));
-
 import bpy
+#//----/ added path complete.. in one line??/------>
+from yafaray.io import yaf_export, yaf_object
 
-bl_addon_info = {
-    "name": "YafaRay Integration",
-    "author": "Shuvro Sarker",
-    "version": "0.1.2 alpha",
-    "blender": (2, 5, 4),
-    "category": "Render",
-    "warning" : "VERY ALPHA!",
-    "description": "YafaRay integration for blender 2.5. When activated, YafaRay will be available in the Render Engine dropdown"
-    }
+
+# register engine and panels
+classes = [
+    yaf_export.YafaRayRenderEngine,
+    yaf_texture.yafTexture, #more classes....?
+    yaf_light.yafLight,
+    yaf_material.yafMaterial,
+    #yaf_export.YafaRayCameraPoll,
+    #yaf_export.YafaRayCameraButtonsPanel
+    ]
 
 def register():
-    import io, ui, op
-    io.register()
-    for submodule in [ui, op]:
-        for element in dir(submodule):
-            try:
-                 getattr(getattr(submodule, element), 'register')()
-            except AttributeError as e:
-                 pass
+    register = bpy.types.register
+    for cls in classes:
+        register(cls)
 
-    return
-"""
-    try:
-        import io, ui, op
-    except:
-        print("Could not import subpackages, delay loading...")
-        def delayload():
-            time.sleep(1)
-            print("trying to register again...")
-            register()
-        t = threading.Thread(target=delayload)
-        t.start()
-        return
+def unregister():    
+    unregister = bpy.types.unregister
+    for cls in classes:
+        unregister(cls)
 
-    io.register()
-    for submodule in [ui, op]:
-        for element in dir(submodule):
-            try:
-                getattr(getattr(submodule, element), 'register')()
-            except AttributeError as e:
-                pass
-"""
-    
-def unregister():
-    pass
-"""
-    import io, ui, op
-    io.unregister()
-    for submodule in [ui, op]:
-        for element in dir(submodule):
-            try:
-                getattr(getattr(submodule, element), 'unregister')()
-            except AttributeError:
-                pass
-"""    
+#yaf_properties.yaf_register_camera_types()
+        
 if __name__ == '__main__':
     register()
