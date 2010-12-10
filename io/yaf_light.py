@@ -214,3 +214,4 @@ class yafLight:
 			if item.type == 'LAMP':
 				self.createLight(yi,item,scene,lamp_mat = ymat)
 				
+				
