@@ -1,1 +1,1 @@
-import yafaray_operator
+from yafaray.op import yafaray_operator
