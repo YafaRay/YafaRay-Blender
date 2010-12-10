@@ -1,7 +1,7 @@
 import bpy
 import re
 import os
-#import yafrayinterface
+import yafrayinterface
 
 def noise2string(ntype):
 
@@ -238,13 +238,13 @@ class yafTexture:
 			yi.paramsSetString("noise_type2", noise2string(tex.noise_distortion))
 		
 		elif tex.yaf_tex_type == 'IMAGE':
-			
-			#ima = tex.tex_file_name
-			#print(str(ima))
+			#imagen = tex.name
+			##print(str(ima))
 			#if ima is not None:
 				# get image full path
-			#	imagefile = get_image_filename(ima)
+			#imagefile = get_image_filename(image.filepath)
 			import os
+			
 			if tex.tex_file_name != "" and not os.path.exists(tex.tex_file_name):
 				yi.printInfo("Exporter: No valid texture image supplied.")
 				return False
@@ -254,7 +254,7 @@ class yafTexture:
 			yi.paramsSetString("type", "image")
 			yi.paramsSetString("filename", tex.tex_file_name)
 			#yi.paramsSetString("filename", imagefile)
-			#print(str(imagefile))
+			print(str(tex.tex_file_name))
 
 			yi.paramsSetBool("use_alpha", tex.use_alpha)
 			yi.paramsSetBool("calc_alpha", tex.use_calculate_alpha)
