@@ -38,9 +38,7 @@ if sys.platform == 'win32':
     import ctypes
     for dll in ['Iex','Half','IlmThread','IlmImf','mingwm10',
                 'libfreetype-6','iconv','libxml2','libtiff-3',
-                'yafaraycore','yafarayplugin', # changed for dll compiled from Kerbox branch (msvc)
-                'pthreadVC2','zlib1','libxml2']: # add all dlls
-    #for dll in ['zlib1','libxml2','pthreadVC2','yafaraycore','yafarayplugin']:
+                'libyafaraycore','libyafarayplugin']:
         try:
             ctypes.cdll.LoadLibrary(os.path.join(BIN_PATH, dll))
         except Exception as e:
