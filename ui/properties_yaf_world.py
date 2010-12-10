@@ -1,6 +1,9 @@
 import bpy
+
+# import types and props ---->
 from bpy.props import *
 World = bpy.types.World
+#TODO: Update default values, edit description
 
 
 World.bg_type = EnumProperty(attr="bg_type",
@@ -12,26 +15,37 @@ World.bg_type = EnumProperty(attr="bg_type",
 		("Darktide's Sunsky","Darktide's Sunsky",""),
 		("Single Color","Single Color",""),
 ),default="Single Color")
-World.bg_zenith_ground_color = FloatVectorProperty(attr="bg_zenith_ground_color",
-                                                   description = "Color Settings", subtype = "COLOR",
-                                                   default = (1, 1, 1),
-                                                   step = 1, precision = 2,
-                                                   min = 0.0, max = 1.0, 
-                                                   soft_min = 0.0, soft_max = 1.0)
+World.bg_zenith_ground_color =  FloatVectorProperty(attr="bg_zenith_ground_color",
+                                            description = "Color Settings", subtype = "COLOR",
+                                            min = 0.0, max = 1.0,
+                                            default = (1, 1, 1), step = 1, 
+                                            precision = 2,
+                                            soft_min = 0.0, soft_max = 1.0)
 World.bg_use_IBL =          BoolProperty(attr="bg_use_IBL",
-                                                   description = "",
-                                                   default = False)
-World.bg_IBL_samples =      IntProperty(attr="bg_IBL_samples", default = 16)
-World.bg_rotation =         FloatProperty(attr="bg_rotation", default = 0.0)
-World.bg_turbidity =        FloatProperty(attr="bg_turbidity", default = 3.0)
-World.bg_a_var =            FloatProperty(attr="bg_a_var", default = 1.0)
-World.bg_b_var =            FloatProperty(attr="bg_b_var", default = 1.0)
-World.bg_c_var =            FloatProperty(attr="bg_c_var", default = 1.0)
+                                            description = "Use IBL",
+                                            default = False)
+World.bg_IBL_samples =      IntProperty(attr="bg_IBL_samples",
+                                            description = "Amount of samples",
+                                            default = 16)
+World.bg_rotation =         FloatProperty(attr="bg_rotation",
+                                            description = "",
+                                            default = 0.0)
+World.bg_turbidity =        FloatProperty(attr="bg_turbidity",
+                                            description = "",
+                                            default = 3.0)
+World.bg_a_var =            FloatProperty(attr="bg_a_var",
+                                            description = "",
+                                            default = 1.0)
+World.bg_b_var =            FloatProperty(attr="bg_b_var",
+                                            default = 1.0)
+World.bg_c_var =            FloatProperty(attr="bg_c_var",
+                                            description = "",
+                                            default = 1.0)
 World.bg_d_var =            FloatProperty(attr="bg_d_var", default = 1.0)
 World.bg_e_var =            FloatProperty(attr="bg_e_var", default = 1.0)
 World.bg_from =             FloatVectorProperty(attr="bg_from",
-                                                  description = "Point Info", subtype = "XYZ",
-                                                  step = 10, precision = 3)
+                                            description = "Point Info", subtype = "XYZ",
+                                            step = 10, precision = 3)
 World.bg_add_sun =          BoolProperty(attr="bg_add_sun")
 World.bg_sun_power =        FloatProperty(attr="bg_sun_power", default = 1.0)
 World.bg_background_light = BoolProperty(attr="bg_background_light")
@@ -41,9 +55,9 @@ World.bg_dsnight =          BoolProperty(attr="bg_dsnight")
 World.bg_dsbright =         FloatProperty(attr="bg_dsbright", default = 1.0)
 World.bg_power =            FloatProperty(attr="bg_power", default = 1.0)
 
-World.bg_exposure = FloatProperty(attr="bg_exposure", default = 1.0)
-World.bg_clamp_rgb = BoolProperty(attr="bg_clamp_rgb")
-World.bg_gamma_enc = BoolProperty(attr="bg_gamma_enc", default = True)
+World.bg_exposure =         FloatProperty(attr="bg_exposure", default = 1.0)
+World.bg_clamp_rgb =        BoolProperty(attr="bg_clamp_rgb")
+World.bg_gamma_enc =        BoolProperty(attr="bg_gamma_enc", default = True)
 
 World.use_image = BoolProperty(attr="use_image", default = False)
 
@@ -99,17 +113,17 @@ class YAF_PT_world(bpy.types.Panel):
 
 		if context.world.bg_type == 'Gradient':
 			col.prop(context.world,"horizon_color", text= "Horizon Color")
-			context.world.use_sky_real = True
 			col.prop(context.world,"ambient_color", text= "Horizon Ground Color")
-			context.world.use_sky_blend = True
 			col.prop(context.world,"zenith_color", text= "Zenith Color")
 			col.prop(context.world,"bg_zenith_ground_color", text= "Zenith Ground Color")
 			col.prop(context.world,"bg_use_IBL", text= "Use IBL")
+									 
 
 		if context.world.bg_type == 'Texture':
 			col.prop(context.world,"bg_use_IBL", text= "Use IBL")
 			col.prop(context.world,"bg_rotation", text= "Rotation")
-						
+			
+			
 
 			col.template_ID(context.world,"active_texture",new="texture.new")
 			tex = context.scene.world.active_texture
@@ -137,10 +151,10 @@ class YAF_PT_world(bpy.types.Panel):
 			col.operator("world.update_sun",text = "Update Sun")
 			col.prop(context.world,"bg_from", text= "From")
 			col.prop(context.world,"bg_add_sun", text= "Add Sun")
-
-			col.prop(context.world,"bg_sun_power", text= "Sun Power")
+			if context.world.bg_add_sun :
+				col.prop(context.world,"bg_sun_power", text= "Sun Power")
+				
 			col.prop(context.world,"bg_background_light", text= "Skylight")
-
 			col.prop(context.world,"bg_light_samples", text= "Samples")
 
 		if context.world.bg_type == 'Darktide\'s Sunsky':
@@ -175,8 +189,8 @@ class YAF_PT_world(bpy.types.Panel):
 			col.prop(context.world,"bg_use_IBL", text= "Use IBL")
 
 		if context.world.bg_use_IBL:
-                    col.prop(context.world,"bg_IBL_samples", text= "IBL Samples")
-                    col.prop(context.world,"bg_power", text= "Multiplier for Background Color")
+			col.prop(context.world, "bg_IBL_samples", text= "IBL Samples")
+			col.prop(context.world, "bg_power", text= "Multiplier for Background Color")
 
 
 from properties_world import WORLD_PT_preview
@@ -204,3 +218,4 @@ def unregister():
 
 if __name__ == "__main__":
 	register()
+
