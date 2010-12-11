@@ -26,7 +26,8 @@ World.bg_use_IBL =          BoolProperty(attr="bg_use_IBL",
                                             default = False)
 World.bg_IBL_samples =      IntProperty(attr="bg_IBL_samples",
                                             description = "Amount of samples",
-                                            default = 16)
+                                            default = 16,
+                                            min = 1, max = 256)
 World.bg_rotation =         FloatProperty(attr="bg_rotation",
                                             description = "",
                                             default = 0.0)
