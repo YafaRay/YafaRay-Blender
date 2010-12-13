@@ -88,7 +88,7 @@ class YAF_PT_general_settings(bpy.types.Panel):
     def draw(self, context):
 
         layout = self.layout
-        split = layout.split()
+        split = layout.split(percentage=0.6)
         col = split.column()
         row = layout.row()
 
