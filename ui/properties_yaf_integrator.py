@@ -2,6 +2,8 @@ import bpy
 
 #import types and props ---->
 from bpy.props import *
+narrowui = 300
+
 Scene = bpy.types.Scene
 
 
@@ -121,63 +123,89 @@ class YAF_PT_render(bpy.types.Panel):
         layout = self.layout
         split = layout.split()
         col = split.column()
+        row = layout.row()
+        wide_ui = context.region.width < narrowui
 
-        col.prop(context.scene,"intg_light_method", text= "Lighting Methods")
+        col = layout.row()
+
+        row.prop(context.scene,"intg_light_method", text= "Lighting Methods")
+
 
         if context.scene.intg_light_method == 'Direct Lighting':
             col.prop(context.scene,"intg_use_caustics", text= "Use Caustics")
 
             if context.scene.intg_use_caustics:
+                col = layout.row()
                 col.prop(context.scene,"intg_photons", text= "Photons")
                 col.prop(context.scene,"intg_caustic_mix", text= "Caustic Mix")
+                col = layout.row()
                 col.prop(context.scene,"intg_caustic_depth", text= "Caustic Depth")
                 col.prop(context.scene,"intg_caustic_radius", text= "Caustic Radius")
-
+            col = layout.row()
             col.prop(context.scene,"intg_use_AO", text= "Use AO")
 
             if context.scene.intg_use_AO:
+                col = layout.row()
                 col.prop(context.scene,"intg_AO_samples", text= "AO Samples")
                 col.prop(context.scene,"intg_AO_distance", text= "AO Distance")
+                col = layout.row()
                 col.prop(context.scene,"intg_AO_color", text= "AO Color")
 
 
         if context.scene.intg_light_method == 'Photon Mapping':
+            col = layout.row()
             col.prop(context.scene,"intg_bounces", text= "Depth")
             col.prop(context.scene,"intg_photons", text= "Diff. Photons")
+            col = layout.row()
             col.prop(context.scene,"intg_diffuse_radius", text= "Diff. Radius")
             col.prop(context.scene,"intg_cPhotons", text= "Caus. Photons")
+            col = layout.row()
             col.prop(context.scene,"intg_caustic_radius", text= "Caus. Radius")
             col.prop(context.scene,"intg_search", text= "Search")
+            col = layout.row()
             col.prop(context.scene,"intg_caustic_mix", text= "Caus. Mix")
             col.prop(context.scene,"intg_final_gather", text= "Final Gather")
 
             if context.scene.intg_final_gather:
+                col = layout.row()
                 col.prop(context.scene,"intg_fg_bounces", text= "FG Bounces")
                 col.prop(context.scene,"intg_fg_samples", text= "FG Samples")
-            col.prop(context.scene,"intg_show_map", text= "Show Map")
 
+            col = layout.row()
+            col.prop(context.scene,"intg_show_map", text= "Show Map")
             col.prop(context.scene,"intg_use_bg", text= "Use Background")
 
 
+
+
+        #col = layout.column() # only afect to pathtracing bloq
         if context.scene.intg_light_method == 'Pathtracing':
+            col = layout.row()
             col.prop(context.scene,"intg_caustic_method", text= "Caustic Method")
 
+            col = layout.row()
+
             if context.scene.intg_caustic_method == 'Path+Photon':
+                #col = layout.row()
                 col.prop(context.scene,"intg_photons", text= "Photons")
                 col.prop(context.scene,"intg_caustic_mix", text= "Caus. Mix")
+                col = layout.row()
                 col.prop(context.scene,"intg_caustic_depth", text= "Caus. Depth")
                 col.prop(context.scene,"intg_caustic_radius", text= "Caus. Radius")
 
             if context.scene.intg_caustic_method == 'Photon':
+                col = layout.row()
                 col.prop(context.scene,"intg_photons", text= "Photons")
                 col.prop(context.scene,"intg_caustic_mix", text= "Caus. Mix")
+                col = layout.row()
                 col.prop(context.scene,"intg_caustic_depth", text= "Caus. Depth")
                 col.prop(context.scene,"intg_caustic_radius", text= "Caus. Radius")
 
+            col = layout.row()
             col.prop(context.scene,"intg_path_samples", text= "Path Samples")
             col.prop(context.scene,"intg_bounces", text= "Depth")
+            col = layout.row()
             col.prop(context.scene,"intg_no_recursion", text= "No Recursion")
-
             col.prop(context.scene,"intg_use_bg", text= "Use Background")
 
 
