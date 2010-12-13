@@ -30,6 +30,8 @@ class yafMaterial:
             yi.paramsSetString("input", tex_in) # SEE the defination later
             
             #mtex is an instance of MaterialTextureSlot class
+            mtex = material.texture_slots
+             
 
             mode = 0
             if mtex.blend_type == 'MIX':
@@ -70,6 +72,7 @@ class yafMaterial:
             
             tex = mtex.texture  # texture object instance
             # lots to do...
+            
             isImage = ( tex.yaf_tex_type == 'IMAGE' )
             
             if (isImage or (tex.yaf_tex_type == 'VORONOI' and tex.coloring != 'INTENSITY') ):
@@ -304,6 +307,7 @@ class yafMaterial:
                 if mat.mat_brdf_type == "Oren-Nayar":
                         yi.paramsSetString("diffuse_brdf", "oren_nayar")
                         yi.paramsSetFloat("sigma", mat.mat_sigma)
+                
                 
                 ymat = yi.createMaterial(self.namehash(mat))
                 self.materialMap[mat] = ymat

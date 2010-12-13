@@ -228,7 +228,7 @@ class yafObject(object):
             #else:
             #    fmat = ymat
                 
-                
+            #if mesh.active_uv_texture is not None : # 2.53    
             if len(mesh.uv_textures) > 0:
                 co = mesh.uv_textures.active.data[index]
                 hasUV = True
@@ -331,7 +331,7 @@ class yafObject(object):
         else:
             if scene.gs_clay_render:
                 #print("Clay rendering is enabled ...")
-                ymaterial = ymat
+                ymaterial = ymat # = self.materialMap["default"] # 2.53
             elif obj.type == 'CURVE':
                 #print("Curve Object is rendering ....")
                 curve = obj.data

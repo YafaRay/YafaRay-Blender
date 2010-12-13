@@ -122,14 +122,11 @@ class yafGeneralAA:
             
             yi.paramsSetBool("clamp_rgb", scene.gs_clamp_rgb)
             yi.paramsSetBool("show_sam_pix", scene.gs_show_sam_pix)
-            yi.paramsSetInt("tile_size",scene.gs_tile_size)
             yi.paramsSetBool("premult", scene.gs_premult)
             
-            if scene.gs_tile_order =="Linear" :
-                yi.paramsSetString("tiles_order", "linear")
-            elif scene.gs_tile_order =="Random":
-                yi.paramsSetString("tiles_order", "random")
-                
+            yi.paramsSetInt("tile_size",scene.gs_tile_size)
+            yi.paramsSetString("tiles_order", scene.gs_tile_order)
+                            
             yi.paramsSetBool("z_channel", scene.gs_z_channel)
             yi.paramsSetBool("drawParams", scene.gs_draw_params)
             yi.paramsSetString("customString", scene.gs_custom_string)

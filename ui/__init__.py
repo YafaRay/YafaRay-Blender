@@ -1,3 +1,5 @@
+#This file is part of Yafaray exporter for Blender
+
 from yafaray.ui import properties_yaf_camera
 from yafaray.ui import properties_yaf_general_settings
 from yafaray.ui import properties_yaf_integrator

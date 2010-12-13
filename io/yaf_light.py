@@ -54,7 +54,6 @@ class yafLight:
 		if dupliNum != None:
 			name += str(dupliNum)
 		
-		
 		#context = bpy.context
 	
 		if matrix == None:
@@ -214,4 +213,5 @@ class yafLight:
 		for item in objects:
 			if item.type == 'LAMP':
 				self.createLight(yi,item,scene,lamp_mat = ymat)
+				
 				

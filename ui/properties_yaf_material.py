@@ -1,6 +1,5 @@
 
 
-
 import bpy
 from bpy.props import *
 Material = bpy.types.Material
@@ -379,3 +378,4 @@ def unregister():
 
 if __name__ == "__main__":
 	register()
+
