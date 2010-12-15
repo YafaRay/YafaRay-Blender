@@ -163,10 +163,10 @@ class yafLight:
 			corner1 = mathutils.Vector((-sizeX/2, sizeY/2, 0))
 			corner2 = mathutils.Vector((sizeX/2, sizeY/2, 0))
 			corner3 = mathutils.Vector((sizeX/2, -sizeY/2, 0))
-			point = matrix * point
-			corner1 = matrix * corner1
-			corner2 = matrix * corner2
-			corner3 = matrix * corner3
+			point = point * matrix
+			corner1 = corner1 * matrix
+			corner2 = corner2 * matrix
+			corner3 = corner3 * matrix
 			
 			#print("point: ", point, corner1, corner2, corner3)
 			yi.paramsClearAll();
