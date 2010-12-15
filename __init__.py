@@ -44,30 +44,26 @@ if sys.platform == 'win32':
             ctypes.cdll.LoadLibrary(os.path.join(BIN_PATH, dll))
         except Exception as e:
             print("ERROR: Failed to load library " + dll + ", " + repr(e));
- 
 
-#from yafaray import core
+
+
 import bpy
 
-from yafaray import io
-from yafaray import ui
-from yafaray import op
 
-def register(): 
-    Scene = bpy.types.Scene
-"""    
-    import io, ui, op
+def register():
+
+    from yafaray import io, ui, op
+
     io.register()
     for submodule in [ui, op]:
         for element in dir(submodule):
             try:
-                 getattr(getattr(submodule, element), 'register')()
-            except AttributeError as e:
-                 pass
+                getattr(getattr(submodule, element), 'register')()
+            except  AttributeError as e:
+               pass
 
     return
-"""
-"""
+
     try:
         import io, ui, op
     except:
@@ -87,15 +83,12 @@ def register():
                 getattr(getattr(submodule, element), 'register')()
             except AttributeError as e:
                 pass
-"""
-    
-def unregister():
-    import bpy
-    Scene = bpy.types.Scene
-"""
-    pass
 
-    import io, ui, op
+
+def unregister():
+    #import bpy
+    from yafaray import io, ui, op # neccesary? double import?
+
     io.unregister()
     for submodule in [ui, op]:
         for element in dir(submodule):
@@ -103,6 +96,6 @@ def unregister():
                 getattr(getattr(submodule, element), 'unregister')()
             except AttributeError:
                 pass
-"""    
+
 if __name__ == '__main__':
     register()
