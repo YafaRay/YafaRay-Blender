@@ -1,16 +1,11 @@
 Yafaray exporter for Blender 2.55
-FOR WIN32:
-You must download the  binaries files for YafaRay win32;
-https://github.com/downloads/povmaniaco/yafaray_exporter/binarys_for_yaf_export.zip
-For latest improvements, download;
-https://github.com/downloads/povmaniaco/yafaray_exporter/new_bin_mgw.7z
-..or latest build by megasoft78 , in graphicall.org
+
+The exporter is in a very experimental stage so use it for testing purposes only
+
+For the latest builds check http://www.yafaray.org/development and graphicall.org
 
 Downloading and extract at Blender/2.55/scripts/addons/yafaray directory
 This will create a dir /bin/plugins containing the necessary files.
-It is not necessary to install YafaRay.
 
 We need to test it and report errors found.
 Thanks.
-FOR LINUX:
-TODO
