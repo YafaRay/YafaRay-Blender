@@ -474,8 +474,8 @@ class yafObject(object):
         elif obj.vol_region == 'Grid Volume':
             yi.paramsSetString("type", "GridVolume");
         
-        elif obj.vol_region == 'Sky Volume':
-            yi.paramsSetString("type", "SkyVolume");
+#        elif obj.vol_region == 'Sky Volume':
+#            yi.paramsSetString("type", "SkyVolume");
         
         yi.paramsSetFloat("sigma_a", obj.vol_absorp)
         yi.paramsSetFloat("sigma_s", obj.vol_scatter)
