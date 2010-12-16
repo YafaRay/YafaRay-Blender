@@ -17,28 +17,34 @@ Scene.intg_light_method =   EnumProperty(attr="intg_light_method",
         ("Bidirectional","Bidirectional",""),
 ),default="Direct Lighting")
 Scene.intg_use_caustics =   BoolProperty(attr="intg_use_caustics",
-                                        description = "",
+                                        description = "Enable photon map for caustics only",
                                         default = False)
 Scene.intg_photons =        IntProperty(attr="intg_photons",
-                                        description = "",
+                                        description = "Number of photons to be shot",
+                                        min = 1, max = 100000000,
                                         default = 500000)
 Scene.intg_caustic_mix =    IntProperty(attr="intg_caustic_mix",
-                                        description = "",
+                                        description = "Max. number of photons to mix (blur)",
+                                        min = 1, max = 10000,
                                         default = 100)
 Scene.intg_caustic_depth =  IntProperty(attr="intg_caustic_depth",
-                                        description = "",
+                                        description = "Max. number of scatter events for photons",
+                                        min = 0, max = 50,
                                         default = 10)
 Scene.intg_caustic_radius = FloatProperty(attr="intg_caustic_radius",
-                                        description = "",
+                                        description = "Max. radius to search for photons",
+                                        min = 0.0001, max = 100.0,
                                         default = 1.0)
 Scene.intg_use_AO =         BoolProperty(attr="intg_use_AO",
-                                        description = "",
+                                        description = "Enable ambient occlusion",
                                         default = False)
 Scene.intg_AO_samples =     IntProperty(attr="intg_AO_samples",
-                                        description = "",
+                                        description = "Number of samples for ambient occlusion",
+                                        min = 1, max = 1000,
                                         default = 32)
 Scene.intg_AO_distance =    FloatProperty(attr="intg_AO_distance",
-                                        description = "",
+                                        description = "Max. occlusion distance. Surfaces further away do not occlude ambient light",
+                                        min = 0.0, max = 10000.0,
                                         default = 1.0)
 Scene.intg_AO_color =       FloatVectorProperty(attr="intg_AO_color",
                                         description = "Color Settings", subtype = "COLOR",
@@ -50,30 +56,36 @@ Scene.intg_bounces =        IntProperty(attr="intg_bounces",
                                         description = "",
                                         min = 4, default = 4, soft_min = 4)
 Scene.intg_diffuse_radius = FloatProperty(attr="intg_diffuse_radius",
-                                        description = "",
+                                        description = "Radius to search for diffuse photons",
+                                        min = 0.001,
                                         default = 1.0)
 Scene.intg_cPhotons =       IntProperty(attr="intg_cPhotons",
-                                        description = "",
+                                        description = "Number of caustic photons to be shot",
+                                        min = 1,
                                         default = 500000)
 Scene.intg_search =         IntProperty(attr="intg_search",
-                                        description = "",
+                                        description = "Maximum number of diffuse photons to be filtered",
+                                        min = 1, max = 10000,
                                         default = 100)
 Scene.intg_final_gather =   BoolProperty(attr="intg_final_gather",
-                                        description = "",
+                                        description = "Use final gathering (recommended)",
                                         default = True)
 Scene.intg_fg_bounces =     IntProperty(attr="intg_fg_bounces",
-                                        description = "",
+                                        description = "Allow gather rays to extend to paths of this length",
+                                        min = 1, max = 20,
                                         default = 3)
 Scene.intg_fg_samples =     IntProperty(attr="intg_fg_samples",
-                                        description = "",
+                                        description = "Number of samples for final gathering",
+                                        min = 1,
                                         default = 16)
 Scene.intg_show_map =       BoolProperty(attr="intg_show_map",
-                                        description = "",
+                                        description = "Directly show radiance map (disables final gathering step)",
                                         default = False)
-Scene.intg_use_bg =         BoolProperty(attr="intg_use_bg",
-                                        description = "",
-                                        default = False)
+#Scene.intg_use_bg =         BoolProperty(attr="intg_use_bg",
+#                                        description = "",
+#                                        default = False)
 Scene.intg_caustic_method = EnumProperty(attr="intg_caustic_method",
+                                        description = "Choose caustic rendering method",
     items = (
         ("Caustic Method","Caustic Method",""),
         ("None","None",""),
@@ -82,10 +94,11 @@ Scene.intg_caustic_method = EnumProperty(attr="intg_caustic_method",
         ("Photon","Photon",""),
 ),default="None")
 Scene.intg_path_samples =   IntProperty(attr="intg_path_samples",
-                                        description = "",
+                                        description = "Number of path samples per pixel sample",
+                                        min = 1,
                                         default = 32)
 Scene.intg_no_recursion =   BoolProperty(attr="intg_no_recursion",
-                                        description = "",
+                                        description = "No recursive raytracing, only pure path tracing",
                                         default = False)
 Scene.intg_debug_type =     EnumProperty(attr="intg_debug_type",
     items = (
@@ -99,7 +112,7 @@ Scene.intg_debug_type =     EnumProperty(attr="intg_debug_type",
         ("dSdV","dSdV",""),
 ),default="dSdV")
 Scene.intg_show_perturbed_normals = BoolProperty(attr="intg_show_perturbed_normals",
-                                        description = "",
+                                        description = "Show the normals perturbed by bump and normal maps",
                                         default = False)
 
 
