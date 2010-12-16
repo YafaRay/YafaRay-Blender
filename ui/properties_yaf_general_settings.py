@@ -5,61 +5,68 @@ from bpy.props import *
 Scene = bpy.types.Scene
 
 Scene.gs_ray_depth =    IntProperty(attr="gs_ray_depth",
-                        description = "Depth of Raytrace", # for description tooltips
+                        description = "Maximum depth for recursive raytracing", # for description tooltips
+                        min = 0, max = 64,
                         default = 2)
 Scene.gs_shadow_depth = IntProperty(attr="gs_shadow_depth",
-                        description = "",
+                        description = "Max. depth for transparent shadows calculation (if enabled)",
+                        min = 0, max = 64,
                         default = 2)
 Scene.gs_threads =      IntProperty(attr="gs_threads",
-                        description = "Number of threads used",
+                        description = "Number of threads to use for rendering",
+                        min = 1,
                         default = 1)
 Scene.gs_gamma =        FloatProperty(attr="gs_gamma",
-                        description = "Gamma for image output",
+                        description = "Gamma correction applied to final output, inverse correction of textures and colors is performed",
+                        min = 0, max = 5,
                         default = 1.8)
 Scene.gs_gamma_input =  FloatProperty(attr="gs_gamma_input",
-                        description = "Gamma for used images",
+                        description = "Gamma correction applied to input",
+                        min = 0, max = 5,
                         default = 1.8)
 Scene.gs_tile_size =    IntProperty(attr="gs_tile_size",
-                        description = "",
+                        description = "Size of the render buckets (tiles)",
+                        min = 0, max = 1024,
                         default = 32)
 Scene.gs_tile_order =   EnumProperty(attr="gs_tile_order",
+                        description = "Selects tiles order type",
                         items = (
                         ("Tile order","Tile order",""),
                         ("linear","Linear",""),
                         ("random","Random",""),
                         ),default="random")
 Scene.gs_auto_threads = BoolProperty(attr="gs_auto_threads",
-                        description = "",
+                        description = "Activate thread number auto detection",
                         default = True)
 Scene.gs_clay_render =  BoolProperty(attr="gs_clay_render",
-                        description = "",
+                        description = "Override all materials with a white diffuse material",
                         default = False)
 Scene.gs_draw_params =  BoolProperty(attr="gs_draw_params",
-                        description = "",
+                        description = "Write the render parameters below the image",
                         default = False)
 Scene.gs_custom_string = StringProperty(attr="gs_custom_string",
-                        description = "",
+                        description = "Custom string will be added to the info bar, use it for CPU, RAM etc.",
                         default = "")
 Scene.gs_auto_save =    BoolProperty(attr="gs_auto_save",
-                        description = "",
+                        description = "Save each rendering result automatically",
                         default = False)
 Scene.gs_auto_alpha =   BoolProperty(attr="gs_auto_alpha",
-                        description = "",
+                        description = "Save alpha channel when rendering to autosave or doing animation",
                         default = False)
 Scene.gs_premult =      BoolProperty(attr="gs_premult",
-                        description = "",
+                        description = "Premultipy Alpha channel for renders with transparent background",
                         default = False)
 Scene.gs_transp_shad =  BoolProperty(attr="gs_transp_shad",
                         description = "Compute transparent shadows",
                         default = False)
 Scene.gs_clamp_rgb =    BoolProperty(attr="gs_clamp_rgb",
-                        description = "",
+                        description = "Reduce the colors' brightness to a low dynamic",
                         default = False)
 Scene.gs_show_sam_pix = BoolProperty(attr="gs_show_sam_pix",
-                        description = "",
+                        description = "Masks pixels marked for resampling during adaptive passes",
                         default = False)
 Scene.gs_z_channel =    BoolProperty(attr="gs_z_channel",
-                        description = "",
+                        description = "Render depth map (Z-Buffer)",
                         default = False)
 Scene.gs_type_render =  EnumProperty(attr="gs_type_render",
                         description = "Render to view Blender or to File, (load at the end)",
