@@ -24,6 +24,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
     bl_idname = IDNAME
     bl_preview = False
     bl_label = "YafaRay Render"
+    progress = 0.0
+    tag = ""
     
     def setInterface(self, yi):
         self.materialMap = {}
@@ -148,27 +150,42 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.exportObjects()
         self.configureRender()
         
-        tag = ""
-        progress = 0.0;
         def prog_callback(command, *args):
-#             pass
-            global tag, progress
-            if command == "tag":
-                tag = args[0]
-            elif command == "progress":
-                progress = args[0]
-            self.update_stats("", "%s - %.2f %%" % (tag, progress))
+            if not self.test_break():
+                if command == "tag":
+                    self.tag = args[0]
+                elif command == "progress":
+                    self.progress = args[0]
+                self.update_stats("", "%s - %.2f %%" % (self.tag, self.progress))
         
         def tile_callback(command, *args):
-            if command == "flushArea":
+            if command == "highliteArea":
                 x0, y0, x1, y1, tile = args
                 res = self.begin_result(x0, y0, x1-x0, y1-y0)
                 try:
                     res.layers[0].rect = tile
                 except BaseException as e:
-                    print("Exception in tile callback:", e)
+                    print("Exception in tile callback with command ", command, ": ", e)
+                    print(args, len(tile))
+                self.update_result(res)
+            elif command == "flushArea":
+                x0, y0, x1, y1, tile = args
+                res = self.begin_result(x0, y0, x1-x0, y1-y0)
+                try:
+                    res.layers[0].rect = tile
+                except BaseException as e:
+                    print("Exception in tile callback with command ", command, ": ", e)
                     print(args, len(tile))
                 self.end_result(res)
+            elif command == "flush":
+                w, h, tile = args
+                res = self.begin_result(0, 0, w, h)
+                try:
+                    res.layers[0].rect = tile
+                except BaseException as e:
+                    print("Exception in flush callback: ", e)
+                    print(args, len(tile))
+                self.update_result(res)
                 
         self.yi.paramsSetString("type", file_type)
         ih = self.yi.createImageHandler("outFile")
@@ -176,12 +193,10 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                         
         self.yi.printInfo("Exporter: Rendering to file " + outputFile)
                     
-        # get a render result to write into
-        result = self.begin_result(0, 0, x, y)
-        lay = result.layers[0]
-        
         # here we export blender scene and renders using yafaray
         if scene.gs_type_render == "file":
+            result = self.begin_result(0, 0, x, y)
+            lay = result.layers[0]
             self.update_stats("", "Rendering to %s" % outputFile)
             print("Rendering to %s" % outputFile)
         
