@@ -20,10 +20,17 @@ Lamp.lamp_type = EnumProperty(attr="lamp_type",
         ("Sun","Sun",""),
         ("IES","IES",""),
 ),default="Sun")
-Lamp.create_geometry = BoolProperty(attr="create_geometry")
-Lamp.infinite = BoolProperty(attr="infinite")
+Lamp.directional = BoolProperty(attr="directional",
+                                    default = False)
+Lamp.infinite = BoolProperty(attr="infinite",
+                                    default = True)
+Lamp.directional_radius = FloatProperty(attr="directional_radius",
+                                    default = 1.0)
+Lamp.create_geometry = BoolProperty(attr="create_geometry",
+                                    default = False)
 Lamp.spot_soft_shadows = BoolProperty(attr="spot_soft_shadows")
-Lamp.shadow_fuzzyness = FloatProperty(attr="shadow_fuzzyness", default = 1.0)
+Lamp.shadow_fuzzyness = FloatProperty(attr="shadow_fuzzyness",
+                                    default = 1.0)
 Lamp.photon_only = BoolProperty(attr="photon_only")
 Lamp.angle = IntProperty(attr="angle",
         max = 80,
@@ -85,11 +92,11 @@ class YAF_PT_lamp(bpy.types.Panel):
             col.prop(context.lamp,"create_geometry", text= "Create Geometry")
 
 
-        elif context.lamp.type == 'Directional':
-            if context.lamp.type != 'SUN':
-                context.lamp.type = 'SUN'
-            row.prop(context.lamp,"shadow_soft_size", text= "Radius")
-            row.prop(context.lamp,"infinite", text= "Infinite")
+#        elif context.lamp.type == 'Directional':
+#            if context.lamp.type != 'SUN':
+#                context.lamp.type = 'SUN'
+#            row.prop(context.lamp,"shadow_soft_size", text= "Radius")
+#            row.prop(context.lamp,"infinite", text= "Infinite")
 
 #       elif context.lamp.type == 'Sphere':
 #           if context.lamp.type != 'POINT':
@@ -116,11 +123,17 @@ class YAF_PT_lamp(bpy.types.Panel):
 
 
         elif context.lamp.type == 'SUN':
-
+            col.prop(context.lamp,"directional", text="directional")
+            if context.lamp.directional:
+                col.prop(context.lamp,"infinite", text= "Infinite")
+                if not context.lamp.infinite:
+                    col.prop(context.lamp,"directional_radius", text= "Radius")
+            else:
+                col.prop(context.lamp,"angle", text= "Angle")
+                col.prop(context.lamp,"yaf_samples", text= "Samples")
             if context.lamp.type != 'SUN':
                 context.lamp.type = 'SUN'
-            col.prop(context.lamp,"angle", text= "Angle")
-            col.prop(context.lamp,"yaf_samples", text= "Samples")
+
 
         elif context.lamp.type == 'POINT':
             col.prop(context.lamp, "use_sphere")

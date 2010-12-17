@@ -133,13 +133,11 @@ class yafLight:
             yi.paramsSetInt("samples", lamp.yaf_samples)
             yi.paramsSetFloat("angle", lamp.angle)
             yi.paramsSetPoint("direction", dir[0], dir[1], dir[2])
-
-        elif lampType == "Directional":
-            yi.paramsSetString("type", "directional")
-            #if props["infinite"] == True:
-            yi.paramsSetBool("infinite", lamp.infinite)
-            yi.paramsSetFloat("radius", lamp.shadow_soft_size)
-            yi.paramsSetPoint("direction", dir[0], dir[1], dir[2])
+            if lamp.directional:
+                yi.paramsSetString("type", "directional")
+                yi.paramsSetBool("infinite", lamp.infinite)
+                yi.paramsSetFloat("radius", lamp.directional_radius)
+                yi.paramsSetPoint("direction", dir[0], dir[1], dir[2])
         
         elif lampType == "IES":
             
