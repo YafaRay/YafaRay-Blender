@@ -23,20 +23,34 @@ Lamp.lamp_type = EnumProperty(attr="lamp_type",
 Lamp.directional = BoolProperty(attr="directional",
                                     default = False)
 Lamp.infinite = BoolProperty(attr="infinite",
+                                    description = "Determines if light is infinite or filling a semi-infinite cylinder",
                                     default = True)
 Lamp.directional_radius = FloatProperty(attr="directional_radius",
+                                    description = "Radius of semi-infinit cylinder (only applies if infinite=false)",
+                                    min = 0.0, max = 10000.0,
                                     default = 1.0)
 Lamp.create_geometry = BoolProperty(attr="create_geometry",
+                                    description = "Creates a visible geometry in the dimensions of the light during the render",
                                     default = False)
-Lamp.spot_soft_shadows = BoolProperty(attr="spot_soft_shadows")
+Lamp.spot_soft_shadows = BoolProperty(attr="spot_soft_shadows",
+                                    description = "Use soft shadows",
+                                    default = False)
 Lamp.shadow_fuzzyness = FloatProperty(attr="shadow_fuzzyness",
+                                    description = "Fuzzyness of the soft shadows (0 - hard shadow, 1 - fuzzy shadow)",
+                                    min = 0.0, max = 1.0,
                                     default = 1.0)
-Lamp.photon_only = BoolProperty(attr="photon_only")
-Lamp.angle = IntProperty(attr="angle",
-        max = 80,
-        min = 0)
+Lamp.photon_only = BoolProperty(attr="photon_only",
+                                    description = "This spot will only throw photons not direct light",
+                                    default = False)
+Lamp.angle = FloatProperty(attr="angle",
+                                    description = "Angle of the cone in degrees (shadow softness)",
+                                    min = 0.0, max = 80.0,
+                                    default = 0.5)
 Lamp.ies_file = StringProperty(attr="ies_file",subtype = 'FILE_PATH')
-Lamp.yaf_samples = IntProperty(attr="yaf_samples", default = 16)
+Lamp.yaf_samples = IntProperty(attr="yaf_samples",
+                                    description = "Number of samples to be taken for direct lighting",
+                                    min = 0, max = 512,
+                                    default = 16)
 Lamp.ies_cone_angle = FloatProperty(attr="ies_cone_angle", default = 10.0)
 Lamp.ies_soft_shadows = BoolProperty(attr="ies_soft_shadows")
 
