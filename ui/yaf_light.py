@@ -20,18 +20,12 @@ Lamp.lamp_type = EnumProperty(attr="lamp_type",
         ("Sun","Sun",""),
         ("IES","IES",""),
 ),default="Sun")
-Lamp.directional = BoolProperty(attr="directional",
+Lamp.create_geometry = BoolProperty(attr="create_geometry",
+                                    description = "Creates a visible geometry in the dimensions of the light during the render",
                                     default = False)
 Lamp.infinite = BoolProperty(attr="infinite",
                                     description = "Determines if light is infinite or filling a semi-infinite cylinder",
                                     default = True)
-Lamp.directional_radius = FloatProperty(attr="directional_radius",
-                                    description = "Radius of semi-infinit cylinder (only applies if infinite=false)",
-                                    min = 0.0, max = 10000.0,
-                                    default = 1.0)
-Lamp.create_geometry = BoolProperty(attr="create_geometry",
-                                    description = "Creates a visible geometry in the dimensions of the light during the render",
-                                    default = False)
 Lamp.spot_soft_shadows = BoolProperty(attr="spot_soft_shadows",
                                     description = "Use soft shadows",
                                     default = False)
@@ -54,7 +48,6 @@ Lamp.yaf_samples = IntProperty(attr="yaf_samples",
 Lamp.ies_cone_angle = FloatProperty(attr="ies_cone_angle", default = 10.0)
 Lamp.ies_soft_shadows = BoolProperty(attr="ies_soft_shadows")
 
-
 class YAF_PT_lamp(bpy.types.Panel):
 
     bl_label = 'Lamp'
@@ -73,14 +66,14 @@ class YAF_PT_lamp(bpy.types.Panel):
         if (context.lamp and  (engine in self.COMPAT_ENGINES) ) :
             try :
                 properties_data_lamp.unregister()
-            except: 
+            except:
                 pass
         else:
             try:
                 properties_data_lamp.register()
-            except: 
+            except:
                 pass
-        return (context.lamp and  (engine in self.COMPAT_ENGINES) ) 
+        return (context.lamp and  (engine in self.COMPAT_ENGINES) )
 
 
     def draw(self, context):
@@ -89,14 +82,14 @@ class YAF_PT_lamp(bpy.types.Panel):
         split = layout.split()
         col = split.column()
 
-        col.prop(context.lamp,"type", text= "Light Type")
+        col.prop(context.lamp,"lamp_type", text= "Light Type")
         row = layout.row()
         split = row.split()
         col = split.column() # row.column = org
 
         #context.lamp.shadow_ray_samples = 16
 
-        if context.lamp.type == 'AREA':
+        if context.lamp.lamp_type == 'Area':
 
             col.prop(context.lamp,"yaf_samples", text= "Samples")
             if context.lamp.type != 'AREA':
@@ -106,21 +99,21 @@ class YAF_PT_lamp(bpy.types.Panel):
             col.prop(context.lamp,"create_geometry", text= "Create Geometry")
 
 
-#        elif context.lamp.type == 'Directional':
-#            if context.lamp.type != 'SUN':
-#                context.lamp.type = 'SUN'
-#            row.prop(context.lamp,"shadow_soft_size", text= "Radius")
-#            row.prop(context.lamp,"infinite", text= "Infinite")
+        elif context.lamp.lamp_type == 'Directional':
+            if context.lamp.type != 'SUN':
+                context.lamp.type = 'SUN'
+            col.prop(context.lamp,"shadow_soft_size", text= "Radius")
+            col.prop(context.lamp,"infinite", text= "Infinite")
 
-#       elif context.lamp.type == 'Sphere':
-#           if context.lamp.type != 'POINT':
-#               context.lamp.type = 'POINT'
-#           col.prop(context.lamp,"shadow_soft_size", text= "Radius")
-#           col.prop(context.lamp,"yaf_samples", text= "Samples")
-#           col.prop(context.lamp,"create_geometry", text= "Create Geometry")
+        elif context.lamp.lamp_type == 'Sphere':
+            if context.lamp.type != 'POINT':
+                context.lamp.type = 'POINT'
+            col.prop(context.lamp,"shadow_soft_size", text= "Radius")
+            col.prop(context.lamp,"yaf_samples", text= "Samples")
+            col.prop(context.lamp,"create_geometry", text= "Create Geometry")
 
 
-        elif context.lamp.type == 'SPOT':
+        elif context.lamp.lamp_type == 'Spot':
 
             if context.lamp.type != 'SPOT':
                 context.lamp.type = 'SPOT'
@@ -136,30 +129,20 @@ class YAF_PT_lamp(bpy.types.Panel):
             col.prop(context.lamp,"photon_only", text= "Photon Only")
 
 
-        elif context.lamp.type == 'SUN':
-            col.prop(context.lamp,"directional", text="directional")
-            if context.lamp.directional:
-                col.prop(context.lamp,"infinite", text= "Infinite")
-                if not context.lamp.infinite:
-                    col.prop(context.lamp,"directional_radius", text= "Radius")
-            else:
-                col.prop(context.lamp,"angle", text= "Angle")
-                col.prop(context.lamp,"yaf_samples", text= "Samples")
+        elif context.lamp.lamp_type == 'Sun':
+
             if context.lamp.type != 'SUN':
                 context.lamp.type = 'SUN'
+            col.prop(context.lamp,"angle", text= "Angle")
+            col.prop(context.lamp,"yaf_samples", text= "Samples")
 
+        elif context.lamp.lamp_type == 'Point':
 
-        elif context.lamp.type == 'POINT':
-            col.prop(context.lamp, "use_sphere")
-            if context.lamp.use_sphere:
-                col.prop(context.lamp,"shadow_soft_size", text= "Radius")
-                col.prop(context.lamp,"yaf_samples", text= "Samples")
-                col.prop(context.lamp,"create_geometry", text= "Create Geometry")           
             if context.lamp.type != 'POINT':
                 context.lamp.type = 'POINT'
 
 
-        elif context.lamp.type == 'IES':
+        elif context.lamp.lamp_type == 'IES':
             col.prop(context.lamp,"ies_file",text = "IES File")
             if context.lamp.ies_soft_shadows:
                 col.prop(context.lamp,"yaf_samples",text = "IES Samples")
