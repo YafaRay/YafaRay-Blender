@@ -46,15 +46,13 @@ class yafLight:
         return ID
         
         
-    def createLight(self, yi,lamp_object, scene, matrix = None, lamp_mat = None, dupliNum = None):
+    def createLight(self, yi, lamp_object, matrix = None, lamp_mat = None, dupliNum = None):
         
         lamp = lamp_object.data
         name = lamp_object.name
         #name = "spot"
         if dupliNum != None:
             name += str(dupliNum)
-        
-        #context = bpy.context
     
         if matrix == None:
             matrix = lamp_object.matrix_local #this change is at 18.7.10
@@ -212,34 +210,3 @@ class yafLight:
         yi.createLight(name)
         
         return True
-
-    def returnActiveLayers(self,object):
-        active_layers = []
-
-        for index,layer in enumerate(object.layers):
-            if layer:
-                active_layers.append(index)
-        return active_layers    
-    
-    def createLights(self,yi,scene):
-        
-        yi.paramsClearAll()
-        yi.paramsSetString("type", "null")
-        ymat = yi.createMaterial("lampmat")
-        
-        objects = scene.objects
-
-        for obj in objects:
-            if obj.type =='LAMP':
-                active_layers  = self.returnActiveLayers(obj)
-                if len(active_layers):
-                    for layer in active_layers:
-                        if scene.layers[layer]:
-                            self.createLight(yi,obj,scene,lamp_mat = ymat)
-                            break
-
-#       for item in objects:
-#           if item.type == 'LAMP':
-#               self.createLight(yi,item,scene,lamp_mat = ymat)
-                
-                

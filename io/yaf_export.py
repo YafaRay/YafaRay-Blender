@@ -1,3 +1,5 @@
+#TODO: Use Blender enumerators if any
+
 import bpy
 import os
 import time
@@ -39,14 +41,67 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.yaf_general_aa = yafGeneralAA(self.yi)
         self.yaf_texture    = yafTexture(self.yi)
         self.yaf_material   = yafMaterial(self.yi, self.materialMap)
-    
-    def exportObjects(self):
-        self.yaf_object.createCamera(self.yi, self.scene)
-        self.yaf_lamp.createLights(self.yi,self.scene)
+
+    def exportScene(self):
         self.yaf_world.exportWorld(self.scene)
-        self.yaf_texture.createTextures(self.yi, self.scene)
+        #self.yaf_texture.createTextures(self.yi, self.scene)
+        self.exportTextures()
         self.exportMaterials()
-        self.yaf_object.writeMeshes(self.yi, self.scene)
+        self.yaf_object.createCamera(self.yi, self.scene)
+        self.exportObjects()
+
+    def exportTextures(self):
+        textures = bpy.data.textures
+        for tex in textures:
+            if tex.type != "NONE":
+                self.yaf_texture.writeTexture(self.scene,tex)
+
+
+    def exportObjects(self):
+        self.yi.printInfo("Exporter: Processing Objects...")
+
+        idx=0      #TODO: REMOVE
+
+        for o in self.scene.objects:
+            # export only visible objects
+            if o.is_visible(self.scene) and not o.hide_render:
+                #if ob.is_duplicator and len(ob.particle_systems) < 1:
+                if o.is_duplicator:
+                    if o.particle_systems:
+                        # Check if we need to render emitter, if so do it
+                        for psys in o.particle_systems:
+                            if psys.settings.use_render_emitter:
+                                self.exportObject(o, o.matrix_local)
+                                break
+                    o.create_dupli_list(self.scene)
+                    for obj in o.dupli_list:
+                        print ("Exporting INSTANCE OBJECT:",obj.object,obj.object.type)
+                        self.exportObject(obj.object, obj.matrix, idx)    #TODO: Please kill that idx
+                        idx += 1    #TODO: REMOVE
+
+                    if o.dupli_list:
+                        o.free_dupli_list()
+                else:
+                    if o.parent and o.parent.is_duplicator:
+                        # this is an instanced object
+                        continue
+                    print ("Exporting REAL OBJECT:",o,o.type)
+                    self.exportObject(o)
+
+
+    def exportObject(self, obj, matrix=None, idx=None):
+        # obj can be any object, even EMPTY or CAMERA
+
+        # TODO: set a proper matrix if none?
+        if matrix == None:
+            matrix = obj.matrix_local #this change is at 18.7.10
+
+        if obj.type == "MESH" or obj.type == "CURVE" or obj.type == "SURFACE":
+                self.yaf_object.writeObject(self.yi, self.scene, obj, matrix)
+        if obj.type == "LAMP":
+                ymat = self.yi.createMaterial("lampmat")    # TODO: ONLY IF GEOMETRY
+                self.yaf_lamp.createLight(self.yi, obj, matrix, ymat, idx)
+
 
     def handleBlendMat(self, mat):
         try:
@@ -75,16 +130,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.materials.add(mat)
             self.yaf_material.writeMaterial(mat)
 
-    def exportMaterial(self,material):
-        if material:
-            if material.mat_type == 'blend':
-                # must make sure all materials used by a blend mat
-                # are written before the blend mat itself
-                self.handleBlendMat(material)
-            else:
-                self.materials.add(material)
-                self.yaf_material.writeMaterial(material)
-    
+
     def exportMaterials(self):
         self.yi.printInfo("Exporter: Processing Materials...")
         self.materials = set()
@@ -97,6 +143,18 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         for mat in bpy.data.materials:
             if mat in self.materials : continue
             self.exportMaterial(mat)
+
+
+    def exportMaterial(self,material):
+        if material:
+            if material.mat_type == 'blend':
+                # must make sure all materials used by a blend mat
+                # are written before the blend mat itself
+                self.handleBlendMat(material)
+            else:
+                self.materials.add(material)
+                self.yaf_material.writeMaterial(material)
+
     
     #    , w, h
     def configureRender(self):
@@ -147,7 +205,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.yi.paramsSetBool("z_channel", scene.gs_z_channel)
                     
         self.yi.startScene()
-        self.exportObjects()
+        self.exportScene()
         self.configureRender()
         
         def prog_callback(command, *args):
