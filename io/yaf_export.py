@@ -44,7 +44,6 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
     def exportScene(self):
         self.yaf_world.exportWorld(self.scene)
-        #self.yaf_texture.createTextures(self.yi, self.scene)
         self.exportTextures()
         self.exportMaterials()
         self.yaf_object.createCamera(self.yi, self.scene)

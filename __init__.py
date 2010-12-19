@@ -27,11 +27,14 @@ sys.path.append(BIN_PATH)
 bl_addon_info = {
     "name": "YafaRay Integration",
     "author": "Shuvro Sarker",
-    "version": "0.1.2 alpha",
+    "version": (0, 1, 2, 'alpha'),
     "blender": (2, 5, 5),
-    "category": "Render",
+    "location": "Info Header (engine dropdown)",
+    "description": "YafaRay integration for blender",
     "warning" : "VERY ALPHA!",
-    "description": "YafaRay integration for blender 2.5. When activated, YafaRay will be available in the Render Engine dropdown"
+    "wiki_url": "http://www.yafaray.org/community/forum",
+    "tracker_url": "http://www.yafaray.org/development/bugtracker/yafaray",
+    "category": "Render"
     }
 if sys.platform == 'win32':
     # preload some dlls so users do not have to mess about with path
