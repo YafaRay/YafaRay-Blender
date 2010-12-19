@@ -122,11 +122,11 @@ class yafObject(object):
 
 
     #extracts data from all the meshes of a scene    
-    def writeMesh(self,yi,scene,obj,ID,ymat = None,isSmooth = False):
+    def writeMesh(self,yi,scene, ID, obj, matrix, ymat = None, isSmooth = False):
         
 
 
-        matrix = obj.matrix_local #recent change
+        #matrix = obj.matrix_local #recent change
         me = obj.data
         me_materials = me.materials
         mesh = obj.create_mesh(scene,True, 'RENDER')   #mesh is created for an object here.
@@ -267,11 +267,9 @@ class yafObject(object):
     # write the object using the given transformation matrix (for duplis)
     # if no matrix is given (usual case) use the object's matrix
     
-    def writeObject(self, yi, scene, obj):
+    def writeObject(self, yi, scene, obj, matrix = None):
         
         print("INFO: Exporting Object: " + obj.name)
-        
-        #materialMap = {}
         
         #create a default material
         self.yi.paramsClearAll()
@@ -351,17 +349,16 @@ class yafObject(object):
 
         
         if isBGPL:
-            self.writeMesh(yi, scene, obj, ID, ymaterial)
+            self.writeMesh(yi, scene, ID, obj, matrix, ymaterial)
         
         elif isVolume:
             self.writeVolumeObject(yi, scene, obj, ID, ymaterial)
-            #self.writeMesh(yi, scene, obj, ID, ymaterial)
             
         elif type(obj.particle_systems)==bpy.types.ParticleSystems:
             self.writeParticlesObject(yi, scene, obj, ID)
             
         else:
-            self.writeMesh(yi, scene, obj, ID, ymaterial)
+            self.writeMesh(yi, scene, ID, obj, matrix, ymaterial)
 
     def writeParticlesObject(self, yi, scene, object, ID):
         
@@ -425,7 +422,7 @@ class yafObject(object):
         # We only need to render emitter object once
         if renderEmitter:
             ymat = self.materialMap["default"]
-            self.writeMesh(yi, scene, object, ID, ymat)
+            self.writeMesh(yi, scene, ID, object, None, ymat)
 
     def writeVolumeObject(self, yi, scene, obj, ID, ymaterial = None):
 
@@ -512,29 +509,3 @@ class yafObject(object):
         yi.createVolumeRegion(obj.name + "." + str(obj.__hash__()) + "." + str(ID))
         return
 
-    
-    def returnActiveLayers(self,object):
-        active_layers = []
-        
-        for index,layer in enumerate(object.layers):
-            if layer:
-                active_layers.append(index)
-        return active_layers
-    
-    def writeMeshes(self,yi,scene,isSmooth = False):
-        
-        objects = scene.objects
-        self.yi.paramsClearAll()
-
-        
-        for obj in objects:
-            if obj.type in ('LAMP', 'CAMERA', 'EMPTY', 'META', 'ARMATURE'):
-                continue
-            else:
-                active_layers  = self.returnActiveLayers(obj)
-                if len(active_layers):
-                    for layer in active_layers:
-                        if scene.layers[layer]:
-                            self.writeObject(yi,scene,obj)
-                            break
-        

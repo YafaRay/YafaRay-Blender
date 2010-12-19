@@ -53,7 +53,7 @@ class yafLight:
         #name = "spot"
         if dupliNum != None:
             name += str(dupliNum)
-
+    
         if matrix == None:
             matrix = lamp_object.matrix_local #this change is at 18.7.10
         pos = matrix[3]
@@ -207,7 +207,7 @@ class yafLight:
         yi.paramsSetColor("color", color[0], color[1], color[2])
         yi.paramsSetFloat("power", power)
 
-
+        
         yi.createLight(name)
-
+        
         return True
