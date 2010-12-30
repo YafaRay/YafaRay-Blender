@@ -53,7 +53,7 @@ class yafLight:
         #name = "spot"
         if dupliNum != None:
             name += str(dupliNum)
-    
+
         if matrix == None:
             matrix = lamp_object.matrix_local #this change is at 18.7.10
         pos = matrix[3]
@@ -131,14 +131,18 @@ class yafLight:
             yi.paramsSetInt("samples", lamp.yaf_samples)
             yi.paramsSetFloat("angle", lamp.angle)
             yi.paramsSetPoint("direction", dir[0], dir[1], dir[2])
+            if lamp.directional:
+                yi.paramsSetString("type", "directional")
+                yi.paramsSetBool("infinite", lamp.infinite)
+                yi.paramsSetFloat("radius", lamp.shadow_soft_size)
 
-        elif lampType == "Directional":
-            yi.paramsSetString("type", "directional")
-            yi.paramsSetBool("infinite", lamp.infinite)
-            yi.paramsSetFloat("radius", lamp.shadow_soft_size)
-            yi.paramsSetPoint("direction", dir[0], dir[1], dir[2])
+        #elif lampType == "Directional": # integrate into Sun lamp
+            #yi.paramsSetString("type", "directional")
+            #yi.paramsSetBool("infinite", lamp.infinite)
+            #yi.paramsSetFloat("radius", lamp.shadow_soft_size)
+            #yi.paramsSetPoint("direction", dir[0], dir[1], dir[2])
 
-        elif lampType == "IES":
+        elif lampType == "HEMI":
 
             yi.paramsSetString("type", "ieslight")
             yi.paramsSetPoint("to", to[0], to[1], to[2])
@@ -207,7 +211,7 @@ class yafLight:
         yi.paramsSetColor("color", color[0], color[1], color[2])
         yi.paramsSetFloat("power", power)
 
-        
+
         yi.createLight(name)
-        
+
         return True
