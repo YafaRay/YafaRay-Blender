@@ -17,6 +17,7 @@
 # ##### END GPL LICENSE BLOCK #####
 import sys, os, threading, time
 
+
 PLUGIN_PATH = os.path.join(__path__[0], 'bin', 'plugins')
 BIN_PATH = os.path.join(__path__[0], 'bin')
 
@@ -48,57 +49,33 @@ if sys.platform == 'win32':
         except Exception as e:
             print("ERROR: Failed to load library " + dll + ", " + repr(e));
 
+# new test for __init__ file
 
+if "bpy" in locals():
+    import imp
+    imp.reload(io)
+    imp.reload(ui)
+    imp.reload(op)
+else:
+    import bpy
+    from yafaray import io, ui, op
 
-import bpy
+#from extensions_framework.engine    import ( engine_base )
+#from extensions_framework           import ( util as efutil )
+#bpy.ops.ef.msg(msg_type='INFO', msg_text='Extensions Framework is loaded')
 
 
 def register():
-
-    from yafaray import io, ui, op
-
-    io.register()
-    for submodule in [ui, op]:
-        for element in dir(submodule):
-            try:
-                getattr(getattr(submodule, element), 'register')()
-            except  AttributeError as e:
-               pass
-
-    return
-
-    try:
-        import io, ui, op
-    except:
-        print("Could not import subpackages, delay loading...")
-        def delayload():
-            time.sleep(1)
-            print("trying to register again...")
-            register()
-        t = threading.Thread(target=delayload)
-        t.start()
-        return
-
-    io.register()
-    for submodule in [ui, op]:
-        for element in dir(submodule):
-            try:
-                getattr(getattr(submodule, element), 'register')()
-            except AttributeError as e:
-                pass
-
+    import bpy
+    # test framework parameter, make crash Blender?
+    #bpy.ops.ef.msg(msg_type='INFO', msg_text='Exporter YafaRay is loaded')
 
 def unregister():
-    #import bpy
-    from yafaray import io, ui, op # neccesary? double import?
+    import bpy
+    #bpy.ops.ef.msg(msg_type='INFO', msg_text='Exporter YafaRay is uploaded')
 
-    io.unregister()
-    for submodule in [ui, op]:
-        for element in dir(submodule):
-            try:
-                getattr(getattr(submodule, element), 'unregister')()
-            except AttributeError:
-                pass
+
+
 
 if __name__ == '__main__':
     register()
