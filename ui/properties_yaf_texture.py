@@ -75,82 +75,24 @@ def context_tex_datablock(context):
     idblock = context.brush
     return idblock
 
-class YAF_TextureButtonsPanel(bpy.types.Panel):
-
+class YAF_TextureButtonsPanel():
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "texture"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
 
     @classmethod #no 2.53
     def poll(self, context):
         tex = context.texture
-        if not tex:
-            return False
-        import properties_texture
-
-
-        import properties_world
-
-        if (context.texture  and  (engine in self.COMPAT_ENGINES) ) :
-            try :
-                properties_texture.register()
-            except:
-                pass
-        else:
-            try:
-                properties_texture.unregister()
-            except:
-                pass
-        if (context.world and  (engine in self.COMPAT_ENGINES) ) :
-            try :
-                properties_world.register()
-            except:
-                pass
-        else:
-            try:
-                properties_world.unregister()
-            except:
-                pass
-        return (context.texture or context.world and  (engine in self.COMPAT_ENGINES) )
-    """
-    def poll(self, context):
-        tex = context.texture
-        if not tex:
-            return False
         engine = context.scene.render.engine
-        var =  (engine in self.COMPAT_ENGINES)
 
-        if var:
-                import properties_texture
-
-                try :
-                        properties_world.unregister()
-                except:
-                        pass
-                del properties_texture
-        return var
-    """
-
-class YAF_TEXTURE_PT_preview(YAF_TextureButtonsPanel, bpy.types.Panel):
-    bl_label = "Preview"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
-
-    def draw(self, context):
-        layout = self.layout
-
-        tex = context.texture
-        slot = getattr(context, "texture_slot", None)
-        idblock = context_tex_datablock(context)
-
-        if idblock:
-            layout.template_preview(tex, parent=idblock, slot=slot)
-        else:
-            layout.template_preview(tex, slot=slot)
+        return tex and (tex.type != 'NONE') and (engine in self.COMPAT_ENGINES)
 
 
-class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel):
-    bl_label = " "
-    bl_show_header = False
+
+class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel, bpy.types.Panel):
+    bl_label = "YafaRay Textures"
+    bl_show_header = True # False orig.
     COMPAT_ENGINES = {'YAFA_RENDER'}
     count = 0
 
@@ -159,21 +101,52 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel):
         engine = context.scene.render.engine
         if not hasattr(context, "texture_slot"):
             return False
+        ##
+
+        import properties_world
+
+        import properties_texture
+
+        if (context.world  and  (engine in self.COMPAT_ENGINES) ) :
+            try :
+                properties_world.unregister()
+            except:
+                pass
+        else:
+            try:
+                properties_world.register()
+            except:
+                pass
+        if (context.texture and  (engine in self.COMPAT_ENGINES) ) :
+            try :
+                properties_texture.unregister()
+            except:
+                pass
+        else:
+            try:
+                properties_texture.register()
+            except:
+                pass
+        #return (context.texture  or context.world and  (engine in self.COMPAT_ENGINES) )
         return ((context.material or context.world or context.lamp or context.brush or context.texture)
             and (engine in self.COMPAT_ENGINES))
 
 
     def draw(self, context):
-
-
         layout = self.layout
         slot = context.texture_slot
         node = context.texture_node
         space = context.space_data
         tex = context.texture
-        wide_ui = context.region.width > narrowui
         idblock = context_tex_datablock(context)
-        tex_collection = space.pin_id == None and type(idblock) != bpy.types.Brush and not node
+        pin_id = space.pin_id
+
+        if not isinstance(pin_id, bpy.types.Material): # isinstance, recen change  for beta 2.56
+            pin_id = None
+
+        tex_collection = (pin_id is None) and (node is None) and (not isinstance(idblock, bpy.types.Brush))
+
+        wide_ui = context.region.width > narrowui
 
         if tex_collection:
             row = layout.row()
@@ -219,52 +192,33 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel):
             else:
                 if wide_ui:
                     split.label(text="Type:")
-                    split.prop(tex, "yaf_tex_type", text="")
-                    #tex.type = tex.yaf_tex_type
+                    split.prop(tex, "type", text="")
+
                 else:
-                    layout.prop(tex, "yaf_tex_type", text="")
-                    #tex.type = tex.yaf_tex_type
+                    layout.prop(tex, "type", text="", icon= "TEXTURE")
 
 
 
-"""
-
-class YAF_TEXTURE_PT_colors(YAF_TextureButtonsPanel):
-    bl_label = "Colors"
-    bl_default_closed = True
+class YAF_TEXTURE_PT_preview(YAF_TextureButtonsPanel, bpy.types.Panel):
+    bl_label = "Preview"
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
     def draw(self, context):
         layout = self.layout
 
         tex = context.texture
-        wide_ui = context.region.width > narrowui
+        slot = getattr(context, "texture_slot", None)
+        idblock = context_tex_datablock(context)
 
-        layout.prop(tex, "use_color_ramp", text="Ramp")
-        if tex.use_color_ramp:
-            layout.template_color_ramp(tex, "color_ramp", expand=True)
-
-        split = layout.split()
-
-        col = split.column()
-        col.label(text="RGB Multiply:")
-        sub = col.column(align=True)
-        sub.prop(tex, "factor_red", text="R")
-        sub.prop(tex, "factor_green", text="G")
-        sub.prop(tex, "factor_blue", text="B")
-
-        if wide_ui:
-            col = split.column()
-        col.label(text="Adjust:")
-        #col.prop(tex, "brightness") # activate error
-        col.prop(tex, "contrast")
-        col.prop(tex, "saturation")
+        if idblock:
+            layout.template_preview(tex, parent=idblock, slot=slot)
+        else:
+            layout.template_preview(tex, slot=slot)
 
 # Texture Slot Panels #
 
-"""
 class YAF_TextureSlotPanel(YAF_TextureButtonsPanel):
-    bl_label = " "
+    #bl_label = "Slots Textures"
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
     @classmethod
@@ -276,14 +230,14 @@ class YAF_TextureSlotPanel(YAF_TextureButtonsPanel):
         return TextureButtonsPanel.poll(self, context) and (engine in self.COMPAT_ENGINES)
 
 
-class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel):
+class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel, bpy.types.Panel):
     bl_label = "YafaRay Mapping (Map Input)"
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
     @classmethod
     def poll(self, context):
         idblock = context_tex_datablock(context)
-        if type(idblock) == bpy.types.Brush and not context.sculpt_object:
+        if isinstance(idblock, bpy.types.Brush) and not context.sculpt_object:
             return False
 
         if not getattr(context, "texture_slot", None):
@@ -297,19 +251,20 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel):
 
         idblock = context_tex_datablock(context)
 
+        #yaf_tex_type = context.texture_slot
+
         tex = context.texture_slot
         wide_ui = context.region.width > narrowui
 
-        if type(idblock) != bpy.types.Brush:
+        if not isinstance(idblock, bpy.types.Brush):
             split = layout.split(percentage=0.3)
             col = split.column()
             col.label(text="Coordinates:")
             col = split.column()
-            col.prop(context.texture, "yaf_texture_coordinates", text="") # 2.55
-            texture = context.texture # 2.55
+            col.prop(tex, "texture_coords", text="") # 2.55
+            # change to same type of blender mapping, for make stable
 
-
-            if texture.yaf_texture_coordinates == 'ORCO': # 2.55
+            if tex.texture_coords == 'ORCO': # 2.55
             #    """
                 ob = context.object
                 if ob and ob.type == 'MESH':
@@ -317,7 +272,7 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel):
                     split.label(text="Mesh:")
                     split.prop(ob.data, "texco_mesh", text="")
             #    """
-            elif texture.yaf_texture_coordinates == 'UV': # 2.55
+            elif tex.texture_coords == 'UV':
 
                 split = layout.split(percentage=0.3)
                 split.label(text="Layer:")
@@ -327,13 +282,12 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel):
                 else:
                     split.prop(tex, "uv_layer", text="")
 
-            elif texture.yaf_texture_coordinates == 'OBJECT': # 2.55
-            #elif tex.texture_coords == 'OBJECT': # 2.53 / act. texture_coords
+            elif tex.texture_coords == 'OBJECT':
                 split = layout.split(percentage=0.3)
                 split.label(text="Object:")
                 split.prop(tex, "object", text="")
 
-        if type(idblock) == bpy.types.Brush:
+        if isinstance(idblock, bpy.types.Brush): # recent change for beta 2.56
             if context.sculpt_object:
                 layout.label(text="Brush Mapping:")
                 layout.prop(tex, "map_mode", expand=True)
@@ -342,7 +296,7 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel):
                 row.active = tex.map_mode in ('FIXED', 'TILED')
                 row.prop(tex, "angle")
         else:
-            if type(idblock) == bpy.types.Material:
+            if isinstance(idblock, bpy.types.Material):
                 split = layout.split(percentage=0.3)
                 split.label(text="Projection:")
                 split.prop(tex, "mapping", text="")
@@ -350,9 +304,9 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel):
                 split = layout.split()
 
                 col = split.column()
-                if texture.yaf_texture_coordinates in ('ORCO', 'UV'):
+                if tex.texture_coords in ('ORCO', 'UV'):
                   col.prop(tex, "use_from_dupli")
-                elif texture.yaf_texture_coordinates == 'OBJECT':
+                elif tex.texture_coords == 'OBJECT':
                   col.prop(tex, "use_from_original")
                 elif wide_ui:
                     col.label()
@@ -374,17 +328,17 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel):
         else:
             col.separator()
 
-        col.prop(tex, "scale") # 'size' in 2.53
+        col.prop(tex, "scale")
 
 
-class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel):
+class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, bpy.types.Panel):
     bl_label = "YafaRay Influence (Map To)"
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
     @classmethod
     def poll(self, context):
         idblock = context_tex_datablock(context)
-        if type(idblock) == bpy.types.Brush:
+        if isinstance(idblock, bpy.types.Brush): # recent change
             return False
 
         if not getattr(context, "texture_slot", None):
@@ -399,37 +353,41 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel):
 
         idblock = context_tex_datablock(context)
 
-        mytype = context.texture
+        #textype = context.texture
         tex = context.texture_slot
         wide_ui = context.region.width > narrowui
 
-        def factor_but(layout, active, toggle, factor, name):
+        def factor_but(layout, toggle, factor, name): # new in last rev. of Blender
             row = layout.row(align=True)
             row.prop(tex, toggle, text="")
             sub = row.row()
-            sub.active = active
+            sub.active = getattr(tex, toggle)
             sub.prop(tex, factor, text=name, slider=True)
+            return sub # XXX, temp. use_map_normal needs to override.
 
-        if type(idblock) == bpy.types.Material:
-            if idblock.type in ('SURFACE', 'HALO', 'WIRE'):
+
+        if isinstance(idblock, bpy.types.Material): # new type in last rev.
+            if idblock.type in ('SURFACE', 'WIRE'): # TODO: lots of todo...
+        #if type(idblock) == bpy.types.Material:
+            #if idblock.type in ('SURFACE', 'HALO', 'WIRE'):
                 split = layout.split()
 
                 col = split.column()
                 col.label(text="Diffuse:")
-                #factor_but(col, tex.use_map_diffuse, "use_map_diffuse", "diffuse_factor", "Intensity")
-                #factor_but(col, tex.use_map_color_diffuse, "use_map_color_diffuse", "diffuse_color_factor", "Color")
-                col.prop(tex,"use_map_diffuse", text = 'Color Diffuse')
-                #factor_but(col, tex.use_map_alpha, "use_map_alpha", "alpha_factor", "Alpha")
+                factor_but(col, "use_map_diffuse", "diffuse_factor", "Intensity")
+                factor_but(col, "use_map_color_diffuse", "diffuse_color_factor", "Color")
+                #col.prop(tex,"use_map_color_diffuse", text = 'Color Diffuse')# if is need, add 'factor but' to use factor value
+                #factor_but(col, "use_map_alpha", "alpha_factor", "Alpha")
                 col.prop(tex,"use_map_alpha", text = 'Map Alpha')
-                #factor_but(col, tex.use_map_translucency, "use_map_translucency", "translucency_factor", "Translucency")
+                #factor_but(col, "use_map_translucency", "translucency_factor", "Translucency")
                 col.prop(tex,"use_map_translucency", text = 'Map Translucency')
 
                 col.separator()
                 col.label(text="Specular:")
-                #factor_but(col, tex.use_map_specular, "use_map_specular", "specular_factor", "Intensity")
-                col.prop(tex,"use_map_specular", text = 'Map Specular')
-                #factor_but(col, tex.use_map_color_spec, "use_map_color_spec", "specular_color_factor", "Color")
-                #factor_but(col, tex.use_map_hardness, "use_map_hardness", "hardness_factor", "Hardness")
+                #factor_but(col, "use_map_specular", "specular_factor", "Intensity")
+                col.prop(tex,"use_map_specular", text = 'Map Specular')# use map color specular ?
+                #factor_but(col, "use_map_color_spec", "specular_color_factor", "Color")
+                #factor_but(col, "use_map_hardness", "hardness_factor", "Hardness")
                 col.prop(tex,"specular_color_factor", text = 'Color', slider = True)
                 col.prop(tex,"hardness_factor", text = 'Hardness', slider = True)
 
@@ -437,19 +395,19 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel):
                 #    col = split.column()
                 col.separator()
                 col.label(text="Shading:")
-                #factor_but(col, tex.use_map_ambient, "use_map_ambient", "ambient_factor", "Ambient")
-                #factor_but(col, tex.use_map_emit, "use_map_emit", "emit_factor", "Emit")
-                #factor_but(col, tex.use_map_mirror, "use_map_mirror", "mirror_factor", "Mirror")
+                #factor_but(col, "use_map_ambient", "ambient_factor", "Ambient")
+                #factor_but(col, "use_map_emit", "emit_factor", "Emit")
+                #factor_but(col, "use_map_mirror", "mirror_factor", "Mirror")
                 col.prop(tex,"use_map_mirror", text = 'Mirror')
-                #factor_but(col, tex.map_raymir, "use_map_raymir", "raymir_factor", "Ray Mirror")
+                #factor_but(col, "use_map_raymir", "raymir_factor", "Ray Mirror")
                 col.prop(tex,"use_map_raymir", text = 'Ray Mirror')
 
                 #col.separator()
-                #col.label(text="Geometry:")
+                col.label(text="Geometry:")
                 # XXX replace 'or' when displacement is fixed to not rely on normal influence value.
-                #factor_but(col, (tex.use_map_normal or tex.use_map_displacement), "use_map_normal", "normal_factor", "Normal")
-                #factor_but(col, tex.map_warp, "map_warp", "warp_factor", "Warp")
-                #factor_but(col, tex.map_displacement, "map_displacement", "displacement_factor", "Displace")
+                sub_tmp = factor_but(col, "use_map_normal", "normal_factor", "Normal")
+                sub_tmp.active = (tex.use_map_normal or tex.use_map_displacement)
+                # END XXX
 
                 col.separator()
                 col.label(text="Others:")
@@ -471,72 +429,72 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel):
             #    split = layout.split()
             #
             #    col = split.column()
-            #    factor_but(col, tex.map_density, "map_density", "density_factor", "Density")
-            #    factor_but(col, tex.map_emission, "map_emission", "emission_factor", "Emission")
-            #    factor_but(col, tex.map_scattering, "map_scattering", "scattering_factor", "Scattering")
-            #    factor_but(col, tex.map_reflection, "map_reflection", "reflection_factor", "Reflection")
+            #    factor_but(col, "use_map_density", "density_factor", "Density")
+            #    factor_but(col, "use_map_emission", "emission_factor", "Emission")
+            #    factor_but(col, "use_map_scatter", "scattering_factor", "Scattering")
+            #    factor_but(col, "use_map_reflect", "reflection_factor", "Reflection")
             #
-            #    if wide_ui:
-            #        col = split.column()
-            #        col.label(text=" ")
-            #    factor_but(col, tex.map_coloremission, "map_coloremission", "coloremission_factor", "Emission Color")
-            #    factor_but(col, tex.map_colortransmission, "map_colortransmission", "colortransmission_factor", "Transmission Color")
-            #    factor_but(col, tex.map_colorreflection, "map_colorreflection", "colorreflection_factor", "Reflection Color")
-
-      #  elif type(idblock) == bpy.types.Lamp:
-      #      split = layout.split()
-        #
+            #    col = split.column()
+            #    col.label(text=" ")
+            #    factor_but(col, "use_map_color_emission", "emission_color_factor", "Emission Color")
+            #    factor_but(col, "use_map_color_transmission", "transmission_color_factor", "Transmission Color")
+            #    factor_but(col, "use_map_color_reflection", "reflection_color_factor", "Reflection Color")
+        #elif isinstance(idblock, bpy.types.Lamp): # not yet revised
+        #    split = layout.split()
         #    col = split.column()
         #    factor_but(col, tex.map_color, "map_color", "color_factor", "Color")
-        #
+
         #    if wide_ui:
         #        col = split.column()
         #    factor_but(col, tex.map_shadow, "map_shadow", "shadow_factor", "Shadow")
-        #
-        #elif type(idblock) == bpy.types.World:
-        #    split = layout.split()
-        #
-        #    col = split.column()
-        #    factor_but(col, tex.map_blend, "map_blend", "blend_factor", "Blend")
-        #    factor_but(col, tex.map_horizon, "map_horizon", "horizon_factor", "Horizon")
-        #
-        #    if wide_ui:
-        #        col = split.column()
-        #    factor_but(col, tex.map_zenith_up, "map_zenith_up", "zenith_up_factor", "Zenith Up")
-        #    factor_but(col, tex.map_zenith_down, "map_zenith_down", "zenith_down_factor", "Zenith Down")
+
+        elif isinstance(idblock, bpy.types.World): # for setup world texture
+            split = layout.split()
+
+            col = split.column()
+            factor_but(col, "use_map_blend", "blend_factor", "Blend")
+            factor_but(col, "use_map_horizon", "horizon_factor", "Horizon")
+            col = split.column()
+            factor_but(col, "use_map_zenith_up", "zenith_up_factor", "Zenith Up")
+            factor_but(col, "use_map_zenith_down", "zenith_down_factor", "Zenith Down")
 
         #layout.separator()
 
         #split = layout.split()
-        #
+
         #col = split.column()
+        #col.prop(tex, "blend_type", text="Blend")
+        #col.prop(tex, "use_rgb_to_intensity")
+        # color is used on grayscale textures even when use_rgb_to_intensity is disabled.
+        #col.prop(tex, "color", text="")
 
 
-        if type(idblock) in (bpy.types.Material, bpy.types.World):
+        if isinstance(idblock, bpy.types.Material) or isinstance(idblock, bpy.types.World):
             split = layout.split()
             col = split.column()
             col.prop(tex, "default_value", text="Default Value", slider=True)
 
 # Texture Type Panels #
 
-
 class YAF_TextureTypePanel(YAF_TextureButtonsPanel):
-    bl_label = " "
+    bl_label = "Texture Type "
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
     @classmethod
     def poll(self, context):
         tex = context.texture
         engine = context.scene.render.engine
-        tex.type = self.tex_type
-        var = ((tex and tex.yaf_tex_type == self.tex_type and not tex.use_nodes) and (engine in self.COMPAT_ENGINES))
-        if var:
-                if context.texture.type != self.tex_type:
-                        context.texture.type = self.tex_type
-        return var
+
+        #next definition
+        return tex and ((tex.type == self.tex_type and not tex.use_nodes) and (engine in self.COMPAT_ENGINES))
+
+        #if var: # not work correct, remove
+        #        if context.texture.type != self.tex_type:
+        #                context.texture.type = self.tex_type
+        #return var
 
 
-class YAF_TEXTURE_PT_clouds(YAF_TextureTypePanel):
+class YAF_TEXTURE_PT_clouds(YAF_TextureTypePanel, bpy.types.Panel):
     bl_label = "Clouds"
     tex_type = 'CLOUDS'
     COMPAT_ENGINES = {'YAFA_RENDER'}
@@ -562,12 +520,9 @@ class YAF_TEXTURE_PT_clouds(YAF_TextureTypePanel):
         col.prop(tex, "noise_scale", text="Size")
         col.prop(tex, "noise_depth", text="Depth")
 
-        #if wide_ui:
-        #    col = split.column()
-        #col.prop(tex, "nabla", text="Nabla")
 
 
-class YAF_TEXTURE_PT_wood(YAF_TextureTypePanel):
+class YAF_TEXTURE_PT_wood(YAF_TextureTypePanel, bpy.types.Panel):
     bl_label = "Wood"
     tex_type = 'WOOD'
     COMPAT_ENGINES = {'YAFA_RENDER'}
@@ -600,11 +555,9 @@ class YAF_TEXTURE_PT_wood(YAF_TextureTypePanel):
         col.prop(tex, "noise_scale", text="Size")
         col.prop(tex, "turbulence")
 
-        #col = split.column()
-        #col.prop(tex, "nabla")
 
 
-class YAF_TEXTURE_PT_marble(YAF_TextureTypePanel):
+class YAF_TEXTURE_PT_marble(YAF_TextureTypePanel, bpy.types.Panel):
     bl_label = "Marble"
     tex_type = 'MARBLE'
     COMPAT_ENGINES = {'YAFA_RENDER'}
@@ -633,9 +586,9 @@ class YAF_TEXTURE_PT_marble(YAF_TextureTypePanel):
         if wide_ui:
             col = split.column()
         col.prop(tex, "turbulence", text="Turbulence")
-        #col.prop(tex, "nabla")
 
-class YAF_TEXTURE_PT_blend(YAF_TextureTypePanel):
+
+class YAF_TEXTURE_PT_blend(YAF_TextureTypePanel, bpy.types.Panel):
     bl_label = "Blend"
     tex_type = 'BLEND'
     COMPAT_ENGINES = {'YAFA_RENDER'}
@@ -669,7 +622,7 @@ class YAF_TEXTURE_PT_image(YAF_TextureTypePanel, bpy.types.Panel):
         tex = context.texture
 
         layout.template_image(tex, "image", tex.image_user)
-        #layout.prop(tex,"tex_file_name", text = "Image File Path")
+
 
 
 def texture_filter_common(tex, layout):
@@ -685,9 +638,9 @@ def texture_filter_common(tex, layout):
     layout.prop(tex, "use_filter_size_min")
 
 
-class YAF_TEXTURE_PT_image_sampling(YAF_TextureTypePanel):
+class YAF_TEXTURE_PT_image_sampling(YAF_TextureTypePanel, bpy.types.Panel):
     bl_label = "Image Sampling"
-    bl_default_closed = True
+    bl_options = {'DEFAULT_CLOSED'}
     tex_type = 'IMAGE'
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
@@ -707,31 +660,30 @@ class YAF_TEXTURE_PT_image_sampling(YAF_TextureTypePanel):
         #col.prop(tex, "invert_alpha", text="Invert")
         #col.separator()
         col.prop(tex, "use_flip_axis", text="Flip X/Y Axis")
-        #""" # des-activate in 2.53
+
         if wide_ui:
             col = split.column()
         else:
             col.separator()
-        ## end
+
         col.prop(tex, "use_normal_map")
-        # # des-activate in 2.53
         row = col.row()
         row.active = tex.use_normal_map
-        row.prop(tex, "normal_space", text="")
+        #row.prop(tex, "normal_map_space", text="")
 
         col.prop(tex, "use_mipmap")
         row = col.row()
         row.active = tex.use_mipmap
         row.prop(tex, "use_mipmap_gauss")
         col.prop(tex, "use_interpolation")
-        #
+
         texture_filter_common(tex, col)
-        # # end
 
 
-class YAF_TEXTURE_PT_image_mapping(YAF_TextureTypePanel):
+
+class YAF_TEXTURE_PT_image_mapping(YAF_TextureTypePanel, bpy.types.Panel):
     bl_label = "Image Mapping"
-    bl_default_closed = True
+    bl_options = {'DEFAULT_CLOSED'}
     tex_type = 'IMAGE'
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
@@ -756,9 +708,9 @@ class YAF_TEXTURE_PT_image_mapping(YAF_TextureTypePanel):
             # """ # des-activate in 2.53
             #if wide_ui:
             #    col = split.column(align=True)
-            col.label(text="Mirror:")
-            col.prop(tex, "use_mirror_x", text="X")
-            col.prop(tex, "use_mirror_y", text="Y")
+            #col.label(text="Mirror:")
+            #col.prop(tex, "use_mirror_x", text="X")
+            #col.prop(tex, "use_mirror_y", text="Y")
             layout.separator()
             # """ # end
         elif tex.extension == 'CHECKER':
@@ -788,7 +740,7 @@ class YAF_TEXTURE_PT_image_mapping(YAF_TextureTypePanel):
         col.prop(tex, "crop_max_y", text="Y")
 
 
-class YAF_TEXTURE_PT_musgrave(YAF_TextureTypePanel):
+class YAF_TEXTURE_PT_musgrave(YAF_TextureTypePanel, bpy.types.Panel):
     bl_label = "Musgrave"
     tex_type = 'MUSGRAVE'
     COMPAT_ENGINES = {'YAFA_RENDER'}
@@ -831,12 +783,12 @@ class YAF_TEXTURE_PT_musgrave(YAF_TextureTypePanel):
         col = split.column()
         col.prop(tex, "noise_scale", text="Size")
 
-        if wide_ui:
-            col = split.column()
-        col.prop(tex, "nabla")
+        #if wide_ui:
+        #    col = split.column()
+        #col.prop(tex, "nabla")
 
 
-class YAF_TEXTURE_PT_voronoi(YAF_TextureTypePanel):
+class YAF_TEXTURE_PT_voronoi(YAF_TextureTypePanel, bpy.types.Panel):
     bl_label = "Voronoi"
     tex_type = 'VORONOI'
     COMPAT_ENGINES = {'YAFA_RENDER'}
@@ -875,12 +827,8 @@ class YAF_TEXTURE_PT_voronoi(YAF_TextureTypePanel):
         col = split.column()
         col.prop(tex, "noise_scale", text="Size")
 
-        #if wide_ui:
-        #    col = split.column()
-        #col.prop(tex, "nabla")
 
-
-class YAF_TEXTURE_PT_distortednoise(YAF_TextureTypePanel):
+class YAF_TEXTURE_PT_distortednoise(YAF_TextureTypePanel, bpy.types.Panel):
     bl_label = "Distorted Noise"
     tex_type = 'DISTORTED_NOISE'
     COMPAT_ENGINES = {'YAFA_RENDER'}
@@ -904,21 +852,15 @@ class YAF_TEXTURE_PT_distortednoise(YAF_TextureTypePanel):
         col.prop(tex, "distortion", text="Distortion")
         col.prop(tex, "noise_scale", text="Size")
 
-        #if wide_ui:
-        #    col = split.column()
-        #col.prop(tex, "nabla")
 
-
-
+#from properties_texture import TEXTURE_PT_preview
 
 classes = [
     #TEXTURE_MT_specials,
     #TEXTURE_MT_envmap_specials,
-    YAF_TextureButtonsPanel,
-    #YAF_TextureSlotPanel,
-    #YAF_TextureTypePanel,
     YAF_TEXTURE_PT_context_texture,
-    #YAF_TEXTURE_PT_preview,
+    YAF_TEXTURE_PT_preview,
+    #TEXTURE_PT_preview,
 
     YAF_TEXTURE_PT_clouds, # Texture Type Panels
     YAF_TEXTURE_PT_wood,
@@ -947,12 +889,14 @@ classes = [
 
 
 def register():
+    #bpy.types.YAF_TextureButtonsPanel.prepend(TEXTURE_PT_preview.draw)
     register = bpy.types.register
     for cls in classes:
         register(cls)
 
 
 def unregister():
+    #bpy.types.YAF_TextureButtonsPanel.remove(TEXTURE_PT_preview.draw)
     unregister = bpy.types.unregister
     for cls in classes:
         unregister(cls)
