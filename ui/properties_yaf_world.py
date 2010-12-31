@@ -181,7 +181,7 @@ class YAF_PT_world(bpy.types.Panel):
                 except: # TODO: create only image texture? procedural not supported.. ?
                     pass
 #
-                
+
             # more code ?, yes, is need
 
 
@@ -258,7 +258,7 @@ classes = [
 
 def register():
     bpy.types.YAF_PT_world.prepend( WORLD_PT_preview.draw )
-    bpy.typesYAF_PT_world.prepend( WORLD_PT_context_world.draw )
+    bpy.types.YAF_PT_world.prepend( WORLD_PT_context_world.draw )
     register = bpy.types.register
     for cls in classes:
         register(cls)
