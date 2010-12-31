@@ -228,6 +228,7 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                 space = context.space_data
                 #wide_ui = context.region.width > narrowui
 
+                #load preview
                 layout.template_preview(context.material)
 
                 if ob:
@@ -266,6 +267,7 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                 col.prop(context.material,"mat_type", text= "Material Types")
 
                 if yaf_mat.mat_type == 'shinydiffusemat':
+
                     col.prop(yaf_mat,"diffuse_color", text= "Color") #sync. values for coherent view in UI
                     col.prop(yaf_mat,"mirror_color", text= "Mirror Color") # link
                     col.separator()
