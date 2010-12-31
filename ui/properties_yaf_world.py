@@ -84,7 +84,7 @@ World.bg_dsbright =         FloatProperty(attr="bg_dsbright",
                                             default = 1.0,
                                             min = 0, max = 10)
 World.bg_power =            FloatProperty(attr="bg_power",
-                                            description = "",
+                                            description = "Multiplier for Background Color",
                                             default = 1.0,
                                             min = 0, max = 10)
 
@@ -99,7 +99,7 @@ World.bg_gamma_enc =        BoolProperty(attr="bg_gamma_enc",
                                             description = "",
                                             default = True)
 
-World.use_image = BoolProperty(attr="use_image", default = False)
+#World.use_image = BoolProperty(attr="use_image", default = False)
 
 
 class YAF_PT_world(bpy.types.Panel):
@@ -165,23 +165,25 @@ class YAF_PT_world(bpy.types.Panel):
 
             tex = context.scene.world.active_texture
 
-            if tex is not None :
-                #tex.type == 'IMAGE'
+            if tex is not None: # and tex.type == 'IMAGE': # revised if changed to yaf_tex_type
                 try:
                     col.template_ID(context.world,"active_texture")#,new="texture.new")
                 except:
                     pass
+                if  tex.type == 'IMAGE': # it allows to change the used image
+                    try:
+                        col.template_image(tex, "image", tex.image_user, compact=True)
+                    except:
+                        pass
             else:
                 try:
                     col.template_ID(context.world,"active_texture",new="texture.new")
-                except:
+                except: # TODO: create only image texture? procedural not supported.. ?
                     pass
+#
+                
+            # more code ?, yes, is need
 
-            if  tex.type == 'IMAGE':
-                try:
-                    col.template_image(tex, "image", tex.image_user,compact=True)
-                except:
-                    pass
 
 
 
@@ -202,7 +204,7 @@ class YAF_PT_world(bpy.types.Panel):
 
             col.prop(context.world,"bg_background_light", text= "Skylight")
             col.prop(context.world,"bg_light_samples", text= "Samples")
-
+## DarkTide Sunsky NOT  more updated? ----->
         if context.world.bg_type == 'Darktide\'s Sunsky':
             col.prop(context.world,"bg_turbidity", text= "Turbidity")
             col.prop(context.world,"bg_a_var", text= "Brightness of horizon gradient")
@@ -236,20 +238,27 @@ class YAF_PT_world(bpy.types.Panel):
 
         if context.world.bg_use_IBL: # for all options used IBL
             col.prop(context.world, "bg_IBL_samples", text= "IBL Samples")
-            col.prop(context.world, "bg_power", text= "Multiplier for Background Color")
+            col.prop(context.world, "bg_power", text= "Power")
+
+# re-use modules from Blender
+
+import properties_world
+
+properties_world.WORLD_PT_preview.COMPAT_ENGINES.add('YAFA_RENDER')
+properties_world.WORLD_PT_context_world.COMPAT_ENGINES.add('YAFA_RENDER')
+
+del properties_world
 
 
-from properties_world import WORLD_PT_preview
-from properties_world import WORLD_PT_context_world
 
-
+# list of classes
 classes = [
     YAF_PT_world,
 ]
 
 def register():
-    YAF_PT_world.prepend( WORLD_PT_preview.draw )
-    YAF_PT_world.prepend( WORLD_PT_context_world.draw )
+    bpy.types.YAF_PT_world.prepend( WORLD_PT_preview.draw )
+    bpy.typesYAF_PT_world.prepend( WORLD_PT_context_world.draw )
     register = bpy.types.register
     for cls in classes:
         register(cls)
