@@ -121,7 +121,7 @@ class YAF_PT_general_settings(bpy.types.Panel):
         col = split.column()
         col.prop(context.scene,"gs_clay_render", text= "Clay Render")
         col.prop(context.scene,"gs_transp_shad", text= "Transp. Shadow")
-        #col.prop(context.scene,"gs_auto_save", text= "Auto Save")
+        col.prop(context.scene,"gs_auto_save", text= "Auto Save")
         col.prop(context.scene,"gs_auto_threads", text= "Auto Threads")
         col.prop(context.scene,"gs_auto_alpha", text= "Auto Alpha")
         col.prop(context.scene,"gs_premult", text= "Premultiply")
