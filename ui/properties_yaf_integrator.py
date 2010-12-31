@@ -81,9 +81,9 @@ Scene.intg_fg_samples =     IntProperty(attr="intg_fg_samples",
 Scene.intg_show_map =       BoolProperty(attr="intg_show_map",
                                         description = "Directly show radiance map (disables final gathering step)",
                                         default = False)
-#Scene.intg_use_bg =         BoolProperty(attr="intg_use_bg",
-#                                        description = "",
-#                                        default = False)
+Scene.intg_use_bg =         BoolProperty(attr="intg_use_bg",
+                                        description = "",
+                                        default = False)
 Scene.intg_caustic_method = EnumProperty(attr="intg_caustic_method",
                                         description = "Choose caustic rendering method",
     items = (
