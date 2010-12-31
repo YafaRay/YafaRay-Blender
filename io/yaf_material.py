@@ -284,7 +284,7 @@ class yafMaterial:
                                 used = True
                                 diffRoot = lname
                         lname = "gloss_layer%x" % i
-                        if self.writeTexLayer(lname, mappername, glossRoot, mtex, mtex.use_map_color_specular, color):
+                        if self.writeTexLayer(lname, mappername, glossRoot, mtex, mtex.use_map_specular, color):
                                 used = True
                                 glossRoot = lname
                         lname = "glossref_layer%x" % i
@@ -325,7 +325,7 @@ class yafMaterial:
                 #link values Yafaray / Blender
                 # provisional, for test only
                 #TODO: change name of 'variables'?
-                mat.mat_color = mat.diffuse_color #value in Blender
+                mat.mat_color = mat.diffuse_color # changed for conflict to glossyshader
                 mat.mat_diffuse_reflect = mat.diffuse_intensity # value in Blender
                 mat.mat_mirror_color = mat.mirror_color # value in Blender
                 mat.mat_specular_reflect = mat.specular_intensity # value in Blender
