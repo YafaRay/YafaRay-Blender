@@ -48,7 +48,15 @@ if sys.platform == 'win32':
             ctypes.cdll.LoadLibrary(os.path.join(BIN_PATH, dll))
         except Exception as e:
             print("ERROR: Failed to load library " + dll + ", " + repr(e));
-
+elif sys.platform == 'linux2':
+    import ctypes
+    for dll in ['libyafaraycore.so','libyafarayplugin.so']:
+    # load order of libraries is very important, not altered
+        try:
+            ctypes.cdll.LoadLibrary(os.path.join(BIN_PATH, dll))
+        except Exception as e:
+            print("ERROR: Failed to load library " + dll + ", " + repr(e));
+			
 # new test for __init__ file
 
 if "bpy" in locals():
