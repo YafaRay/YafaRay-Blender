@@ -56,7 +56,8 @@ elif sys.platform == 'linux2':
             ctypes.cdll.LoadLibrary(os.path.join(BIN_PATH, dll))
         except Exception as e:
             print("ERROR: Failed to load library " + dll + ", " + repr(e));
-			
+
+
 # new test for __init__ file
 
 if "bpy" in locals():
