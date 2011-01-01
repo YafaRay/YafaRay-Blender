@@ -284,7 +284,7 @@ class yafMaterial:
                                 used = True
                                 diffRoot = lname
                         lname = "gloss_layer%x" % i
-                        if self.writeTexLayer(lname, mappername, glossRoot, mtex, mtex.use_map_specular, color):
+                        if self.writeTexLayer(lname, mappername, glossRoot, mtex, mtex.use_map_color_spec, color):
                                 used = True
                                 glossRoot = lname
                         lname = "glossref_layer%x" % i
