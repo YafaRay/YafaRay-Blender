@@ -17,7 +17,6 @@
 # ##### END GPL LICENSE BLOCK #####
 import sys, os, threading, time
 
-
 PLUGIN_PATH = os.path.join(__path__[0], 'bin', 'plugins')
 BIN_PATH = os.path.join(__path__[0], 'bin')
 
@@ -37,26 +36,21 @@ bl_addon_info = {
     "tracker_url": "http://www.yafaray.org/development/bugtracker/yafaray",
     "category": "Render"
     }
-if sys.platform == 'win32':
-    # preload some dlls so users do not have to mess about with path
-    import ctypes
-    for dll in ['zlib1','libxml2-2','libgcc_s_sjlj-1','Half','Iex','IlmThread',# in some rev of Blender, Half before Iex
-                'IlmImf','libjpeg-8','libpng14','libtiff-3','libfreetype-6',
-                'libyafaraycore','libyafarayplugin']:
-    # load order of libraries is very important, not altered
-        try:
-            ctypes.cdll.LoadLibrary(os.path.join(BIN_PATH, dll))
-        except Exception as e:
-            print("ERROR: Failed to load library " + dll + ", " + repr(e));
-elif sys.platform == 'linux2':
-    import ctypes
-    for dll in ['libyafaraycore.so','libyafarayplugin.so']:
-    # load order of libraries is very important, not altered
-        try:
-            ctypes.cdll.LoadLibrary(os.path.join(BIN_PATH, dll))
-        except Exception as e:
-            print("ERROR: Failed to load library " + dll + ", " + repr(e));
 
+# Preload needed libraries
+
+if sys.platform == 'win32':
+    # Loading order of the dlls is sensible please do not alter it
+    dllArray = ['zlib1','libxml2-2','libgcc_s_sjlj-1','Half','Iex','IlmThread','IlmImf','libjpeg-8','libpng14','libtiff-3','libfreetype-6','libyafaraycore','libyafarayplugin']
+else:
+    dllArray = ['libyafaraycore.so','libyafarayplugin.so']
+
+import ctypes
+for dll in dllArray:
+    try:
+        ctypes.cdll.LoadLibrary(os.path.join(BIN_PATH, dll))
+    except Exception as e:
+        print("ERROR: Failed to load library " + dll + ", " + repr(e));
 
 # new test for __init__ file
 
