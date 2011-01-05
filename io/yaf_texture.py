@@ -33,7 +33,7 @@ class yafTexture:
         yi = self.yi
         yi.paramsClearAll()
 
-        if tex.type == 'BLEND' :
+        if tex.type == 'BLEND':
 
             yi.printInfo("Exporter: Creating Texture: \"" + name + "\" type BLEND")
             yi.paramsSetString("type", "blend")
@@ -47,7 +47,7 @@ class yafTexture:
             yi.paramsSetString("stype", stype)
 
 
-        elif tex.type == 'CLOUDS': 
+        elif tex.type == 'CLOUDS':
 
             yi.printInfo("Exporter: Creating Texture: \"" + name + "\" type CLOUDS")
             yi.paramsSetString("type", "clouds")
