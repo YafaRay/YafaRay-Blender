@@ -27,7 +27,7 @@ class yafMaterial:
             yi.paramsSetString("type", "layer")
             yi.paramsSetString("name", name)
 
-            yi.paramsSetString("input", tex_in)#tex_in) # SEE the defination later
+            yi.paramsSetString("input", tex_in)# SEE the defination later
 
             #mtex is an instance of MaterialTextureSlot class
 
@@ -168,18 +168,18 @@ class yafMaterial:
                 yi = self.yi
                 yi.paramsClearAll()
 
-                if rough: # these properties are not created yet
-                        yi.paramsSetString("type", "rough_glass")
-                        yi.paramsSetFloat("exponent", mat.mat_exponent )
-                        yi.paramsSetFloat("alpha", mat.mat_alpha )
+                if rough: # create bool property "rough"
+                    yi.paramsSetString("type", "rough_glass")
+                    yi.paramsSetFloat("exponent", mat.mat_exponent )
+                    yi.paramsSetFloat("alpha", mat.mat_alpha )
                 else:
-                        yi.paramsSetString("type", "glass")
+                    yi.paramsSetString("type", "glass")
 
                 yi.paramsSetFloat("IOR", mat.mat_ior)
                 filt_col = mat.mat_filter_color
                 mir_col = mat.mat_mirror_color
                 tfilt = mat.mat_transmit_filter
-                abs_col = mat.mat_absorp_color
+                abs_col = mat.diffuse_color # mat_absorp_color = diffuse_color Blender value
 
                 yi.paramsSetColor("filter_color", filt_col[0], filt_col[1], filt_col[2])
                 yi.paramsSetColor("mirror_color", mir_col[0], mir_col[1], mir_col[2])
@@ -235,13 +235,13 @@ class yafMaterial:
                 yi = self.yi
                 yi.paramsClearAll()
 
-                if coated:
+                if coated: # create bool property
                         yi.paramsSetString("type", "coated_glossy")
                         yi.paramsSetFloat("IOR", mat.mat_ior)
                 else:
                         yi.paramsSetString("type", "glossy")
 
-                diffuse_color = mat.mat_diff_color # possible error
+                diffuse_color = mat.diffuse_color # mat.mat_diff_color = diffuse_color value in Blender
                 #color = props["color"]
                 color         = mat.mat_glossy_color
 
@@ -319,24 +319,17 @@ class yafMaterial:
                 yi = self.yi
                 yi.paramsClearAll()
 
-
                 yi.paramsSetString("type", "shinydiffusemat")
 
                 #link values Yafaray / Blender
                 # provisional, for test only
                 #TODO: change name of 'variables'?
-                mat.mat_color = mat.diffuse_color # changed for conflict to glossyshader
-                mat.mat_diffuse_reflect = mat.diffuse_intensity # value in Blender
-                mat.mat_mirror_color = mat.mirror_color # value in Blender
-                mat.mat_specular_reflect = mat.specular_intensity # value in Blender
-                mat.mat_translucency = mat.translucency # value in Blender
-                mat.mat_emit = mat.emit # value
-
-                bCol = mat.mat_color #
-                mirCol = mat.mat_mirror_color #
-                bSpecr = mat.mat_specular_reflect #
+                
+                bCol = mat.diffuse_color  # mat_color = diffuse_color Blender value
+                mirCol = mat.mirror_color # mat_mirror_color = mirror_color Blender value
+                bSpecr = mat.specular_intensity # mat_specular_reflect = specular_intensity Blender value
                 bTransp = mat.mat_transparency
-                bTransl = mat.translucency #
+                bTransl = mat.translucency # mat_translucency = translucency Blender value
                 bTransmit = mat.mat_transmit_filter
 
                 # TODO: all
@@ -410,7 +403,7 @@ class yafMaterial:
                 yi.paramsSetColor("color", bCol[0], bCol[1], bCol[2])
                 yi.paramsSetFloat("transparency", bTransp)
                 yi.paramsSetFloat("translucency", bTransl)
-                yi.paramsSetFloat("diffuse_reflect", mat.mat_diffuse_reflect) # link
+                yi.paramsSetFloat("diffuse_reflect", mat.diffuse_intensity) # mat_diffuse_reflect = diffuse_intensity Blender value
                 yi.paramsSetFloat("emit", mat.mat_emit)#
                 yi.paramsSetFloat("transmit_filter", bTransmit)
 
