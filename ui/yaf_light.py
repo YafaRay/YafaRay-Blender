@@ -14,7 +14,7 @@ from rna_prop_ui import PropertyPanel
 # only create proprerty if not exist in Blender
 # if exist, but not apropiate parameter for Yafaray
 
-Lamp.lamp_type = EnumProperty(attr="lamp_type",
+Lamp.lamp_type = EnumProperty(attr="type",
     items = (
         ("","Light Type",""),
         ("POINT","Point",""),
@@ -89,6 +89,7 @@ class YAF_PT_lamp(bpy.types.Panel):
     def poll(self, context):
 
         engine = context.scene.render.engine
+        """
         import properties_data_lamp
 
         if (context.lamp and  (engine in self.COMPAT_ENGINES) ) :
@@ -101,13 +102,31 @@ class YAF_PT_lamp(bpy.types.Panel):
                 properties_data_lamp.register() # use Blender properties
             except:
                 pass
-
+        """
         return (context.lamp and  (engine in self.COMPAT_ENGINES))
 
 
     def draw(self, context):
 
         layout = self.layout
+        # test insert context.lamp here, for no import module
+        ob = context.object
+        lamp = context.lamp
+        space = context.space_data
+        lamp_type = context.lamp.type
+
+        split = layout.split(percentage=0.65)
+
+        texture_count = len(lamp.texture_slots.keys())
+
+        if ob:
+            split.template_ID(ob, "data")
+        elif lamp:
+            split.template_ID(space, "pin_id")
+
+        if texture_count != 0:
+            split.label(text=str(texture_count), icon='TEXTURE')
+        # end insert
 
         # draw preview? easy...
         layout.template_preview(context.lamp)
@@ -117,9 +136,8 @@ class YAF_PT_lamp(bpy.types.Panel):
         split = layout.split(percentage = 0.65)
         row = layout.row()
 
-        col = split.column() # row.column = org
+        col = row.column() # row.column = org
         sub = col.column()
-
 
         #context.lamp.shadow_ray_samples = 16
 
@@ -132,9 +150,6 @@ class YAF_PT_lamp(bpy.types.Panel):
 
 
         elif context.lamp.type == 'SPOT':
-
-            #if context.lamp.type != 'SPOT': # not work..
-            #    context.lamp.type = 'SPOT'
 
             col.prop(context.lamp,"spot_size", text= "Cone Angle")
             col.prop(context.lamp,"spot_soft_shadows", text= "Soft Shadow")
@@ -170,6 +185,7 @@ class YAF_PT_lamp(bpy.types.Panel):
 
         elif context.lamp.type == 'HEMI':
 
+            col.label("YafaRay Light type IES")
             col.prop(context.lamp,"ies_file",text = "IES File")
             #col.prop(context.lamp,"spot_size",text = "IES Cone Angle")
             col.prop(context.lamp,"ies_soft_shadows",text = "IES Soft Shadows")
