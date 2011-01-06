@@ -63,7 +63,7 @@ class yafLight:
 
         yi.paramsClearAll()
         #props = obj.properties["YafRay"]
-        lampType = lamp.type
+        lampType = lamp.type or lamp_type # for test
         power = lamp.energy
         color = lamp.color
 
@@ -78,40 +78,21 @@ class yafLight:
 
         if lampType == "POINT":
             yi.paramsSetString("type", "pointlight")
-            power = 0.5 * power * power
+            power = 0.5 * power * power # original value
 
             if lamp.use_sphere:
-                yi.paramsClearAll();
-                yi.paramsSetString("type", "spherelight")
-                #radius = props["radius"]
+                #yi.paramsClearAll();
                 radius = lamp.shadow_soft_size
-                power = 0.5*power*power/(radius * radius)
-                yi.paramsSetInt("samples", lamp.yaf_samples)
+                power = 0.5*power*power/(radius * radius) # radius < 1 crash geometry ?
 
                 if  lamp.create_geometry == True:
                     ID = self.makeSphere(24, 48, pos[0], pos[1], pos[2], radius, lamp_mat)
                     yi.paramsSetInt("object", ID)
 
-
-#       elif lampType == "Sphere":
-            #radius = props["radius"]
-#           radius = lamp.shadow_soft_size
-#           power = 0.5*power*power/(radius * radius)
-
-
-            #yi.paramsClearAll();
-
-#           if  lamp.create_geometry == True:
-#               ID = self.makeSphere(24, 48, pos[0], pos[1], pos[2], radius, lamp_mat)
-#               yi.paramsSetInt("object", ID)
-
-            #yi.paramsSetInt("samples", props["samples"])
-#           yi.paramsSetString("type", "spherelight")
-#           yi.paramsSetInt("samples", lamp.yaf_samples)
-
-            #print(str(lamp.shadow_ray_samples))
-#           yi.paramsSetFloat("radius", radius)
-            #print("complete ")
+                yi.paramsSetString("type", "spherelight")
+                yi.paramsSetInt("samples", lamp.yaf_samples)
+                yi.paramsSetFloat("radius", radius)
+                #print("complete ")
 
         elif lampType == "SPOT":
             #light = obj.getData()
@@ -144,6 +125,7 @@ class yafLight:
 
         elif lampType == "HEMI":
 
+            # use for IES light
             yi.paramsSetString("type", "ieslight")
             yi.paramsSetPoint("to", to[0], to[1], to[2])
             import os
@@ -158,7 +140,7 @@ class yafLight:
 
         elif lampType == "AREA":
             #yi.paramsSetString("type", "arealight")
-            #areaLight = obj.getData()
+            #areaLight = obj.getData() # old
             #sizeX = areaLight.getAreaSizeX()
             #sizeY = areaLight.getAreaSizeY()
 
