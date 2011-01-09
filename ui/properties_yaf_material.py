@@ -294,7 +294,7 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                         col.prop(yaf_mat,"mat_sigma", text= "Sigma", slider = True)
 
                 #--------
-                # proposal for unificated glossy's shaders definition, if confirm other devels, delete old code
+                # delete unused code after integration
                 #--------
 
                 if yaf_mat.mat_type == 'glossy' or yaf_mat.mat_type == 'coated_glossy': # if used " 'glossy' or 'coated_glossy' " not work correct
@@ -322,26 +322,8 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                         col.prop(yaf_mat,"mat_ior", text= "IOR", slider = True)
                         coated = True
 
-                #if yaf_mat.mat_type == 'coated_glossy':
-                #    col.prop(yaf_mat,"diffuse_color", text= "Diffuse Color") # link
-                #    col.prop(yaf_mat,"mat_glossy_color", text= "Glossy Color")
-                #    col.separator()
-                #    col.prop(yaf_mat,"mat_diffuse_reflect", text= "Diffuse Reflection", slider = True)
-                #    col.prop(yaf_mat,"mat_glossy_reflect", text= "Glossy Reflection", slider = True)
-                #    col.prop(yaf_mat,"mat_anisotropic", text= "Anisotropic")
-                #    if yaf_mat.mat_anisotropic == True:
-                #        col.prop(yaf_mat,"mat_exp_u", text= "Exponent U", slider = True)
-                #        col.prop(yaf_mat,"mat_exp_v", text= "Exponent V", slider = True)
-                #    else:
-                #        col.prop(yaf_mat,"mat_exponent", text= "Exponent", slider = True)
-
-                #     col.prop(yaf_mat,"mat_as_diffuse", text= "As Diffuse")
-
-                #    col.prop(yaf_mat,"mat_ior", text= "IOR", slider = True)
-                #    coated = True
-
                 #--------
-                # proposal for unificated glass shaders definition, if confirm other devels, delete old code
+                # delete unused code
                 # -------
 
                 if yaf_mat.mat_type == 'glass' or yaf_mat.mat_type == 'rough_glass':
@@ -361,24 +343,6 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                         col.prop(yaf_mat,"mat_alpha", text= "Alpha", slider = True)
                         rough = True
 
-                    #col.prop(yaf_mat,"mat_fake_shadows", text= "Fake Shadows")
-                    #rough = False
-
-                #if yaf_mat.mat_type == 'rough_glass':
-                #    col.prop(yaf_mat,"diffuse_color", text= "Absorption Color")# mat_absorp_color
-                #    col.prop(yaf_mat,"mat_filter_color", text= "Filter Color")
-                #    col.prop(yaf_mat,"mat_mirror_color", text= "Mirror Color")
-                #    col.separator()
-                #    col.prop(yaf_mat,"mat_ior", text= "IOR", slider = True)
-                #    col.prop(yaf_mat,"mat_absorp_distance", text= "Absorption Distance", slider = True)
-                #    col.prop(yaf_mat,"mat_transmit_filter", text= "Transmit Filter", slider = True)
-                #    col.prop(yaf_mat,"mat_dispersion_power", text= "Dispersion Power", slider = True)
-                #
-                #    col.prop(yaf_mat,"mat_exponent", text= "Exponent", slider = True)
-                #    col.prop(yaf_mat,"mat_alpha", text= "Alpha", slider = True)
-
-                #    col.prop(yaf_mat,"mat_fake_shadows", text= "Fake Shadows")
-                #    rough = True
 
                 if yaf_mat.mat_type == 'blend':
                     col.prop(yaf_mat,"mat_blend_value", text= "Blend Value", slider = True)
