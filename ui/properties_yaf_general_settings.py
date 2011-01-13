@@ -98,6 +98,7 @@ class YAF_PT_general_settings(bpy.types.Panel):
         split = layout.split(percentage=0.6)
         col = split.column()
         row = layout.row()
+        rd = context.scene.render
 
         col.prop(context.scene,"gs_ray_depth", text= "Ray Depth")
         if context.scene.gs_transp_shad:
@@ -112,11 +113,13 @@ class YAF_PT_general_settings(bpy.types.Panel):
             col.prop(context.scene,"gs_tile_order", text= "Tile order")
             col.prop(context.scene,"gs_tile_size", text= "Tile Size")
 
+
         else:
             col.prop(context.scene,"gs_draw_params", text= "Draw Params")
             if context.scene.gs_draw_params:
                 col = layout.row()
                 col.prop(context.scene,"gs_custom_string", text= "Custom String")
+        col.prop(context.scene.render, "use_color_management")
 
         col = split.column()
         col.prop(context.scene,"gs_clay_render", text= "Clay Render")
