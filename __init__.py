@@ -24,7 +24,7 @@ sys.path.append(BIN_PATH)
 
 
 
-bl_addon_info = {
+bl_info = {
     "name": "YafaRay Integration",
     "author": "Shuvro Sarker",
     "version": (0, 1, 2, 'alpha'),
