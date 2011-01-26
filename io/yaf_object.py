@@ -138,7 +138,8 @@ class yafObject(object):
             return
         
         hasOrco = False
-        hasUV   = False
+		# TODO: this may not be the best way to check for uv maps
+        hasUV   = (len(mesh.uv_textures) > 0)
             
         # Check if the object has an orco mapped texture
         for mat in mesh.materials:
@@ -199,6 +200,7 @@ class yafObject(object):
                 ind +=  1
             else:
                 self.yi.addVertex(v.co[0], v.co[1], v.co[2])
+                print(v.co)
         
 
         co = None
@@ -229,15 +231,16 @@ class yafObject(object):
             #    fmat = ymat
                 
             #if mesh.active_uv_texture is not None : # 2.53    
-            if len(mesh.uv_textures) > 0:
+            if hasUV:
                 co = mesh.uv_textures.active.data[index]
-                hasUV = True
             
-            if hasUV == True and (co is not None) :
+            if hasUV:
                 uv0 = yi.addUV(co.uv1[0], co.uv1[1])
                 uv1 = yi.addUV(co.uv2[0], co.uv2[1])
                 uv2 = yi.addUV(co.uv3[0], co.uv3[1])
                 yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2, ymat)
+                #print("UVs: ", co.uv1, co.uv2, co.uv3, co.uv4)
+                #print("verts: ", f.vertices[0], f.vertices[1], f.vertices[2])
                 #print("with uv case 1")
             
             else:
@@ -247,9 +250,10 @@ class yafObject(object):
             #print("trying to locate error " + str(index))
         
             if len(f.vertices) == 4:
-                if hasUV == True and (co is not None):
+                if hasUV:
                     uv3 = yi.addUV(co.uv4[0], co.uv4[1])
                     yi.addTriangle(f.vertices[2], f.vertices[3], f.vertices[0], uv2, uv3, uv0, ymat)
+                    #print("verts: ", f.vertices[0], f.vertices[1], f.vertices[2], f.vertices[3])
                     #print("with uv case 2")
                 else:
                     self.yi.addTriangle(f.vertices[2], f.vertices[3], f.vertices[0],fmat)
