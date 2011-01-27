@@ -328,7 +328,7 @@ class yafMaterial:
                 
                 bCol = mat.diffuse_color  # mat_color = diffuse_color Blender value
                 mirCol = mat.mirror_color # mat_mirror_color = mirror_color Blender value
-                bSpecr = mat.specular_intensity # mat_specular_reflect = specular_intensity Blender value
+                bSpecr = mat.mat_mirror_strength # mat_specular_reflect = specular_intensity Blender value
                 bTransp = mat.mat_transparency
                 bTransl = mat.translucency # mat_translucency = translucency Blender value
                 bTransmit = mat.mat_transmit_filter
