@@ -200,8 +200,6 @@ class yafObject(object):
                 ind +=  1
             else:
                 self.yi.addVertex(v.co[0], v.co[1], v.co[2])
-                print(v.co)
-        
 
         co = None
         #ymat = None
