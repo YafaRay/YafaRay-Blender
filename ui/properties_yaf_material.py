@@ -171,12 +171,6 @@ Material.mat_sigma =            FloatProperty(attr="mat_sigma",
                                         default = 0.1, step = 1,
                                         precision = 2,
                                         soft_min = 0.0, soft_max = 1.0)
-Material.mat_specular_reflect = FloatProperty(attr="specular_intensity", # link
-                                        description = "",
-                                        min = 0.0, max = 1.0,
-                                        default = 0.0, step = 1,
-                                        precision = 2,
-                                        soft_min = 0.0, soft_max = 1.0)
 Material.rough =     BoolProperty(attr="rough",
                                         description = "",
                                         default = False)
@@ -236,6 +230,8 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                 space = context.space_data
                 #wide_ui = context.region.width > narrowui
 
+                layout.operator("bla", "TextOp")
+
                 #load preview
                 layout.template_preview(context.material)
 
@@ -269,6 +265,8 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                         split.template_ID(space, "pin_id")
                         split.separator()
 
+                if context.material == None: return
+
                 col.separator()
 
 
@@ -280,7 +278,6 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                     col.prop(yaf_mat,"mirror_color", text= "Mirror Color") # link
                     col.separator()
                     col.prop(yaf_mat,"diffuse_intensity", text= "Diffuse Reflection", slider = True) # link
-                    col.prop(yaf_mat,"specular_intensity", text= "Specular Reflection", slider = True) # link
                     col.prop(yaf_mat,"mat_mirror_strength", text= "Mirror Strength", slider = True)
                     col.prop(yaf_mat,"mat_transparency", text= "Transparency", slider = True)
                     col.prop(yaf_mat,"translucency", text= "Translucency", slider = True) # link
