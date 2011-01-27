@@ -1,5 +1,6 @@
 import bpy
 import mathutils
+import yafrayinterface
 
 def proj2int(val):
     if val ==   'NONE' : return 0
@@ -137,13 +138,13 @@ class yafMaterial:
 
                         if mtex.object is not None:
 
-                                texmat = mtex.object.matrix_local.invert()
+                                texmat = mtex.object.matrix_local.copy().invert()
                                 rtmatrix = yafrayinterface.new_floatArray(4*4)
 
                                 for x in range(4):
-                                        for y in range(4):
-                                                idx = (y + x * 4)
-                                                yafrayinterface.floatArray_setitem(rtmatrix, idx, texmat[x][y])
+                                    for y in range(4):
+                                        idx = (y + x * 4)
+                                        yafrayinterface.floatArray_setitem(rtmatrix, idx, texmat[x][y])
 
                                 yi.paramsSetMemMatrix("transform", rtmatrix, True)
                                 yafrayinterface.delete_floatArray(rtmatrix)
