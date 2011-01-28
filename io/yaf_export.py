@@ -24,7 +24,7 @@ IDNAME = 'YAFA_RENDER'
 
 class YafaRayRenderEngine(bpy.types.RenderEngine):
     bl_idname = IDNAME
-    bl_use_preview = True
+    bl_use_preview = False
     bl_label = "YafaRay Render"
     progress = 0.0
     tag = ""
@@ -50,42 +50,42 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.exportObjects()
 
     def exportTextures(self):
-        for obj in self.scene.objects:
-            for mat_slot in obj.material_slots:
-                for tex in mat_slot.material.texture_slots:
-                    if tex:
-                        self.yaf_texture.writeTexture(self.scene,tex.texture)
+        # export textures from visible objects only. Won't work with
+        # blend mat, there the textures need to be handled separately
+        for obj in [o for o in self.scene.objects if (not o.hide_render and o.is_visible(self.scene))]:
+            for mat_slot in [m for m in obj.material_slots if m.material]:
+                for tex in [t for t in mat_slot.material.texture_slots if (t and t.texture)]:
+                    self.yaf_texture.writeTexture(self.scene, tex.texture)
 
     def exportObjects(self):
         self.yi.printInfo("Exporter: Processing Objects...")
 
         idx=0      #TODO: REMOVE
 
-        for o in self.scene.objects:
-            # export only visible objects
-            if o.is_visible(self.scene) and not o.hide_render:
-                #if ob.is_duplicator and len(ob.particle_systems) < 1:
-                if o.is_duplicator:
-                    if o.particle_systems:
-                        # Check if we need to render emitter, if so do it
-                        for psys in o.particle_systems:
-                            if psys.settings.use_render_emitter:
-                                self.exportObject(o, o.matrix_local)
-                                break
-                    o.create_dupli_list(self.scene)
-                    for obj in o.dupli_list:
-                        #print ("Exporting INSTANCE OBJECT:",obj.object,obj.object.type)
-                        self.exportObject(obj.object, obj.matrix, idx)    #TODO: Please kill that idx
-                        idx += 1    #TODO: REMOVE
+        # export only visible objects
+        for obj in [o for o in self.scene.objects if not o.hide_render and o.is_visible(self.scene)]:
+            # if ob.is_duplicator and len(ob.particle_systems) < 1:
+            if obj.is_duplicator:
+                if obj.particle_systems:
+                    # Check if we need to render emitter, if so do it
+                    for psys in obj.particle_systems:
+                        if psys.settings.use_render_emitter:
+                            self.exportObject(obj, obj.matrix_local)
+                            break
+                obj.create_dupli_list(self.scene)
+                for obj_dupli in obj.dupli_list:
+                    #print ("Exporting INSTANCE OBJECT:",obj.object,obj.object.type)
+                    self.exportObject(obj_dupli.object, obj_dupli.matrix, idx)    #TODO: Please kill that idx
+                    idx += 1    #TODO: REMOVE
 
-                    if o.dupli_list:
-                        o.free_dupli_list()
-                else:
-                    if o.parent and o.parent.is_duplicator:
-                        # this is an instanced object
-                        continue
-                    #print ("Exporting REAL OBJECT:",o,o.type)
-                    self.exportObject(o)
+                if obj.dupli_list:
+                    obj.free_dupli_list()
+            else:
+                if obj.parent and obj.parent.is_duplicator:
+                    # this is an instanced object
+                    continue
+                #print ("Exporting REAL OBJECT:",o,o.type)
+                self.exportObject(obj)
 
 
     def exportObject(self, obj, matrix=None, idx=None):
@@ -144,7 +144,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                     self.exportMaterial(mat_slot.material)
 
 
-    def exportMaterial(self,material):
+    def exportMaterial(self, material):
         if material:
             if material.mat_type == 'blend':
                 # must make sure all materials used by a blend mat

@@ -1,6 +1,6 @@
+import os as real_os # somehow, os as a module name becomes unavailable with bpy import
 import bpy
 import re
-import os
 from  math import *
 import yafrayinterface
 
@@ -29,7 +29,6 @@ class yafTexture:
         self.loadedTextures = set()
 
     def writeTexture(self,scene,tex):
-
         name = tex.name
         
         if name in self.loadedTextures: return
@@ -242,14 +241,14 @@ class yafTexture:
             yi.paramsSetString("noise_type1", noise2string(tex.noise_basis))
             yi.paramsSetString("noise_type2", noise2string(tex.noise_distortion))
 
-        elif tex.type == 'IMAGE' and (tex.image is not None):
+        elif tex.type == 'IMAGE' and tex.image:
             image_tex = tex.image
-            image_file = get_image_filename(image_tex.filepath)
-
-            import os
+            image_file = bpy.path.abspath(image_tex.filepath)
+            image_file = real_os.path.realpath(image_file)
+            image_file = real_os.path.normpath(image_file)
 
             #if tex.tex_file_name != "" and not os.path.exists(tex.tex_file_name): # org
-            if image_file != "" and not os.path.exists(image_file):
+            if image_file != "" and not real_os.path.exists(image_file):
                 yi.printInfo("Exporter: No valid texture image supplied.")
                 return False
 

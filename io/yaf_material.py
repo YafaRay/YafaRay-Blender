@@ -158,7 +158,9 @@ class yafMaterial:
                 elif mtex.mapping == 'SPHERE' : yi.paramsSetString("mapping", "sphere")
 
                 if mtex.use_map_normal: #|| mtex->maptoneg & MAP_NORM )
-                        nf = mtex.normal_factor
+                        # scale up the normal factor, it ressembles
+                        # blender a bit more
+                        nf = mtex.normal_factor * 5
                         yi.paramsSetFloat("bump_strength", nf)
 
 

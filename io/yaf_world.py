@@ -1,14 +1,10 @@
 import bpy
 from  math import *
 import re
-import os
+import os as real_os # somehow, os as a module name becomes unavailable with bpy import
 #import mathutils
 #import yafrayinterface
 
-
-def get_image_filename(filepath):
-    path = filepath.replace('//',os.path.expanduser('~')+'/',1)
-    return os.path.abspath(path)
 
 class yafWorld:
         def __init__(self, interface):
@@ -49,7 +45,13 @@ class yafWorld:
                         if worldTex.type == 'IMAGE' and (worldTex.image is not None):
 
                             yi.paramsSetString("type", "image")
-                            yi.paramsSetString("filename", get_image_filename(worldTex.image.filepath) )
+
+                            image_file = bpy.path.abspath(worldTex.image.filepath)
+                            image_file = real_os.path.realpath(image_file)
+                            image_file = real_os.path.normpath(image_file)
+
+                            yi.paramsSetString("filename", image_file)
+
                             # exposure_adjust not restricted to integer range anymore
                             yi.paramsSetFloat("exposure_adjust", world.bg_exposure)
 

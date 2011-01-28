@@ -81,12 +81,12 @@ class yafLight:
 
         if lampType == "POINT":
             yi.paramsSetString("type", "pointlight")
-            #power = 0.5 * power * power # original value
+            power = 0.5 * power * power # original value
 
             if lamp.use_sphere:
                 #yi.paramsClearAll();
                 radius = lamp.shadow_soft_size
-                #power = 0.5*power*power/(radius * radius) # radius < 1 crash geometry ?
+                power /= (radius * radius) # radius < 1 crash geometry ?
 
                 if lamp.create_geometry:
                     ID = self.makeSphere(24, 48, pos[0], pos[1], pos[2], radius, self.lightMat)
@@ -107,7 +107,7 @@ class yafLight:
             yi.paramsSetFloat("shadowFuzzyness", lamp.shadow_fuzzyness)
             yi.paramsSetBool("photon_only", lamp.photon_only )
             yi.paramsSetInt("samples", lamp.yaf_samples)
-            #power = 0.5*power*power
+            power = 0.5 * power * power
 
         elif lampType == "SUN":
             yi.paramsSetString("type", "sunlight")
