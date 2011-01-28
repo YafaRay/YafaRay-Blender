@@ -21,14 +21,26 @@ class yafWorld:
                 #scene   = context.scene
                 world   = scene.world
 
-                bg_type = world.bg_type
-                print("INFO: Exporting World, type: " + bg_type)
+                if world:
+                    bg_type = world.bg_type
+                    useIBL = world.bg_use_IBL
+                    iblSamples = world.bg_IBL_samples
+                    bgPower = world.bg_power
+                    c = world.horizon_color
+                else:
+                    bg_type = "constant"
+                    c = (0.0, 0.0, 0.0)
+                    useIBL = False
+                    iblSamples = 8
+                    bgPower = 1
+
+                self.yi.printInfo("Exporting World, type: " + bg_type)
                 yi.paramsClearAll();
 
                 if bg_type == 'Texture':
                     if world.active_texture is not None :
                         worldTex = world.active_texture
-                        print("INFO World Texture, name: " + worldTex.name)
+                        self.yi.printInfo("World Texture, name: " + worldTex.name)
                     else :
                         worldTex = None
 
@@ -59,11 +71,11 @@ class yafWorld:
 
                             yi.paramsSetString("type", "textureback");
                             yi.paramsSetString("texture", "world_texture");
-                            yi.paramsSetBool("ibl", world.bg_use_IBL)
+                            yi.paramsSetBool("ibl", useIBL)
                             yi.paramsSetBool("with_caustic", True) #this 2 lines are temporary
                             yi.paramsSetBool("with_diffuse", True)
-                            yi.paramsSetInt("ibl_samples", world.bg_IBL_samples)
-                            yi.paramsSetFloat("power", world.bg_power);
+                            yi.paramsSetInt("ibl_samples", iblSamples)
+                            yi.paramsSetFloat("power", bgPower);
                             yi.paramsSetFloat("rotation", world.bg_rotation)
 
                 elif bg_type == 'Gradient' :
@@ -84,9 +96,9 @@ class yafWorld:
                     #print(str(c[0]) + ", " + str(c[1]) + ", " + str(c[2]))
                     yi.paramsSetColor("zenith_ground_color", c[0], c[1], c[2])
 
-                    yi.paramsSetFloat("power", world.bg_power)
-                    yi.paramsSetBool("ibl", world.bg_use_IBL)
-                    yi.paramsSetInt("ibl_samples", world.bg_IBL_samples)
+                    yi.paramsSetFloat("power", bgPower)
+                    yi.paramsSetBool("ibl", useIBL)
+                    yi.paramsSetInt("ibl_samples", iblSamples)
                     yi.paramsSetString("type", "gradientback")
 
                 elif bg_type == 'Sunsky' :
@@ -141,12 +153,11 @@ class yafWorld:
 
                 else:
                     #print('proper portion Single Color' )
-                    c = world.horizon_color
                     yi.paramsSetColor("color", c[0], c[1], c[2])
                     #print(str(c[0]) + " " + str(c[1]) + " " + str(c[2]))
-                    yi.paramsSetBool("ibl", world.bg_use_IBL)
-                    yi.paramsSetInt("ibl_samples", world.bg_IBL_samples)
-                    yi.paramsSetFloat("power", world.bg_power)
+                    yi.paramsSetBool("ibl", useIBL)
+                    yi.paramsSetInt("ibl_samples", iblSamples)
+                    yi.paramsSetFloat("power", bgPower)
                     yi.paramsSetString("type", "constant");
 
                 yi.createBackground("world_background")

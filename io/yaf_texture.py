@@ -26,10 +26,14 @@ def get_image_filename(filepath):
 class yafTexture:
     def __init__(self, interface):
         self.yi = interface
+        self.loadedTextures = set()
 
     def writeTexture(self,scene,tex):
 
         name = tex.name
+        
+        if name in self.loadedTextures: return
+        
         yi = self.yi
         yi.paramsClearAll()
 
@@ -300,21 +304,5 @@ class yafTexture:
             #if tex.rot90 != 0:
             yi.paramsSetBool("rot90", tex.use_flip_axis)
         yi.createTexture(name)
-
-    def createTextures(self,yi,scene):
-        #alternative option: bpy.data.textures
-        #objects = scene.objects
-        #for item in objects:
-        #   for index in range(16):
-        #       if not item.active_material.texture_slots[index]:
-        #           break
-        #       elif item.active_material.use_textures[index]:
-        #           tex = item.active_material.texture_slots[index].texture
-        #           self.writeTexture(scene, tex)
-        textures = bpy.data.textures
-        for tex in textures:
-            self.writeTexture(scene,tex)
-
-
-
+        self.loadedTextures.add(name)
 

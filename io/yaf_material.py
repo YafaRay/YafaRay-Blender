@@ -14,8 +14,7 @@ class yafMaterial:
                 self.materialMap = mMap
 
         def namehash(self,obj):
-                # TODO: Better hashing using mat.__str__() ?
-                nh = obj.name + "." + str(obj.__hash__())
+                nh = obj.name + "-" + str(obj.__hash__())
                 return nh
 
         def writeTexLayer(self, name, tex_in, ulayer, mtex, chanflag, dcol):
@@ -228,9 +227,7 @@ class yafMaterial:
                 if len(fcolRoot) > 0:   yi.paramsSetString("filter_color_shader", fcolRoot)
                 if len(bumpRoot) > 0:   yi.paramsSetString("bump_shader", bumpRoot)
 
-                ymat = yi.createMaterial(self.namehash(mat))
-                self.materialMap[mat] = ymat
-
+                return yi.createMaterial(self.namehash(mat))
 
         def writeGlossyShader(self, mat, coated): #mat : instance of material class
                 yi = self.yi
@@ -310,10 +307,7 @@ class yafMaterial:
                         yi.paramsSetString("diffuse_brdf", "oren_nayar")
                         yi.paramsSetFloat("sigma", mat.mat_sigma)
 
-
-                ymat = yi.createMaterial(self.namehash(mat))
-                self.materialMap[mat] = ymat
-
+                return yi.createMaterial(self.namehash(mat))
 
         def writeShinyDiffuseShader(self, mat):
 
@@ -335,11 +329,11 @@ class yafMaterial:
 
                 # TODO: all
 
-                i=0
+                i = 0
                 used_textures = []
-                for item in mat.texture_slots:
-                        if hasattr(item,'use') and (item.texture is not None) :
-                                used_textures.append(item)
+                for tex_slot in mat.texture_slots:
+                        if tex_slot and tex_slot.use and tex_slot.texture:
+                                used_textures.append(tex_slot)
 
                 diffRoot = ''
                 mcolRoot = ''
@@ -351,41 +345,49 @@ class yafMaterial:
 
 
                 for mtex in used_textures:
-                        #if mtex == None: continue # better ?
-                        if mtex.texture.type == 'NONE': #: continue
-                        #if mtex.texture.yaf_tex_type == 'NONE':
-                                continue
-
+                        if not mtex.texture: continue
                         used = False
                         mappername = "map%x" %i
 
-                        lname = "diff_layer%x" % i
-                        if self.writeTexLayer(lname, mappername, diffRoot, mtex, mtex.use_map_color_diffuse, bCol):
-                                used = True
-                                diffRoot = lname
-                        lname = "mircol_layer%x" % i
-                        if self.writeTexLayer(lname, mappername, mcolRoot, mtex, mtex.use_map_mirror, mirCol):
-                                used = True
-                                mcolRoot = lname
-                        lname = "transp_layer%x" % i
-                        if self.writeTexLayer(lname, mappername, transpRoot, mtex, mtex.use_map_alpha, [bTransp]):
-                                used = True
-                                transpRoot = lname
-                        lname = "translu_layer%x" % i
-                        if self.writeTexLayer(lname, mappername, translRoot, mtex, mtex.use_map_translucency, [bTransl]):
-                                used = True
-                                translRoot = lname
-                        lname = "mirr_layer%x" % i
-                        if self.writeTexLayer(lname, mappername, mirrorRoot, mtex, mtex.use_map_raymir, [bSpecr]):
-                                used = True
-                                mirrorRoot = lname
-                        lname = "bump_layer%x" % i
-                        if self.writeTexLayer(lname, mappername, bumpRoot, mtex, mtex.use_map_normal, [0]):
-                                used = True
-                                bumpRoot = lname
+                        if mtex.use_map_color_diffuse:
+                                lname = "diff_layer%x" % i
+                                if self.writeTexLayer(lname, mappername, diffRoot, mtex, mtex.use_map_color_diffuse, bCol):
+                                        used = True
+                                        diffRoot = lname
+
+                        if mtex.use_map_mirror:
+                                lname = "mircol_layer%x" % i
+                                if self.writeTexLayer(lname, mappername, mcolRoot, mtex, mtex.use_map_mirror, mirCol):
+                                        used = True
+                                        mcolRoot = lname
+
+                        if mtex.use_map_alpha:
+                                lname = "transp_layer%x" % i
+                                if self.writeTexLayer(lname, mappername, transpRoot, mtex, mtex.use_map_alpha, [bTransp]):
+                                        used = True
+                                        transpRoot = lname
+
+                        if mtex.use_map_translucency:
+                                lname = "translu_layer%x" % i
+                                if self.writeTexLayer(lname, mappername, translRoot, mtex, mtex.use_map_translucency, [bTransl]):
+                                        used = True
+                                        translRoot = lname
+
+                        if mtex.use_map_raymir:
+                                lname = "mirr_layer%x" % i
+                                if self.writeTexLayer(lname, mappername, mirrorRoot, mtex, mtex.use_map_raymir, [bSpecr]):
+                                        used = True
+                                        mirrorRoot = lname
+
+                        if mtex.use_map_normal:
+                                lname = "bump_layer%x" % i
+                                if self.writeTexLayer(lname, mappername, bumpRoot, mtex, mtex.use_map_normal, [0]):
+                                        used = True
+                                        bumpRoot = lname
+
                         if used:
                                 self.writeMappingNode(mappername, mtex.texture.name, mtex)
-                        i +=1
+                        i += 1
 
                 yi.paramsEndList()
                 if len(diffRoot) > 0:
@@ -417,8 +419,7 @@ class yafMaterial:
                         yi.paramsSetString("diffuse_brdf", "oren_nayar")
                         yi.paramsSetFloat("sigma", mat.mat_sigma)
 
-                ymat = yi.createMaterial(self.namehash(mat))
-                self.materialMap[mat] = ymat
+                return yi.createMaterial(self.namehash(mat))
 
         def writeBlendShader(self, mat):
 
@@ -462,40 +463,39 @@ class yafMaterial:
                         yi.paramsSetString("mask", diffRoot)
 
                 yi.paramsSetFloat("blend_value", mat.mat_blend_value)
-                ymat = yi.createMaterial(self.namehash(mat))
-                self.materialMap[mat] = ymat
-
-
+                return yi.createMaterial(self.namehash(mat))
 
         def writeMatteShader(self, mat):
                 yi = self.yi
                 yi.paramsClearAll()
                 yi.paramsSetString("type", "shadow_mat")
-                ymat = yi.createMaterial(self.namehash(mat))
-                self.materialMap[mat] = ymat
+                return yi.createMaterial(self.namehash(mat))
 
         def writeNullMat(self, mat):
                 yi = self.yi
                 yi.paramsClearAll()
                 yi.paramsSetString("type", "null")
-                ymat = yi.createMaterial(self.namehash(mat))
-                self.materialMap[mat] = ymat
+                return yi.createMaterial(self.namehash(mat))
 
         def writeMaterial(self, mat):
                 self.yi.printInfo("Exporter: Creating Material: \"" + self.namehash(mat) + "\"")
+                ymat = None
                 if mat.name == "y_null":
-                        self.writeNullMat(mat)
+                        ymat = self.writeNullMat(mat)
                 elif mat.mat_type == "glass":
-                        self.writeGlassShader(mat, False)
+                        ymat = self.writeGlassShader(mat, False)
                 elif mat.mat_type == "rough_glass":
-                        self.writeGlassShader(mat, True)
+                        ymat = self.writeGlassShader(mat, True)
                 elif mat.mat_type == "glossy":
-                        self.writeGlossyShader(mat, False)
+                        ymat = self.writeGlossyShader(mat, False)
                 elif mat.mat_type == "coated_glossy":
-                        self.writeGlossyShader(mat, True)
+                        ymat = self.writeGlossyShader(mat, True)
                 elif mat.mat_type == "shinydiffusemat":
-                        self.writeShinyDiffuseShader(mat)
+                        ymat = self.writeShinyDiffuseShader(mat)
                 elif mat.mat_type == "blend":
-                        self.writeBlendShader(mat)
+                        ymat = self.writeBlendShader(mat)
                 else:
-                        self.writeNullMat(mat)
+                        ymat = self.writeNullMat(mat)
+                
+                self.materialMap[mat] = ymat
+

@@ -17,7 +17,7 @@ class yafLight:
         yi.startGeometry();
 
         if not yi.startTriMesh(ID, 2+(nu-1)*nv, 2*(nu-1)*nv, False, False):
-            print("error on starting trimesh!\n")
+            yi.printError("Couldn't start trimesh!")
 
         yi.addVertex(x, y, z+rad);
         yi.addVertex(x, y, z-rad);
@@ -38,15 +38,15 @@ class yafLight:
                 yi.addTriangle( 2+v*(nu-1)+u, 2+v*(nu-1)+u+1, 2+((v+1)%nv)*(nu-1)+u, mat );
                 yi.addTriangle( 2+v*(nu-1)+u+1, 2+((v+1)%nv)*(nu-1)+u+1, 2+((v+1)%nv)*(nu-1)+u, mat );
 
-        print("before starting end trimesh ...")
+        #print("before starting end trimesh ...")
         yi.endTriMesh();
-        print("before starting end geometry ...")
+        #print("before starting end geometry ...")
         yi.endGeometry();
-        print("ID is :" + str(ID+100))
+        #print("ID is :" + str(ID+100))
         return ID
 
 
-    def createLight(self, yi, lamp_object, matrix = None, lamp_mat = None, dupliNum = None):
+    def createLight(self, yi, lamp_object, matrix = None, dupliNum = None, preview = False):
 
         lamp = lamp_object.data
         name = lamp_object.name
@@ -61,51 +61,53 @@ class yafLight:
         up = matrix[1]
         to = [pos[0] - dir[0], pos[1] - dir[1], pos[2] - dir[2]]
 
-        yi.paramsClearAll()
-        #props = obj.properties["YafRay"]
         lampType = lamp.type or lamp_type # for test
         power = lamp.energy
         color = lamp.color
-
-        #lamp = context.lamp
-        #scene = context.scene
+        
+        if preview:
+            power *= 5;
 
         yi.paramsClearAll()
 
+        yi.printInfo("Exporting Lamp:" + str(name) +  " type: " + str(lampType) )
+        
+        if lamp.create_geometry and not self.lightMat:
+            self.yi.paramsClearAll()
+            self.yi.paramsSetString("type", "light_mat")
+            self.lightMat = self.yi.createMaterial("lm")
+            self.yi.paramsClearAll()
 
-        print("INFO: Exporting Lamp:" + str(name) +  " type: " + str(lampType) )
-        #print("work started ... ")
 
         if lampType == "POINT":
             yi.paramsSetString("type", "pointlight")
-            power = 0.5 * power * power # original value
+            #power = 0.5 * power * power # original value
 
             if lamp.use_sphere:
                 #yi.paramsClearAll();
                 radius = lamp.shadow_soft_size
-                power = 0.5*power*power/(radius * radius) # radius < 1 crash geometry ?
+                #power = 0.5*power*power/(radius * radius) # radius < 1 crash geometry ?
 
-                if  lamp.create_geometry == True:
-                    ID = self.makeSphere(24, 48, pos[0], pos[1], pos[2], radius, lamp_mat)
+                if lamp.create_geometry:
+                    ID = self.makeSphere(24, 48, pos[0], pos[1], pos[2], radius, self.lightMat)
                     yi.paramsSetInt("object", ID)
 
                 yi.paramsSetString("type", "spherelight")
                 yi.paramsSetInt("samples", lamp.yaf_samples)
                 yi.paramsSetFloat("radius", radius)
-                #print("complete ")
 
         elif lampType == "SPOT":
             #light = obj.getData()
             yi.paramsSetString("type", "spotlight")
-            #print "spot ", light.getSpotSize()
-            yi.paramsSetFloat("cone_angle", (lamp.spot_size * 57.29577))
+            # Blender reports the angle of the full cone in radians and we need half of the apperture angle in degrees
+            yi.paramsSetFloat("cone_angle", (lamp.spot_size * 57.29577951308232087684636) * 0.5)
             yi.paramsSetFloat("blend", lamp.spot_blend)
             yi.paramsSetPoint("to", to[0], to[1], to[2])
             yi.paramsSetBool("soft_shadows", lamp.spot_soft_shadows)
             yi.paramsSetFloat("shadowFuzzyness", lamp.shadow_fuzzyness)
             yi.paramsSetBool("photon_only", lamp.photon_only )
             yi.paramsSetInt("samples", lamp.yaf_samples)
-            power = 0.5*power*power
+            #power = 0.5*power*power
 
         elif lampType == "SUN":
             yi.paramsSetString("type", "sunlight")
@@ -166,7 +168,7 @@ class yafLight:
 
             #print("point: ", point, corner1, corner2, corner3)
             yi.paramsClearAll();
-            if lamp.create_geometry  == True:
+            if lamp.create_geometry:
                 ID = yi.getNextFreeID()
                 yi.startGeometry();
                 yi.startTriMesh(ID, 4, 2, False, False, 0);
@@ -175,8 +177,8 @@ class yafLight:
                 yi.addVertex(corner1[0], corner1[1], corner1[2]);
                 yi.addVertex(corner2[0], corner2[1], corner2[2]);
                 yi.addVertex(corner3[0], corner3[1], corner3[2]);
-                yi.addTriangle(0, 1, 2, lamp_mat);
-                yi.addTriangle(0, 2, 3, lamp_mat);
+                yi.addTriangle(0, 1, 2, self.lightMat);
+                yi.addTriangle(0, 2, 3, self.lightMat);
                 yi.endTriMesh();
                 yi.endGeometry();
                 yi.paramsSetInt("object", ID);

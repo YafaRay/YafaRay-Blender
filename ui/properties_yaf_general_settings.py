@@ -90,49 +90,46 @@ class YAF_PT_general_settings(bpy.types.Panel):
         engine = context.scene.render.engine
         return (True  and  (engine in self.COMPAT_ENGINES) )
 
-
-
     def draw(self, context):
 
         layout = self.layout
         split = layout.split(percentage=0.6)
         col = split.column()
         row = layout.row()
-        rd = context.scene.render
+        sc = context.scene
+        rd = sc.render
 
-        col.prop(context.scene,"gs_ray_depth", text= "Ray Depth")
-        if context.scene.gs_transp_shad:
-            col.prop(context.scene,"gs_shadow_depth", text= "Shadow Depth")
-        if context.scene.gs_auto_threads == False:
-            col.prop(context.scene,"gs_threads", text= "Threads")
-        col.prop(context.scene,"gs_gamma", text= "Gamma")
-        col.prop(context.scene,"gs_gamma_input", text= "Gamma Input")
+        col.prop(sc, "gs_ray_depth", text = "Ray Depth")
 
-        col.prop(context.scene,"gs_type_render", text = "Render")
-        if context.scene.gs_type_render == "into_blender":
-            col.prop(context.scene,"gs_tile_order", text= "Tile order")
-            col.prop(context.scene,"gs_tile_size", text= "Tile Size")
+        if sc.gs_transp_shad:
+            col.prop(sc, "gs_shadow_depth", text = "Shadow Depth")
 
+        if sc.gs_auto_threads == False:
+            col.prop(sc, "gs_threads", text = "Threads")
 
+        col.prop(sc, "gs_gamma", text = "Gamma")
+        col.prop(sc, "gs_gamma_input", text = "Gamma Input")
+        col.prop(sc, "gs_type_render", text = "Render")
+
+        if sc.gs_type_render == "into_blender":
+            col.prop(sc, "gs_tile_order", text = "Tile order")
+            col.prop(sc, "gs_tile_size", text = "Tile Size")
         else:
-            col.prop(context.scene,"gs_draw_params", text= "Draw Params")
+            col.prop(sc, "gs_draw_params", text = "Draw Params")
             if context.scene.gs_draw_params:
                 col = layout.row()
-                col.prop(context.scene,"gs_custom_string", text= "Custom String")
-        col.prop(context.scene.render, "use_color_management")
+                col.prop(sc, "gs_custom_string", text = "Custom String")
 
         col = split.column()
-        col.prop(context.scene,"gs_clay_render", text= "Clay Render")
-        col.prop(context.scene,"gs_transp_shad", text= "Transp. Shadow")
-        col.prop(context.scene,"gs_auto_save", text= "Auto Save")
-        col.prop(context.scene,"gs_auto_threads", text= "Auto Threads")
-        col.prop(context.scene,"gs_auto_alpha", text= "Auto Alpha")
-        col.prop(context.scene,"gs_premult", text= "Premultiply")
-        col.prop(context.scene,"gs_clamp_rgb", text= "Clamp RGB")
-        col.prop(context.scene,"gs_show_sam_pix", text= "Show Sam Pix")
-
-
-
+        col.prop(rd, "use_color_management", text = "Use Linear Workflow")
+        col.prop(sc, "gs_clay_render", text = "Clay Render")
+        col.prop(sc, "gs_transp_shad", text = "Transp. Shadow")
+        col.prop(sc, "gs_auto_save", text = "Auto Save")
+        col.prop(sc, "gs_auto_threads", text = "Auto Threads")
+        col.prop(sc, "gs_auto_alpha", text = "Auto Alpha")
+        col.prop(sc, "gs_premult", text = "Premultiply")
+        col.prop(sc, "gs_clamp_rgb", text = "Clamp RGB")
+        col.prop(sc, "gs_show_sam_pix", text = "Show Sam Pix")
 
 classes = [
     YAF_PT_general_settings,
@@ -142,7 +139,6 @@ def register():
     register = bpy.types.register
     for cls in classes:
         register(cls)
-
 
 def unregister():
     unregister = bpy.types.unregister

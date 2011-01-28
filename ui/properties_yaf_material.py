@@ -230,10 +230,8 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                 space = context.space_data
                 #wide_ui = context.region.width > narrowui
 
-                layout.operator("bla", "TextOp")
-
                 #load preview
-                layout.template_preview(context.material)
+                layout.template_preview(context.material, True, context.material)
 
                 if ob:
                     row = layout.row()

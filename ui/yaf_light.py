@@ -159,7 +159,6 @@ class YAF_PT_lamp(bpy.types.Panel):
                 col.prop(context.lamp,"shadow_fuzzyness", text= "Shadow Fuzzyness")
 
             col.prop(context.lamp,"spot_blend", text= "Blend")
-            col.prop(context.lamp,"distance", text= "Distance")
             #col = split.column()
             col.prop(context.lamp,"photon_only", text= "Photon Only")
 

@@ -60,25 +60,29 @@ class yafGeneralAA:
         
                 world = scene.world
                 
-                # preset default volume integrator        
-                vint_type = world.v_int_type
-                self.yi.printInfo("Exporter: Creating Volume Integrator: \"" + vint_type + "\"...")
+                if world:
+                    
+                    # preset default volume integrator        
+                    vint_type = world.v_int_type
+                    self.yi.printInfo("Exporter: Creating Volume Integrator: \"" + vint_type + "\"...")
 
-                if vint_type == 'Single Scatter':
-                    yi.paramsSetString("type", "SingleScatterIntegrator");
-                    yi.paramsSetFloat("stepSize", world.v_int_step_size )
-                    yi.paramsSetBool("adaptive", world.v_int_adaptive )
-                    yi.paramsSetBool("optimize", world.v_int_optimize )
-        
-                elif vint_type  == 'Sky':
-                    yi.paramsSetString( "type", "SkyIntegrator")
-                    yi.paramsSetFloat( "turbidity", world.v_int_dsturbidity )
-                    yi.paramsSetFloat( "stepSize", world.v_int_step_size )
-                    yi.paramsSetFloat( "alpha", world.v_int_alpha )
-                    yi.paramsSetFloat( "sigma_t", world.v_int_scale )
-        
+                    if vint_type == 'Single Scatter':
+                        yi.paramsSetString("type", "SingleScatterIntegrator");
+                        yi.paramsSetFloat("stepSize", world.v_int_step_size )
+                        yi.paramsSetBool("adaptive", world.v_int_adaptive )
+                        yi.paramsSetBool("optimize", world.v_int_optimize )
+            
+                    elif vint_type  == 'Sky':
+                        yi.paramsSetString( "type", "SkyIntegrator")
+                        yi.paramsSetFloat( "turbidity", world.v_int_dsturbidity )
+                        yi.paramsSetFloat( "stepSize", world.v_int_step_size )
+                        yi.paramsSetFloat( "alpha", world.v_int_alpha )
+                        yi.paramsSetFloat( "sigma_t", world.v_int_scale )
+            
+                    else:
+                        yi.paramsSetString("type", "none")
                 else:
-                    yi.paramsSetString("type", "none")
+                     yi.paramsSetString("type", "none")
 
                 yi.createIntegrator("volintegr")
                 return True
@@ -88,7 +92,7 @@ class yafGeneralAA:
             yi = self.yi
             render = scene.render
             
-            print("INFO: Exporting Render Settings")
+            yi.printInfo("Exporting Render Settings")
             
             [sizeX, sizeY, bStartX, bStartY, bsizeX, bsizeY,cam_data] = self.getRenderCoords(scene)
                 

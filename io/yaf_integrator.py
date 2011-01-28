@@ -19,7 +19,7 @@ class yafIntegrator:
             yi.paramsSetBool("transpShad", scene.gs_transp_shad)
 
             light_type = scene.intg_light_method
-            print("INFO: Exporting Integrator:" + light_type)
+            yi.printInfo("Exporting Integrator:" + light_type)
 
             if light_type == "Direct Lighting" :
                 yi.paramsSetString("type", "directlighting")

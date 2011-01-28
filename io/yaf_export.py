@@ -24,7 +24,7 @@ IDNAME = 'YAFA_RENDER'
 
 class YafaRayRenderEngine(bpy.types.RenderEngine):
     bl_idname = IDNAME
-    bl_preview = False
+    bl_use_preview = True
     bl_label = "YafaRay Render"
     progress = 0.0
     tag = ""
@@ -50,11 +50,11 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.exportObjects()
 
     def exportTextures(self):
-        textures = bpy.data.textures
-        for tex in textures:
-            if tex.type != "NONE":
-                self.yaf_texture.writeTexture(self.scene,tex)
-
+        for obj in self.scene.objects:
+            for mat_slot in obj.material_slots:
+                for tex in mat_slot.material.texture_slots:
+                    if tex:
+                        self.yaf_texture.writeTexture(self.scene,tex.texture)
 
     def exportObjects(self):
         self.yi.printInfo("Exporter: Processing Objects...")
@@ -74,7 +74,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                                 break
                     o.create_dupli_list(self.scene)
                     for obj in o.dupli_list:
-                        print ("Exporting INSTANCE OBJECT:",obj.object,obj.object.type)
+                        #print ("Exporting INSTANCE OBJECT:",obj.object,obj.object.type)
                         self.exportObject(obj.object, obj.matrix, idx)    #TODO: Please kill that idx
                         idx += 1    #TODO: REMOVE
 
@@ -84,7 +84,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                     if o.parent and o.parent.is_duplicator:
                         # this is an instanced object
                         continue
-                    print ("Exporting REAL OBJECT:",o,o.type)
+                    #print ("Exporting REAL OBJECT:",o,o.type)
                     self.exportObject(o)
 
 
@@ -98,8 +98,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         if obj.type == "MESH" or obj.type == "CURVE" or obj.type == "SURFACE":
                 self.yaf_object.writeObject(self.yi, self.scene, obj, matrix)
         if obj.type == "LAMP":
-                ymat = self.yi.createMaterial("lampmat")    # TODO: ONLY IF GEOMETRY
-                self.yaf_lamp.createLight(self.yi, obj, matrix, ymat, idx)
+                self.yaf_lamp.createLight(self.yi, obj, matrix, idx, (self.scene.name == "preview"))
 
 
     def handleBlendMat(self, mat):
@@ -139,9 +138,10 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         ymat = self.yi.createMaterial("defaultMat")
         self.materialMap["default"] = ymat
 
-        for mat in bpy.data.materials:
-            if mat in self.materials : continue
-            self.exportMaterial(mat)
+        for obj in self.scene.objects:
+            for mat_slot in obj.material_slots:
+                if mat_slot.material not in self.materials:
+                    self.exportMaterial(mat_slot.material)
 
 
     def exportMaterial(self,material):
@@ -184,10 +184,11 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
     def render(self, scene):
         self.update_stats("", "Setting up render")
 
-        scene.frame_set(scene.frame_current)
+        if scene.name != "preview":
+            scene.frame_set(scene.frame_current)
         self.scene = scene
         r = scene.render
-
+        
         # compute resolution
         x= int(r.resolution_x*r.resolution_percentage*0.01)
         y= int(r.resolution_y*r.resolution_percentage*0.01)
@@ -244,26 +245,25 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                     print(args, len(tile))
                 self.update_result(res)
 
-        self.yi.paramsSetString("type", file_type)
-        ih = self.yi.createImageHandler("outFile")
-        co = yafrayinterface.imageOutput_t(ih, str(outputFile), 0, 0)
-
-        self.yi.printInfo("Exporter: Rendering to file " + outputFile)
-
-        # here we export blender scene and renders using yafaray
         if scene.gs_type_render == "file":
-            result = self.begin_result(0, 0, x, y)
-            lay = result.layers[0]
+            self.yi.paramsSetString("type", file_type)
+            ih = self.yi.createImageHandler("outFile")
+            co = yafrayinterface.imageOutput_t(ih, str(outputFile), 0, 0)
+
+            self.yi.printInfo("Exporter: Rendering to file " + outputFile)
+
             self.update_stats("", "Rendering to %s" % outputFile)
-            print("Rendering to %s" % outputFile)
 
             self.yi.render(co)
+
+            result = self.begin_result(0, 0, x, y)
+            lay = result.layers[0]
 
             if scene.gs_z_channel:
                 lay.load_from_file(output + '_zbuffer.' + file_type)
             else:
                 lay.load_from_file(outputFile)
-        # done
+
             self.end_result(result)
 
         if scene.gs_type_render == "into_blender":

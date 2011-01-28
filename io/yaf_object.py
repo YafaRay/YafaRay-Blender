@@ -9,7 +9,7 @@ class yafObject(object):
 
     def createCamera(self,yi,scene,useView = False):
         
-        print("INFO: Exporting Camera")
+        self.yi.printInfo("Exporting Camera")
 
         camera = scene.camera
         matrix = camera.matrix_local # this change is recent
@@ -271,7 +271,7 @@ class yafObject(object):
     
     def writeObject(self, yi, scene, obj, matrix = None):
         
-        print("INFO: Exporting Object: " + obj.name)
+        yi.printInfo("Exporting Object: " + obj.name)
         
         #create a default material
         self.yi.paramsClearAll()
@@ -324,16 +324,16 @@ class yafObject(object):
             self.yi.paramsSetBool("photon_only", obj.bgp_photon_only)
             self.yi.createLight(obj.name)
         
-        
         # Object Material
+
+        ymaterial = None
+
         if isMeshlight:
             ymaterial = ml_mat
         else:
             if scene.gs_clay_render:
-                #print("Clay rendering is enabled ...")
-                ymaterial = ymat # = self.materialMap["default"] # 2.53
+                ymaterial = ymat
             elif obj.type == 'CURVE':
-                #print("Curve Object is rendering ....")
                 curve = obj.data
                 if len(curve.materials) > 0:
                     mat = curve.materials[0]
@@ -341,14 +341,23 @@ class yafObject(object):
                 else:
                     ymaterial = self.materialMap["default"]
             else:
-                #print("material length :" + str(len(obj.data.materials)))
-                if len(obj.data.materials):
+                if len(obj.data.materials) and obj.data.materials[0]:
                     mat = obj.data.materials[0]
-                    ymaterial = self.materialMap[mat]
+                    
+                    if mat in self.materialMap:
+                        ymaterial = self.materialMap[mat]
+                    else:
+                        ymaterial = self.materialMap["default"]
                 else:
-                    print("No material is selected ...")
-                    ymaterial = self.materialMap["default"]
-
+                    for mat_slot in obj.material_slots:
+                        if mat_slot.material in self.materialMap:
+                            ymaterial = self.materialMap[mat_slot.material]
+                        else:
+                            ymaterial = self.materialMap["default"]
+                            
+                    if not ymaterial:
+                        yi.printWarning("Object \"" + obj.name + "\" has no material asigned.")
+                        ymaterial = self.materialMap["default"]
         
         if isBGPL:
             self.writeMesh(yi, scene, ID, obj, matrix, ymaterial)
@@ -434,9 +443,9 @@ class yafObject(object):
         me_materials = me.materials
         
         if scene is None:
-            print("scene is None ...")
+            yi.printError("scene is None ...")
         else:
-            print(str(scene))
+            yi.printInfo(str(scene))
         mesh = obj.create_mesh(scene,True, 'RENDER')   #mesh is created for an object here.
         
             

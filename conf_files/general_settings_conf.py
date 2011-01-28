@@ -33,7 +33,7 @@ properties.append(['scene','gs_premult','bool',False,'Premult'])
 properties.append(['scene','gs_transp_shad','bool',False,'Transp. Shadow'])
 properties.append(['scene','gs_clamp_rgb','bool',False,'Clamp RGB'])
 properties.append(['scene','gs_show_sam_pix','bool',False,'Show Sam Pix'])
-
+properties.append(['scene','use_color_management','bool',False,'Use Linear Workflow'])
 
 
 panel_code.add_properties(properties)
