@@ -1,4 +1,9 @@
 import bpy
+from bpy.props import *
+
+bpy.types.Scene.useViewToRender = BoolProperty(attr = "useViewToRender")
+bpy.types.Scene.viewMatrix = FloatVectorProperty(attr = "viewMatrix", size = 16)
+
 
 class RENDER_PT_render(bpy.types.Panel):
 

@@ -4,8 +4,6 @@ import bpy
 from bpy.props import *
 
 
-bpy.types.Scene.useViewToRender = BoolProperty(attr = "useViewToRender")
-
 Camera = bpy.types.Camera
 
 Camera.camera_type = EnumProperty(attr = "camera_type",
@@ -48,30 +46,6 @@ Camera.color_data =     FloatVectorProperty(attr = "color_data",
                                         precision = 3)
 
 
-class UpdateCameraTypeOperator(bpy.types.Operator):
-    bl_idname = "yafaray.cameratypeop"
-    bl_label = ""
-
-    def execute(self, context):
-        if context.camera.camera_type == 'orthographic':
-            context.camera.type = 'ORTHO'
-        else:
-            context.camera.type = 'PERSP'
-        return {'FINISHED'}
-
-class RenderFromView(bpy.types.Operator):
-    bl_idname = "yafaray.render_from_view"
-    bl_label = ""
-
-    def execute(self, context):
-        context.scene.useViewToRender = True
-        #bpy.ops.render.view_show()
-        context.scene.gs_type_render = "into_blender"
-        bpy.ops.render.render()
-        context.scene.useViewToRender = False
-        return {'FINISHED'}
-
-
 class YAF_PT_camera(bpy.types.Panel):
 
     bl_label = 'Camera'
@@ -108,11 +82,8 @@ class YAF_PT_camera(bpy.types.Panel):
 
         camera = context.camera
 
-
-        #col.prop(bpy.data,"cameras",text = "Available cameras")
         col.prop(context.camera, "camera_type", text = "Yafaray Camera")
-        col.operator("yafaray.cameratypeop", text = "Update 3D View Camera")
-        col.operator("yafaray.render_from_view", text = "Render From View")
+        col.operator("object.update_camera_type", text = "Update 3D View Camera")
         col.separator()
 
         if context.camera.camera_type == 'angular':
@@ -138,28 +109,3 @@ class YAF_PT_camera(bpy.types.Panel):
             col.prop(context.camera, "bokeh_rotation", text = "Bokeh Rotation")
 
 
-        # col.prop(context.camera, "color_data", text = "Yafaray Camera Point")
-
-
-#properties_data_camera.DATA_PT_context_camera.(COMPAT_ENGINES).add
-
-classes = [
-    YAF_PT_camera,
-]
-
-def register():
-    #YAF_PT_camera.prepend( DATA_PT_context_camera.draw )
-    register = bpy.types.register
-    for cls in classes:
-        register(cls)
-
-
-def unregister():
-    #bpy.types.YAF_PT_camera.remove( DATA_PT_context_camera.draw )
-    unregister = bpy.types.unregister
-    for cls in classes:
-        unregister(cls)
-
-
-if __name__ == "__main__":
-    register()

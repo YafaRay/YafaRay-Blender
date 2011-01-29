@@ -112,18 +112,52 @@ class RENDER_OT_render_view(bpy.types.Operator):
     
     def invoke(self, context, event):
         context.scene.useViewToRender = True
+
+        # pretty much get the first best 3d view and use its view
+        # matrix, store it serialized in the scene
+        views3d = [s for s in bpy.context.window.screen.areas if s.type == "VIEW_3D"]
+
+        if len(views3d) == 0:
+            print("No 3d view found")
+            return
+
+        m = views3d[0].spaces[0].region_3d.view_matrix.copy()
+
+        mSerial = [0 for o in range(16)]
+        for row in range(4):
+            for column in range(4):
+                mSerial[column + row * 4] = m[row][column]
+
+        context.scene.viewMatrix = mSerial
+
         bpy.ops.render.render('INVOKE_DEFAULT')
         return 'FINISHED'
+
+
+class OBJECT_OT_UpdateCameraType(bpy.types.Operator):
+    bl_idname = "object.update_camera_type"
+    bl_label = ""
+
+    def execute(self, context):
+        if context.camera.camera_type == 'orthographic':
+            context.camera.type = 'ORTHO'
+        else:
+            context.camera.type = 'PERSP'
+        return {'FINISHED'}
+
+
 
 def register():
     bpy.types.register(OBJECT_OT_get_position)
     bpy.types.register(OBJECT_OT_get_angle)
     bpy.types.register(OBJECT_OT_update_sun)
     bpy.types.register(RENDER_OT_render_view)
+    bpy.types.register(OBJECT_OT_UpdateCameraType)
 
 def unregister():
     bpy.types.unregister(OBJECT_OT_get_position)
     bpy.types.unregister(OBJECT_OT_get_angle)
     bpy.types.unregister(OBJECT_OT_update_sun)
     bpy.types.unregister(RENDER_OT_render_view)
+    bpy.types.register(OBJECT_OT_UpdateCameraType)
 

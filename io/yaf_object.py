@@ -23,22 +23,18 @@ class yafObject(object):
         render = scene.render
 
         if scene.useViewToRender:
-        # if useView:
             # use the view matrix to calculate the inverted transformed
             # points cam pos (0,0,0), front (0,0,1) and up (0,1,0)
             # view matrix works like the opengl view part of the
             # projection matrix, i.e. transforms everything so camera is
             # at 0,0,0 looking towards 0,0,1 (y axis being up)
 
-            # pretty much get the first best 3d view and use its view
-            # matrix
-            views3d = [s for s in bpy.context.window.screen.areas if s.type == "VIEW_3D"]
+            m = mathutils.Matrix()
+            m.resize4x4()
 
-            m = views3d[0].spaces[0].region_3d.view_matrix.copy()
-
-            if len(views3d) == 0:
-                print("No 3d view found")
-                return
+            for row in range(4):
+                for column in range(4):
+                    m[row][column] = scene.viewMatrix[column + row * 4]
 
             m.transpose()
             inv = m.invert()
@@ -48,6 +44,7 @@ class yafObject(object):
             dir = frontCam - pos
             up = aboveCam - pos
 
+
         else:
             matrix = camera.matrix_local # this change is recent
             pos = matrix[3]
@@ -55,15 +52,17 @@ class yafObject(object):
             up = matrix[1]
 
         to = [pos[0] - dir[0], pos[1] - dir[1], pos[2] - dir[2]]
-        
+
         x = int(render.resolution_x * render.resolution_percentage * 0.01)
         y = int(render.resolution_y * render.resolution_percentage * 0.01)
-        
+
         yi.paramsClearAll()
 
 
-        if useView:
+        if scene.useViewToRender:
             yi.paramsSetString("type", "perspective");
+            yi.paramsSetFloat("focal", 0.5)
+            scene.useViewToRender = False # needs to be reset, maybe not the best place here
 
         else:
             fdist = 1 # only changes for ortho
