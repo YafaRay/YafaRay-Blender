@@ -16,14 +16,10 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# <pep8 compliant>
 import bpy
 from rna_prop_ui import PropertyPanel
 from bpy.props import *
 Texture = bpy.types.Texture
-
-#narrowui = bpy.context.user_preferences.view.properties_width_check
-narrowui = 300
 
 Texture.yaf_tex_type = EnumProperty(attr="yaf_tex_type",
         items = (
@@ -836,44 +832,3 @@ class YAF_TEXTURE_PT_distortednoise(YAF_TextureTypePanel, bpy.types.Panel):
         col.prop(tex, "distortion", text="Distortion")
         col.prop(tex, "noise_scale", text="Size")
 
-
-#from properties_texture import TEXTURE_PT_preview
-
-classes = [
-    YAF_TextureButtonsPanel,
-    YAF_TEXTURE_PT_context_texture,
-    YAF_TEXTURE_PT_preview,
-    YAF_TextureSlotPanel,
-    YAF_TEXTURE_PT_mapping,
-    YAF_TEXTURE_PT_influence,
-    YAF_TextureTypePanel,
-    YAF_TEXTURE_PT_clouds, # Texture Type Panels
-    YAF_TEXTURE_PT_wood,
-    YAF_TEXTURE_PT_marble,
-    YAF_TEXTURE_PT_blend,
-    YAF_TEXTURE_PT_image,
-    YAF_TEXTURE_PT_image_sampling,
-    YAF_TEXTURE_PT_image_mapping,
-    YAF_TEXTURE_PT_musgrave,
-    YAF_TEXTURE_PT_voronoi,
-    YAF_TEXTURE_PT_distortednoise,
-    #YAF_TEXTURE_PT_colors, # activate in 2.53
-
-    ]
-
-
-def register():
-    #bpy.types.YAF_TextureButtonsPanel.prepend(TEXTURE_PT_preview.draw)
-    register = bpy.types.register
-    for cls in classes:
-        register(cls)
-
-
-def unregister():
-    #bpy.types.YAF_TextureButtonsPanel.remove(TEXTURE_PT_preview.draw)
-    unregister = bpy.types.unregister
-    for cls in classes:
-        unregister(cls)
-
-if __name__ == "__main__":
-    register()

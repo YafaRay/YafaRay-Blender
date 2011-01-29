@@ -61,25 +61,3 @@ class YAF_PT_AA_settings(bpy.types.Panel):
             col.prop(context.scene,"AA_inc_samples", text= "AA Inc. Samples")
             col.prop(context.scene,"AA_threshold", text= "AA Threshold")
 
-
-
-
-classes = [
-    YAF_PT_AA_settings,
-]
-
-def register():
-    register = bpy.types.register
-    for cls in classes:
-        register(cls)
-
-
-def unregister():
-    unregister = bpy.types.unregister
-    for cls in classes:
-        unregister(cls)
-
-
-if __name__ == "__main__":
-    register()
-

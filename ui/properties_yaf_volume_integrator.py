@@ -57,25 +57,3 @@ class YAF_PT_vol_integrator(bpy.types.Panel):
 		#	col.prop(context.world,"v_int_scale", text= "Scale")
 		#	col.prop(context.world,"v_int_alpha", text= "Alpha")
 
-
-
-
-classes = [
-	YAF_PT_vol_integrator,
-]
-
-def register():
-	register = bpy.types.register
-	for cls in classes:
-		register(cls)
-
-
-def unregister():
-	unregister = bpy.types.unregister
-	for cls in classes:
-		unregister(cls)
-
-
-if __name__ == "__main__":
-	register()
-

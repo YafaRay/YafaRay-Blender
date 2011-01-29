@@ -227,26 +227,3 @@ class YAF_PT_render(bpy.types.Panel):
 
             col.prop(context.scene,"intg_show_perturbed_normals", text= "Perturbed Normals")
 
-
-
-
-
-classes = [
-    YAF_PT_render,
-]
-
-def register():
-    register = bpy.types.register
-    for cls in classes:
-        register(cls)
-
-
-def unregister():
-    unregister = bpy.types.unregister
-    for cls in classes:
-        unregister(cls)
-
-
-if __name__ == "__main__":
-    register()
-

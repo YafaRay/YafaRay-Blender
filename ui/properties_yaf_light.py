@@ -194,26 +194,3 @@ class YAF_PT_lamp(bpy.types.Panel):
         col.prop(context.lamp,"color", text= "Color")
         col.prop(context.lamp,"energy", text= "Power")
 
-
-
-classes = [
-    YAF_PT_lamp,
-]
-
-def register():
-
-    register = bpy.types.register
-    for cls in classes:
-        register(cls)
-
-
-def unregister():
-
-    unregister = bpy.types.unregister
-    for cls in classes:
-        unregister(cls)
-
-
-if __name__ == "__main__":
-    register()
-

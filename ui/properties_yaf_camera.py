@@ -41,7 +41,6 @@ Camera.color_data =     FloatVectorProperty(attr="color_data",
                                         step = 10,
                                         precision = 3)
 
-
 class YAF_PT_camera(bpy.types.Panel):
 
     bl_label = 'Camera'
@@ -131,26 +130,3 @@ class YAF_PT_camera(bpy.types.Panel):
 
         col.prop(context.camera,"color_data", text= "Yafaray Camera Point")
 
-
-#properties_data_camera.DATA_PT_context_camera.(COMPAT_ENGINES).add
-
-classes = [
-    YAF_PT_camera,
-]
-
-def register():
-    #YAF_PT_camera.prepend( DATA_PT_context_camera.draw )
-    register = bpy.types.register
-    for cls in classes:
-        register(cls)
-
-
-def unregister():
-    #bpy.types.YAF_PT_camera.remove( DATA_PT_context_camera.draw )
-    unregister = bpy.types.unregister
-    for cls in classes:
-        unregister(cls)
-
-
-if __name__ == "__main__":
-    register()

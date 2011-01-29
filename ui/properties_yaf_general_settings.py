@@ -131,20 +131,3 @@ class YAF_PT_general_settings(bpy.types.Panel):
         col.prop(sc, "gs_clamp_rgb", text = "Clamp RGB")
         col.prop(sc, "gs_show_sam_pix", text = "Show Sam Pix")
 
-classes = [
-    YAF_PT_general_settings,
-]
-
-def register():
-    register = bpy.types.register
-    for cls in classes:
-        register(cls)
-
-def unregister():
-    unregister = bpy.types.unregister
-    for cls in classes:
-        unregister(cls)
-
-
-if __name__ == "__main__":
-    register()

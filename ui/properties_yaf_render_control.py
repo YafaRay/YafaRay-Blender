@@ -26,12 +26,3 @@ class RENDER_PT_render(bpy.types.Panel):
         
         self.layout.row().prop(context.scene.render, "display_mode")
 
-def register():
-    pass
-
-def unregister():
-    pass
-
-if __name__ == "__main__":
-    register()
-
