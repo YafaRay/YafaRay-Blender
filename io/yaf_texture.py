@@ -2,7 +2,6 @@ import os as real_os # somehow, os as a module name becomes unavailable with bpy
 import bpy
 import re
 from  math import *
-import yafrayinterface
 
 def noise2string(ntype):
 

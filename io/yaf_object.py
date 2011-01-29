@@ -1,6 +1,5 @@
 import bpy
 import time
-#from yafaray.yaf_properties import *
 
 class yafObject(object):
     def __init__(self, yi, mMap):
