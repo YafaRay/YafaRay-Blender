@@ -131,26 +131,26 @@ class yafMaterial:
                 elif mtex.texture_coords == 'STRESS'    :          yi.paramsSetString("texco", "stress")
                 elif mtex.texture_coords == 'TANGENT'   :          yi.paramsSetString("texco", "tangent")
 
-                elif mtex.texture_coords == 'OBJECT'    :
+                elif mtex.texture_coords == 'OBJECT':
 
-                        yi.paramsSetString("texco", "transformed")
+                    yi.paramsSetString("texco", "transformed")
 
-                        if mtex.object is not None:
+                    if mtex.object is not None:
 
-                                texmat = mtex.object.matrix_local.copy().invert()
-                                rtmatrix = yafrayinterface.new_floatArray(4*4)
+                            texmat = mtex.object.matrix_local.copy().invert()
+                            rtmatrix = yafrayinterface.new_floatArray(4*4)
 
-                                for x in range(4):
-                                    for y in range(4):
-                                        idx = (y + x * 4)
-                                        yafrayinterface.floatArray_setitem(rtmatrix, idx, texmat[x][y])
+                            for x in range(4):
+                                for y in range(4):
+                                    idx = (y + x * 4)
+                                    yafrayinterface.floatArray_setitem(rtmatrix, idx, texmat[x][y])
 
-                                yi.paramsSetMemMatrix("transform", rtmatrix, True)
-                                yafrayinterface.delete_floatArray(rtmatrix)
+                            yi.paramsSetMemMatrix("transform", rtmatrix, True)
+                            yafrayinterface.delete_floatArray(rtmatrix)
 
-                yi.paramsSetInt("proj_x", proj2int(mtex.mapping_x) ) #
-                yi.paramsSetInt("proj_y", proj2int(mtex.mapping_y) )
-                yi.paramsSetInt("proj_z", proj2int(mtex.mapping_z) )
+                yi.paramsSetInt("proj_x", proj2int(mtex.mapping_x))
+                yi.paramsSetInt("proj_y", proj2int(mtex.mapping_y))
+                yi.paramsSetInt("proj_z", proj2int(mtex.mapping_z))
 
                 if   mtex.mapping == 'FLAT'   : yi.paramsSetString("mapping", "plain")
                 elif mtex.mapping == 'CUBE'   : yi.paramsSetString("mapping", "cube")
@@ -172,25 +172,25 @@ class yafMaterial:
 
                 if rough: # create bool property "rough"
                     yi.paramsSetString("type", "rough_glass")
-                    yi.paramsSetFloat("exponent", mat.mat_exponent )
-                    yi.paramsSetFloat("alpha", mat.mat_alpha )
+                    yi.paramsSetFloat("exponent", mat.exponent )
+                    yi.paramsSetFloat("alpha", mat.alpha )
                 else:
                     yi.paramsSetString("type", "glass")
 
-                yi.paramsSetFloat("IOR", mat.mat_ior)
-                filt_col = mat.mat_filter_color
-                mir_col = mat.mat_mirror_color
-                tfilt = mat.mat_transmit_filter
-                abs_col = mat.diffuse_color # mat_absorp_color = diffuse_color Blender value
+                yi.paramsSetFloat("IOR", mat.IOR)
+                filt_col = mat.filter_color
+                mir_col = mat.mirror_color
+                tfilt = mat.transmit_filter
+                abs_col = mat.absorption
 
                 yi.paramsSetColor("filter_color", filt_col[0], filt_col[1], filt_col[2])
                 yi.paramsSetColor("mirror_color", mir_col[0], mir_col[1], mir_col[2])
                 yi.paramsSetFloat("transmit_filter", tfilt)
 
-                yi.paramsSetColor( "absorption", abs_col[0], abs_col[1], abs_col[2] )
-                yi.paramsSetFloat("absorption_dist", mat.mat_absorp_distance)
-                yi.paramsSetFloat("dispersion_power", mat.mat_dispersion_power)
-                yi.paramsSetBool("fake_shadows", mat.mat_fake_shadows)
+                yi.paramsSetColor("absorption", abs_col[0], abs_col[1], abs_col[2])
+                yi.paramsSetFloat("absorption_dist", mat.absorption_dist)
+                yi.paramsSetFloat("dispersion_power", mat.dispersion_power)
+                yi.paramsSetBool("fake_shadows", mat.fake_shadows)
 
                 mcolRoot = ''
                 fcolRoot = ''
@@ -237,30 +237,27 @@ class yafMaterial:
 
                 if coated: # create bool property
                         yi.paramsSetString("type", "coated_glossy")
-                        yi.paramsSetFloat("IOR", mat.mat_ior)
+                        yi.paramsSetFloat("IOR", mat.IOR)
                 else:
                         yi.paramsSetString("type", "glossy")
 
-                diffuse_color = mat.diffuse_color # mat.mat_diff_color = diffuse_color value in Blender
-                #color = props["color"]
-                color         = mat.mat_glossy_color
-
-                #glossy_reflect = props["glossy_reflect"]
+                diffuse_color = mat.diffuse_color
+                color         = mat.color
 
                 # TODO: textures
 
 
                 yi.paramsSetColor("diffuse_color", diffuse_color[0], diffuse_color[1], diffuse_color[2])
                 yi.paramsSetColor("color", color[0],color[1], color[2])
-                yi.paramsSetFloat("glossy_reflect", mat.mat_glossy_reflect)
-                yi.paramsSetFloat("exponent", mat.mat_exponent)
-                yi.paramsSetFloat("diffuse_reflect", mat.mat_diffuse_reflect)
-                yi.paramsSetBool("as_diffuse", mat.mat_as_diffuse)
+                yi.paramsSetFloat("glossy_reflect", mat.glossy_reflect)
+                yi.paramsSetFloat("exponent", mat.exponent)
+                yi.paramsSetFloat("diffuse_reflect", mat.diffuse_reflect)
+                yi.paramsSetBool("as_diffuse", mat.as_diffuse)
 
 
-                yi.paramsSetBool("anisotropic", mat.mat_anisotropic)
-                yi.paramsSetFloat("exp_u", mat.mat_exp_u )
-                yi.paramsSetFloat("exp_v", mat.mat_exp_v )
+                yi.paramsSetBool("anisotropic", mat.anisotropic)
+                yi.paramsSetFloat("exp_u", mat.exp_u )
+                yi.paramsSetFloat("exp_v", mat.exp_v )
 
                 diffRoot = ''
                 mcolRoot = ''
@@ -288,7 +285,7 @@ class yafMaterial:
                                 used = True
                                 glossRoot = lname
                         lname = "glossref_layer%x" % i
-                        if self.writeTexLayer(lname, mappername, glRefRoot, mtex, mtex.use_map_specular, [mat.mat_glossy_reflect]):
+                        if self.writeTexLayer(lname, mappername, glRefRoot, mtex, mtex.use_map_specular, [mat.glossy_reflect]):
                                 used = True
                                 glRefRoot = lname
                         lname = "bump_layer%x" % i
@@ -305,9 +302,9 @@ class yafMaterial:
                 if len(glRefRoot) > 0 :  yi.paramsSetString("glossy_reflect_shader", glRefRoot)
                 if len(bumpRoot)  > 0 :  yi.paramsSetString("bump_shader", bumpRoot)
 
-                if mat.mat_brdf_type == "Oren-Nayar":
+                if mat.brdf_type == "Oren-Nayar":
                         yi.paramsSetString("diffuse_brdf", "oren_nayar")
-                        yi.paramsSetFloat("sigma", mat.mat_sigma)
+                        yi.paramsSetFloat("sigma", mat.sigma)
 
                 return yi.createMaterial(self.namehash(mat))
 
@@ -322,12 +319,12 @@ class yafMaterial:
                 # provisional, for test only
                 #TODO: change name of 'variables'?
                 
-                bCol = mat.diffuse_color  # mat_color = diffuse_color Blender value
-                mirCol = mat.mirror_color # mat_mirror_color = mirror_color Blender value
-                bSpecr = mat.mat_mirror_strength # mat_specular_reflect = specular_intensity Blender value
-                bTransp = mat.mat_transparency
-                bTransl = mat.translucency # mat_translucency = translucency Blender value
-                bTransmit = mat.mat_transmit_filter
+                bCol = mat.color
+                mirCol = mat.mirror_color
+                bSpecr = mat.specular_reflect
+                bTransp = mat.transparency
+                bTransl = mat.translucency
+                bTransmit = mat.transmit_filter
 
                 # TODO: all
 
@@ -408,32 +405,29 @@ class yafMaterial:
                 yi.paramsSetColor("color", bCol[0], bCol[1], bCol[2])
                 yi.paramsSetFloat("transparency", bTransp)
                 yi.paramsSetFloat("translucency", bTransl)
-                yi.paramsSetFloat("diffuse_reflect", mat.diffuse_intensity) # mat_diffuse_reflect = diffuse_intensity Blender value
-                yi.paramsSetFloat("emit", mat.mat_emit)
+                yi.paramsSetFloat("diffuse_reflect", mat.diffuse_reflect)
+                yi.paramsSetFloat("emit", mat.emit)
                 yi.paramsSetFloat("transmit_filter", bTransmit)
 
                 yi.paramsSetFloat("specular_reflect", bSpecr)
                 yi.paramsSetColor("mirror_color", mirCol[0], mirCol[1], mirCol[2])
-                yi.paramsSetBool("fresnel_effect", mat.mat_fresnel_effect)
-                yi.paramsSetFloat("IOR", mat.mat_ior)
+                yi.paramsSetBool("fresnel_effect", mat.fresnel_effect)
+                yi.paramsSetFloat("IOR", mat.IOR)
 
-                if mat.mat_brdf_type == "Oren-Nayar":
+                if mat.brdf_type == "Oren-Nayar":
                         yi.paramsSetString("diffuse_brdf", "oren_nayar")
-                        yi.paramsSetFloat("sigma", mat.mat_sigma)
+                        yi.paramsSetFloat("sigma", mat.sigma)
 
                 return yi.createMaterial(self.namehash(mat))
 
         def writeBlendShader(self, mat):
-
                 yi = self.yi
                 yi.paramsClearAll()
 
-
-                #yi.printInfo("Exporter: Blend material with: [" + props["material1"] + "] [" + props["material2"] + "]")
+                yi.printInfo("Exporter: Blend material with: [" + mat.material1 + "] [" + mat.material2 + "]")
                 yi.paramsSetString("type", "blend_mat")
-                yi.paramsSetString("material1", self.namehash( bpy.data.materials[mat.mat_material_one] )  )
-                yi.paramsSetString("material2", self.namehash( bpy.data.materials[mat.mat_material_two] )  )
-
+                yi.paramsSetString("material1", self.namehash( bpy.data.materials[mat.material1] )  )
+                yi.paramsSetString("material2", self.namehash( bpy.data.materials[mat.material2] )  )
 
                 i=0
 
@@ -453,7 +447,7 @@ class yafMaterial:
                         mappername = "map%x" %i
 
                         lname = "diff_layer%x" % i
-                        if self.writeTexLayer(lname, mappername, diffRoot, mtex, mtex.use_map_color_diffuse, [mat.mat_blend_value] ):
+                        if self.writeTexLayer(lname, mappername, diffRoot, mtex, mtex.use_map_color_diffuse, [mat.blend_value] ):
                                 used = True
                                 diffRoot = lname
                         if used:
@@ -464,7 +458,7 @@ class yafMaterial:
                 if len(diffRoot) > 0:
                         yi.paramsSetString("mask", diffRoot)
 
-                yi.paramsSetFloat("blend_value", mat.mat_blend_value)
+                yi.paramsSetFloat("blend_value", mat.blend_value)
                 return yi.createMaterial(self.namehash(mat))
 
         def writeMatteShader(self, mat):
