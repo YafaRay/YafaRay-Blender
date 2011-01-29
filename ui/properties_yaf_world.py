@@ -249,29 +249,3 @@ properties_world.WORLD_PT_context_world.COMPAT_ENGINES.add('YAFA_RENDER')
 
 del properties_world
 
-
-
-# list of classes
-classes = [
-    YAF_PT_world,
-]
-
-def register():
-    bpy.types.YAF_PT_world.prepend( WORLD_PT_preview.draw )
-    bpy.types.YAF_PT_world.prepend( WORLD_PT_context_world.draw )
-    register = bpy.types.register
-    for cls in classes:
-        register(cls)
-
-
-def unregister():
-    bpy.types.YAF_PT_world.remove( WORLD_PT_preview.draw )
-    bpy.types.YAF_PT_world.remove( WORLD_PT_context_world.draw )
-    unregister = bpy.types.unregister
-    for cls in classes:
-        unregister(cls)
-
-
-if __name__ == "__main__":
-    register()
-

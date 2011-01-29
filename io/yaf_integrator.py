@@ -1,6 +1,5 @@
 import bpy
 
-
 class yafIntegrator:
         def __init__(self, interface):
                 self.yi = interface
@@ -113,5 +112,5 @@ class yafIntegrator:
                 yi.paramsSetBool("showPN",scene.intg_show_perturbed_normals);
             yi.createIntegrator("default")
 
+            return True
 
-            return True;

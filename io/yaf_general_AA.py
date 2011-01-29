@@ -1,6 +1,5 @@
 import bpy
 
-
 class yafGeneralAA:
         def __init__(self, interface):
                 self.yi = interface
@@ -141,3 +140,4 @@ class yafGeneralAA:
                 yi.paramsSetInt("threads", scene.gs_threads)
 
             yi.paramsSetString("background_name", "world_background")
+            

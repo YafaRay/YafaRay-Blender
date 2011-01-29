@@ -1,6 +1,7 @@
 import bpy
 import math
 import mathutils
+import time
 
 class OBJECT_OT_get_position(bpy.types.Operator):
     bl_label = "From( get position )"
@@ -104,13 +105,25 @@ def sunPosAngle(mode="get", val="position"):
     else :
         print('There is no active Sun Lamp object in the scene')
 
+class RENDER_OT_render_view(bpy.types.Operator):
+    bl_label = "Render View"
+    bl_idname = "render.render_view"
+    bl_description = "Renders using the view in the active 3d viewport"
+    
+    def invoke(self, context, event):
+        context.scene.useViewToRender = True
+        bpy.ops.render.render('INVOKE_DEFAULT')
+        return 'FINISHED'
 
 def register():
     bpy.types.register(OBJECT_OT_get_position)
     bpy.types.register(OBJECT_OT_get_angle)
     bpy.types.register(OBJECT_OT_update_sun)
+    bpy.types.register(RENDER_OT_render_view)
 
 def unregister():
     bpy.types.unregister(OBJECT_OT_get_position)
     bpy.types.unregister(OBJECT_OT_get_angle)
     bpy.types.unregister(OBJECT_OT_update_sun)
+    bpy.types.unregister(RENDER_OT_render_view)
+

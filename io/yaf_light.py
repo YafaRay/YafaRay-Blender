@@ -1,7 +1,6 @@
 import bpy
 from  math import *
 import mathutils
-#import yafrayinterface
 
 class yafLight:
     def __init__(self, interface):
@@ -200,3 +199,4 @@ class yafLight:
         yi.createLight(name)
 
         return True
+

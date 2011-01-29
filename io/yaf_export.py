@@ -52,6 +52,9 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
     def exportTextures(self):
         # export textures from visible objects only. Won't work with
         # blend mat, there the textures need to be handled separately
+        
+        if self.scene.name == "preview": return
+        
         for obj in [o for o in self.scene.objects if (not o.hide_render and o.is_visible(self.scene))]:
             for mat_slot in [m for m in obj.material_slots if m.material]:
                 for tex in [t for t in mat_slot.material.texture_slots if (t and t.texture)]:
@@ -90,6 +93,9 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
     def exportObject(self, obj, matrix=None, idx=None):
         # obj can be any object, even EMPTY or CAMERA
+
+        if self.scene.name == "preview":
+            if obj.name in ["checkers.004", "checkers.005", "checkers.008", "checkers.009"]: return
 
         # TODO: set a proper matrix if none?
         if matrix == None:
@@ -177,9 +183,6 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         return outputFile,output,filetype
 
-    def dummy(self):
-        return self.yaf_general_aa.getRenderCoords(self.scene)
-
     # callback to render scene
     def render(self, scene):
         self.update_stats("", "Setting up render")
@@ -217,7 +220,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.update_stats("", "%s - %.2f %%" % (self.tag, self.progress))
 
         def tile_callback(command, *args):
-            if command == "highliteArea":
+            if command == "highliteArea" and self.scene.name != "preview":
                 x0, y0, x1, y1, tile = args
                 res = self.begin_result(x0, y0, x1-x0, y1-y0)
                 try:
@@ -235,7 +238,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                     print("Exception in tile callback with command ", command, ": ", e)
                     print(args, len(tile))
                 self.end_result(res)
-            elif command == "flush":
+            elif command == "flush" and self.scene.name != "preview":
                 w, h, tile = args
                 res = self.begin_result(0, 0, w, h)
                 try:
@@ -283,26 +286,3 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         self.update_stats("", "Done!")
 
-# Use some of the existing buttons.
-# moved to /ui/__init__.py
-"""
-import properties_render, properties_particle
-
-for panel in [properties_render.RENDER_PT_render,
-              properties_render.RENDER_PT_dimensions,
-              properties_render.RENDER_PT_output,
-              properties_render.RENDER_PT_shading,
-              properties_particle.PARTICLE_PT_context_particles,
-              properties_particle.PARTICLE_PT_emission,
-              properties_particle.PARTICLE_PT_hair_dynamics,
-              properties_particle.PARTICLE_PT_velocity,
-              properties_particle.PARTICLE_PT_rotation,
-              properties_particle.PARTICLE_PT_physics,
-              properties_particle.PARTICLE_PT_boidbrain,
-              properties_particle.PARTICLE_PT_render,
-              properties_particle.PARTICLE_PT_draw,
-              properties_particle.PARTICLE_PT_force_fields]:
-    panel.COMPAT_ENGINES.add(IDNAME)
-
-del properties_render, properties_particle
-"""

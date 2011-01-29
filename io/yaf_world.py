@@ -2,9 +2,6 @@ import bpy
 from  math import *
 import re
 import os as real_os # somehow, os as a module name becomes unavailable with bpy import
-#import mathutils
-#import yafrayinterface
-
 
 class yafWorld:
         def __init__(self, interface):
@@ -164,3 +161,4 @@ class yafWorld:
 
                 yi.createBackground("world_background")
                 return True
+

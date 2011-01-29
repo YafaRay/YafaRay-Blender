@@ -14,9 +14,7 @@ Material.mat_type = EnumProperty(attr="mat_type",
         ("coated_glossy","Coated Glossy",""),
         ("glass","Glass",""),
         ("rough_glass","Rough Glass",""),
-        ("blend","Blend",""),
-        #("none","None",""), # only create for test ( povman...)
-),default="shinydiffusemat")
+        ("blend","Blend","")),default="shinydiffusemat")
 ######## Yafaray ######                         ##### Blender values, for test link #####
 Material.mat_color =            FloatVectorProperty(attr="diffuse_color", # link
                                         description = "Color Settings",
@@ -360,31 +358,4 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
 
                     col.prop(yaf_mat,"mat_material_one", text= "Material One")
                     col.prop(yaf_mat,"mat_material_two", text= "Material Two")
-                #else:
-                #    yaf_mat.mat_type = "None" # only for test ( povman...)
-
-
-
-
-
-
-classes = [
-    YAF_MaterialButtonsPanel,
-    YAF_PT_material,
-]
-
-def register():
-    register = bpy.types.register
-    for cls in classes:
-        register(cls)
-
-
-def unregister():
-    unregister = bpy.types.unregister
-    for cls in classes:
-        unregister(cls)
-
-
-if __name__ == "__main__":
-    register()
 
