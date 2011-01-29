@@ -1,44 +1,55 @@
 import bpy
 import time
+import mathutils
 #from yafaray.yaf_properties import *
+
+def multiplyMatrix4x4Vector4(matrix, vector):
+    result = mathutils.Vector((0.0, 0.0, 0.0, 0.0))
+    for i in range(4):
+        result[i] = matrix[i] * vector
+
+    return result
 
 class yafObject(object):
     def __init__(self, yi, mMap):
         self.yi = yi
         self.materialMap = mMap
 
-    def createCamera(self,yi,scene,useView = False):
+    def createCamera(self, yi, scene, useView = False):
         
         self.yi.printInfo("Exporting Camera")
 
         camera = scene.camera
-        matrix = camera.matrix_local # this change is recent
         render = scene.render
-        
-        #renderData = scene.getRenderingContext()
-        #
-        #if not useView:
-        #    camObj = scene.objects.camera
-        #    camera = camObj.getData()
-        #
-        if useView:
+
+        if scene.useViewToRender:
+        # if useView:
             # use the view matrix to calculate the inverted transformed
             # points cam pos (0,0,0), front (0,0,1) and up (0,1,0)
             # view matrix works like the opengl view part of the
             # projection matrix, i.e. transforms everything so camera is
             # at 0,0,0 looking towards 0,0,1 (y axis being up)
-        
-            m = matrix.copy()
+
+            # pretty much get the first best 3d view and use its view
+            # matrix
+            views3d = [s for s in bpy.context.window.screen.areas if s.type == "VIEW_3D"]
+
+            m = views3d[0].spaces[0].region_3d.view_matrix.copy()
+
+            if len(views3d) == 0:
+                print("No 3d view found")
+                return
+
             m.transpose()
             inv = m.invert()
-            pos = inv * mathutils.Vector(0, 0, 0, 1)
-            aboveCam = inv * mathutils.Vector(0, 1, 0, 1)
-            frontCam = inv * mathutils.Vector(0, 0, 1, 1)
+            pos = multiplyMatrix4x4Vector4(inv, mathutils.Vector((0, 0, 0, 1)))
+            aboveCam = multiplyMatrix4x4Vector4(inv, mathutils.Vector((0, 1, 0, 1)))
+            frontCam = multiplyMatrix4x4Vector4(inv, mathutils.Vector((0, 0, 1, 1)))
             dir = frontCam - pos
             up = aboveCam - pos
 
         else:
-
+            matrix = camera.matrix_local # this change is recent
             pos = matrix[3]
             dir = matrix[2]
             up = matrix[1]
@@ -53,49 +64,48 @@ class yafObject(object):
 
         if useView:
             yi.paramsSetString("type", "perspective");
-        else:
 
+        else:
             fdist = 1 # only changes for ortho
 
             camera = camera.data
-            camType = camera.type
+            camType = camera.camera_type
 
-            if camType == "ORTHO":
-                yi.paramsSetString("type", "orthographic");
+            yi.paramsSetString("type", camType);
+
+            if camType == "orthographic":
                 yi.paramsSetFloat("scale", camera.ortho_scale)
 
-            elif camType == "PERSP" or camType == "architect":
-                
-                yi.paramsSetString("type", 'perspective');
+            elif camType in ["perspective", "architect"]:
                 f_aspect = 1.0;
                 if (x * x) <= (y * y):
                     f_aspect=(x * x) / (y * y)
 
                 #print "f_aspect: ", f_aspect
                 yi.paramsSetFloat("focal", camera.lens/(f_aspect*32.0))
-                                
+
                 # DOF params, only valid for real camera
                 # use DOF object distance if present or fixed DOF
-                
-                if (camera.dof_object):
+
+                if camera.dof_object:
                     # use DOF object distance
-                    dof_distance = camera.dof_object.location.length
+                    dist = (pos.xyz - camera.dof_object.location.xyz).length
+                    dof_distance = dist
                 else:
                     # use fixed DOF distance
                     dof_distance = camera.dof_distance
 
                 yi.paramsSetFloat("dof_distance", dof_distance)
-                yi.paramsSetFloat("aperture", 0)
+                yi.paramsSetFloat("aperture", camera.aperture)
                 # bokeh params
-                yi.paramsSetString("bokeh_type", 'disk1')
-                yi.paramsSetFloat("bokeh_rotation", 0)
+                yi.paramsSetString("bokeh_type", camera.bokeh_type)
+                yi.paramsSetFloat("bokeh_rotation", camera.bokeh_rotation)
             
             elif camType == "angular":
-                yi.paramsSetString("type", "angular");
                 yi.paramsSetBool("circular", camera.circular)
                 yi.paramsSetBool("mirrored", camera.mirrored)
-                yi.paramsSetFloat("max_angle",camera.max_angle)
-                yi.paramsSetFloat("angle", camera.lens)
+                yi.paramsSetFloat("max_angle", camera.max_angle)
+                yi.paramsSetFloat("angle", camera.angular_angle)
         
         yi.paramsSetInt("resx", x)
         yi.paramsSetInt("resy", y)

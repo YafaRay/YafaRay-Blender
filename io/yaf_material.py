@@ -409,7 +409,7 @@ class yafMaterial:
                 yi.paramsSetFloat("transparency", bTransp)
                 yi.paramsSetFloat("translucency", bTransl)
                 yi.paramsSetFloat("diffuse_reflect", mat.diffuse_intensity) # mat_diffuse_reflect = diffuse_intensity Blender value
-                yi.paramsSetFloat("emit", mat.mat_emit)#
+                yi.paramsSetFloat("emit", mat.mat_emit)
                 yi.paramsSetFloat("transmit_filter", bTransmit)
 
                 yi.paramsSetFloat("specular_reflect", bSpecr)

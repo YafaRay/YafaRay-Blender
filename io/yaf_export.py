@@ -24,7 +24,7 @@ IDNAME = 'YAFA_RENDER'
 
 class YafaRayRenderEngine(bpy.types.RenderEngine):
     bl_idname = IDNAME
-    bl_use_preview = False
+    bl_use_preview = True
     bl_label = "YafaRay Render"
     progress = 0.0
     tag = ""

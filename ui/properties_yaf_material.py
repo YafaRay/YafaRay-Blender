@@ -60,7 +60,7 @@ Material.mat_transmit_filter =  FloatProperty(attr="mat_transmit_filter",
                                         default = 1.0, step = 1,
                                         precision = 2,
                                         soft_min = 0.0, soft_max = 1.0)
-Material.mat_emit =             FloatProperty(attr="emit", # link
+Material.mat_emit =             FloatProperty(attr="mat_emit", # link
                                         description = "",
                                         min = 0.0, max = 1.0,
                                         default = 0.0, step = 1,
@@ -280,7 +280,7 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                     col.prop(yaf_mat,"mat_transparency", text= "Transparency", slider = True)
                     col.prop(yaf_mat,"translucency", text= "Translucency", slider = True) # link
                     col.prop(yaf_mat,"mat_transmit_filter", text= "Transmit Filter", slider = True)
-                    col.prop(yaf_mat,"emit", text= "Emit", slider = True) # link
+                    col.prop(yaf_mat,"mat_emit", text= "Emit", slider = True) # link
                     col.prop(yaf_mat,"mat_fresnel_effect", text= "Fresnel Effect")
                     if yaf_mat.mat_fresnel_effect:
                         col.prop(yaf_mat,"mat_ior", text= "IOR", slider = True)

@@ -6,6 +6,7 @@ import mathutils
 class yafLight:
     def __init__(self, interface):
         self.yi = interface
+        self.lightMat = None
 
     def makeSphere(self, nu, nv, x, y, z, rad, mat):
         yi = self.yi
