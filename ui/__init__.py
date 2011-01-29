@@ -10,8 +10,7 @@ from yafaray.ui import properties_yaf_volume_integrator
 from yafaray.ui import properties_yaf_world
 from yafaray.ui import properties_yaf_AA_settings
 from yafaray.ui import properties_yaf_object_light
-#from yafaray.ui import properties_yaf_data_lamp
-from yafaray.ui import yaf_light
+from yafaray.ui import properties_yaf_light
 
 # import properties_data_mesh from Blender, "as is"
 # TODO: select only necessary elements

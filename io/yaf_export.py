@@ -283,26 +283,3 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         self.update_stats("", "Done!")
 
-# Use some of the existing buttons.
-# moved to /ui/__init__.py
-"""
-import properties_render, properties_particle
-
-for panel in [properties_render.RENDER_PT_render,
-              properties_render.RENDER_PT_dimensions,
-              properties_render.RENDER_PT_output,
-              properties_render.RENDER_PT_shading,
-              properties_particle.PARTICLE_PT_context_particles,
-              properties_particle.PARTICLE_PT_emission,
-              properties_particle.PARTICLE_PT_hair_dynamics,
-              properties_particle.PARTICLE_PT_velocity,
-              properties_particle.PARTICLE_PT_rotation,
-              properties_particle.PARTICLE_PT_physics,
-              properties_particle.PARTICLE_PT_boidbrain,
-              properties_particle.PARTICLE_PT_render,
-              properties_particle.PARTICLE_PT_draw,
-              properties_particle.PARTICLE_PT_force_fields]:
-    panel.COMPAT_ENGINES.add(IDNAME)
-
-del properties_render, properties_particle
-"""
