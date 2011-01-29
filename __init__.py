@@ -15,6 +15,7 @@
 #  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 # ##### END GPL LICENSE BLOCK #####
+
 import sys, os, threading, time
 
 PLUGIN_PATH = os.path.join(__path__[0], 'bin', 'plugins')
@@ -22,16 +23,14 @@ BIN_PATH = os.path.join(__path__[0], 'bin')
 
 sys.path.append(BIN_PATH)
 
-
-
 bl_info = {
-    "name": "YafaRay Integration",
-    "author": "Shuvro Sarker",
+    "name": "YafaRay Exporter",
+    "author": "Shuvro Sarker, Kim Skoglund (Kerbox), Pedro Alcaide (povmaniaco), Paulo Gomes (tuga3d), Michele Castigliego (subcomandante), Bert Bucholtz, Rodrigo Placencia (DarkTide)",
     "version": (0, 1, 2, 'alpha'),
-    "blender": (2, 5, 5),
+    "blender": (2, 5, 6),
     "location": "Info Header (engine dropdown)",
     "description": "YafaRay integration for blender",
-    "warning" : "VERY ALPHA!",
+    "warning" : "Alpha state",
     "wiki_url": "http://www.yafaray.org/community/forum",
     "tracker_url": "http://www.yafaray.org/development/bugtracker/yafaray",
     "category": "Render"
@@ -42,6 +41,8 @@ bl_info = {
 if sys.platform == 'win32':
     # Loading order of the dlls is sensible please do not alter it
     dllArray = ['zlib1','libxml2-2','libgcc_s_sjlj-1','Half','Iex','IlmThread','IlmImf','libjpeg-8','libpng14','libtiff-3','libfreetype-6','libyafaraycore','libyafarayplugin']
+elif sys.platform == 'darwin':
+    dllArray = ['libyafaraycore.dylib','libyafarayplugin.dylib']
 else:
     dllArray = ['libyafaraycore.so','libyafarayplugin.so']
 
@@ -52,33 +53,21 @@ for dll in dllArray:
     except Exception as e:
         print("ERROR: Failed to load library " + dll + ", " + repr(e));
 
-# new test for __init__ file
-
 if "bpy" in locals():
     import imp
     imp.reload(io)
     imp.reload(ui)
-    imp.reload(op)
+    imp.reload(ot)
 else:
     import bpy
-    from yafaray import io, ui, op
-
-#from extensions_framework.engine    import ( engine_base )
-#from extensions_framework           import ( util as efutil )
-#bpy.ops.ef.msg(msg_type='INFO', msg_text='Extensions Framework is loaded')
-
+    from yafaray import io, ui, ot
 
 def register():
-    import bpy
-    # test framework parameter, make crash Blender?
-    #bpy.ops.ef.msg(msg_type='INFO', msg_text='Exporter YafaRay is loaded')
+    pass
 
 def unregister():
-    import bpy
-    #bpy.ops.ef.msg(msg_type='INFO', msg_text='Exporter YafaRay is uploaded')
-
-
-
+    pass
 
 if __name__ == '__main__':
     register()
+
