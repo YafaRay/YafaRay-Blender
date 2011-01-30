@@ -3,34 +3,35 @@ from bpy.props import *
 Scene = bpy.types.Scene
 
 
-Scene.AA_min_samples = IntProperty(attr="AA_min_samples",
+Scene.AA_min_samples = IntProperty(
                         description = "Number of samples for first AA pass",
                         min = 1,
                         default = 1)
-Scene.AA_inc_samples = IntProperty(attr="AA_inc_samples",
+Scene.AA_inc_samples = IntProperty(
                         description = "Number of samples for additional AA passes",
                         min = 1,
                         default = 1)
-Scene.AA_passes =      IntProperty(attr="AA_passes",
+Scene.AA_passes =      IntProperty(
                         description = "Number of anti-aliasing passes. Adaptive sampling (passes > 1) uses different pattern",
                         min = 1,
                         default = 1)
-Scene.AA_threshold =   FloatProperty(attr="AA_threshold",
+Scene.AA_threshold =   FloatProperty(
                         description = "Color threshold for additional AA samples in next pass",
                         min = 0, max = 1,
                         default = 0.05, precision = 4)
-Scene.AA_pixelwidth =  FloatProperty(attr="AA_pixelwidth",
+Scene.AA_pixelwidth =  FloatProperty(
                         description = "AA filter size",
                         min = 1,
                         default = 1.5)
-Scene.AA_filter_type = EnumProperty(attr="AA_filter_type",
+Scene.AA_filter_type = EnumProperty(
                     items = (
-                    ("AA Filter Type","AA Filter Type",""),
-                    ("Box","Box",""),
-                    ("Mitchell","Mitchell",""),
-                    ("Gauss","Gauss",""),
-                    ("Lanczos","Lanczos","")
-                    ),default="Gauss")
+                        ("AA Filter Type","AA Filter Type",""),
+                        ("box","Box",""),
+                        ("mitchell","Mitchell",""),
+                        ("gauss","Gauss",""),
+                        ("lanczos","Lanczos","")
+                        ),
+                    default="gauss")
 
 
 class YAF_PT_AA_settings(bpy.types.Panel):

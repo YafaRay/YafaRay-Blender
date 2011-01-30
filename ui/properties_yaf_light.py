@@ -14,18 +14,18 @@ from rna_prop_ui import PropertyPanel
 # only create proprerty if not exist in Blender
 # if exist, but not apropiate parameter for Yafaray
 
-Lamp.lamp_type = EnumProperty(attr="type",
-    items = (
-        ("","Light Type",""),
-        ("POINT","Point",""),
-        ("SUN","Sun",""),
-        #("Directional","Directional",""), # integrate into Sun
-        #("MeshLight","MeshLight",""),
-        #("Sphere","Sphere",""), # integrate in Pointlight
-        ("SPOT","Spot",""),
-        ("IES","IES",""),
-        ("AREA","Area",""),
-),default="POINT")
+#Lamp.lamp_type = EnumProperty(attr="type",
+#    items = (
+#        ("","Light Type",""),
+#        ("POINT","Point",""),
+#        ("SUN","Sun",""),
+#        #("Directional","Directional",""), # integrate into Sun
+#        #("MeshLight","MeshLight",""),
+#        #("Sphere","Sphere",""), # integrate in Pointlight
+#        ("SPOT","Spot",""),
+#        ("IES","IES",""),
+#        ("AREA","Area",""),
+#),default="POINT")
 Lamp.directional =      BoolProperty(attr="directional",
                                     description = "",
                                     default = False)

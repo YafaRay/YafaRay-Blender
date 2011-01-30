@@ -11,6 +11,7 @@ from yafaray.ui import properties_yaf_volume_integrator
 from yafaray.ui import properties_yaf_world
 from yafaray.ui import properties_yaf_object_light
 from yafaray.ui import properties_yaf_light
+from yafaray.ui import properties_yaf_convert
 
 import properties_render, properties_particle, properties_data_mesh
 

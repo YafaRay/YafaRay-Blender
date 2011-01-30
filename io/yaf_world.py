@@ -16,8 +16,8 @@ class yafWorld:
 
                 if world:
                     bg_type = world.bg_type
-                    useIBL = world.bg_use_IBL
-                    iblSamples = world.bg_IBL_samples
+                    useIBL = world.bg_use_ibl
+                    iblSamples = world.bg_ibl_samples
                     bgPower = world.bg_power
                     c = world.horizon_color
                 else:

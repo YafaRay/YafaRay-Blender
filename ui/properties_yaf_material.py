@@ -68,10 +68,10 @@ Material.fresnel_effect =   BoolProperty(
                                         default = False)
 Material.brdf_type = EnumProperty(
     items = (
-        ("BRDF Type","BRDF Type",""),
-        ("Oren-Nayar","Oren-Nayar",""),
-        ("Normal (Lambert)","Normal (Lambert)",""),
-),default="Normal (Lambert)")
+        ("BRDF Type", "BRDF Type", ""),
+        ("oren-nayar", "Oren-Nayar", ""),
+        ("lambert", "Normal (Lambert)", "")),
+    default="lambert")
 
 #Material.diffuse_color =        FloatVectorProperty(
 #                                        description = "Diffuse Color",
@@ -167,6 +167,11 @@ Material.rough =                BoolProperty(
 Material.coated =               BoolProperty(
                                         description = "",
                                         default = False)
+
+Material.material1 =            EnumProperty(items = [])
+Material.material2 =            EnumProperty(items = [])
+
+
 
 class YAF_MaterialButtonsPanel():
     bl_space_type = 'PROPERTIES'
@@ -334,13 +339,13 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
 
                     values = [("Material One", "Material One", "")]
                     for item in bpy.data.materials:
-                        values.append((item.name,item.name,""))
+                        values.append((item.name, item.name,""))
 
                     materialList1 = tuple(values)
 
                     values = [("Material Two","Material Two", "")]
                     for item in bpy.data.materials:
-                        values.append((item.name,item.name,""))
+                        values.append((item.name, item.name,""))
 
                     materialList2 = tuple(values)
 
