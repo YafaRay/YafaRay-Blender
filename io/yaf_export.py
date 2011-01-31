@@ -13,7 +13,7 @@ from yafaray import PLUGIN_PATH
 from yafaray.io.yaf_light  import yafLight
 from yafaray.io.yaf_world  import yafWorld
 from yafaray.io.yaf_integrator import yafIntegrator
-from yafaray.io.yaf_general_AA import yafGeneralAA
+from yafaray.io import yaf_scene
 from yafaray.io.yaf_texture import yafTexture
 from yafaray.io.yaf_material import yafMaterial
 
@@ -38,7 +38,6 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.yaf_lamp       = yafLight(self.yi)
         self.yaf_world      = yafWorld(self.yi)
         self.yaf_integrator = yafIntegrator(self.yi)
-        self.yaf_general_aa = yafGeneralAA(self.yi)
         self.yaf_texture    = yafTexture(self.yi)
         self.yaf_material   = yafMaterial(self.yi, self.materialMap, self.yaf_texture.loadedTextures)
 
@@ -160,9 +159,9 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
     #    , w, h
     def configureRender(self):
         # Integrators
-        self.yi.paramsClearAll()
         self.yaf_integrator.exportIntegrator(self.scene)
-        self.yaf_general_aa.exportGeneralAA(self.scene)
+        self.yaf_integrator.exportVolumeIntegrator(self.scene)
+        yaf_scene.exportRenderSettings(self.yi, self.scene)
 
     def decideOutputFileName(self, output_path, filetype):
         if filetype == 'PNG':
@@ -198,12 +197,10 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         self.setInterface(yafrayinterface.yafrayInterface_t())
 
-        outputFile,output,file_type = self.decideOutputFileName(r.filepath, r.file_format)
+        outputFile, output, file_type = self.decideOutputFileName(r.filepath, r.file_format)
 
         self.yi.paramsClearAll()
         self.yi.paramsSetString("type", file_type)
-        self.yi.paramsSetInt("width", x)
-        self.yi.paramsSetInt("height", y)
         self.yi.paramsSetBool("alpha_channel", False)
         self.yi.paramsSetBool("z_channel", scene.gs_z_channel)
 
@@ -269,7 +266,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
             self.end_result(result)
 
-        if scene.gs_type_render == "into_blender":
+        elif scene.gs_type_render == "into_blender":
             import threading
             t = threading.Thread(target=self.yi.render, args=(x, y, tile_callback, prog_callback))
             t.start()
