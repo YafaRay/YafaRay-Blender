@@ -1,5 +1,6 @@
 import bpy
-from  math import *
+import math
+from math import *
 import mathutils
 
 class yafLight:
@@ -61,7 +62,7 @@ class yafLight:
         up = matrix[1]
         to = pos - dir
 
-        lampType = lamp.type or lamp_type # for test
+        lampType = lamp.lamp_type
         power = lamp.energy
         color = lamp.color
         
@@ -88,7 +89,7 @@ class yafLight:
             self.yi.paramsClearAll()
 
 
-        if lampType == "POINT":
+        if lampType == "point":
             yi.paramsSetString("type", "pointlight")
             power = 0.5 * power * power # original value
 
@@ -105,18 +106,18 @@ class yafLight:
                 yi.paramsSetInt("samples", lamp.yaf_samples)
                 yi.paramsSetFloat("radius", radius)
 
-        elif lampType == "SPOT":
-            
+        elif lampType == "spot":
             if preview and name == "Lamp.002":
                 angle = 50
             else:
                 # Blender reports the angle of the full cone in radians
                 # and we need half of the apperture angle in degrees
                 # (spot_size * 180 / pi) / 2
-                angle = (lamp.spot_size * 57.29577951308232087684636) * 0.5
-                
+                angle = (lamp.spot_size * 180 / math.pi) * 0.5
+                # angle = (lamp.spot_size * 57.29577951308232087684636) * 0.5
+
             yi.paramsSetString("type", "spotlight")
-            
+
             yi.paramsSetFloat("cone_angle", angle)
             yi.paramsSetFloat("blend", lamp.spot_blend)
             yi.paramsSetPoint("to", to[0], to[1], to[2])
@@ -126,7 +127,7 @@ class yafLight:
             yi.paramsSetInt("samples", lamp.yaf_samples)
             power = 0.5 * power * power
 
-        elif lampType == "SUN":
+        elif lampType == "sun":
             yi.paramsSetString("type", "sunlight")
             yi.paramsSetInt("samples", lamp.yaf_samples)
             yi.paramsSetFloat("angle", lamp.angle)
@@ -136,13 +137,7 @@ class yafLight:
                 yi.paramsSetBool("infinite", lamp.infinite)
                 yi.paramsSetFloat("radius", lamp.shadow_soft_size)
 
-        #elif lampType == "Directional": # integrate into Sun lamp
-            #yi.paramsSetString("type", "directional")
-            #yi.paramsSetBool("infinite", lamp.infinite)
-            #yi.paramsSetFloat("radius", lamp.shadow_soft_size)
-            #yi.paramsSetPoint("direction", dir[0], dir[1], dir[2])
-
-        elif lampType == "HEMI":
+        elif lampType == "ies":
 
             # use for IES light
             yi.paramsSetString("type", "ieslight")
@@ -157,18 +152,18 @@ class yafLight:
             yi.paramsSetFloat("cone_angle", lamp.ies_cone_angle)
 
 
-        elif lampType == "AREA":
+        elif lampType == "area":
             #yi.paramsSetString("type", "arealight")
             #areaLight = obj.getData() # old
             #sizeX = areaLight.getAreaSizeX()
             #sizeY = areaLight.getAreaSizeY()
 
-            sizeX = lamp.size
-            sizeY = lamp.size_y
+            # sizeX = lamp.size
+            # sizeY = lamp.size_y
+            sizeX = 1.0
+            sizeY = 1.0
 
-            matrix = lamp_object.matrix_world.__copy__()
-            #lamp_object.transform(matrix)
-            #matrix.transpose()
+            matrix = lamp_object.matrix_world
 
             # generate an untransformed rectangle in the XY plane with
             # the light's position as the centerpoint and transform it

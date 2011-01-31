@@ -185,7 +185,6 @@ class YAF_MaterialButtonsPanel():
 
 
 class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
-
         bl_label = 'YafaRay Material'
         bl_space_type = 'PROPERTIES'
         bl_region_type = 'WINDOW'
@@ -194,13 +193,11 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
 
         @classmethod
         def poll(self, context):
-
                 engine = context.scene.render.engine
                 return ( (context.material or context.object) and  (engine in self.COMPAT_ENGINES) )
 
 
         def draw(self, context):
-
                 layout = self.layout
 
                 mat = context.material
@@ -213,7 +210,7 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                 #load preview
                 layout.template_preview(context.material, True, context.material)
                 layout.operator("RENDER_OT_refresh_preview", text="Refresh preview", icon="RENDER_STILL")
-                
+
                 if ob:
                     row = layout.row()
 
@@ -251,7 +248,6 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                 col.prop(context.material,"mat_type", text= "Material Types")
 
                 if yaf_mat.mat_type == 'shinydiffusemat':
-
                     col.prop(yaf_mat,"color", text= "Color")
                     col.prop(yaf_mat,"mirror_color", text= "Mirror Color")
                     col.separator()
@@ -262,9 +258,12 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                     col.prop(yaf_mat,"transmit_filter", text= "Transmit Filter", slider = True)
                     col.prop(yaf_mat,"emit", text= "Emit", slider = True) # link
                     col.prop(yaf_mat,"fresnel_effect", text= "Fresnel Effect")
+
                     if yaf_mat.fresnel_effect:
                         col.prop(yaf_mat, "IOR", text= "IOR", slider = True)
+
                     col.prop(yaf_mat, "brdf_type", text= "BRDF Type")
+
                     if yaf_mat.brdf_type == "Oren-Nayar":
                         col.prop(yaf_mat,"sigma", text= "Sigma", slider = True)
 
@@ -273,7 +272,6 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                 #--------
 
                 if yaf_mat.mat_type == 'glossy' or yaf_mat.mat_type == 'coated_glossy':
-
                     col.prop(yaf_mat,"diffuse_color", text= "Diffuse Color")#link, not changed in proprerty definition, for test
                     col.prop(yaf_mat,"color", text= "Glossy Color")
                     col.separator()

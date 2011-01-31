@@ -67,6 +67,8 @@ class yafWorld:
                                 yi.paramsSetString("mapping", "probe");
                             elif texco == 'SPHERE':
                                 yi.paramsSetString("mapping", "sphere");
+                            else:
+                                yi.printWarning("World texture mapping neither Sphere nor AngMap!")
 
                             yi.paramsSetString("type", "textureback");
                             yi.paramsSetString("texture", "world_texture");

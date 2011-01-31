@@ -153,9 +153,9 @@ class RENDER_OT_render_view(bpy.types.Operator):
         
         if not view3d or view3d.view_perspective == "ORTHO":
             context.window_manager.invoke_popup(self)
-            return {'CANCELLED'}        
+            return {'CANCELLED'}
         
-        m = view3d.view_matrix.copy()
+        m = view3d.view_matrix
         
         mSerial = [0 for o in range(16)]
         for row in range(4):

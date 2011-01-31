@@ -61,7 +61,7 @@ class yafObject(object):
         
         if scene.useViewToRender:
             yi.paramsSetString("type", "perspective")
-            yi.paramsSetFloat("focal", 0.5)
+            yi.paramsSetFloat("focal", 0.7)
             bpy.ops.wm.context_set_boolean("EXEC_DEFAULT", data_path="scene.useViewToRender", value=False)
 
         else:

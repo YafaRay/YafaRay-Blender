@@ -193,8 +193,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         r = scene.render
         
         # compute resolution
-        x= int(r.resolution_x*r.resolution_percentage*0.01)
-        y= int(r.resolution_y*r.resolution_percentage*0.01)
+        x = int(r.resolution_x * r.resolution_percentage * 0.01)
+        y = int(r.resolution_y * r.resolution_percentage * 0.01)
 
         self.setInterface(yafrayinterface.yafrayInterface_t())
 

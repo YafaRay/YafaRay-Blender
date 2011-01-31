@@ -75,7 +75,6 @@ class YAF_PT_camera(bpy.types.Panel):
 
 
     def draw(self, context):
-
         layout = self.layout
         split = layout.split()
         col = split.column()
@@ -86,18 +85,21 @@ class YAF_PT_camera(bpy.types.Panel):
         col.separator()
 
         if context.camera.camera_type == 'angular':
-            bpy.ops.wm.context_set_enum("EXEC_DEFAULT", data_path="camera.type", value="PERSP")
+            if not camera.type == "PERSP":
+                bpy.ops.wm.context_set_enum("EXEC_DEFAULT", data_path="camera.type", value="PERSP")
             col.prop(context.camera, "angular_angle", text = "Angle")
             col.prop(context.camera, "max_angle", text = "Max Angle")
             col.prop(context.camera, "mirrored", text = "Mirrored")
             col.prop(context.camera, "circular", text = "Circular")
 
         elif camera.camera_type == 'orthographic':
-            bpy.ops.wm.context_set_enum("EXEC_DEFAULT", data_path="camera.type", value="ORTHO")
+            if not camera.type == "ORTHO":
+                bpy.ops.wm.context_set_enum("EXEC_DEFAULT", data_path="camera.type", value="ORTHO")
             col.prop(context.camera, "ortho_scale", text = "Scale")
 
         elif camera.camera_type in ['perspective', 'architect']:
-            bpy.ops.wm.context_set_enum("EXEC_DEFAULT", data_path="camera.type", value="PERSP")
+            if not camera.type == "PERSP":
+                bpy.ops.wm.context_set_enum("EXEC_DEFAULT", data_path="camera.type", value="PERSP")
             col.prop(context.camera, "lens", text = "Focal Length")
 
             col.label("Depth of Field")

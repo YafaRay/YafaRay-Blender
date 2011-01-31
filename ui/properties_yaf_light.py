@@ -14,18 +14,15 @@ from rna_prop_ui import PropertyPanel
 # only create proprerty if not exist in Blender
 # if exist, but not apropiate parameter for Yafaray
 
-#Lamp.lamp_type = EnumProperty(attr="type",
-#    items = (
-#        ("","Light Type",""),
-#        ("POINT","Point",""),
-#        ("SUN","Sun",""),
-#        #("Directional","Directional",""), # integrate into Sun
-#        #("MeshLight","MeshLight",""),
-#        #("Sphere","Sphere",""), # integrate in Pointlight
-#        ("SPOT","Spot",""),
-#        ("IES","IES",""),
-#        ("AREA","Area",""),
-#),default="POINT")
+Lamp.lamp_type = EnumProperty(
+    items = (
+        ("", "Light Type", ""),
+        ("point", "Point", ""),
+        ("sun", "Sun", ""),
+        ("spot", "Spot", ""),
+        ("ies", "IES", ""),
+        ("area", "Area", "")),
+    default="point")
 Lamp.directional =      BoolProperty(attr="directional",
                                     description = "",
                                     default = False)
@@ -107,7 +104,6 @@ class YAF_PT_lamp(bpy.types.Panel):
 
 
     def draw(self, context):
-
         layout = self.layout
         # test insert context.lamp here, for no import module
         ob = context.object
@@ -131,66 +127,74 @@ class YAF_PT_lamp(bpy.types.Panel):
         # draw preview? easy...
         layout.template_preview(context.lamp)
 
-        layout.prop(context.lamp,"type", expand=True, text= "Light Type")
+        layout.prop(lamp, "lamp_type", expand=True, text= "Light Type")
+        # layout.prop(context.lamp, "type", expand=True, text= "Light Type")
 
         split = layout.split(percentage = 0.65)
         row = layout.row()
 
-        col = row.column() # row.column = org
+        col = row.column()
         sub = col.column()
 
-        #context.lamp.shadow_ray_samples = 16
+        if lamp.lamp_type == 'area':
+            if not lamp.type == "AREA":
+                bpy.ops.wm.context_set_enum("EXEC_DEFAULT", data_path="lamp.type", value="AREA")
 
-        if context.lamp.type == 'AREA':
+            col.prop(lamp, "yaf_samples", text= "Samples")
+            # col.prop(lamp, "size", text= "SizeX")
+            # col.prop(lamp, "size_y", text= "SizeY")
+            col.prop(lamp, "create_geometry", text= "Create Geometry")
 
-            col.prop(context.lamp,"yaf_samples", text= "Samples")
-            col.prop(context.lamp,"size", text= "SizeX")
-            col.prop(context.lamp,"size_y", text= "SizeY")
-            col.prop(context.lamp,"create_geometry", text= "Create Geometry") # crash in render
+        elif lamp.lamp_type == 'spot':
+            if not lamp.type == "SPOT":
+                bpy.ops.wm.context_set_enum("EXEC_DEFAULT", data_path="lamp.type", value="SPOT")
 
+            col.prop(lamp, "spot_size", text= "Cone Angle")
+            col.prop(lamp, "spot_blend", text= "Cone Edge Softness")
 
-        elif context.lamp.type == 'SPOT':
+            col.prop(lamp, "spot_soft_shadows", text= "Soft Shadow", toggle = True)
 
-            col.prop(context.lamp,"spot_size", text= "Cone Angle")
-            col.prop(context.lamp,"spot_soft_shadows", text= "Soft Shadow")
+            if lamp.spot_soft_shadows:
+                box = col.box()
+                box.prop(lamp, "yaf_samples", text= "Samples")
+                box.prop(lamp, "shadow_fuzzyness", text= "Shadow Fuzzyness")
 
-            if context.lamp.spot_soft_shadows:
-                col.prop(context.lamp,"yaf_samples", text= "Samples")
-                col.prop(context.lamp,"shadow_fuzzyness", text= "Shadow Fuzzyness")
+            col.prop(lamp, "photon_only", text= "Photon Only")
 
-            col.prop(context.lamp,"spot_blend", text= "Blend")
-            #col = split.column()
-            col.prop(context.lamp,"photon_only", text= "Photon Only")
+        elif lamp.lamp_type == 'sun':
+            if not lamp.type == "SUN":
+                bpy.ops.wm.context_set_enum("EXEC_DEFAULT", data_path="lamp.type", value="SUN")
 
+            col.prop(lamp, "angle", text= "Angle")
+            col.prop(lamp, "yaf_samples", text= "Samples")
+            col.prop(lamp, "directional", text= "Directional", toggle = True)
+            if lamp.directional:
+                box = col.box()
+                box.prop(lamp, "shadow_soft_size", text= "Radius")
+                box.prop(lamp, "infinite", text= "Infinite")
 
-        elif context.lamp.type == 'SUN':
+        elif lamp.lamp_type == 'point':
+            if not lamp.type == "POINT":
+                bpy.ops.wm.context_set_enum("EXEC_DEFAULT", data_path="lamp.type", value="POINT")
 
-            col.prop(context.lamp,"angle", text= "Angle")
-            col.prop(context.lamp,"yaf_samples", text= "Samples")
-            col.prop(context.lamp,"directional", text= "Directional")
-            if context.lamp.directional:
-                col.prop(context.lamp,"shadow_soft_size", text= "Radius")
-                col.prop(context.lamp,"infinite", text= "Infinite")
+            col.prop(lamp, "use_sphere",text= "Use sphere", toggle = True)
+            if lamp.use_sphere:
+                box = col.box()
+                box.prop(lamp, "shadow_soft_size", text= "Radius")
+                box.prop(lamp, "yaf_samples", text= "Samples")
+                box.prop(lamp, "create_geometry", text= "Create Geometry")
 
-        elif context.lamp.type == 'POINT':
-
-            col.prop(context.lamp,"use_sphere",text= "Use sphere")
-            if context.lamp.use_sphere:
-                col.prop(context.lamp,"shadow_soft_size", text= "Radius")
-                col.prop(context.lamp,"yaf_samples", text= "Samples")
-                col.prop(context.lamp,"distance", text= "Distance")
-                col.prop(context.lamp,"create_geometry", text= "Create Geometry")
-
-
-        elif context.lamp.type == 'HEMI':
+        elif lamp.lamp_type == 'ies':
+            if not lamp.type == "SPOT":
+                bpy.ops.wm.context_set_enum("EXEC_DEFAULT", data_path="lamp.type", value="SPOT")
 
             col.label("YafaRay Light type IES")
-            col.prop(context.lamp,"ies_file",text = "IES File")
-            #col.prop(context.lamp,"spot_size",text = "IES Cone Angle")
-            col.prop(context.lamp,"ies_soft_shadows",text = "IES Soft Shadows")
-            if context.lamp.ies_soft_shadows:
-                col.prop(context.lamp,"yaf_samples",text = "IES Samples")
+            col.prop(lamp, "ies_file",text = "IES File")
+            col.prop(lamp, "ies_soft_shadows",text = "IES Soft Shadows", toggle = True)
+            if lamp.ies_soft_shadows:
+                box = col.box()
+                box.prop(lamp, "yaf_samples",text = "IES Samples")
 
-        col.prop(context.lamp,"color", text= "Color")
-        col.prop(context.lamp,"energy", text= "Power")
+        col.prop(lamp, "color", text= "Color")
+        col.prop(lamp, "energy", text= "Power")
 
