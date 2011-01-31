@@ -34,6 +34,8 @@ class yafTexture:
         
         yi = self.yi
         yi.paramsClearAll()
+        
+        textureConfigured = False
 
         if tex.type == 'BLEND':
 
@@ -48,6 +50,7 @@ class yafTexture:
             elif tex.progression == 'QUADRATIC_SPHERE' :    stype = "halo"
             yi.paramsSetString("stype", stype)
 
+            textureConfigured = True
 
         elif tex.type == 'CLOUDS':
 
@@ -67,6 +70,7 @@ class yafTexture:
             yi.paramsSetBool("hard", hard)
             yi.paramsSetInt("depth", tex.noise_depth)
 
+            textureConfigured = True
 
         elif tex.type == 'WOOD':
 
@@ -112,6 +116,8 @@ class yafTexture:
 
             yi.paramsSetString("shape", ts )
 
+            textureConfigured = True
+
         elif tex.type == 'MARBLE':
 
             yi.printInfo("Exporter: Creating Texture: \"" + name + "\" type MARBLE")
@@ -151,6 +157,8 @@ class yafTexture:
                 ts = "sin"
 
             yi.paramsSetString("shape", ts)
+
+            textureConfigured = True
 
         elif tex.type == 'VORONOI':
 
@@ -197,6 +205,8 @@ class yafTexture:
 
             yi.paramsSetString("distance_metric", ts)
 
+            textureConfigured = True
+
         elif tex.type == 'MUSGRAVE':
 
             yi.printInfo("Exporter: Creating Texture: \"" + name + "\" type MUSGRAVE")
@@ -225,6 +235,8 @@ class yafTexture:
 
             yi.paramsSetFloat("intensity", tex.offset)
 
+            textureConfigured = True
+
         elif tex.type == 'DISTORTED_NOISE':
 
             yi.printInfo("Exporter: Creating Texture: \"" + name + "\" type DISTORTED NOISE")
@@ -239,6 +251,8 @@ class yafTexture:
 
             yi.paramsSetString("noise_type1", noise2string(tex.noise_basis))
             yi.paramsSetString("noise_type2", noise2string(tex.noise_distortion))
+
+            textureConfigured = True
 
         elif tex.type == 'IMAGE' and tex.image:
             image_tex = tex.image
@@ -301,6 +315,11 @@ class yafTexture:
             # rot90 flag
             #if tex.rot90 != 0:
             yi.paramsSetBool("rot90", tex.use_flip_axis)
-        yi.createTexture(name)
-        self.loadedTextures.add(name)
+            textureConfigured = True
+        
+        if textureConfigured:    
+            yi.createTexture(name)
+            self.loadedTextures.add(name)
+        
+        return textureConfigured
 

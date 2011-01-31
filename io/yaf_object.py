@@ -37,32 +37,32 @@ class yafObject(object):
                     m[row][column] = scene.viewMatrix[column + row * 4]
 
             m.transpose()
+
             inv = m.invert()
             pos = multiplyMatrix4x4Vector4(inv, mathutils.Vector((0, 0, 0, 1)))
             aboveCam = multiplyMatrix4x4Vector4(inv, mathutils.Vector((0, 1, 0, 1)))
             frontCam = multiplyMatrix4x4Vector4(inv, mathutils.Vector((0, 0, 1, 1)))
             dir = frontCam - pos
-            up = aboveCam - pos
+            up = aboveCam
 
 
         else:
             matrix = camera.matrix_local # this change is recent
             pos = matrix[3]
             dir = matrix[2]
-            up = matrix[1]
+            up = pos + matrix[1]
 
-        to = [pos[0] - dir[0], pos[1] - dir[1], pos[2] - dir[2]]
+        to = pos - dir
 
         x = int(render.resolution_x * render.resolution_percentage * 0.01)
         y = int(render.resolution_y * render.resolution_percentage * 0.01)
 
         yi.paramsClearAll()
-
-
+        
         if scene.useViewToRender:
-            yi.paramsSetString("type", "perspective");
+            yi.paramsSetString("type", "perspective")
             yi.paramsSetFloat("focal", 0.5)
-            scene.useViewToRender = False # needs to be reset, maybe not the best place here
+            bpy.ops.wm.context_set_boolean("EXEC_DEFAULT", data_path="scene.useViewToRender", value=False)
 
         else:
             fdist = 1 # only changes for ortho
@@ -80,7 +80,6 @@ class yafObject(object):
                 if (x * x) <= (y * y):
                     f_aspect=(x * x) / (y * y)
 
-                #print "f_aspect: ", f_aspect
                 yi.paramsSetFloat("focal", camera.lens/(f_aspect*32.0))
 
                 # DOF params, only valid for real camera
@@ -110,7 +109,7 @@ class yafObject(object):
         yi.paramsSetInt("resy", y)
 
         yi.paramsSetPoint("from", pos[0], pos[1], pos[2])
-        yi.paramsSetPoint("up", pos[0] + up[0], pos[1] + up[1], pos[2] + up[2])
+        yi.paramsSetPoint("up", up[0], up[1], up[2])
         yi.paramsSetPoint("to", to[0], to[1], to[2])
         yi.createCamera("cam")
 
@@ -132,8 +131,6 @@ class yafObject(object):
 
     #extracts data from all the meshes of a scene    
     def writeMesh(self,yi,scene, ID, obj, matrix, ymat = None, isSmooth = False):
-        
-
 
         #matrix = obj.matrix_local #recent change
         me = obj.data
@@ -168,7 +165,6 @@ class yafObject(object):
             # into a (-1 -1 -1) (1 1 1) bounding box
             ov = []
             bbMin, bbMax = self.getBBCorners(obj)
-            # print bbMin, bbMax
         
             delta = []
                 
@@ -184,8 +180,7 @@ class yafObject(object):
         
         self.yi.paramsClearAll()
         self.yi.startGeometry()
-            
-            
+        
         obType = 0
             
         #ID = self.yi.getNextFreeID()
@@ -197,7 +192,6 @@ class yafObject(object):
                 count += 2
             else:
                 count += 1
-            
             
         self.yi.startTriMesh(ID, len(mesh.vertices), len(mesh.faces) , hasOrco, hasUV, obType)
         #print("The name of id is : " + str(ID) )

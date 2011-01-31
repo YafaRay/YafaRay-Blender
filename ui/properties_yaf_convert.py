@@ -1,5 +1,4 @@
 import bpy
-from yafaray.io import yafaray_converter
 
 class YAF_PT_convert(bpy.types.Panel):
     bl_label = 'Convert old YafaRay Settings'
@@ -15,5 +14,5 @@ class YAF_PT_convert(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
-        layout.column().operator("data.convert_yafaray_properties", "Convert old data")
+        layout.column().operator("data.convert_yafaray_properties", "Convert data form 2.4x")
 

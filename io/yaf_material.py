@@ -9,15 +9,17 @@ def proj2int(val):
     elif val == 'Z'    : return 3
 
 class yafMaterial:
-        def __init__(self, interface,mMap):
+        def __init__(self, interface, mMap, texMap):
                 self.yi          = interface
                 self.materialMap = mMap
+                self.textureMap  = texMap
 
         def namehash(self,obj):
                 nh = obj.name + "-" + str(obj.__hash__())
                 return nh
 
         def writeTexLayer(self, name, tex_in, ulayer, mtex, chanflag, dcol):
+            if mtex.name not in self.textureMap: return False
             if chanflag == 0:
                 return False
 
@@ -325,6 +327,11 @@ class yafMaterial:
                 bTransp = mat.transparency
                 bTransl = mat.translucency
                 bTransmit = mat.transmit_filter
+                bEmit = mat.emit
+
+                if self.preview and mat.name.find("check") != -1:
+                        bCol = mat.diffuse_color
+                        bEmit = 0.35
 
                 # TODO: all
 
@@ -406,7 +413,7 @@ class yafMaterial:
                 yi.paramsSetFloat("transparency", bTransp)
                 yi.paramsSetFloat("translucency", bTransl)
                 yi.paramsSetFloat("diffuse_reflect", mat.diffuse_reflect)
-                yi.paramsSetFloat("emit", mat.emit)
+                yi.paramsSetFloat("emit", bEmit)
                 yi.paramsSetFloat("transmit_filter", bTransmit)
 
                 yi.paramsSetFloat("specular_reflect", bSpecr)
@@ -473,7 +480,8 @@ class yafMaterial:
                 yi.paramsSetString("type", "null")
                 return yi.createMaterial(self.namehash(mat))
 
-        def writeMaterial(self, mat):
+        def writeMaterial(self, mat, preview = False):
+                self.preview = preview
                 self.yi.printInfo("Exporter: Creating Material: \"" + self.namehash(mat) + "\"")
                 ymat = None
                 if mat.name == "y_null":

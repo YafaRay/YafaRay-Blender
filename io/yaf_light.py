@@ -59,14 +59,23 @@ class yafLight:
         pos = matrix[3]
         dir = matrix[2]
         up = matrix[1]
-        to = [pos[0] - dir[0], pos[1] - dir[1], pos[2] - dir[2]]
+        to = pos - dir
 
         lampType = lamp.type or lamp_type # for test
         power = lamp.energy
         color = lamp.color
         
         if preview:
-            power *= 5;
+            if name == "Lamp":
+                pos = (-6, -4, 8, 1.0)
+                power = 5
+            elif name == "Lamp.001":
+                pos = (6, -6, -2, 1.0)
+                power = 6
+            elif name == "Lamp.002":
+                pos = (-2.9123109, -7.270790733, 4.439187765, 1.0)
+                to = (-0.0062182024121284485, 0.6771485209465027, 1.8015732765197754, 1.0)
+                power = 5
 
         yi.paramsClearAll()
 
@@ -97,10 +106,18 @@ class yafLight:
                 yi.paramsSetFloat("radius", radius)
 
         elif lampType == "SPOT":
-            #light = obj.getData()
+            
+            if preview and name == "Lamp.002":
+                angle = 50
+            else:
+                # Blender reports the angle of the full cone in radians
+                # and we need half of the apperture angle in degrees
+                # (spot_size * 180 / pi) / 2
+                angle = (lamp.spot_size * 57.29577951308232087684636) * 0.5
+                
             yi.paramsSetString("type", "spotlight")
-            # Blender reports the angle of the full cone in radians and we need half of the apperture angle in degrees
-            yi.paramsSetFloat("cone_angle", (lamp.spot_size * 57.29577951308232087684636) * 0.5)
+            
+            yi.paramsSetFloat("cone_angle", angle)
             yi.paramsSetFloat("blend", lamp.spot_blend)
             yi.paramsSetPoint("to", to[0], to[1], to[2])
             yi.paramsSetBool("soft_shadows", lamp.spot_soft_shadows)

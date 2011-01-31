@@ -83,19 +83,21 @@ class YAF_PT_camera(bpy.types.Panel):
         camera = context.camera
 
         col.prop(context.camera, "camera_type", text = "Yafaray Camera")
-        col.operator("object.update_camera_type", text = "Update 3D View Camera")
         col.separator()
 
         if context.camera.camera_type == 'angular':
+            bpy.ops.wm.context_set_enum("EXEC_DEFAULT", data_path="camera.type", value="PERSP")
             col.prop(context.camera, "angular_angle", text = "Angle")
             col.prop(context.camera, "max_angle", text = "Max Angle")
             col.prop(context.camera, "mirrored", text = "Mirrored")
             col.prop(context.camera, "circular", text = "Circular")
 
         elif camera.camera_type == 'orthographic':
+            bpy.ops.wm.context_set_enum("EXEC_DEFAULT", data_path="camera.type", value="ORTHO")
             col.prop(context.camera, "ortho_scale", text = "Scale")
 
         elif camera.camera_type in ['perspective', 'architect']:
+            bpy.ops.wm.context_set_enum("EXEC_DEFAULT", data_path="camera.type", value="PERSP")
             col.prop(context.camera, "lens", text = "Focal Length")
 
             col.label("Depth of Field")

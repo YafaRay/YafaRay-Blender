@@ -2,7 +2,6 @@ import bpy
 
 #import types and props ---->
 from bpy.props import *
-narrowui = 300
 
 Scene = bpy.types.Scene
 
@@ -79,7 +78,7 @@ Scene.intg_fg_samples =     IntProperty(attr="intg_fg_samples",
                                         min = 1,
                                         default = 16)
 Scene.intg_show_map =       BoolProperty(attr="intg_show_map",
-                                        description = "Directly show radiance map (disables final gathering step)",
+                                        description = "Directly show radiance map, useful to calibrate the photon map (disables final gathering step)",
                                         default = False)
 Scene.intg_use_bg =         BoolProperty(attr="intg_use_bg",
                                         description = "",
@@ -134,62 +133,61 @@ class YAF_PT_render(bpy.types.Panel):
     def draw(self, context):
 
         layout = self.layout
-        split = layout.split()
-        col = split.column()
+
+        layout.prop(context.scene,"intg_light_method", text= "Lighting Methods")
+
         row = layout.row()
-        wide_ui = context.region.width < narrowui
-
-        col = layout.row()
-
-        row.prop(context.scene,"intg_light_method", text= "Lighting Methods")
-
 
         if context.scene.intg_light_method == 'Direct Lighting':
-            col.prop(context.scene,"intg_use_caustics", text= "Use Caustics")
 
+            row = layout.row()
+
+            col = row.column(align=True)
+            col.prop(context.scene,"intg_use_caustics", text= "Use Caustics", toggle=True)
+            
             if context.scene.intg_use_caustics:
-                col = layout.row()
                 col.prop(context.scene,"intg_photons", text= "Photons")
                 col.prop(context.scene,"intg_caustic_mix", text= "Caustic Mix")
-                col = layout.row()
                 col.prop(context.scene,"intg_caustic_depth", text= "Caustic Depth")
                 col.prop(context.scene,"intg_caustic_radius", text= "Caustic Radius")
-            col = layout.row()
-            col.prop(context.scene,"intg_use_AO", text= "Use AO")
+
+            col = row.column(align=True)
+            col.prop(context.scene,"intg_use_AO", text= "Use Ambient Occlusion", toggle=True)
 
             if context.scene.intg_use_AO:
-                col = layout.row()
                 col.prop(context.scene,"intg_AO_samples", text= "AO Samples")
                 col.prop(context.scene,"intg_AO_distance", text= "AO Distance")
-                col = layout.row()
                 col.prop(context.scene,"intg_AO_color", text= "AO Color")
 
 
         if context.scene.intg_light_method == 'Photon Mapping':
-            col = layout.row()
-            col.prop(context.scene,"intg_bounces", text= "Depth")
-            col.prop(context.scene,"intg_photons", text= "Diff. Photons")
-            col = layout.row()
-            col.prop(context.scene,"intg_diffuse_radius", text= "Diff. Radius")
-            col.prop(context.scene,"intg_cPhotons", text= "Caus. Photons")
-            col = layout.row()
-            col.prop(context.scene,"intg_caustic_radius", text= "Caus. Radius")
-            col.prop(context.scene,"intg_search", text= "Search")
-            col = layout.row()
-            col.prop(context.scene,"intg_caustic_mix", text= "Caus. Mix")
-            col.prop(context.scene,"intg_final_gather", text= "Final Gather")
+            row = layout.row()
+
+            row.prop(context.scene,"intg_bounces", text= "Depth")
+
+            row = layout.row()
+
+            col = row.column(align=True)
+            col.label(" Diffuse Photons:", icon="MOD_PHYSICS")
+            col.prop(context.scene,"intg_photons", text= "Count")
+            col.prop(context.scene,"intg_diffuse_radius", text= "Search radius")
+            col.prop(context.scene,"intg_search", text= "Search count")
+
+            col = row.column(align=True)
+            col.label(" Caustic Photons:", icon="MOD_PARTICLES")
+            col.prop(context.scene,"intg_cPhotons", text= "Count")
+            col.prop(context.scene,"intg_caustic_radius", text= "Search radius")
+            col.prop(context.scene,"intg_caustic_mix", text= "Search count")
+
+            row = layout.row()
+            row.prop(context.scene,"intg_final_gather", text= "Final Gather", toggle=True, icon="FORCE_FORCE")
 
             if context.scene.intg_final_gather:
                 col = layout.row()
-                col.prop(context.scene,"intg_fg_bounces", text= "FG Bounces")
-                col.prop(context.scene,"intg_fg_samples", text= "FG Samples")
-
-            col = layout.row()
-            col.prop(context.scene,"intg_show_map", text= "Show Map")
-            col.prop(context.scene,"intg_use_bg", text= "Use Background")
-
-
-
+                col.prop(context.scene,"intg_fg_bounces", text= "Bounces")
+                col.prop(context.scene,"intg_fg_samples", text= "Samples")
+                col = layout.row()
+                col.prop(context.scene,"intg_show_map", text= "Show radiance map", toggle=True)
 
         #col = layout.column() # only afect to pathtracing bloq
         if context.scene.intg_light_method == 'Pathtracing':

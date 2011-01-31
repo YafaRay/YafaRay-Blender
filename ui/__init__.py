@@ -4,6 +4,8 @@ from yafaray.ui import properties_yaf_render_control
 from yafaray.ui import properties_yaf_general_settings
 from yafaray.ui import properties_yaf_integrator
 from yafaray.ui import properties_yaf_AA_settings
+from yafaray.ui import properties_yaf_render_output
+
 from yafaray.ui import properties_yaf_camera
 from yafaray.ui import properties_yaf_material
 from yafaray.ui import properties_yaf_texture
@@ -13,11 +15,9 @@ from yafaray.ui import properties_yaf_object_light
 from yafaray.ui import properties_yaf_light
 from yafaray.ui import properties_yaf_convert
 
-import properties_render, properties_particle, properties_data_mesh
+import properties_particle, properties_data_mesh
 
-for panel in [properties_render.RENDER_PT_dimensions,
-              properties_render.RENDER_PT_output,
-              properties_particle.PARTICLE_PT_context_particles,
+for panel in [properties_particle.PARTICLE_PT_context_particles,
               properties_particle.PARTICLE_PT_emission,
               properties_particle.PARTICLE_PT_hair_dynamics,
               properties_particle.PARTICLE_PT_velocity,
@@ -40,8 +40,5 @@ for panel in [properties_render.RENDER_PT_dimensions,
               properties_data_mesh.MESH_MT_vertex_group_specials]:
     panel.COMPAT_ENGINES.add('YAFA_RENDER')
 
-properties_yaf_render_control.RENDER_PT_render.COMPAT_ENGINES = properties_render.RENDER_PT_render.COMPAT_ENGINES
-properties_yaf_render_control.RENDER_PT_render.COMPAT_ENGINES.add('YAFA_RENDER')
-
-del properties_render, properties_particle, properties_data_mesh
+del properties_particle, properties_data_mesh
 
