@@ -2,7 +2,6 @@
 
 from yafaray.io import yaf_export
 from yafaray.io import yaf_world
-from yafaray.io import yaf_general_AA
 from yafaray.io import yaf_integrator
 from yafaray.io import yaf_texture
 from yafaray.io import yaf_object

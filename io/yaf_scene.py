@@ -66,7 +66,6 @@ def exportRenderSettings(yi, scene):
     render = scene.render
 
     [sizeX, sizeY, bStartX, bStartY, bsizeX, bsizeY, cam_data] = getRenderCoords(scene)
-    print(sizeX, sizeY, bStartX, bStartY, bsizeX, bsizeY)
 
     #yi.paramsClearAll()
     #yi.paramsSetString("type", "none")
