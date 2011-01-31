@@ -213,7 +213,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.update_stats("", "%s - %.2f %%" % (self.tag, self.progress))
 
         def tile_callback(command, *args):
-            if command == "highliteArea" and self.preview:
+            if command == "highliteArea" and not self.preview:
                 x0, y0, x1, y1, tile = args
                 res = self.begin_result(x0, y0, x1-x0, y1-y0)
                 try:
@@ -231,7 +231,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                     self.yi.printError("Exception in tile callback with command ", command, ": ", e)
                     self.yi.printError(args, len(tile))
                 self.end_result(res)
-            elif command == "flush" and self.preview:
+            elif command == "flush" and not self.preview:
                 w, h, tile = args
                 res = self.begin_result(0, 0, w, h)
                 try:
@@ -274,8 +274,13 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.update_stats("", "Aborting...")
                 self.yi.abort()
                 t.join()
+                self.yi.clearAll()
+                del self.yi
                 self.update_stats("", "Render is aborted")
                 return
 
         self.update_stats("", "Done!")
+        
+        self.yi.clearAll()
+        del self.yi
 
