@@ -156,13 +156,6 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.yaf_material.writeMaterial(material, self.preview)
 
 
-    #    , w, h
-    def configureRender(self):
-        # Integrators
-        self.yaf_integrator.exportIntegrator(self.scene)
-        self.yaf_integrator.exportVolumeIntegrator(self.scene)
-        yaf_scene.exportRenderSettings(self.yi, self.scene)
-
     def decideOutputFileName(self, output_path, filetype):
         if filetype == 'PNG':
             filetype = 'png'
@@ -206,7 +199,10 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         self.yi.startScene()
         self.exportScene()
-        self.configureRender()
+        self.yaf_integrator.exportIntegrator(self.scene)
+        self.yaf_integrator.exportVolumeIntegrator(self.scene)
+
+        yaf_scene.exportRenderSettings(self.yi, self.scene) # must be called last as the params from here will be used by render()
 
         def prog_callback(command, *args):
             if not self.test_break():
