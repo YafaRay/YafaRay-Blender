@@ -14,5 +14,5 @@ class YAF_PT_convert(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
-        layout.column().operator("data.convert_yafaray_properties", "Convert data form 2.4x")
+        layout.column().operator("data.convert_yafaray_properties", "Convert data from 2.4x")
 

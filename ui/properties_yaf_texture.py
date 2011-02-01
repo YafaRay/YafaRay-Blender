@@ -233,35 +233,24 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel, bpy.types.Panel):
         tex = context.texture_slot
 
         if not isinstance(idblock, bpy.types.Brush):
-            split = layout.split(percentage=0.3)
-            col = split.column()
-            col.label(text="Coordinates:")
-            col = split.column()
-            col.prop(tex, "texture_coords", text="") # 2.55
+            col = layout.column()
+            col.prop(tex, "texture_coords", text="Coordinates") # 2.55
             # change to same type of blender mapping, for make stable
 
             if tex.texture_coords == 'ORCO': # 2.55
-            #    """
                 ob = context.object
                 if ob and ob.type == 'MESH':
-                    split = layout.split(percentage=0.3)
-                    split.label(text="Mesh:")
-                    split.prop(ob.data, "texco_mesh", text="")
-            #    """
-            elif tex.texture_coords == 'UV':
+                    col.prop(ob.data, "texco_mesh", text="Mesh")
 
-                split = layout.split(percentage=0.3)
-                split.label(text="Layer:")
+            elif tex.texture_coords == 'UV':
                 ob = context.object
                 if ob and ob.type == 'MESH':
-                    split.prop_search(tex, "uv_layer", ob.data, "uv_textures", text="")
+                    col.prop_search(tex, "uv_layer", ob.data, "uv_textures", text="Layer")
                 else:
-                    split.prop(tex, "uv_layer", text="")
+                    col.prop(tex, "uv_layer", text="Layer")
 
             elif tex.texture_coords == 'OBJECT':
-                split = layout.split(percentage=0.3)
-                split.label(text="Object:")
-                split.prop(tex, "object", text="")
+                col.prop(tex, "object", text="Object")
 
         if isinstance(idblock, bpy.types.Brush): # recent change for beta 2.56
             if context.sculpt_object:
@@ -273,13 +262,10 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel, bpy.types.Panel):
                 row.prop(tex, "angle")
         else:
             if isinstance(idblock, bpy.types.Material):
-                split = layout.split(percentage=0.3)
-                split.label(text="Projection:")
-                split.prop(tex, "mapping", text="")
+                col.prop(tex, "mapping", text="Projection")
 
                 split = layout.split()
 
-                col = split.column()
                 if tex.texture_coords in ('ORCO', 'UV'):
                   col.prop(tex, "use_from_dupli")
                 elif tex.texture_coords == 'OBJECT':
@@ -290,14 +276,11 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel, bpy.types.Panel):
                 row.prop(tex, "mapping_y", text="")
                 row.prop(tex, "mapping_z", text="")
 
-        split = layout.split()
+        splitCol = col.split()
 
-        col = split.column()
-        col.prop(tex, "offset")
+        splitCol.prop(tex, "offset")
 
-        col.separator()
-
-        col.prop(tex, "scale")
+        splitCol.prop(tex, "scale")
 
 
 class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, bpy.types.Panel):
@@ -316,6 +299,15 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, bpy.types.Panel):
         engine = context.scene.render.engine
         return (engine in self.COMPAT_ENGINES)
 
+
+    def factor_but(self, tex, layout, toggle, factor, name): # new in last rev. of Blender
+        row = layout.row(align = True)
+        row.prop(tex, toggle, text = "")
+        sub = row.row()
+        sub.active = getattr(tex, toggle)
+        sub.prop(tex, factor, text = name, slider = True)
+        return sub # XXX, temp. use_map_normal needs to override.
+
     def draw(self, context):
 
         layout = self.layout
@@ -325,47 +317,39 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, bpy.types.Panel):
         #textype = context.texture
         tex = context.texture_slot
 
-        def factor_but(layout, toggle, factor, name): # new in last rev. of Blender
-            row = layout.row(align=True)
-            row.prop(tex, toggle, text="")
-            sub = row.row()
-            sub.active = getattr(tex, toggle)
-            sub.prop(tex, factor, text=name, slider=True)
-            return sub # XXX, temp. use_map_normal needs to override.
+        shaderNodes = dict()
+        shaderNodes["Bump"]         = ["use_map_normal", "normal_factor", "Bump"]
+        shaderNodes["MirrorAmount"] = ["use_map_specular", "specular_factor", "Mirror Amount"]
+        shaderNodes["MirrorColor"]  = ["use_map_color_spec", "specular_color_factor", "Mirror Color"]
+        shaderNodes["DiffuseColor"] = ["use_map_color_diffuse", "diffuse_color_factor", "Diffuse Color"]
+        shaderNodes["GlossyColor"]  = ["use_map_color_spec", "specular_color_factor", "Glossy Color"]
+        shaderNodes["GlossyAmount"] = ["use_map_specular", "specular_factor", "Glossy Amount"]
+        shaderNodes["Transparency"] = ["use_map_alpha", "alpha_factor", "Transparency"]
+        shaderNodes["Translucency"] = ["use_map_translucency", "translucency_factor", "Translucency"]
+        shaderNodes["BlendAmount"]  = ["use_map_diffuse", "diffuse_factor", "Blending Amount"]
+
+        materialShaderNodes = dict()
+        materialShaderNodes["glass"]           = [ "Bump", "MirrorColor" ]
+        materialShaderNodes["rough_glass"]     = [ "Bump", "MirrorColor" ]
+        materialShaderNodes["glossy"]          = [ "DiffuseColor", "GlossyColor", "GlossyAmount", "Bump" ]
+        materialShaderNodes["coated_glossy"]   = [ "DiffuseColor", "GlossyColor", "GlossyAmount", "Bump" ]
+        materialShaderNodes["shinydiffusemat"] = [ "DiffuseColor", "MirrorAmount", "MirrorColor", "Transparency", "Translucency", "Bump" ]
+        materialShaderNodes["blend"]           = [ "BlendAmount" ]
 
 
         if isinstance(idblock, bpy.types.Material): # new type in last rev.
-            if idblock.type in ('SURFACE', 'WIRE'): # TODO: lots of todo...
+            # if idblock.type in ('SURFACE', 'WIRE'): # TODO: lots of todo...
+                material = context.material
+                materialType = material.mat_type
+
+                nodes = materialShaderNodes[materialType]
 
                 split = layout.split()
-                """ Deprecated old mode 'col.prop', added model 'factor_but'
-                TODO: separate options for shaders; shinidiffusemat, glossy, etc.. """
-
                 col = split.column()
-                col.label(text="Diffuse:")
-                factor_but(col, "use_map_diffuse", "diffuse_factor", "Intensity")
-                factor_but(col, "use_map_color_diffuse", "diffuse_color_factor", "Color")
-                factor_but(col, "use_map_alpha", "alpha_factor", "Alpha")
-                factor_but(col, "use_map_translucency", "translucency_factor", "Translucency")
 
-                col.separator()
-                col.label(text="Specular:")
-                factor_but(col, "use_map_specular", "specular_factor", "Intensity")
-                factor_but(col, "use_map_color_spec", "specular_color_factor", "Color")
-                factor_but(col, "use_map_hardness", "hardness_factor", "Hardness")
-
-                col.separator()
-                col.label(text="Shading:")
-                factor_but(col, "use_map_emit", "emit_factor", "Emit")
-                factor_but(col, "use_map_mirror", "mirror_factor", "Mirror")
-                factor_but(col, "use_map_raymir", "raymir_factor", "Ray Mirror")
-
-                col.separator()
-                col.label(text="Geometry:")
-                # XXX replace 'or' when displacement is fixed to not rely on normal influence value.
-                sub_tmp = factor_but(col, "use_map_normal", "normal_factor", "Normal")
-                sub_tmp.active = (tex.use_map_normal or tex.use_map_displacement)
-                # END XXX
+                for node in nodes:
+                    value = shaderNodes[node]
+                    self.factor_but(tex, col, value[0], value[1], value[2])
 
                 col.separator()
                 col.label(text="Others:")

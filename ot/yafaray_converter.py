@@ -143,14 +143,14 @@ def convertWorld(world):
 
     bg_type = props["bg_type"]
 
-    bgTypeDict = dict(constant = "Single Color",
-        gradientback = "Gradient",
-        textureback = "Texture",
-        sunsky = "Sunsky",
-        darksky = "DarkTide's SunSky")
+    bgTypeDict = dict()
+    bgTypeDict["Constant"]= "Single Color"
+    bgTypeDict["Gradient"]= "Gradient"
+    bgTypeDict["Texture"]= "Texture"
+    bgTypeDict["Sunsky"]= "Sunsky"
+    bgTypeDict["DarkTide's SunSky"]= "Darktide's Sunsky"
 
-    # world.bg_type = bgTypeDict[bg_type]
-    world.bg_type = bg_type
+    world.bg_type = bgTypeDict[bg_type]
 
     for p in props:
         value = props[p]

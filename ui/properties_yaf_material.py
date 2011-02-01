@@ -264,7 +264,7 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
 
                     col.prop(yaf_mat, "brdf_type", text= "BRDF Type")
 
-                    if yaf_mat.brdf_type == "Oren-Nayar":
+                    if yaf_mat.brdf_type == "oren-nayar":
                         col.prop(yaf_mat,"sigma", text= "Sigma", slider = True)
 
                 #--------
@@ -288,7 +288,7 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
 
                     if yaf_mat.mat_type == 'glossy':
                         col.prop(yaf_mat,"brdf_type", text= "BRDF Type")
-                        if yaf_mat.brdf_type == "Oren-Nayar":
+                        if yaf_mat.brdf_type == "oren-nayar":
                             col.prop(yaf_mat,"sigma", text= "Sigma", slider = True)
                             coated = False # created boolean property
                     else: #if yaf_mat.mat_type == 'coated_glossy': # only this part is diferent for coated
