@@ -265,14 +265,10 @@ class yafTexture:
                 yi.printInfo("Exporter: No valid texture image supplied.")
                 return False
 
-
-            #yi.printInfo("Exporter: Creating Texture: \"" + name + "\" type IMAGE: " + tex.tex_file_name) # org
             yi.printInfo("Exporter: Creating Texture: \"" + name + "\" type IMAGE: " + image_file)
 
             yi.paramsSetString("type", "image")
-            #yi.paramsSetString("filename", tex.image(filepath))
             yi.paramsSetString("filename", image_file)
-            print(str(image_file))
 
             yi.paramsSetBool("use_alpha", tex.use_alpha)
             yi.paramsSetBool("calc_alpha", tex.use_calculate_alpha)
@@ -312,14 +308,12 @@ class yafTexture:
             yi.paramsSetFloat("cropmax_x", tex.crop_max_x)
             yi.paramsSetFloat("cropmax_y", tex.crop_max_y)
 
-            # rot90 flag
-            #if tex.rot90 != 0:
             yi.paramsSetBool("rot90", tex.use_flip_axis)
             textureConfigured = True
-        
-        if textureConfigured:    
+
+        if textureConfigured:
             yi.createTexture(name)
             self.loadedTextures.add(name)
-        
+
         return textureConfigured
 

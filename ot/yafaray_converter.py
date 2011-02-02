@@ -2,23 +2,19 @@ import bpy
 from bpy.props import *
 
 
-def convertLights(lights):
+def convertLights(lightObjects):
     problemList = []
 
-    for light in lights:
+    for light in lightObjects:
         problemList += convertLight(light)
 
     return problemList
 
 
-def convertLight(light):
+def convertLight(lightObj):
     problemList = []
 
-    lightObj = bpy.data.objects.get(light.name)
-
-    if not lightObj:
-        problemList.append("Light " + light.name + " not found as object.")
-        return problemList
+    light = lightObj.data
 
     props = lightObj.get("YafRay", None)
     if not props:
@@ -31,6 +27,17 @@ def convertLight(light):
         power = "energy",
         createGeometry = "create_geometry")
 
+    # set just the lamp type correctly so the blender type will be also correct
+    if props["type"] == "Area":          light.lamp_type = "area"
+    elif props["type"] == "Point":       light.lamp_type = "point"
+    elif props["type"] == "Sphere":      light.lamp_type = "point"
+    elif props["type"] == "IES Light":   light.lamp_type = "ies"
+    elif props["type"] == "Spot":        light.lamp_type = "spot"
+    elif props["type"] == "Sun":         light.lamp_type = "sun"
+    elif props["type"] == "Directional": light.lamp_type = "sun"
+    else: print("No lamp type fits!")
+
+    print("lamp", light.name, light.lamp_type)
 
     for p in props:
         value = props[p]
@@ -144,7 +151,7 @@ def convertWorld(world):
     bg_type = props["bg_type"]
 
     bgTypeDict = dict()
-    bgTypeDict["Constant"]= "Single Color"
+    bgTypeDict["Single Color"]= "Single Color"
     bgTypeDict["Gradient"]= "Gradient"
     bgTypeDict["Texture"]= "Texture"
     bgTypeDict["Sunsky"]= "Sunsky"
@@ -336,7 +343,7 @@ class ConvertYafarayProperties(bpy.types.Operator):
         problemList = []
 
         problemList += convertMaterials(data.materials)
-        problemList += convertLights(data.lamps)
+        problemList += convertLights([l for l in data.objects if l.type == "LAMP"])
         problemList += convertWorld(data.worlds[0])
         problemList += convertSceneSettings(scene)
 

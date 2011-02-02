@@ -314,7 +314,6 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, bpy.types.Panel):
 
         idblock = context_tex_datablock(context)
 
-        #textype = context.texture
         tex = context.texture_slot
 
         shaderNodes = dict()
@@ -337,30 +336,27 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, bpy.types.Panel):
         materialShaderNodes["blend"]           = [ "BlendAmount" ]
 
 
-        if isinstance(idblock, bpy.types.Material): # new type in last rev.
-            # if idblock.type in ('SURFACE', 'WIRE'): # TODO: lots of todo...
-                material = context.material
-                materialType = material.mat_type
+        if isinstance(idblock, bpy.types.Material):
+            material = context.material
+            materialType = material.mat_type
 
-                nodes = materialShaderNodes[materialType]
+            nodes = materialShaderNodes[materialType]
 
-                split = layout.split()
-                col = split.column()
+            col = layout.column()
 
-                for node in nodes:
-                    value = shaderNodes[node]
-                    self.factor_but(tex, col, value[0], value[1], value[2])
+            for node in nodes:
+                value = shaderNodes[node]
+                self.factor_but(tex, col, value[0], value[1], value[2])
 
-                col.separator()
-                col.label(text="Others:")
-                col.prop(tex, "blend_type", text="Blend")
-                col.prop(tex, "use_rgb_to_intensity")
-                sub = col.column()
-                sub.active = tex.use_rgb_to_intensity
-                sub.prop(tex, "color", text="")
+            col.separator()
+            col.prop(tex, "blend_type", text = "Blend")
+            col.prop(tex, "use_rgb_to_intensity")
+            sub = col.column()
+            sub.active = tex.use_rgb_to_intensity
+            sub.prop(tex, "color", text = "")
 
-                col.prop(tex, "invert", text="Negative")
-                col.prop(tex, "use_stencil")
+            col.prop(tex, "invert", text = "Negative")
+            col.prop(tex, "use_stencil")
 
         elif isinstance(idblock, bpy.types.World): # for setup world texture
             split = layout.split()
@@ -454,7 +450,7 @@ class YAF_TEXTURE_PT_marble(YAF_TextureTypePanel, bpy.types.Panel):
 
         layout.prop(tex, "marble_type", expand=True)
         layout.prop(tex, "noisebasis_2", expand=True)
-        layout.label(text="Noise:")
+        layout.label(text = "Noise:")
         layout.prop(tex, "noise_type", text="Type", expand=True)
         layout.prop(tex, "noise_basis", text="Basis")
 
@@ -511,41 +507,41 @@ def texture_filter_common(tex, layout):
     layout.prop(tex, "use_filter_size_min")
 
 
-class YAF_TEXTURE_PT_image_sampling(YAF_TextureTypePanel, bpy.types.Panel):
-    bl_label = "Image Sampling"
-    bl_options = {'DEFAULT_CLOSED'}
-    tex_type = 'IMAGE'
-    COMPAT_ENGINES = {'YAFA_RENDER'}
-
-    def draw(self, context):
-        layout = self.layout
-
-        idblock = context_tex_datablock(context)
-        tex = context.texture
-
-        split = layout.split()
-
-        col = split.column()
-        col.label(text="Alpha:")
-        col.prop(tex, "use_alpha", text="Use")
-        col.prop(tex, "use_calculate_alpha", text="Calculate")
-        col.prop(tex, "use_flip_axis", text="Flip X/Y Axis")
-
-        col.separator()
-
-        #Only for Material based textures, not for Lamp/World...
-        if isinstance(idblock, bpy.types.Material):
-            col.prop(tex, "use_normal_map")
-            row = col.row()
-            row.active = tex.use_normal_map
-
-        col.prop(tex, "use_mipmap")
-        row = col.row()
-        row.active = tex.use_mipmap
-        row.prop(tex, "use_mipmap_gauss")
-        col.prop(tex, "use_interpolation")
-
-        texture_filter_common(tex, col)
+#   class YAF_TEXTURE_PT_image_sampling(YAF_TextureTypePanel, bpy.types.Panel):
+#   bl_label = "Image Sampling"
+#   bl_options = {'DEFAULT_CLOSED'}
+#   tex_type = 'IMAGE'
+#   COMPAT_ENGINES = {'YAFA_RENDER'}
+#
+#   def draw(self, context):
+#       layout = self.layout
+#
+#       idblock = context_tex_datablock(context)
+#       tex = context.texture
+#
+#       split = layout.split()
+#
+#       col = split.column()
+#       col.label(text="Alpha:")
+#       col.prop(tex, "use_alpha", text="Use")
+#       col.prop(tex, "use_calculate_alpha", text="Calculate")
+#       col.prop(tex, "use_flip_axis", text="Flip X/Y Axis")
+#
+#       col.separator()
+#
+#       #Only for Material based textures, not for Lamp/World...
+#       if isinstance(idblock, bpy.types.Material):
+#           col.prop(tex, "use_normal_map")
+#           row = col.row()
+#           row.active = tex.use_normal_map
+#
+#       col.prop(tex, "use_mipmap")
+#       row = col.row()
+#       row.active = tex.use_mipmap
+#       row.prop(tex, "use_mipmap_gauss")
+#       col.prop(tex, "use_interpolation")
+#
+#       texture_filter_common(tex, col)
 
 
 class YAF_TEXTURE_PT_image_mapping(YAF_TextureTypePanel, bpy.types.Panel):
@@ -561,35 +557,32 @@ class YAF_TEXTURE_PT_image_mapping(YAF_TextureTypePanel, bpy.types.Panel):
 
         layout.prop(tex, "extension")
 
-        split = layout.split()
+        col = layout.column()
 
         if tex.extension == 'REPEAT':
-            col = split.column(align=True)
-            col.label(text="Repeat:")
-            col.prop(tex, "repeat_x", text="X")
-            col.prop(tex, "repeat_y", text="Y")
-            layout.separator()
+            row = col.row(align = True)
+            row.prop(tex, "repeat_x", text="X")
+            row.prop(tex, "repeat_y", text="Y")
+            col.separator()
 
         elif tex.extension == 'CHECKER':
-            col = split.column(align=True)
             row = col.row()
             row.prop(tex, "use_checker_even", text="Even")
             row.prop(tex, "use_checker_odd", text="Odd")
+            col.prop(tex, "checker_distance", text="Distance")
+            col.separator()
 
-            col.prop(tex, "checker_distance", text="Distance") # des-activate in 2.53
+        row = col.row(align = True)
+        row.label(text = "Crop Minimum:")
+        row.prop(tex, "crop_min_x", text="X")
+        row.prop(tex, "crop_min_y", text="Y")
 
-            layout.separator()
+        col.separator()
 
-        split = layout.split()
-
-        col = split.column(align=True)
-        col.label(text="Crop Minimum:")
-        col.prop(tex, "crop_min_x", text="X")
-        col.prop(tex, "crop_min_y", text="Y")
-
-        col.label(text="Crop Maximum:")
-        col.prop(tex, "crop_max_x", text="X")
-        col.prop(tex, "crop_max_y", text="Y")
+        row = col.row(align = True)
+        row.label(text = "Crop Maximum:")
+        row.prop(tex, "crop_max_x", text="X")
+        row.prop(tex, "crop_max_y", text="Y")
 
 
 class YAF_TEXTURE_PT_musgrave(YAF_TextureTypePanel, bpy.types.Panel):
