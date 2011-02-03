@@ -48,7 +48,7 @@ def getRenderCoords(scene):
     bStartX += shiftX
     bStartY -= shiftY
 
-    return [sizeX, sizeY, bStartX, bStartY, bsizeX, bsizeY,cam_data]
+    return [sizeX, sizeY, bStartX, bStartY, bsizeX, bsizeY, cam_data]
 
 def exportAA(yi, scene):
     yi.paramsSetInt("AA_passes", scene.AA_passes)
@@ -66,10 +66,6 @@ def exportRenderSettings(yi, scene):
     render = scene.render
 
     [sizeX, sizeY, bStartX, bStartY, bsizeX, bsizeY, cam_data] = getRenderCoords(scene)
-
-    #yi.paramsClearAll()
-    #yi.paramsSetString("type", "none")
-    #yi.createIntegrator("volintegr")
 
     yi.paramsSetString("camera_name", "cam")
     yi.paramsSetString("integrator_name", "default")

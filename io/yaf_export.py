@@ -8,8 +8,9 @@ import sys
 import platform
 
 import yafrayinterface
-from yafaray.io.yaf_object import yafObject
 from yafaray import PLUGIN_PATH
+from yafaray import YAF_ID_NAME
+from yafaray.io.yaf_object import yafObject
 from yafaray.io.yaf_light  import yafLight
 from yafaray.io.yaf_world  import yafWorld
 from yafaray.io.yaf_integrator import yafIntegrator
@@ -17,22 +18,27 @@ from yafaray.io import yaf_scene
 from yafaray.io.yaf_texture import yafTexture
 from yafaray.io.yaf_material import yafMaterial
 
-#import yafrayinterface
-
-#this is the name of our Render
-IDNAME = 'YAFA_RENDER'
-
 class YafaRayRenderEngine(bpy.types.RenderEngine):
-    bl_idname = IDNAME
+    bl_idname = YAF_ID_NAME
     bl_use_preview = True
     bl_label = "YafaRay Render"
-    progress = 0.0
+    prog = 0.0
     tag = ""
+    useViewToRender = False
+    viewMatrix = None
+    viewRenderKey = -65535
 
     def setInterface(self, yi):
         self.materialMap = {}
         self.materials   = set()
         self.yi = yi
+
+        if self.preview:
+            self.yi.setVerbosityMute()
+        else:
+            # TODO: add verbosity control in the general settings
+            self.yi.setVerbosityInfo()
+
         self.yi.loadPlugins(PLUGIN_PATH)
         self.yaf_object     = yafObject(self.yi, self.materialMap)
         self.yaf_lamp       = yafLight(self.yi)
@@ -40,6 +46,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.yaf_integrator = yafIntegrator(self.yi)
         self.yaf_texture    = yafTexture(self.yi)
         self.yaf_material   = yafMaterial(self.yi, self.materialMap, self.yaf_texture.loadedTextures)
+        
 
     def exportScene(self):
         self.yaf_world.exportWorld(self.scene)
@@ -184,18 +191,28 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.scene = scene
         r = scene.render
         
-        # compute resolution
-        x = int(r.resolution_x * r.resolution_percentage * 0.01)
-        y = int(r.resolution_y * r.resolution_percentage * 0.01)
-
+        [sizeX, sizeY, bStartX, bStartY, bsizeX, bsizeY, camDummy] = yaf_scene.getRenderCoords(scene)
+        
+        if r.use_border:
+            x = bsizeX
+            y = bsizeY
+        else:
+            x = sizeX
+            y = sizeY
+        
         self.setInterface(yafrayinterface.yafrayInterface_t())
 
-        outputFile, output, file_type = self.decideOutputFileName(r.filepath, r.file_format)
+        if scene.gs_type_render == "file":
+            outputFile, output, file_type = self.decideOutputFileName(r.filepath, r.file_format)
+            self.yi.paramsClearAll()
+            self.yi.paramsSetString("type", file_type)
+            self.yi.paramsSetBool("alpha_channel", r.color_mode == "RGBA")
+            self.yi.paramsSetBool("z_channel", scene.gs_z_channel)
+            self.yi.paramsSetInt("width", x + bStartX)
+            self.yi.paramsSetInt("height", y + bStartY)
+            ih = self.yi.createImageHandler("outFile")
+            co = yafrayinterface.imageOutput_t(ih, str(outputFile), 0, 0)
 
-        self.yi.paramsClearAll()
-        self.yi.paramsSetString("type", file_type)
-        self.yi.paramsSetBool("alpha_channel", False)
-        self.yi.paramsSetBool("z_channel", scene.gs_z_channel)
 
         self.yi.startScene()
         self.exportScene()
@@ -204,57 +221,18 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         yaf_scene.exportRenderSettings(self.yi, self.scene) # must be called last as the params from here will be used by render()
 
-        def prog_callback(command, *args):
-            if not self.test_break():
-                if command == "tag":
-                    self.tag = args[0]
-                elif command == "progress":
-                    self.progress = args[0]
-                self.update_stats("", "%s - %.2f %%" % (self.tag, self.progress))
-
-        def tile_callback(command, *args):
-            if command == "highliteArea" and not self.preview:
-                x0, y0, x1, y1, tile = args
-                res = self.begin_result(x0, y0, x1-x0, y1-y0)
-                try:
-                    res.layers[0].rect = tile
-                except BaseException as e:
-                    self.yi.printError("Exception in tile callback with command ", command, ": ", e)
-                    self.yi.printError(args, len(tile))
-                self.update_result(res)
-            elif command == "flushArea":
-                x0, y0, x1, y1, tile = args
-                res = self.begin_result(x0, y0, x1-x0, y1-y0)
-                try:
-                    res.layers[0].rect = tile
-                except BaseException as e:
-                    self.yi.printError("Exception in tile callback with command ", command, ": ", e)
-                    self.yi.printError(args, len(tile))
-                self.end_result(res)
-            elif command == "flush" and not self.preview:
-                w, h, tile = args
-                res = self.begin_result(0, 0, w, h)
-                try:
-                    res.layers[0].rect = tile
-                except BaseException as e:
-                    self.yi.printError("Exception in flush callback: ", e)
-                    self.yi.printError(args, len(tile))
-                self.update_result(res)
-
         if scene.gs_type_render == "file":
-            self.yi.paramsSetString("type", file_type)
-            ih = self.yi.createImageHandler("outFile")
-            co = yafrayinterface.imageOutput_t(ih, str(outputFile), 0, 0)
-
+            
             self.yi.printInfo("Exporter: Rendering to file " + outputFile)
 
             self.update_stats("", "Rendering to %s" % outputFile)
 
             self.yi.render(co)
 
-            result = self.begin_result(0, 0, x, y)
-            lay = result.layers[0]
+            result = self.begin_result(bStartX, bStartY, x + bStartX, y + bStartY)
 
+            lay = result.layers[0]
+            
             if scene.gs_z_channel:
                 lay.load_from_file(output + '_zbuffer.' + file_type)
             else:
@@ -263,8 +241,42 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.end_result(result)
 
         elif scene.gs_type_render == "into_blender":
+            
             import threading
-            t = threading.Thread(target=self.yi.render, args=(x, y, tile_callback, prog_callback))
+
+            def progressCallback(command, *args):
+                if not self.test_break():
+                    if command == "tag":
+                        self.tag = args[0]
+                    elif command == "progress":
+                        self.prog = args[0]
+                    self.update_stats("", "%s - %.2f %%" % (self.tag, self.prog))
+
+            def drawAreaCallback(*args):
+                x, y, w, h, tile = args
+                res = self.begin_result(x, y, w, h)
+                try:
+                    res.layers[0].rect = tile
+                except:
+                    pass
+                self.update_result(res)
+
+            def flushCallback(*args):
+                w, h, tile = args
+                res = self.begin_result(0, 0, w, h)
+                try:
+                    res.layers[0].rect = tile
+                except BaseException as e:
+                    pass
+                self.end_result(res)
+
+            t = threading.Thread( target=self.yi.render,
+                                  args=( sizeX, sizeY, 0, 0,
+                                  self.preview,
+                                  drawAreaCallback,
+                                  flushCallback,
+                                  progressCallback )
+                                 )
             t.start()
 
             while t.isAlive() and not self.test_break():

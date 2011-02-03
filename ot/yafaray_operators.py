@@ -3,10 +3,6 @@ import math
 import mathutils
 import time
 
-bpy.types.Scene.useViewToRender = bpy.props.BoolProperty(attr = "useViewToRender", default=False)
-bpy.types.Scene.viewMatrix = bpy.props.FloatVectorProperty(attr = "viewMatrix", size = 16)
-bpy.types.Scene.viewRenderKey = bpy.props.IntProperty(attr = "viewRenderKey", default=-65535)
-
 class OBJECT_OT_get_position(bpy.types.Operator):
     bl_label = "From( get position )"
     bl_idname = "world.get_position"
@@ -118,9 +114,8 @@ class RENDER_OT_render_view(bpy.types.Operator):
     def poll(self, context):
 
         kitems = context.window_manager.keyconfigs.active.keymaps["Screen"].items
-        if not kitems.from_id(context.scene.viewRenderKey):
-            bpy.ops.wm.context_set_int("EXEC_DEFAULT", data_path="scene.viewRenderKey",
-            value = kitems.new("RENDER_OT_render_view", 'F12', 'RELEASE', False, False, False, True).id)
+        if not kitems.from_id(bpy.types.YAFA_RENDER.viewRenderKey):
+            bpy.types.YAFA_RENDER.viewRenderKey = kitems.new("RENDER_OT_render_view", 'F12', 'RELEASE', False, False, False, True).id
 
         return context.scene.render.engine  == 'YAFA_RENDER'
 
@@ -138,7 +133,7 @@ class RENDER_OT_render_view(bpy.types.Operator):
     
     def invoke(self, context, event):
 
-        context.scene.useViewToRender = True
+        bpy.types.YAFA_RENDER.useViewToRender = True
 
         # Get the 3d view unde the mouse cursor
         # if the region is not a 3d view
@@ -155,15 +150,8 @@ class RENDER_OT_render_view(bpy.types.Operator):
             context.window_manager.invoke_popup(self)
             return {'CANCELLED'}
         
-        m = view3d.view_matrix
+        bpy.types.YAFA_RENDER.viewMatrix = view3d.view_matrix.copy()
         
-        mSerial = [0 for o in range(16)]
-        for row in range(4):
-            for column in range(4):
-                mSerial[column + row * 4] = m[row][column]
-        
-        context.scene.viewMatrix = mSerial
-
         bpy.ops.render.render('INVOKE_DEFAULT')
         
         return {'FINISHED'}

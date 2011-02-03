@@ -20,7 +20,7 @@ import sys, os, threading, time
 
 PLUGIN_PATH = os.path.join(__path__[0], 'bin', 'plugins')
 BIN_PATH = os.path.join(__path__[0], 'bin')
-YAF_ID_NAME = "YAFARAY_RENDER"
+YAF_ID_NAME = "YAFA_RENDER"
 
 sys.path.append(BIN_PATH)
 

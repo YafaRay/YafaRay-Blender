@@ -1,7 +1,6 @@
 import bpy
 import time
 import mathutils
-#from yafaray.yaf_properties import *
 
 def multiplyMatrix4x4Vector4(matrix, vector):
     result = mathutils.Vector((0.0, 0.0, 0.0, 0.0))
@@ -22,29 +21,22 @@ class yafObject(object):
         camera = scene.camera
         render = scene.render
 
-        if scene.useViewToRender:
+        if bpy.types.YAFA_RENDER.useViewToRender and bpy.types.YAFA_RENDER.viewMatrix:
             # use the view matrix to calculate the inverted transformed
             # points cam pos (0,0,0), front (0,0,1) and up (0,1,0)
             # view matrix works like the opengl view part of the
             # projection matrix, i.e. transforms everything so camera is
             # at 0,0,0 looking towards 0,0,1 (y axis being up)
 
-            m = mathutils.Matrix()
-            m.resize4x4()
-
-            for row in range(4):
-                for column in range(4):
-                    m[row][column] = scene.viewMatrix[column + row * 4]
-
+            m = bpy.types.YAFA_RENDER.viewMatrix
             m.transpose()
-
+            
             inv = m.invert()
             pos = multiplyMatrix4x4Vector4(inv, mathutils.Vector((0, 0, 0, 1)))
             aboveCam = multiplyMatrix4x4Vector4(inv, mathutils.Vector((0, 1, 0, 1)))
             frontCam = multiplyMatrix4x4Vector4(inv, mathutils.Vector((0, 0, 1, 1)))
             dir = frontCam - pos
             up = aboveCam
-
 
         else:
             matrix = camera.matrix_local # this change is recent
@@ -59,10 +51,10 @@ class yafObject(object):
 
         yi.paramsClearAll()
         
-        if scene.useViewToRender:
+        if bpy.types.YAFA_RENDER.useViewToRender:
             yi.paramsSetString("type", "perspective")
             yi.paramsSetFloat("focal", 0.7)
-            bpy.ops.wm.context_set_boolean("EXEC_DEFAULT", data_path="scene.useViewToRender", value=False)
+            bpy.types.YAFA_RENDER.useViewToRender = False
 
         else:
             fdist = 1 # only changes for ortho

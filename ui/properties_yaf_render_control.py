@@ -179,4 +179,3 @@ class YAFRENDER_PT_output(YafarayRenderButtonsPanel, bpy.types.Panel):
                 col = subsplit.column()
                 col.prop(rd, "quicktime_audio_resampling_hq")
 
-
