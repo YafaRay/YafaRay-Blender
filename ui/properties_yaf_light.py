@@ -111,17 +111,17 @@ class YAF_PT_lamp(bpy.types.Panel):
         space = context.space_data
         lamp_type = context.lamp.type
 
-        split = layout.split(percentage=0.65)
+        # split = layout.split(percentage=0.65)
 
-        texture_count = len(lamp.texture_slots.keys())
+        # texture_count = len(lamp.texture_slots.keys())
 
-        if ob:
-            split.template_ID(ob, "data")
-        elif lamp:
-            split.template_ID(space, "pin_id")
+        # if ob:
+        #     split.template_ID(ob, "data")
+        # elif lamp:
+        #    split.template_ID(space, "pin_id")
 
-        if texture_count != 0:
-            split.label(text=str(texture_count), icon='TEXTURE')
+        # if texture_count != 0:
+        #    split.label(text=str(texture_count), icon='TEXTURE')
         # end insert
 
         # draw preview? easy...
@@ -130,11 +130,10 @@ class YAF_PT_lamp(bpy.types.Panel):
         layout.prop(lamp, "lamp_type", expand=True, text= "Light Type")
         # layout.prop(context.lamp, "type", expand=True, text= "Light Type")
 
-        split = layout.split(percentage = 0.65)
+        # split = layout.split(percentage = 0.65)
         row = layout.row()
 
         col = row.column()
-        sub = col.column()
 
         if lamp.lamp_type == 'area':
             if not lamp.type == "AREA":

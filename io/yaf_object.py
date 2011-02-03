@@ -57,8 +57,6 @@ class yafObject(object):
             bpy.types.YAFA_RENDER.useViewToRender = False
 
         else:
-            fdist = 1 # only changes for ortho
-
             camera = camera.data
             camType = camera.camera_type
 
@@ -69,8 +67,8 @@ class yafObject(object):
 
             elif camType in ["perspective", "architect"]:
                 f_aspect = 1.0;
-                if (x * x) <= (y * y):
-                    f_aspect=(x * x) / (y * y)
+                if x < y:
+                    f_aspect= x / y
 
                 yi.paramsSetFloat("focal", camera.lens/(f_aspect*32.0))
 
@@ -134,11 +132,11 @@ class yafObject(object):
             mesh.transform(matrix)
         else:
             return
-        
+
         hasOrco = False
-		# TODO: this may not be the best way to check for uv maps
+        # TODO: this may not be the best way to check for uv maps
         hasUV   = (len(mesh.uv_textures) > 0)
-            
+
         # Check if the object has an orco mapped texture
         for mat in mesh.materials:
             if mat == None: continue
@@ -157,9 +155,9 @@ class yafObject(object):
             # into a (-1 -1 -1) (1 1 1) bounding box
             ov = []
             bbMin, bbMax = self.getBBCorners(obj)
-        
+
             delta = []
-                
+
             for i in range(3):
                 delta.append(bbMax[i] - bbMin[i])
                 if delta[i] < 0.0001: delta[i] = 1
