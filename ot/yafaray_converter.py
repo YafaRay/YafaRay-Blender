@@ -2,6 +2,128 @@ import bpy
 from bpy.props import *
 
 
+def convertObjects(objects):
+    problemList = []
+
+    for object in objects:
+        problemList += convertObject(object)
+
+    return problemList
+
+
+def convertObject(obj):
+    problemList = []
+
+    props = obj.get("YafRay", None)
+    if not props:
+        problemList.append("No properties on object" + obj.name)
+        return problemList
+
+    variableDict = dict(
+        samples = "ml_samples",
+        power = "ml_power",
+        double_sided = "ml_double_sided",
+        color = "ml_color",
+        meshLight = "ml_enable",
+        volume = "vol_enable",
+        sigma_s = "vol_scatter",
+        sigma_a = "vol_absorp",
+        density = "vol_density",
+        sharpness = "vol_sharpness",
+        cover = "vol_cover",
+        a = "vol_height",
+        b = "vol_steepness",
+        bgPortalLight = "bgp_enable",
+        with_caustic = "bgp_with_caustic",
+        with_diffuse = "bgp_with_diffuse",
+        photon_only = "bgp_photon_only"
+        )
+
+    for p in props:
+        value = props[p]
+        # print(p, props[p])
+
+        if p in variableDict:
+            p = variableDict[p]
+
+        if value == "ExpDensityVolume": obj.vol_region = "ExpDensity Volume"
+        elif value == "UniformVolume":  obj.vol_region = "Uniform Volume"
+        elif value == "NoiseVolume":    obj.vol_region = "Noise Volume"
+
+        try:
+            if type(value) in [float, int, bool]:
+                exec("obj." + p + " = " + str(value))
+            elif type(value) in [str]:
+                exec("obj." + p + " = \"" + value + "\"")
+            else:
+                exec("obj." + p + " = [" + str(value[0]) + ", " + str(value[1]) + ", " + str(value[2]) + "]")
+        except:
+            problemList.append("Object: Problem inserting: " + p)
+
+    return problemList
+
+
+
+
+def convertLights(lightObjects):
+    problemList = []
+
+    for light in lightObjects:
+        problemList += convertLight(light)
+
+    return problemList
+
+
+def convertLight(lightObj):
+    problemList = []
+
+    light = lightObj.data
+
+    props = lightObj.get("YafRay", None)
+    if not props:
+        problemList.append("No properties on light" + light.name)
+        return problemList
+
+    variableDict = dict(
+        samples = "yaf_samples",
+        radius = "shadow_soft_size",
+        power = "energy",
+        createGeometry = "create_geometry")
+
+    # set just the lamp type correctly so the blender type will be also correct
+    if props["type"] == "Area":          light.lamp_type = "area"
+    elif props["type"] == "Point":       light.lamp_type = "point"
+    elif props["type"] == "Sphere":      light.lamp_type = "point"
+    elif props["type"] == "IES Light":   light.lamp_type = "ies"
+    elif props["type"] == "Spot":        light.lamp_type = "spot"
+    elif props["type"] == "Sun":         light.lamp_type = "sun"
+    elif props["type"] == "Directional": light.lamp_type = "sun"
+    else: print("No lamp type fits!")
+
+    print("lamp", light.name, light.lamp_type)
+
+    for p in props:
+        value = props[p]
+        # print(p, props[p])
+
+        if p in variableDict:
+            p = variableDict[p]
+
+        try:
+            if type(value) in [float, int, bool]:
+                exec("light." + p + " = " + str(value))
+            elif type(value) in [str]:
+                exec("light." + p + " = \"" + value + "\"")
+            else:
+                exec("light." + p + " = [" + str(value[0]) + ", " + str(value[1]) + ", " + str(value[2]) + "]")
+        except:
+            problemList.append("Light: Problem inserting: " + p)
+
+    return problemList
+
+
+
+
 def convertLights(lightObjects):
     problemList = []
 
@@ -346,6 +468,7 @@ class ConvertYafarayProperties(bpy.types.Operator):
         problemList += convertLights([l for l in data.objects if l.type == "LAMP"])
         problemList += convertWorld(data.worlds[0])
         problemList += convertSceneSettings(scene)
+        problemList += convertObjects(data.objects)
 
         print("Problems:")
         for p in problemList:

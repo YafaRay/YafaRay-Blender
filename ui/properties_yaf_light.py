@@ -127,7 +127,7 @@ class YAF_PT_lamp(bpy.types.Panel):
         # draw preview? easy...
         layout.template_preview(context.lamp)
 
-        layout.prop(lamp, "lamp_type", expand=True, text= "Light Type")
+        layout.prop(lamp, "lamp_type", expand = True, text = "Light Type")
         # layout.prop(context.lamp, "type", expand=True, text= "Light Type")
 
         # split = layout.split(percentage = 0.65)

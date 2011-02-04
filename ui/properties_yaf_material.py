@@ -220,7 +220,7 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                     col.operator("object.material_slot_remove", icon='ZOOMOUT', text="")
                     #col.menu("MATERIAL_MT_specials", icon='DOWNARROW_HLT', text="")
 
-                if ob.mode == 'EDIT':
+                    if ob.mode == 'EDIT':
                         row = layout.row(align=True)
                         row.operator("object.material_slot_assign", text="Assign")
                         row.operator("object.material_slot_select", text="Select")

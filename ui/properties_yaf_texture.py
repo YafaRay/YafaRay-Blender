@@ -304,7 +304,7 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, bpy.types.Panel):
         row = layout.row(align = True)
         row.prop(tex, toggle, text = "")
         sub = row.row()
-        sub.active = getattr(tex, toggle)
+        sub.enabled = getattr(tex, toggle)
         sub.prop(tex, factor, text = name, slider = True)
         return sub # XXX, temp. use_map_normal needs to override.
 
@@ -362,11 +362,11 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, bpy.types.Panel):
             split = layout.split()
 
             col = split.column()
-            factor_but(col, "use_map_blend", "blend_factor", "Blend")
-            factor_but(col, "use_map_horizon", "horizon_factor", "Horizon")
+            self.factor_but(tex, col, "use_map_blend", "blend_factor", "Blend")
+            self.factor_but(tex, col, "use_map_horizon", "horizon_factor", "Horizon")
             col = split.column()
-            factor_but(col, "use_map_zenith_up", "zenith_up_factor", "Zenith Up")
-            factor_but(col, "use_map_zenith_down", "zenith_down_factor", "Zenith Down")
+            self.factor_but(tex, col, "use_map_zenith_up", "zenith_up_factor", "Zenith Up")
+            self.factor_but(tex, col, "use_map_zenith_down", "zenith_down_factor", "Zenith Down")
 
         if isinstance(idblock, bpy.types.Material) or isinstance(idblock, bpy.types.World):
             split = layout.split()
@@ -477,7 +477,7 @@ class YAF_TEXTURE_PT_blend(YAF_TextureTypePanel, bpy.types.Panel):
         #
         sub = layout.row()
         #
-        sub.active = (tex.progression in ('LINEAR', 'QUADRATIC', 'EASING', 'RADIAL'))
+        sub.enabled = (tex.progression in ('LINEAR', 'QUADRATIC', 'EASING', 'RADIAL'))
         sub.prop(tex, "use_flip_axis", expand=True)
 
 
@@ -636,7 +636,7 @@ class YAF_TEXTURE_PT_voronoi(YAF_TextureTypePanel, bpy.types.Panel):
         col.label(text="Distance Metric:")
         col.prop(tex, "distance_metric", text="")
         sub = col.column()
-        sub.active = tex.distance_metric == 'MINKOVSKY'
+        sub.enabled = tex.distance_metric == 'MINKOVSKY'
         sub.prop(tex, "minkovsky_exponent", text="Exponent")
         col.label(text="Coloring:")
         col.prop(tex, "color_mode", text="")

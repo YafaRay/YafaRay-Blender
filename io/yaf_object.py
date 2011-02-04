@@ -459,18 +459,18 @@ class yafObject(object):
             yi.paramsSetString("type", "UniformVolume");
         
         elif obj.vol_region == 'Noise Volume':
-            
-            texture = obj.data.materials[0].texture_slots[0].texture
-            
-            if texture.yaf_tex_type != 'DISTORTED_NOISE':
-                yi.printWarning("Exporter: No noise texture set on the object, NoiseVolume won't be created")
-                return
-        
-            yi.paramsSetString("type", "NoiseVolume");
-            yi.paramsSetFloat("sharpness", obj.vol_sharpness)
-            yi.paramsSetFloat("cover", obj.vol_cover)
-            yi.paramsSetFloat("density", obj.vol_density)
-            yi.paramsSetString("texture", texture.name)
+            if not obj.data.materials[0]:
+                yi.printError("Volume object (" + obj.name + ") is missing the material")
+            elif not obj.data.materials[0].texture_slots[0].texture:
+                yi.printError("Volume object's material (" + obj.name + ") is missing the noise texture")#
+            else:
+                texture = obj.data.materials[0].texture_slots[0].texture
+
+                yi.paramsSetString("type", "NoiseVolume");
+                yi.paramsSetFloat("sharpness", obj.vol_sharpness)
+                yi.paramsSetFloat("cover", obj.vol_cover)
+                yi.paramsSetFloat("density", obj.vol_density)
+                yi.paramsSetString("texture", texture.name)
         
         elif obj.vol_region == 'Grid Volume':
             yi.paramsSetString("type", "GridVolume");
@@ -480,9 +480,9 @@ class yafObject(object):
         
         yi.paramsSetFloat("sigma_a", obj.vol_absorp)
         yi.paramsSetFloat("sigma_s", obj.vol_scatter)
-        yi.paramsSetFloat("l_e", obj.vol_l_e)
-        yi.paramsSetFloat("g", obj.vol_g)
-        yi.paramsSetInt("attgridScale", bpy.context.scene.world.v_int_attgridres)
+        # yi.paramsSetFloat("l_e", obj.vol_l_e)
+        # yi.paramsSetFloat("g", obj.vol_g)
+        yi.paramsSetInt("attgridScale", scene.world.v_int_attgridres)
         
         
         min = [1e10, 1e10, 1e10]

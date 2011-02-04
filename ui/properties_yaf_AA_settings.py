@@ -58,7 +58,11 @@ class YAF_PT_AA_settings(bpy.types.Panel):
         col.prop(context.scene,"AA_pixelwidth", text= "AA Pixelwidth")
         col = split.column()
         col.prop(context.scene,"AA_passes", text= "AA Passes")
-        if context.scene.AA_passes > 1:
-            col.prop(context.scene,"AA_inc_samples", text= "AA Inc. Samples")
-            col.prop(context.scene,"AA_threshold", text= "AA Threshold")
+
+        sub = col.column()
+
+        sub.enabled = (context.scene.AA_passes > 1)
+        sub.prop(context.scene,"AA_inc_samples", text= "AA Inc. Samples")
+        sub.prop(context.scene,"AA_threshold", text= "AA Threshold")
+
 
