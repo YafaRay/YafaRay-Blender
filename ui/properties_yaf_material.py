@@ -327,8 +327,8 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                     materialList1 = tuple(values)
 
                     values = [("Material Two","Material Two", "")]
-                    for item in bpy.data.materials:
-                        values.append((item.name, item.name,""))
+                    for item in [m for m in bpy.data.materials if not m.name == yaf_mat.name]:
+                        values.append((item.name, item.name, ""))
 
                     materialList2 = tuple(values)
 
@@ -337,4 +337,3 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
 
                     col.prop(yaf_mat, "material1", text= "Material One")
                     col.prop(yaf_mat, "material2", text= "Material Two")
-

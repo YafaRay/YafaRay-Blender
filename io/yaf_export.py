@@ -110,6 +110,10 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
 
     def handleBlendMat(self, mat):
+        if mat.name == mat.material1 or mat.name == mat.material2:
+            self.yi.printError("Exporter: Blend material " + mat.name + " contains itself!")
+            return
+
         try:
             mat1_name =  mat.material1
             mat1      =  bpy.data.materials[mat1_name]
