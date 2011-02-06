@@ -105,19 +105,21 @@ class yafObject(object):
         yi.createCamera("cam")
 
 
-    def getBBCorners(self,object):
-            bb = object.bound_box   #look bpy.types.Object if there is any problem
-            min = [1e10, 1e10, 1e10]
-            max = [-1e10, -1e10, -1e10]
+    def getBBCorners(self, object):
+        bb = object.bound_box   #look bpy.types.Object if there is any problem
+
+        min = [1e10, 1e10, 1e10]
+        max = [-1e10, -1e10, -1e10]
     
-            for corner in bb:
-                    for i in range(3):
-                            if corner[i] < min[i]:
-                                    min[i] = corner[i]
-                            if corner[i] > max[i]:
-                                    max[i] = corner[i]
-            
-            return min, max
+        for corner in bb:
+            for i in range(3):
+                if corner[i] < min[i]:
+                    min[i] = corner[i]
+                if corner[i] > max[i]:
+                    max[i] = corner[i]
+
+        return min, max
+
 
 
     #extracts data from all the meshes of a scene    
@@ -126,7 +128,7 @@ class yafObject(object):
         #matrix = obj.matrix_local #recent change
         me = obj.data
         me_materials = me.materials
-        mesh = obj.create_mesh(scene,True, 'RENDER')   #mesh is created for an object here.
+        mesh = obj.create_mesh(scene, True, 'RENDER') # mesh is created for an object here.
             
         
         if matrix:
@@ -150,7 +152,6 @@ class yafObject(object):
             if hasOrco:
                 break
 
-        vert_count = 0
         if hasOrco:
             # Keep a copy of the untransformed vertex and bring them
             # into a (-1 -1 -1) (1 1 1) bounding box
@@ -162,11 +163,13 @@ class yafObject(object):
             for i in range(3):
                 delta.append(bbMax[i] - bbMin[i])
                 if delta[i] < 0.0001: delta[i] = 1
-            for v in mesh.vertices:
+
+            # use original mesh's untransformed vertices
+            for v in obj.data.vertices:
                 normCo = []
-                vert_count = vert_count + 1
                 for i in range(3):
                     normCo.append(2 * (v.co[i] - bbMin[i]) / delta[i] - 1)
+
                 ov.append([normCo[0], normCo[1], normCo[2]])
         
         self.yi.paramsClearAll()
@@ -175,32 +178,21 @@ class yafObject(object):
         obType = 0
             
         #ID = self.yi.getNextFreeID()
-            
-        ''' count triangles '''
-        count = 0
-        for face in mesh.faces:
-            if len(face.vertices) == 4:
-                count += 2
-            else:
-                count += 1
-            
-        self.yi.startTriMesh(ID, len(mesh.vertices), len(mesh.faces) , hasOrco, hasUV, obType)
+
+        self.yi.startTriMesh(ID, len(mesh.vertices), len(mesh.faces), hasOrco, hasUV, obType)
         #print("The name of id is : " + str(ID) )
             
-        ind = 0
-        for v in mesh.vertices:
+        for ind, v in enumerate(mesh.vertices):
             if hasOrco:
-                self.yi.addVertex(v.co[0], v.co[1], v.co[2],ov[ind][0], ov[ind][1], ov[ind][2] )
-                ind += 1
+                self.yi.addVertex(v.co[0], v.co[1], v.co[2], ov[ind][0], ov[ind][1], ov[ind][2])
             else:
                 self.yi.addVertex(v.co[0], v.co[1], v.co[2])
 
-        co = None
-
-        for index,f in enumerate(mesh.faces):
+        for index, f in enumerate(mesh.faces):
             if f.use_smooth == True:
                 isSmooth = True
                 
+            fmat = self.materialMap["default"] # fallback is always the default mat
             
             # get the face material if none is provided to override
             if scene.gs_clay_render:
@@ -211,13 +203,10 @@ class yafObject(object):
                     fmat = self.materialMap[mat]
                 elif ymat:
                     fmat = ymat
-                else:
-                    fmat = self.materialMap["default"]
             elif ymat:
                 fmat = ymat
-            else:
-                fmat = self.materialMap["default"]
 
+            co = None
             if hasUV:
                 co = mesh.uv_textures.active.data[index]
             
@@ -225,26 +214,18 @@ class yafObject(object):
                 uv0 = yi.addUV(co.uv1[0], co.uv1[1])
                 uv1 = yi.addUV(co.uv2[0], co.uv2[1])
                 uv2 = yi.addUV(co.uv3[0], co.uv3[1])
-                yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2, ymat)
-                #print("UVs: ", co.uv1, co.uv2, co.uv3, co.uv4)
-                #print("verts: ", f.vertices[0], f.vertices[1], f.vertices[2])
-                #print("with uv case 1")
-            
+                yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2, fmat)
             else:
-                self.yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2],fmat)
-                #print("without uv case 1")
+                self.yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2], fmat)
                 
             #print("trying to locate error " + str(index))
         
             if len(f.vertices) == 4:
                 if hasUV:
                     uv3 = yi.addUV(co.uv4[0], co.uv4[1])
-                    yi.addTriangle(f.vertices[2], f.vertices[3], f.vertices[0], uv2, uv3, uv0, ymat)
-                    #print("verts: ", f.vertices[0], f.vertices[1], f.vertices[2], f.vertices[3])
-                    #print("with uv case 2")
+                    yi.addTriangle(f.vertices[2], f.vertices[3], f.vertices[0], uv2, uv3, uv0, fmat)
                 else:
-                    self.yi.addTriangle(f.vertices[2], f.vertices[3], f.vertices[0],fmat)
-                    #print("without uv case 2")
+                    self.yi.addTriangle(f.vertices[2], f.vertices[3], f.vertices[0], fmat)
                     
         self.yi.endTriMesh()
         

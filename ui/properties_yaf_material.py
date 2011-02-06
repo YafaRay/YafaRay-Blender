@@ -132,10 +132,10 @@ Material.absorption =           FloatVectorProperty(
                                         soft_min = 0.0, soft_max = 1.0)
 Material.absorption_dist =      FloatProperty(
                                         description = "",
-                                        min = 1.0, max = 100.0,
+                                        min = 0.0, max = 100.0,
                                         default = 1.0, step = 1,
                                         precision = 2,
-                                        soft_min = 1.0, soft_max = 100.0)
+                                        soft_min = 0.0, soft_max = 100.0)
 Material.filter_color =         FloatVectorProperty(
                                         description = "Color Settings", subtype = "COLOR",
                                         min = 0.0, max = 1.0,
