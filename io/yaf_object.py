@@ -190,12 +190,11 @@ class yafObject(object):
         for v in mesh.vertices:
             if hasOrco:
                 self.yi.addVertex(v.co[0], v.co[1], v.co[2],ov[ind][0], ov[ind][1], ov[ind][2] )
-                ind +=  1
+                ind += 1
             else:
                 self.yi.addVertex(v.co[0], v.co[1], v.co[2])
 
         co = None
-        #ymat = None
 
         for index,f in enumerate(mesh.faces):
             if f.use_smooth == True:
@@ -203,7 +202,6 @@ class yafObject(object):
                 
             
             # get the face material if none is provided to override
-            #if ymat is None:
             if scene.gs_clay_render:
                 fmat = self.materialMap["default"]
             elif len(mesh.materials):
@@ -218,10 +216,7 @@ class yafObject(object):
                 fmat = ymat
             else:
                 fmat = self.materialMap["default"]
-            #else:
-            #    fmat = ymat
-                
-            #if mesh.active_uv_texture is not None : # 2.53    
+
             if hasUV:
                 co = mesh.uv_textures.active.data[index]
             

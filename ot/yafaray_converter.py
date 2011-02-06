@@ -192,22 +192,6 @@ def convertMaterials(materials):
             mat.name = "Problem"
             problemList.append("Renaming mat.name to " + mat.name)
 
-    values = [("Material One", "Material One", "")]
-    for item in materials:
-        values.append((item.name, item.name, ""))
-
-    materialList1 = tuple(values)
-
-    values = [("Material Two", "Material Two", "")]
-    for item in materials:
-        values.append((item.name, item.name, ""))
-
-    materialList2 = tuple(values)
-
-    Material = bpy.types.Material
-    Material.material1 = EnumProperty(items = materialList1)
-    Material.material2 = EnumProperty(items = materialList2)
-
     for mat in materials:
         problemList += convertMaterial(mat)
 
@@ -218,7 +202,7 @@ def convertMaterials(materials):
 def convertMaterial(mat):
     problemList = []
 
-    # print("convert", mat.name)
+    print("convert", mat.name, mat.mat_type)
     props = mat.get("YafRay", None)
     if not props:
         problemList.append("No properties on material " + mat.name)
@@ -230,11 +214,19 @@ def convertMaterial(mat):
 
     mat.mat_type = props["type"]
 
+    materialList = []
+    for item in [m for m in bpy.data.materials if not m.name == mat.name]:
+        materialList.append((item.name, item.name,""))
+
+    Material = bpy.types.Material
+    Material.material1 = EnumProperty(items = materialList, name = "Material One")
+    Material.material2 = EnumProperty(items = materialList, name = "Material Two")
+
     # print("type", props["type"])
 
     for p in props:
         value = props[p]
-        # print(p, props[p])
+        print(p, value)
 
         if p == "type": continue
         if p == "mask": continue
@@ -251,12 +243,17 @@ def convertMaterial(mat):
 
         # print("type:", type(value))
 
-        if type(value) in [float, int, bool]:
-            exec("mat." + p + " = " + str(value))
-        elif type(value) in [str]:
-            exec("mat." + p + " = \"" + value + "\"")
-        else:
-            exec("mat." + p + " = [" + str(value[0]) + ", " + str(value[1]) + ", " + str(value[2]) + "]")
+
+
+        try:
+            if type(value) in [float, int, bool]:
+                exec("mat." + p + " = " + str(value))
+            elif type(value) in [str]:
+                exec("mat." + p + " = \"" + value + "\"")
+            else:
+                exec("mat." + p + " = [" + str(value[0]) + ", " + str(value[1]) + ", " + str(value[2]) + "]")
+        except:
+            problemList.append("Material: Problem inserting: " + p)
 
     return problemList
 
@@ -273,11 +270,11 @@ def convertWorld(world):
     bg_type = props["bg_type"]
 
     bgTypeDict = dict()
-    bgTypeDict["Single Color"]= "Single Color"
-    bgTypeDict["Gradient"]= "Gradient"
-    bgTypeDict["Texture"]= "Texture"
-    bgTypeDict["Sunsky"]= "Sunsky"
-    bgTypeDict["DarkTide's SunSky"]= "Darktide's Sunsky"
+    bgTypeDict["Single Color"] = "Single Color"
+    bgTypeDict["Gradient"] = "Gradient"
+    bgTypeDict["Texture"] = "Texture"
+    bgTypeDict["Sunsky"] = "Sunsky"
+    bgTypeDict["DarkTide's SunSky"] = "Darktide's Sunsky"
 
     world.bg_type = bgTypeDict[bg_type]
 
@@ -347,7 +344,7 @@ def convertAASettings(scene):
 
     variableDict = dict(
         filter_type = "AA_filter_type",
-        minsamples = "AA_filter_type")
+        AA_minsamples = "AA_min_samples")
 
     for p in props:
         value = props[p]
@@ -422,10 +419,19 @@ def convertIntegratorSettings(scene):
     variableDict = dict(
         cautics = "use_caustics",
         do_AO = "use_AO",
-        diffuseRadiu = "diffuse_radius",
+        diffuseRadius = "diffuse_radius",
         finalGather = "final_gather",
         use_background = "use_bg",
         debugType = "debug_type")
+
+    lightType = props["lightType"]
+
+    lightTypeDict = dict()
+    lightTypeDict["Photon mapping"] = "Photon Mapping"
+    lightTypeDict["Direct lighting"] = "Direct Lighting"
+    lightTypeDict["Pathtracing"] = "Pathtracing"
+    lightTypeDict["Debug"] = "Debug"
+    scene.intg_light_method = lightTypeDict[lightType]
 
     for p in props:
         value = props[p]

@@ -8,13 +8,14 @@ Scene = bpy.types.Scene
 
 Scene.intg_light_method =   EnumProperty(attr="intg_light_method",
     items = (
-        ("Lighting Methods","Lighting Methods",""),
-        ("Direct Lighting","Direct Lighting",""),
-        ("Photon Mapping","Photon Mapping",""),
-        ("Pathtracing","Pathtracing",""),
-        ("Debug","Debug",""),
-        ("Bidirectional","Bidirectional",""),
-),default="Direct Lighting")
+        ("Lighting Methods", "Lighting Methods", ""),
+        ("Direct Lighting", "Direct Lighting", ""),
+        ("Photon Mapping", "Photon Mapping", ""),
+        ("Pathtracing", "Pathtracing", ""),
+        ("Debug", "Debug", ""),
+        ("Bidirectional", "Bidirectional", ""),
+    ),
+    default="Direct Lighting")
 Scene.intg_use_caustics =   BoolProperty(attr="intg_use_caustics",
                                         description = "Enable photon map for caustics only",
                                         default = False)

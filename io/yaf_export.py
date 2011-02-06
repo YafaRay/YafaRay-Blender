@@ -110,19 +110,19 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
 
     def handleBlendMat(self, mat):
-        if mat.name == mat.material1 or mat.name == mat.material2:
+        mat1_name = mat.material1
+        mat2_name = mat.material2
+
+        if mat.name == mat1_name or mat.name == mat2_name:
             self.yi.printError("Exporter: Blend material " + mat.name + " contains itself!")
             return
 
-        try:
-            mat1_name =  mat.material1
-            mat1      =  bpy.data.materials[mat1_name]
-
-            mat2_name =  mat.material2
-            mat2      =  bpy.data.materials[mat2_name]
-        except:
-            self.yi.printWarning("Exporter: Problem with blend material" + mat.name + ". Could not find one of the two blended materials.")
+        if not mat1_name in bpy.data.materials or not mat2_name in bpy.data.materials:
+            self.yi.printWarning("Exporter: Problem with blend material " + mat.name + ". Could not find one of the two blended materials.")
             return
+
+        mat1 = bpy.data.materials[mat1_name]
+        mat2 = bpy.data.materials[mat2_name]
 
         if mat1.mat_type == 'blend':
             self.handleBlendMat(mat1)

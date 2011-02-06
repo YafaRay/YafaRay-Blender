@@ -1,18 +1,20 @@
 import bpy
-from rna_prop_ui import PropertyPanel # need ?
+# from rna_prop_ui import PropertyPanel # need ?
 from bpy.props import *
 
 Material = bpy.types.Material
 
+# the first entry is bad (true for nearly all EnumProperties), it should be in the "name" property
+# but changing this will shift the material indices by one, invalidating all saved material
 Material.mat_type = EnumProperty(
-    items = (
-        ("Material Types","Material Types",""),
-        ("shinydiffusemat","Shinydiffusemat",""),
-        ("glossy","Glossy",""),
-        ("coated_glossy","Coated Glossy",""),
-        ("glass","Glass",""),
-        ("rough_glass","Rough Glass",""),
-        ("blend","Blend","")),default="shinydiffusemat")
+    items = [("Material Types", "Material Types", ""),
+        ("shinydiffusemat", "Shinydiffusemat", ""),
+        ("glossy", "Glossy", ""),
+        ("coated_glossy", "Coated Glossy", ""),
+        ("glass", "Glass", ""),
+        ("rough_glass", "Rough Glass", ""),
+        ("blend", "Blend", "")],
+    default = "shinydiffusemat")
 
 ######## Yafaray ######                         ##### Blender values, for test link #####
 Material.color =                FloatVectorProperty(
@@ -300,7 +302,6 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                 # -------
 
                 if yaf_mat.mat_type == 'glass' or yaf_mat.mat_type == 'rough_glass':
-
                     col.prop(yaf_mat,"absorption", text= "Absorption Color")
                     col.prop(yaf_mat,"filter_color", text= "Filter Color")
                     col.prop(yaf_mat,"mirror_color", text= "Mirror Color")
@@ -310,30 +311,21 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                     col.prop(yaf_mat,"transmit_filter", text= "Transmit Filter", slider = True)
                     col.prop(yaf_mat,"dispersion_power", text= "Dispersion Power", slider = True)
                     col.prop(yaf_mat,"fake_shadows", text= "Fake Shadows")
-                    rough = False # created boolean property
+
                     if yaf_mat.mat_type == 'rough_glass': # only this part is diferent for rough_glass
                         col.prop(yaf_mat,"exponent", text= "Exponent", slider = True)
                         col.prop(yaf_mat,"alpha", text= "Alpha", slider = True)
-                        rough = True
 
 
                 if yaf_mat.mat_type == 'blend':
                     col.prop(yaf_mat, "blend_value", text= "Blend Value", slider = True)
 
-                    values = [("Material One", "Material One", "")]
-                    for item in bpy.data.materials:
-                        values.append((item.name, item.name,""))
-
-                    materialList1 = tuple(values)
-
-                    values = [("Material Two","Material Two", "")]
+                    materialList = []
                     for item in [m for m in bpy.data.materials if not m.name == yaf_mat.name]:
-                        values.append((item.name, item.name, ""))
+                        materialList.append((item.name, item.name,""))
 
-                    materialList2 = tuple(values)
+                    Material.material1 = EnumProperty(items = materialList, name = "Material One")
+                    Material.material2 = EnumProperty(items = materialList, name = "Material Two")
 
-                    Material.material1 = EnumProperty(items = materialList1)
-                    Material.material2 = EnumProperty(items = materialList2)
-
-                    col.prop(yaf_mat, "material1", text= "Material One")
-                    col.prop(yaf_mat, "material2", text= "Material Two")
+                    col.prop(yaf_mat, "material1", text = "Material One")
+                    col.prop(yaf_mat, "material2", text = "Material Two")
