@@ -64,7 +64,7 @@ Scene.gs_clamp_rgb =    BoolProperty(attr="gs_clamp_rgb",
                         default = False)
 Scene.gs_show_sam_pix = BoolProperty(attr="gs_show_sam_pix",
                         description = "Masks pixels marked for resampling during adaptive passes",
-                        default = False)
+                        default = True)
 Scene.gs_z_channel =    BoolProperty(attr="gs_z_channel",
                         description = "Render depth map (Z-Buffer)",
                         default = False)

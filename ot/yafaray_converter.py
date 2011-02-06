@@ -24,7 +24,7 @@ def convertObject(obj):
         power = "ml_power",
         double_sided = "ml_double_sided",
         color = "ml_color",
-        meshLight = "ml_enable",
+        meshlight = "ml_enable",
         volume = "vol_enable",
         sigma_s = "vol_scatter",
         sigma_a = "vol_absorp",
@@ -233,7 +233,7 @@ def convertMaterial(mat):
         if p in ["material1", "material2"]:
             if value not in materialNames:
                 problemList.append("Broken blend material: " + mat.name + " replacing ...")
-                exec("mat." + p + " = \"" + materialNames[0] + "\"")
+                exec("mat." + p + " = \"" + materialList[0][0] + "\"")
                 continue
 
         if p == "brdf_type" or p == "brdfType":
