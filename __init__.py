@@ -26,7 +26,10 @@ sys.path.append(BIN_PATH)
 
 bl_info = {
     "name": "YafaRay Exporter",
-    "author": "Shuvro Sarker, Kim Skoglund (Kerbox), Pedro Alcaide (povmaniaco), Paulo Gomes (tuga3d), Michele Castigliego (subcomandante), Bert Bucholtz, Rodrigo Placencia (DarkTide)",
+    "author": "Shuvro Sarker, Kim Skoglund (Kerbox), \
+Pedro Alcaide (povmaniaco), Paulo Gomes (tuga3d), \
+Michele Castigliego (subcomandante), Bert Buchholz, \
+Rodrigo Placencia (DarkTide), Alexander Smirnov (Exvion)",
     "version": (0, 1, 2, 'alpha'),
     "blender": (2, 5, 6),
     "location": "Info Header (engine dropdown)",

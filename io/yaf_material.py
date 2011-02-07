@@ -164,8 +164,11 @@ class yafMaterial:
         elif mtex.mapping == 'TUBE'   : yi.paramsSetString("mapping", "tube")
         elif mtex.mapping == 'SPHERE' : yi.paramsSetString("mapping", "sphere")
 
+        yi.paramsSetPoint("offset", mtex.offset[0], mtex.offset[1], mtex.offset[2])
+        yi.paramsSetPoint("scale", mtex.scale[0], mtex.scale[1], mtex.scale[2])
+
         if mtex.use_map_normal: #|| mtex->maptoneg & MAP_NORM )
-            # scale up the normal factor, it ressembles
+            # scale up the normal factor, it resembles
             # blender a bit more
             nf = mtex.normal_factor * 5
             yi.paramsSetFloat("bump_strength", nf)

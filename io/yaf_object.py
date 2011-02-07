@@ -31,11 +31,12 @@ class yafObject(object):
             m = bpy.types.YAFA_RENDER.viewMatrix
 
             m.transpose()
-            
-            inv = m.inverted()
+            inv = m.invert()
+
             pos = multiplyMatrix4x4Vector4(inv, mathutils.Vector((0, 0, 0, 1)))
             aboveCam = multiplyMatrix4x4Vector4(inv, mathutils.Vector((0, 1, 0, 1)))
             frontCam = multiplyMatrix4x4Vector4(inv, mathutils.Vector((0, 0, 1, 1)))
+
             dir = frontCam - pos
             up = aboveCam
 
@@ -130,12 +131,6 @@ class yafObject(object):
         me_materials = me.materials
         mesh = obj.create_mesh(scene, True, 'RENDER') # mesh is created for an object here.
             
-        
-        if matrix:
-            mesh.transform(matrix)
-        else:
-            return
-
         hasOrco = False
         # TODO: this may not be the best way to check for uv maps
         hasUV   = (len(mesh.uv_textures) > 0)
@@ -152,10 +147,12 @@ class yafObject(object):
             if hasOrco:
                 break
 
+        # normalized vertex positions for orco mapping
+        ov = []
+
         if hasOrco:
             # Keep a copy of the untransformed vertex and bring them
             # into a (-1 -1 -1) (1 1 1) bounding box
-            ov = []
             bbMin, bbMax = self.getBBCorners(obj)
 
             delta = []
@@ -164,13 +161,19 @@ class yafObject(object):
                 delta.append(bbMax[i] - bbMin[i])
                 if delta[i] < 0.0001: delta[i] = 1
 
-            # use original mesh's untransformed vertices
-            for v in obj.data.vertices:
+            # use untransformed mesh's vertices
+            for v in mesh.vertices:
                 normCo = []
                 for i in range(3):
                     normCo.append(2 * (v.co[i] - bbMin[i]) / delta[i] - 1)
 
                 ov.append([normCo[0], normCo[1], normCo[2]])
+
+        # only transform the mesh after orcos have been stored
+        if matrix:
+            mesh.transform(matrix)
+        else:
+            return
         
         self.yi.paramsClearAll()
         self.yi.startGeometry()

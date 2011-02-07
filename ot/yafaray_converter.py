@@ -379,7 +379,7 @@ def convertGeneralSettings(scene):
     variableDict = dict(
         raydepth = "ray_depth",
         shadowDepth = "shadow_depth",
-        gammeInput = "gamma_input",
+        gammaInput = "gamma_input",
         clayRender = "clay_render",
         drawPArams = "draw_params",
         customString = "custom_string",
