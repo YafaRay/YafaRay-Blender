@@ -21,19 +21,20 @@ from rna_prop_ui import PropertyPanel
 from bpy.props import *
 Texture = bpy.types.Texture
 
-Texture.yaf_tex_type = EnumProperty(attr="yaf_tex_type",
-        items = (
-                ("TEXTURE_TYPE","Texture Type",""),
-                ("NONE","None",""),
-                ("BLEND","Blend",""),
-                ("CLOUDS","Clouds",""),
-                ("WOOD","Wood",""),
-                ("MARBLE","Marble",""),
-                ("VORONOI","Voronoi",""),
-                ("MUSGRAVE","Musgrave",""),
-                ("DISTORTED_NOISE","Distorted Noise",""),
-                ("IMAGE","Image",""),
-),default="NONE")
+Texture.yaf_tex_type = EnumProperty(
+    items = (
+            # ("TEXTURE_TYPE","Texture Type",""),
+            ("NONE","None",""),
+            ("BLEND","Blend",""),
+            ("CLOUDS","Clouds",""),
+            ("WOOD","Wood",""),
+            ("MARBLE","Marble",""),
+            ("VORONOI","Voronoi",""),
+            ("MUSGRAVE","Musgrave",""),
+            ("DISTORTED_NOISE","Distorted Noise",""),
+            ("IMAGE","Image","")),
+    default = "NONE",
+    name = "Texture Type")
 
 Texture.yaf_texture_coordinates = EnumProperty(attr="yaf_texture_coordinates",
         items = (
@@ -168,12 +169,14 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel, bpy.types.Panel):
             split = layout.split(percentage=0.2)
 
             if tex.use_nodes:
-
                 if slot:
                     split.label(text="Output:")
                     split.prop(slot, "output_node", text="")
             else:
-                layout.prop(tex, "type", text="Type", icon= "TEXTURE")
+                # FIXME: this should be yaf_tex_type, but then it seems the panels need to be changed.
+                # right now with the Blender "type", we have lots of texture types we don't support
+                layout.prop(tex, "type", text = "Type", icon = "TEXTURE")
+                # layout.prop(tex, "yaf_tex_type", text = "Type", icon = "TEXTURE")
 
 
 class YAF_TEXTURE_PT_preview(YAF_TextureButtonsPanel, bpy.types.Panel):

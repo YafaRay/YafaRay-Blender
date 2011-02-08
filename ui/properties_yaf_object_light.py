@@ -44,16 +44,17 @@ Object.bgp_photon_only = BoolProperty(attr="bgp_photon_only",
 
 Object.vol_enable =     BoolProperty(attr="vol_enable",
                                         description="Makes the mesh a volume at its bounding box")
-Object.vol_region =     EnumProperty(attr="vol_region",
-                                        description="Set the volume region",
+Object.vol_region =     EnumProperty(
+    description="Set the volume region",
     items = (
-        ("Volume Region","Volume Region",""),
         ("ExpDensity Volume","ExpDensity Volume",""),
         ("Noise Volume","Noise Volume",""),
-        ("Uniform Volume","Uniform Volume",""),
+        ("Uniform Volume","Uniform Volume","")
         #("Grid Volume","Grid Volume",""),
-        #("Sky Volume","Sky Volume",""),
-),default="ExpDensity Volume")
+        #("Sky Volume","Sky Volume","")
+        ),
+    default="ExpDensity Volume",
+    name = "Volume Type")
 Object.vol_height =     FloatProperty(attr="vol_height",
                                             description="",
                                             min = 0,
@@ -82,31 +83,6 @@ Object.vol_scatter =    FloatProperty(attr="vol_scatter",
                                             description="Scattering coefficient",
                                             min = 0,max = 1,
                                             default = .1)
-#Object.vol_l_e =        FloatProperty(attr="vol_l_e",
-#                                            description = "",
-#                                            default = 0.0,
-#                                            min = -1.0, max = 1.0,
-#                                            soft_min = -1.0, soft_max = 1.0)
-#Object.vol_g = bpy.props.FloatProperty(attr="vol_g",
-#                                            description = "",
-#                                            default = 0.0,
-#                                            min = 0.0, max = 1.0,
-#                                            soft_min = 0.0, soft_max = 1.0)
-
-#volume Integrator
-#EnumProperty(attr="v_int_type",
-#	items = (
-#		("Volume Integrator","Volume Integrator",""),
-#		("None","None",""),
-#		("Single Scatter","Single Scatter",""),
-#		("Sky","Sky",""),
-#),default="Sky")
-#FloatProperty(attr="v_int_step_size")
-#BoolProperty(attr="v_int_adaptive")
-#BoolProperty(attr="v_int_optimize")
-#IntProperty(attr="v_int_attgridres")
-#FloatProperty(attr="v_int_scale")
-#FloatProperty(attr="v_int_alpha")
 
 class YAF_PT_object_light(bpy.types.Panel):
 

@@ -245,7 +245,7 @@ class yafMaterial:
             yi.paramsSetString("type", "glossy")
 
         diffuse_color = mat.diffuse_color
-        color         = mat.color
+        color         = mat.glossy_color
 
         yi.paramsSetColor("diffuse_color", diffuse_color[0], diffuse_color[1], diffuse_color[2])
         yi.paramsSetColor("color", color[0],color[1], color[2])
@@ -317,13 +317,13 @@ class yafMaterial:
         # provisional, for test only
         #TODO: change name of 'variables'?
         
-        bCol = mat.color
-        mirCol = mat.mirror_color
-        bSpecr = mat.specular_reflect
-        bTransp = mat.transparency
-        bTransl = mat.translucency
+        bCol      = mat.diffuse_color
+        mirCol    = mat.mirror_color
+        bSpecr    = mat.specular_reflect
+        bTransp   = mat.transparency
+        bTransl   = mat.translucency
         bTransmit = mat.transmit_filter
-        bEmit = mat.emit
+        bEmit     = mat.emit
 
         if self.preview and mat.name.find("check") != -1:
             bCol = mat.diffuse_color

@@ -7,22 +7,23 @@ Material = bpy.types.Material
 # the first entry is bad (true for nearly all EnumProperties), it should be in the "name" property
 # but changing this will shift the material indices by one, invalidating all saved material
 Material.mat_type = EnumProperty(
-    items = [("Material Types", "Material Types", ""),
+    items = [
         ("shinydiffusemat", "Shinydiffusemat", ""),
         ("glossy", "Glossy", ""),
         ("coated_glossy", "Coated Glossy", ""),
         ("glass", "Glass", ""),
         ("rough_glass", "Rough Glass", ""),
         ("blend", "Blend", "")],
-    default = "shinydiffusemat")
+    default = "shinydiffusemat",
+    name = "Material Types")
 
 ######## Yafaray ######                         ##### Blender values, for test link #####
-Material.color =                FloatVectorProperty(
-                                        description = "Color",
-                                        default = (1.0, 1.0, 1.0),
-                                        subtype = "COLOR", step = 1,
-                                        precision = 2, min = 0.0, max = 1.0,
-                                        soft_min = 0.0, soft_max = 1.0)
+#Material.color =                FloatVectorProperty(
+#                                        description = "Color",
+#                                        default = (1.0, 1.0, 1.0),
+#                                        subtype = "COLOR", step = 1,
+#                                        precision = 2, min = 0.0, max = 1.0,
+#                                        soft_min = 0.0, soft_max = 1.0)
 #Material.mirror_color =         FloatVectorProperty(
 #                                        description = "Color",
 #                                        default = (0.7,0.7,0.7),
@@ -70,18 +71,17 @@ Material.fresnel_effect =   BoolProperty(
                                         default = False)
 Material.brdf_type = EnumProperty(
     items = (
-        ("BRDF Type", "BRDF Type", ""),
         ("oren-nayar", "Oren-Nayar", ""),
         ("lambert", "Normal (Lambert)", "")),
-    default="lambert")
+    default = "lambert",
+    name = "BRDF Type")
 
-#Material.diffuse_color =        FloatVectorProperty(
-#                                        description = "Diffuse Color",
-#                                        subtype = "COLOR",
-#                                        min = 0.0, max = 1.0,
-#                                        default = (0.7,0.7,0.7), step = 1,
-#                                        precision = 2,
-#                                        soft_min = 0.0, soft_max = 1.0)
+Material.glossy_color =        FloatVectorProperty(
+                                        description = "Glossy Color",
+                                        subtype = "COLOR",
+                                        min = 0.0, max = 1.0,
+                                        default = (0.7,0.7,0.7)
+                                        )
 Material.glossy_reflect =       FloatProperty(
                                         description = "",
                                         min = 0.0, max = 1.0,
@@ -250,7 +250,7 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                 col.prop(context.material,"mat_type", text= "Material Types")
 
                 if yaf_mat.mat_type == 'shinydiffusemat':
-                    col.prop(yaf_mat,"color", text= "Color")
+                    col.prop(yaf_mat, "diffuse_color", text= "Diffuse Color")
                     col.prop(yaf_mat,"mirror_color", text= "Mirror Color")
                     col.separator()
                     col.prop(yaf_mat,"diffuse_reflect", text= "Diffuse Reflection", slider = True)
@@ -275,7 +275,7 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
 
                 if yaf_mat.mat_type == 'glossy' or yaf_mat.mat_type == 'coated_glossy':
                     col.prop(yaf_mat,"diffuse_color", text= "Diffuse Color")#link, not changed in proprerty definition, for test
-                    col.prop(yaf_mat,"color", text= "Glossy Color")
+                    col.prop(yaf_mat,"glossy_color", text= "Glossy Color")
                     col.separator()
                     col.prop(yaf_mat,"diffuse_reflect", text= "Diffuse Reflection", slider = True)
                     col.prop(yaf_mat,"glossy_reflect", text= "Glossy Reflection", slider = True)

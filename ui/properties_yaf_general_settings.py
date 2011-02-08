@@ -28,13 +28,13 @@ Scene.gs_tile_size =    IntProperty(attr="gs_tile_size",
                         description = "Size of the render buckets (tiles)",
                         min = 0, max = 1024,
                         default = 32)
-Scene.gs_tile_order =   EnumProperty(attr="gs_tile_order",
+Scene.gs_tile_order =   EnumProperty(
                         description = "Selects tiles order type",
                         items = (
-                        ("Tile order","Tile order",""),
-                        ("linear","Linear",""),
-                        ("random","Random",""),
-                        ),default="random")
+                            ("linear","Linear",""),
+                            ("random","Random","")),
+                        default="random",
+                        name = "Tile Order")
 Scene.gs_auto_threads = BoolProperty(attr="gs_auto_threads",
                         description = "Activate thread number auto detection",
                         default = True)
@@ -68,13 +68,13 @@ Scene.gs_show_sam_pix = BoolProperty(attr="gs_show_sam_pix",
 Scene.gs_z_channel =    BoolProperty(attr="gs_z_channel",
                         description = "Render depth map (Z-Buffer)",
                         default = False)
-Scene.gs_type_render =  EnumProperty(attr="gs_type_render",
+Scene.gs_type_render =  EnumProperty(
                         description = "Render to view Blender or to File, (load at the end)",
                         items = (
-                        ("Render Type","Type render",""),
-                        ("file","File, load at the end",""),
-                        ("into_blender","Into Blender",""),
-                        ), default = "into_blender")
+                            ("file", "File, load at the end", ""),
+                            ("into_blender", "Into Blender", "")),
+                        default = "into_blender",
+                        name = "Render Type")
 
 class YAF_PT_general_settings(bpy.types.Panel):
 

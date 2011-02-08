@@ -2,13 +2,14 @@ import bpy
 from bpy.props import *
 World = bpy.types.World
 
-World.v_int_type = EnumProperty(attr="v_int_type",
+World.v_int_type = EnumProperty(
 	items = (
-		("Volume Integrator","Volume Integrator",""),
 		("None","None",""),
-		("Single Scatter","Single Scatter",""),
-		#("Sky","Sky",""),
-),default="None")
+        ("Single Scatter","Single Scatter","")
+        #("Sky","Sky",""),
+    ),
+    default="None",
+    name = "Volume Integrator")
 World.v_int_step_size =   FloatProperty(attr="v_int_step_size", precision = 3)
 World.v_int_adaptive =    BoolProperty(attr="v_int_adaptive")
 World.v_int_optimize =    BoolProperty(attr="v_int_optimize")

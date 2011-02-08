@@ -224,9 +224,22 @@ def convertMaterial(mat):
 
     # print("type", props["type"])
 
+    variableDict = dict()
+
+    if mat.mat_type in ["glossy", "coated_glossy"]:
+        variableDict["color"] = "glossy_color"
+
+    elif mat.mat_type == "shinydiffusemat":
+        variableDict["color"] = "diffuse_color"
+        variableDict["diffuse_color"] = ""
+
     for p in props:
         value = props[p]
         print(p, value)
+
+        if p in variableDict:
+            print("p in dict:", p, variableDict[p])
+            p = variableDict[p]
 
         if p == "type": continue
         if p == "mask": continue
@@ -242,8 +255,6 @@ def convertMaterial(mat):
             continue
 
         # print("type:", type(value))
-
-
 
         try:
             if type(value) in [float, int, bool]:
@@ -285,11 +296,8 @@ def convertWorld(world):
         if p in ['zenith_color', 'horizon_color']:
             exec("world." + p + " = [" + str(value[0]) + ", " + str(value[1]) + ", " + str(value[2]) + "]")
             continue
-        if p in ['horizon_ground_color']:
-            exec("world.ambient_color = [" + str(value[0]) + ", " + str(value[1]) + ", " + str(value[2]) + "]")
-            continue
         if p in ['color']:
-            exec("world.horizon_color = [" + str(value[0]) + ", " + str(value[1]) + ", " + str(value[2]) + "]")
+            exec("world.bg_single_color = [" + str(value[0]) + ", " + str(value[1]) + ", " + str(value[2]) + "]")
             continue
         if p in ['ibl']:
             exec("world.bg_use_ibl = " + str(value))
@@ -318,6 +326,7 @@ def convertWorld(world):
         if p in ['dsgammaenc']:
             exec("world.bg_gamma_enc = " + str(value))
             continue
+        # FIXME: ignore following properties, may not be correct
         if p in ['alpha', 'sigma_t', 'attgridScale', 'optimize', 'adaptive', 'stepSize', 'volType', 'dscolorspace', 'with_caustic', 'with_diffuse', 'bg_type', 'dsa', 'dsb', 'dsc', 'dsd', 'dse', 'dsf']: continue
 
         if type(value) in [float, int, bool]:

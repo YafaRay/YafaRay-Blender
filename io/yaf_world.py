@@ -7,25 +7,21 @@ class yafWorld:
         def __init__(self, interface):
                 self.yi = interface
 
-        def exportWorld(self,scene):
+        def exportWorld(self, scene):
                 yi = self.yi
 
-                #context = bpy.context
-                #scene   = context.scene
-                world   = scene.world
+                world = scene.world
 
                 if world:
                     bg_type = world.bg_type
                     useIBL = world.bg_use_ibl
                     iblSamples = world.bg_ibl_samples
                     bgPower = world.bg_power
-                    c = world.horizon_color
+                    c = world.bg_single_color
                 else:
-                    bg_type = "constant"
+                    bg_type = "Single Color"
                     c = (0.0, 0.0, 0.0)
                     useIBL = False
-                    iblSamples = 8
-                    bgPower = 1
 
                 self.yi.printInfo("Exporting World, type: " + bg_type)
                 yi.paramsClearAll();

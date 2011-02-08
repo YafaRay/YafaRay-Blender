@@ -16,13 +16,13 @@ from rna_prop_ui import PropertyPanel
 
 Lamp.lamp_type = EnumProperty(
     items = (
-        ("", "Light Type", ""),
         ("point", "Point", ""),
         ("sun", "Sun", ""),
         ("spot", "Spot", ""),
         ("ies", "IES", ""),
         ("area", "Area", "")),
-    default="point")
+    default="point",
+    name = "Light Type")
 Lamp.directional =      BoolProperty(attr="directional",
                                     description = "",
                                     default = False)

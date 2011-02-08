@@ -25,13 +25,13 @@ Scene.AA_pixelwidth =  FloatProperty(
                         default = 1.5)
 Scene.AA_filter_type = EnumProperty(
                     items = (
-                        ("AA Filter Type","AA Filter Type",""),
-                        ("box","Box",""),
-                        ("mitchell","Mitchell",""),
-                        ("gauss","Gauss",""),
-                        ("lanczos","Lanczos","")
+                        ("box", "Box", ""),
+                        ("mitchell", "Mitchell", ""),
+                        ("gauss", "Gauss", ""),
+                        ("lanczos", "Lanczos", "")
                         ),
-                    default="gauss")
+                    default = "gauss",
+                    name = "AA Filter Type")
 
 
 class YAF_PT_AA_settings(bpy.types.Panel):

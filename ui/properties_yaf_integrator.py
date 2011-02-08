@@ -6,16 +6,16 @@ from bpy.props import *
 Scene = bpy.types.Scene
 
 
-Scene.intg_light_method =   EnumProperty(attr="intg_light_method",
+Scene.intg_light_method =   EnumProperty(
     items = (
-        ("Lighting Methods", "Lighting Methods", ""),
         ("Direct Lighting", "Direct Lighting", ""),
         ("Photon Mapping", "Photon Mapping", ""),
         ("Pathtracing", "Pathtracing", ""),
         ("Debug", "Debug", ""),
         ("Bidirectional", "Bidirectional", ""),
     ),
-    default="Direct Lighting")
+    default="Direct Lighting",
+    name = "Lighting Method")
 Scene.intg_use_caustics =   BoolProperty(attr="intg_use_caustics",
                                         description = "Enable photon map for caustics only",
                                         default = False)
@@ -87,12 +87,12 @@ Scene.intg_use_bg =         BoolProperty(attr="intg_use_bg",
 Scene.intg_caustic_method = EnumProperty(attr="intg_caustic_method",
                                         description = "Choose caustic rendering method",
     items = (
-        ("Caustic Method","Caustic Method",""),
         ("None","None",""),
         ("Path","Path",""),
         ("Path+Photon","Path+Photon",""),
-        ("Photon","Photon",""),
-),default="None")
+        ("Photon","Photon","")),
+    default = "None",
+    name = "Caustic Method")
 Scene.intg_path_samples =   IntProperty(attr="intg_path_samples",
                                         description = "Number of path samples per pixel sample",
                                         min = 1,
@@ -102,15 +102,15 @@ Scene.intg_no_recursion =   BoolProperty(attr="intg_no_recursion",
                                         default = False)
 Scene.intg_debug_type =     EnumProperty(attr="intg_debug_type",
     items = (
-        ("Debug Type","Debug Type",""),
         ("N","N",""),
         ("dPdU","dPdU",""),
         ("dPdV","dPdV",""),
         ("NU","NU",""),
         ("NV","NV",""),
         ("dSdU","dSdU",""),
-        ("dSdV","dSdV",""),
-),default="dSdV")
+        ("dSdV","dSdV","")),
+    default = "dSdV",
+    name = "Debug Type")
 Scene.intg_show_perturbed_normals = BoolProperty(attr="intg_show_perturbed_normals",
                                         description = "Show the normals perturbed by bump and normal maps",
                                         default = False)
