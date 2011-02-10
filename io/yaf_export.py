@@ -207,7 +207,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         
         self.setInterface(yafrayinterface.yafrayInterface_t())
 
-        yi.setInputGamma(scene.gs_gamma_input, True)
+        self.yi.setInputGamma(scene.gs_gamma_input, True)
 
         if scene.gs_type_render == "file":
             outputFile, output, file_type = self.decideOutputFileName(r.filepath, r.file_format)
