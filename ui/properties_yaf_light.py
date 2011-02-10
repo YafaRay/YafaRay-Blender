@@ -126,9 +126,9 @@ class YAF_PT_lamp(bpy.types.Panel):
 
         # draw preview? easy...
         layout.template_preview(context.lamp)
+        layout.operator("LAMP_OT_sync_3dview", text="Sync with 3D view", icon="LAMP")
 
         layout.prop(lamp, "lamp_type", expand = True, text = "Light Type")
-        # layout.prop(context.lamp, "type", expand=True, text= "Light Type")
 
         # split = layout.split(percentage = 0.65)
         row = layout.row()
@@ -136,18 +136,12 @@ class YAF_PT_lamp(bpy.types.Panel):
         col = row.column()
 
         if lamp.lamp_type == 'area':
-            if not lamp.type == "AREA":
-                bpy.ops.wm.context_set_enum("EXEC_DEFAULT", data_path="lamp.type", value="AREA")
-
             col.prop(lamp, "yaf_samples", text= "Samples")
             # col.prop(lamp, "size", text= "SizeX")
             # col.prop(lamp, "size_y", text= "SizeY")
             col.prop(lamp, "create_geometry", text= "Create Geometry")
 
         elif lamp.lamp_type == 'spot':
-            if not lamp.type == "SPOT":
-                bpy.ops.wm.context_set_enum("EXEC_DEFAULT", data_path="lamp.type", value="SPOT")
-
             col.prop(lamp, "spot_size", text= "Cone Angle")
             col.prop(lamp, "spot_blend", text= "Cone Edge Softness")
 
@@ -161,9 +155,6 @@ class YAF_PT_lamp(bpy.types.Panel):
             col.prop(lamp, "photon_only", text= "Photon Only")
 
         elif lamp.lamp_type == 'sun':
-            if not lamp.type == "SUN":
-                bpy.ops.wm.context_set_enum("EXEC_DEFAULT", data_path="lamp.type", value="SUN")
-
             col.prop(lamp, "angle", text= "Angle")
             col.prop(lamp, "yaf_samples", text= "Samples")
             col.prop(lamp, "directional", text= "Directional", toggle = True)
@@ -173,9 +164,6 @@ class YAF_PT_lamp(bpy.types.Panel):
                 box.prop(lamp, "infinite", text= "Infinite")
 
         elif lamp.lamp_type == 'point':
-            if not lamp.type == "POINT":
-                bpy.ops.wm.context_set_enum("EXEC_DEFAULT", data_path="lamp.type", value="POINT")
-
             col.prop(lamp, "use_sphere",text= "Use sphere", toggle = True)
             if lamp.use_sphere:
                 box = col.box()
@@ -184,9 +172,6 @@ class YAF_PT_lamp(bpy.types.Panel):
                 box.prop(lamp, "create_geometry", text= "Create Geometry")
 
         elif lamp.lamp_type == 'ies':
-            if not lamp.type == "SPOT":
-                bpy.ops.wm.context_set_enum("EXEC_DEFAULT", data_path="lamp.type", value="SPOT")
-
             col.label("YafaRay Light type IES")
             col.prop(lamp, "ies_file",text = "IES File")
             col.prop(lamp, "ies_soft_shadows",text = "IES Soft Shadows", toggle = True)

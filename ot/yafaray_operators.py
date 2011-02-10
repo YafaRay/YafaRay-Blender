@@ -78,7 +78,7 @@ def sunPosAngle(mode="get", val="position"):
                 # compute sun ray direction from position
                 vray = bg_from.copy()
                 if bg_from.length:
-                    vray.negate().normalize()
+                    vray.negate().normalized()
                 
                 # get angle between sun ray and reference vector
                 if vtrack.length and vray.length:
@@ -87,7 +87,7 @@ def sunPosAngle(mode="get", val="position"):
                     print("Zero length input vector - sun angle set to 0")
             
                 # get rotation axis
-                axis = vtrack.cross(vray).normalize()
+                axis = vtrack.cross(vray).normalized()
             
                 # get quaternion representing rotation and get corresponding euler angles
                 quat = mathutils.Quaternion(axis, ang)
@@ -164,5 +164,19 @@ class RENDER_OT_refresh_preview(bpy.types.Operator):
     def invoke(self, context, event):
         mat = context.scene.objects.active.active_material
         mat.preview_render_type = mat.preview_render_type
+        return {'FINISHED'}
+
+class LAMP_OT_sync_3dview(bpy.types.Operator):
+    bl_label = "Sync type with 3D view"
+    bl_idname = "lamp.sync_3dview"
+    bl_description = "Sets the lamp type on the 3d view"
+    
+    def invoke(self, context, event):
+        lamp = context.scene.objects.active
+
+        if lamp.type == 'LAMP':
+            lampTypeMap = {'area': 'AREA', 'spot': 'SPOT', 'sun': 'SUN', 'point': 'POINT', 'ies': 'SPOT'}
+            lamp.data.type = lampTypeMap[lamp.data.lamp_type]
+
         return {'FINISHED'}
 
