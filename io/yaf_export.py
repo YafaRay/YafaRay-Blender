@@ -21,6 +21,7 @@ from yafaray.io.yaf_material import yafMaterial
 class YafaRayRenderEngine(bpy.types.RenderEngine):
     bl_idname = YAF_ID_NAME
     bl_use_preview = True
+    bl_use_postprocess = False
     bl_label = "YafaRay Render"
     prog = 0.0
     tag = ""
@@ -205,6 +206,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             y = sizeY
         
         self.setInterface(yafrayinterface.yafrayInterface_t())
+
+        yi.setInputGamma(scene.gs_gamma_input, True)
 
         if scene.gs_type_render == "file":
             outputFile, output, file_type = self.decideOutputFileName(r.filepath, r.file_format)
