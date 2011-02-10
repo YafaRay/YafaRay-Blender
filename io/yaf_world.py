@@ -22,6 +22,8 @@ class yafWorld:
                     bg_type = "Single Color"
                     c = (0.0, 0.0, 0.0)
                     useIBL = False
+                    iblSamples = 16
+                    bgPower = 1
 
                 self.yi.printInfo("Exporting World, type: " + bg_type)
                 yi.paramsClearAll();
