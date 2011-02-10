@@ -21,7 +21,6 @@ from yafaray.io.yaf_material import yafMaterial
 class YafaRayRenderEngine(bpy.types.RenderEngine):
     bl_idname = YAF_ID_NAME
     bl_use_preview = True
-    bl_use_postprocess = False
     bl_label = "YafaRay Render"
     prog = 0.0
     tag = ""
@@ -187,6 +186,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
     def render(self, scene):
 
         self.preview = (scene.name == "preview")
+        
+        self.bl_use_postprocess = False
 
         self.update_stats("", "Setting up render")
 
@@ -296,10 +297,13 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.yi.clearAll()
                 del self.yi
                 self.update_stats("", "Render is aborted")
+                self.bl_use_postprocess = True
                 return
 
         self.update_stats("", "Done!")
         
         self.yi.clearAll()
         del self.yi
+
+        self.bl_use_postprocess = True
 
