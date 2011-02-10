@@ -72,7 +72,7 @@ def exportRenderSettings(yi, scene):
     yi.paramsSetString("volintegrator_name", "volintegr")
 
     yi.paramsSetFloat("gamma", scene.gs_gamma)
-    yi.paramsSetFloat("gammaInput", scene.gs_gamma_input)
+    yi.setInputGamma(scene.gs_gamma_input)
 
     exportAA(yi, scene)
     
