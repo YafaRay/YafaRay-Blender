@@ -31,7 +31,7 @@ class yafObject(object):
             m = bpy.types.YAFA_RENDER.viewMatrix
 
             m.transpose()
-            inv = m.invert()
+            inv = m.inverted()
 
             pos = multiplyMatrix4x4Vector4(inv, mathutils.Vector((0, 0, 0, 1)))
             aboveCam = multiplyMatrix4x4Vector4(inv, mathutils.Vector((0, 1, 0, 1)))
