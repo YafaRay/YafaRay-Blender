@@ -25,9 +25,10 @@ World.bg_horizon_ground_color = FloatVectorProperty(
                                             subtype = "COLOR",
                                             default = (1, 1, 1))
 
-World.bg_single_color =     FloatVectorProperty(
-                                            subtype = "COLOR",
-                                            default = (1, 1, 1))
+World.bg_single_color =     FloatVectorProperty(description = "Background color",
+                                            subtype = 'COLOR',
+                                            min = 0.0, max = 1.0,
+                                            default = (0.7,0.7,0.7))
 
 World.bg_use_ibl =          BoolProperty(
                                             description = "Use IBL",
