@@ -96,19 +96,6 @@ class YAF_PT_object_light(bpy.types.Panel):
 	def poll(self, context):
 
 		engine = context.scene.render.engine
-
-		import properties_object
-
-		if (True  and  (engine in self.COMPAT_ENGINES) ) :
-			try :
-				properties_object.unregister()
-			except: 
-				pass
-		else:
-			try:
-				properties_object.register()
-			except: 
-				pass
 		return (context.object.type == 'MESH'  and  (engine in self.COMPAT_ENGINES) ) 
 
 
