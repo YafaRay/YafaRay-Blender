@@ -53,6 +53,8 @@ Texture.yaf_texture_coordinates = EnumProperty(attr="yaf_texture_coordinates",
 
 Texture.tex_file_name = StringProperty(attr='tex_file_name', subtype = 'FILE_PATH')
 
+Texture.yaf_is_normal_map = BoolProperty(default = False, name = "Normal map")
+
 from properties_material import active_node_mat
 
 
@@ -317,7 +319,8 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, bpy.types.Panel):
 
         idblock = context_tex_datablock(context)
 
-        tex = context.texture_slot
+        tex_slot = context.texture_slot
+        texture = context.texture
 
         shaderNodes = dict()
         shaderNodes["Bump"]         = ["use_map_normal", "normal_factor", "Bump"]
@@ -349,32 +352,34 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, bpy.types.Panel):
 
             for node in nodes:
                 value = shaderNodes[node]
-                self.factor_but(tex, col, value[0], value[1], value[2])
+                self.factor_but(tex_slot, col, value[0], value[1], value[2])
+                if node == "Bump" and getattr(tex_slot, "use_map_normal") and texture.type == "IMAGE":
+                    col.prop(texture, "yaf_is_normal_map", "Use map as normal map")
 
             col.separator()
-            col.prop(tex, "blend_type", text = "Blend")
-            col.prop(tex, "use_rgb_to_intensity")
+            col.prop(tex_slot, "blend_type", text = "Blend")
+            col.prop(tex_slot, "use_rgb_to_intensity")
             sub = col.column()
-            sub.active = tex.use_rgb_to_intensity
-            sub.prop(tex, "color", text = "")
+            sub.active = tex_slot.use_rgb_to_intensity
+            sub.prop(tex_slot, "color", text = "")
 
-            col.prop(tex, "invert", text = "Negative")
-            col.prop(tex, "use_stencil")
+            col.prop(tex_slot, "invert", text = "Negative")
+            col.prop(tex_slot, "use_stencil")
 
         elif isinstance(idblock, bpy.types.World): # for setup world texture
             split = layout.split()
 
             col = split.column()
-            self.factor_but(tex, col, "use_map_blend", "blend_factor", "Blend")
-            self.factor_but(tex, col, "use_map_horizon", "horizon_factor", "Horizon")
+            self.factor_but(tex_slot, col, "use_map_blend", "blend_factor", "Blend")
+            self.factor_but(tex_slot, col, "use_map_horizon", "horizon_factor", "Horizon")
             col = split.column()
-            self.factor_but(tex, col, "use_map_zenith_up", "zenith_up_factor", "Zenith Up")
-            self.factor_but(tex, col, "use_map_zenith_down", "zenith_down_factor", "Zenith Down")
+            self.factor_but(tex_slot, col, "use_map_zenith_up", "zenith_up_factor", "Zenith Up")
+            self.factor_but(tex_slot, col, "use_map_zenith_down", "zenith_down_factor", "Zenith Down")
 
         if isinstance(idblock, bpy.types.Material) or isinstance(idblock, bpy.types.World):
             split = layout.split()
             col = split.column()
-            col.prop(tex, "default_value", text="Default Value", slider=True)
+            col.prop(tex_slot, "default_value", text="Default Value", slider=True)
 
 # Texture Type Panels #
 
