@@ -57,7 +57,7 @@ def sunPosAngle(mode="get", val="position"):
                     world.bg_from = point
                 
                 elif val == 'angle' :
-                    inv_matrix    = mathutils.Matrix(active_object.matrix_local).copy().invert()
+                    inv_matrix    = mathutils.Matrix(active_object.matrix_local).copy().inverted()
                     world.bg_from = (inv_matrix[0][2],inv_matrix[1][2],inv_matrix[2][2])
             
             elif mode == 'update' :
@@ -81,7 +81,8 @@ def sunPosAngle(mode="get", val="position"):
                 # compute sun ray direction from position
                 vray = bg_from.copy()
                 if bg_from.length:
-                    vray.negate().normalize()
+                    vray.negate()
+                    vray.normalize()
                 
                 # get angle between sun ray and reference vector
                 if vtrack.length and vray.length:
@@ -94,15 +95,10 @@ def sunPosAngle(mode="get", val="position"):
             
                 # get quaternion representing rotation and get corresponding euler angles
                 quat = mathutils.Quaternion(axis, ang)
-                eul = quat.to_euler().unique()
+                eul = quat.to_euler()
                 
-                eulrad = []
-                for i in eul:
-                    eulrad.append(math.radians(i))
-
                 # update sun rotation and redraw the 3D windows
-                print(str(eulrad))
-                active_object.rotation_euler = eulrad
+                active_object.rotation_euler = eul
 
 
     else :
