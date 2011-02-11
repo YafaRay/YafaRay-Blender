@@ -32,6 +32,7 @@ Michele Castigliego (subcomandante), Bert Buchholz, \
 Rodrigo Placencia (DarkTide), Alexander Smirnov (Exvion)",
     "version": (0, 1, 2, 'alpha'),
     "blender": (2, 5, 6),
+    "api": 34773,
     "location": "Info Header (engine dropdown)",
     "description": "YafaRay integration for blender",
     "warning" : "Alpha state",
@@ -67,10 +68,10 @@ else:
     from yafaray import io, ui, ot
 
 def register():
-    pass
+    bpy.utils.register_module(__name__)
 
 def unregister():
-    pass
+    bpy.utils.unregister_module(__name__)
 
 if __name__ == '__main__':
     register()
