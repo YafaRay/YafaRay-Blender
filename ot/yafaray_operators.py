@@ -48,10 +48,13 @@ def sunPosAngle(mode="get", val="position"):
             if mode == 'get' :
                 if val == 'position' :
                     location = mathutils.Vector(active_object.location)
+                    
                     if location.length:
-                        point = location.copy().normalize()
-                    print(str(point))
-                    world.bg_from = point.copy()
+                        point = location.normalized()
+                    else:
+                        point = location.copy()
+
+                    world.bg_from = point
                 
                 elif val == 'angle' :
                     inv_matrix    = mathutils.Matrix(active_object.matrix_local).copy().invert()
@@ -78,7 +81,7 @@ def sunPosAngle(mode="get", val="position"):
                 # compute sun ray direction from position
                 vray = bg_from.copy()
                 if bg_from.length:
-                    vray.negate().normalized()
+                    vray.negate().normalize()
                 
                 # get angle between sun ray and reference vector
                 if vtrack.length and vray.length:
