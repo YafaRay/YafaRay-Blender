@@ -211,8 +211,10 @@ def convertMaterial(mat):
     materialNames = []
     for item in bpy.data.materials:
         materialNames.append(item.name)
-
-    mat.mat_type = props["type"]
+    if props["type"] == "Rough Glass":
+        mat.mat_type = 'rough_glass'
+    else:
+        mat.mat_type = props["type"]
 
     materialList = []
     for item in [m for m in bpy.data.materials if not m.name == mat.name]:
