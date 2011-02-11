@@ -120,34 +120,7 @@ class YAF_PT_world(bpy.types.Panel):
     @classmethod
     def poll(self, context):
 
-        engine = context.scene.render.engine
-
-        import properties_world
-
-
-        import properties_texture
-
-        if (context.world  and  (engine in self.COMPAT_ENGINES) ) :
-            try :
-                properties_world.unregister()
-            except:
-                pass
-        else:
-            try:
-                properties_world.register()
-            except:
-                pass
-        if (context.texture and  (engine in self.COMPAT_ENGINES) ) :
-            try :
-                properties_texture.unregister()
-            except:
-                pass
-        else:
-            try:
-                properties_texture.register()
-            except:
-                pass
-        return (context.texture  or context.world and  (engine in self.COMPAT_ENGINES) )
+        return context.world and  (context.scene.render.engine in self.COMPAT_ENGINES)
 
 
     def draw(self, context):
@@ -186,9 +159,6 @@ class YAF_PT_world(bpy.types.Panel):
                     col.template_ID(context.world, "active_texture", new="texture.new")
                 except: # TODO: create only image texture? procedural not supported.. ?
                     pass
-#
-
-            # more code ?, yes, is need
 
         elif context.world.bg_type == 'Sunsky':
             col.prop(context.world, "bg_turbidity", text = "Turbidity")
