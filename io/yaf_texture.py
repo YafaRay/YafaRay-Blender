@@ -272,7 +272,7 @@ class yafTexture:
 
             yi.paramsSetBool("use_alpha", tex.use_alpha)
             yi.paramsSetBool("calc_alpha", tex.use_calculate_alpha)
-            yi.paramsSetBool("normalmap", tex.use_normal_map)
+            yi.paramsSetBool("normalmap", tex.yaf_is_normal_map)
             yi.paramsSetFloat("gamma", scene.gs_gamma_input)
 
             # repeat

@@ -109,7 +109,6 @@ class YAF_PT_lamp(bpy.types.Panel):
         ob = context.object
         lamp = context.lamp
         space = context.space_data
-        lamp_type = context.lamp.type
 
         # split = layout.split(percentage=0.65)
 

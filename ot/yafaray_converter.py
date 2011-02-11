@@ -103,8 +103,11 @@ def convertLight(lightObj):
     print("lamp", light.name, light.lamp_type)
 
     for p in props:
+        if p == "type":
+            continue
+
         value = props[p]
-        # print(p, props[p])
+        # print(p, value)
 
         if p in variableDict:
             p = variableDict[p]
@@ -122,63 +125,6 @@ def convertLight(lightObj):
     return problemList
 
 
-
-
-def convertLights(lightObjects):
-    problemList = []
-
-    for light in lightObjects:
-        problemList += convertLight(light)
-
-    return problemList
-
-
-def convertLight(lightObj):
-    problemList = []
-
-    light = lightObj.data
-
-    props = lightObj.get("YafRay", None)
-    if not props:
-        problemList.append("No properties on light" + light.name)
-        return problemList
-
-    variableDict = dict(
-        samples = "yaf_samples",
-        radius = "shadow_soft_size",
-        power = "energy",
-        createGeometry = "create_geometry")
-
-    # set just the lamp type correctly so the blender type will be also correct
-    if props["type"] == "Area":          light.lamp_type = "area"
-    elif props["type"] == "Point":       light.lamp_type = "point"
-    elif props["type"] == "Sphere":      light.lamp_type = "point"
-    elif props["type"] == "IES Light":   light.lamp_type = "ies"
-    elif props["type"] == "Spot":        light.lamp_type = "spot"
-    elif props["type"] == "Sun":         light.lamp_type = "sun"
-    elif props["type"] == "Directional": light.lamp_type = "sun"
-    else: print("No lamp type fits!")
-
-    print("lamp", light.name, light.lamp_type)
-
-    for p in props:
-        value = props[p]
-        print(p, props[p])
-
-        if p in variableDict:
-            p = variableDict[p]
-
-        try:
-            if type(value) in [float, int, bool]:
-                exec("light." + p + " = " + str(value))
-            elif type(value) in [str]:
-                exec("light." + p + " = \"" + value + "\"")
-            else:
-                exec("light." + p + " = [" + str(value[0]) + ", " + str(value[1]) + ", " + str(value[2]) + "]")  
-        except:
-            problemList.append("Light: Problem inserting: " + p)
-
-    return problemList
 
 
 
@@ -485,7 +431,7 @@ class ConvertYafarayProperties(bpy.types.Operator):
         problemList += convertLights([l for l in data.objects if l.type == "LAMP"])
         problemList += convertWorld(data.worlds[0])
         problemList += convertSceneSettings(scene)
-        problemList += convertObjects(data.objects)
+        problemList += convertObjects([o for o in data.objects if o.type == "MESH"])
 
         print("Problems:")
         for p in problemList:
