@@ -222,6 +222,7 @@ class YAF_PT_render(bpy.types.Panel):
 
 
         if context.scene.intg_light_method == 'Debug':
+            col = layout.column()
             col.prop(context.scene,"intg_debug_type", text= "Debug Type")
 
             col.prop(context.scene,"intg_show_perturbed_normals", text= "Perturbed Normals")

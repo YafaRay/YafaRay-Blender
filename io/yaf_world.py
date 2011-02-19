@@ -87,7 +87,7 @@ class yafWorld:
                     #print(str(c[0]) + ", " + str(c[1]) + ", " + str(c[2]))
                     yi.paramsSetColor("zenith_color", c[0], c[1], c[2])
 
-                    c = world.ambient_color
+                    c = world.bg_horizon_ground_color
                     #print(str(c[0]) + ", " + str(c[1]) + ", " + str(c[2]))
                     yi.paramsSetColor("horizon_ground_color", c[0], c[1], c[2])
 

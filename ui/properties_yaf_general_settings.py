@@ -114,11 +114,6 @@ class YAF_PT_general_settings(bpy.types.Panel):
         if sc.gs_type_render == "into_blender":
             col.prop(sc, "gs_tile_order", text = "Tile order")
             col.prop(sc, "gs_tile_size", text = "Tile Size")
-        else:
-            col.prop(sc, "gs_draw_params", text = "Draw Params")
-            if context.scene.gs_draw_params:
-                col = layout.row()
-                col.prop(sc, "gs_custom_string", text = "Custom String")
 
         col = split.column()
         col.prop(rd, "use_color_management", text = "Use Linear Workflow")
@@ -131,3 +126,7 @@ class YAF_PT_general_settings(bpy.types.Panel):
         col.prop(sc, "gs_clamp_rgb", text = "Clamp RGB")
         col.prop(sc, "gs_show_sam_pix", text = "Show Sam Pix")
 
+        col.prop(sc, "gs_draw_params", text = "Draw Params")
+        if context.scene.gs_draw_params:
+            col = layout.row()
+            col.prop(sc, "gs_custom_string", text = "Custom String")

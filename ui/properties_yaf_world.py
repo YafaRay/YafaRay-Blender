@@ -19,11 +19,13 @@ World.bg_type = EnumProperty(
 
 World.bg_zenith_ground_color = FloatVectorProperty(
                                             subtype = "COLOR",
-                                            default = (1, 1, 1))
+                                            min = 0.0, max = 1.0,
+                                            default = (1, .9, .8))
 
 World.bg_horizon_ground_color = FloatVectorProperty(
                                             subtype = "COLOR",
-                                            default = (1, 1, 1))
+                                            min = 0.0, max = 1.0,
+                                            default = (.8, .6, .3))
 
 World.bg_single_color =     FloatVectorProperty(description = "Background color",
                                             subtype = 'COLOR',
@@ -132,9 +134,9 @@ class YAF_PT_world(bpy.types.Panel):
         col.prop(context.world, "bg_type", text = "Background")
 
         if context.world.bg_type == 'Gradient':
+            col.prop(context.world, "zenith_color", text = "Zenith Color")
             col.prop(context.world, "horizon_color", text = "Horizon Color")
             col.prop(context.world, "bg_horizon_ground_color", text = "Horizon Ground Color")
-            col.prop(context.world, "zenith_color", text = "Zenith Color")
             col.prop(context.world, "bg_zenith_ground_color", text = "Zenith Ground Color")
             col.prop(context.world, "bg_use_ibl", text = "Use IBL")
 

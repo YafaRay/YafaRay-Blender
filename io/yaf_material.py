@@ -18,6 +18,14 @@ class yafMaterial:
         nh = obj.name + "-" + str(obj.__hash__())
         return nh
 
+    def getUsedTextures(self, material):
+        used_textures = []
+        for tex_slot in material.texture_slots:
+            if tex_slot and tex_slot.use and tex_slot.texture:
+                used_textures.append(tex_slot)
+
+        return used_textures
+
     def writeTexLayer(self, name, tex_in, ulayer, mtex, chanflag, dcol, factor):
         if mtex.name not in self.textureMap: return False
         if not chanflag: return False
@@ -207,10 +215,7 @@ class yafMaterial:
         bumpRoot = ''
 
         i=0
-        used_textures = []
-        for item in mat.texture_slots: # changed 'enabled' to 'use', recent change
-            if hasattr(item,'use') and (item.texture is not None) :
-                    used_textures.append(item) # these are instances of materialTextureSlot
+        used_textures = self.getUsedTextures(mat)
 
         for mtex in used_textures:
             used = False
@@ -266,11 +271,8 @@ class yafMaterial:
         bumpRoot = ''
 
         i=0
-        used_textures = []
-        for item in mat.texture_slots:
-            if hasattr(item,'use') and (item.texture is not None) :
-                used_textures.append(item) # these are instances of materialTextureSlot
-
+        used_textures = self.getUsedTextures(mat)
+ 
         for mtex in used_textures:
             used = False
             mappername = "map%x" %i
@@ -330,10 +332,7 @@ class yafMaterial:
             bEmit = 0.35
 
         i = 0
-        used_textures = []
-        for tex_slot in mat.texture_slots:
-            if tex_slot and tex_slot.use and tex_slot.texture:
-                used_textures.append(tex_slot)
+        used_textures = self.getUsedTextures(mat)
 
         diffRoot = ''
         mcolRoot = ''
@@ -426,11 +425,7 @@ class yafMaterial:
         i=0
 
         diffRoot = ''
-        used_textures = []
-        for item in mat.texture_slots: # changed 'enabled' for 'use'
-            if hasattr(item, 'use') and (item.texture is not None) :
-                used_textures.append(item)
-
+        used_textures = self.getUsedTextures(mat)
 
         for mtex in used_textures:
             if mtex.texture.type == 'NONE':

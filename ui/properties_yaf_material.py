@@ -1,11 +1,8 @@
 import bpy
-# from rna_prop_ui import PropertyPanel # need ?
 from bpy.props import *
 
 Material = bpy.types.Material
 
-# the first entry is bad (true for nearly all EnumProperties), it should be in the "name" property
-# but changing this will shift the material indices by one, invalidating all saved material
 Material.mat_type = EnumProperty(
     items = [
         ("shinydiffusemat", "Shinydiffusemat", ""),
@@ -17,23 +14,10 @@ Material.mat_type = EnumProperty(
     default = "shinydiffusemat",
     name = "Material Types")
 
-######## Yafaray ######                         ##### Blender values, for test link #####
-#Material.color =                FloatVectorProperty(
-#                                        description = "Color",
-#                                        default = (1.0, 1.0, 1.0),
-#                                        subtype = "COLOR", step = 1,
-#                                        precision = 2, min = 0.0, max = 1.0,
-#                                        soft_min = 0.0, soft_max = 1.0)
-#Material.mirror_color =         FloatVectorProperty(
-#                                        description = "Color",
-#                                        default = (0.7,0.7,0.7),
-#                                        subtype = "COLOR", step = 1,
-#                                        precision = 2, min = 0.0, max = 1.0,
-#                                        soft_min = 0.0, soft_max = 1.0)
 Material.diffuse_reflect =      FloatProperty(
                                         description = "",
                                         min = 0.0, max = 1.0,
-                                        default = 0.95, step = 1,
+                                        default = 1.0, step = 1,
                                         precision = 2,
                                         soft_min = 0.0, soft_max = 1.0)
 Material.specular_reflect =     FloatProperty(
@@ -48,24 +32,12 @@ Material.transparency =         FloatProperty(
                                         default = 0.0, step = 1,
                                         precision = 2,
                                         soft_min = 0.0, soft_max = 1.0)
-#Material.translucency =         FloatProperty(
-#                                        description = "",
-#                                        min = 0.0, max = 1.0,
-#                                        default = 0.0, step = 1,
-#                                        precision = 2,
-#                                        soft_min = 0.0, soft_max = 1.0)
 Material.transmit_filter =      FloatProperty(
                                         description = "",
                                         min = 0.0, max = 1.0,
                                         default = 1.0, step = 1,
                                         precision = 2,
                                         soft_min = 0.0, soft_max = 1.0)
-#Material.emit =                 FloatProperty(
-#                                        description = "",
-#                                        min = 0.0, max = 1.0,
-#                                        default = 0.0, step = 1,
-#                                        precision = 2,
-#                                        soft_min = 0.0, soft_max = 1.0)
 Material.fresnel_effect =   BoolProperty(
                                         description = "",
                                         default = False)
@@ -106,12 +78,6 @@ Material.exponent =             FloatProperty(
                                         default = 50.0, step = 10,
                                         precision = 2,
                                         soft_min = 1.0, soft_max = 10000.0)
-#Material.alpha =                FloatProperty(
-#                                        description = "",
-#                                        min = 0.0, max = 1.0,
-#                                        default = 0.2, step = 1,
-#                                        precision = 2,
-#                                        soft_min = 0.0, soft_max = 1.0)
 Material.as_diffuse =           BoolProperty(
                                         description = "",
                                         default = False)
