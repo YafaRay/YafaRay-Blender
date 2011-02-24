@@ -116,10 +116,60 @@ class YAF_PT_camera(bpy.types.Panel):
             col.prop(context.camera, "bokeh_bias", text = "Bokeh Bias")
             col.prop(context.camera, "bokeh_rotation", text = "Bokeh Rotation")
 
+
+
+class YAF_PT_camera_display(bpy.types.Panel):
+
+    bl_label = 'Display'
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = 'data'
+    COMPAT_ENGINES = ['YAFA_RENDER']
+
+    @classmethod
+    def poll(self, context):
+
+        engine = context.scene.render.engine
+
+        import properties_data_camera
+
+        if (context.camera and (engine in self.COMPAT_ENGINES)):
+            try:
+                properties_data_camera.unregister()
+            except:
+                pass
+        else:
+            try:
+                properties_data_camera.register()
+            except:
+                pass
+        return (context.camera and (engine in self.COMPAT_ENGINES))
+
+    def draw(self, context):
+        layout = self.layout
+
+        camera = context.camera
+
+        split = layout.split()
+
+        col = split.column()
+        col.prop(camera, "show_limits", text="Limits")
+        # col.prop(camera, "show_mist", text="Mist")
+        col.prop(camera, "show_title_safe", text="Title Safe")
+        col.prop(camera, "show_name", text="Name")
+
+        col = split.column()
+        col.prop(camera, "draw_size", text="Size")
+        col.separator()
+        col.prop(camera, "show_passepartout", text="Passepartout")
+        sub = col.column()
+        sub.active = camera.show_passepartout
+        sub.prop(camera, "passepartout_alpha", text="Alpha", slider=True)
+
         # added for convinience only, has no effect on Yafaray's rendering
+        col = layout.column()
         col.separator()
         row = col.row()
         row.label("Clipping:")
         row.prop(context.camera, "clip_start", text = "Start")
         row.prop(context.camera, "clip_end", text = "End")
-

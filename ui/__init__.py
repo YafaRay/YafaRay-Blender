@@ -45,4 +45,3 @@ for panel in panelSet:
     panel.COMPAT_ENGINES.add('YAFA_RENDER')
 
 del properties_particle, properties_data_mesh
-
