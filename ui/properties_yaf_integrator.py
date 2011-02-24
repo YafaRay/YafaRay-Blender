@@ -13,6 +13,7 @@ Scene.intg_light_method =   EnumProperty(
         ("Pathtracing", "Pathtracing", ""),
         ("Debug", "Debug", ""),
         ("Bidirectional", "Bidirectional", ""),
+        ("SPPM", "SPPM", "")
     ),
     default="Direct Lighting",
     name = "Lighting Method")
@@ -115,6 +116,13 @@ Scene.intg_show_perturbed_normals = BoolProperty(attr="intg_show_perturbed_norma
                                         description = "Show the normals perturbed by bump and normal maps",
                                         default = False)
 
+Scene.intg_pm_ire = BoolProperty(default = False);
+Scene.intg_pass_num = IntProperty(min = 1, default = 1000);
+Scene.intg_times = FloatProperty(min = 0.0, default = 1.0);
+Scene.intg_photon_radius = FloatProperty(min = 0.0, default = 1.0);
+
+
+
 
 class YAF_PT_render(bpy.types.Panel):
 
@@ -136,8 +144,6 @@ class YAF_PT_render(bpy.types.Panel):
         layout = self.layout
 
         layout.prop(context.scene,"intg_light_method", text= "Lighting Methods")
-
-        row = layout.row()
 
         if context.scene.intg_light_method == 'Direct Lighting':
 
@@ -161,7 +167,7 @@ class YAF_PT_render(bpy.types.Panel):
                 col.prop(context.scene,"intg_AO_color", text= "AO Color")
 
 
-        if context.scene.intg_light_method == 'Photon Mapping':
+        elif context.scene.intg_light_method == 'Photon Mapping':
             row = layout.row()
 
             row.prop(context.scene,"intg_bounces", text= "Depth")
@@ -191,7 +197,7 @@ class YAF_PT_render(bpy.types.Panel):
                 col.prop(context.scene,"intg_show_map", text= "Show radiance map", toggle=True)
 
         #col = layout.column() # only afect to pathtracing bloq
-        if context.scene.intg_light_method == 'Pathtracing':
+        elif context.scene.intg_light_method == 'Pathtracing':
             col = layout.row()
             col.prop(context.scene,"intg_caustic_method", text= "Caustic Method")
 
@@ -221,9 +227,19 @@ class YAF_PT_render(bpy.types.Panel):
             col.prop(context.scene,"intg_use_bg", text= "Use Background")
 
 
-        if context.scene.intg_light_method == 'Debug':
-            col = layout.column()
+        elif context.scene.intg_light_method == 'Debug':
+            col = layout.row()
             col.prop(context.scene,"intg_debug_type", text= "Debug Type")
 
             col.prop(context.scene,"intg_show_perturbed_normals", text= "Perturbed Normals")
+
+        elif context.scene.intg_light_method == 'SPPM':
+            col = layout.column()
+            col.prop(context.scene, "intg_photons", text= "Photons")
+            col.prop(context.scene, "intg_pass_num", text= "Passes")
+            col.prop(context.scene, "intg_bounces", text= "Bounces")
+            col.prop(context.scene, "intg_times", text= "Times (?)")
+            col.prop(context.scene, "intg_diffuse_radius", text= "Search radius")
+            col.prop(context.scene, "intg_search", text= "Search count")
+            col.prop(context.scene, "intg_pm_ire", text= "PM IRE")
 
