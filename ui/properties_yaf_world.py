@@ -67,7 +67,7 @@ World.bg_e_var =            FloatProperty(
                                             default = 1.0,
                                             min = 0, max = 10)
 World.bg_from =             FloatVectorProperty(
-                                            description = "Point Info", subtype = "XYZ",
+                                            description = "Point Info", subtype = "DIRECTION",
                                             default = (0.5, 0.5, 0.5),
                                             step = 10, precision = 3,
                                             min = -1, max = 1)
@@ -110,13 +110,29 @@ World.bg_gamma_enc =        BoolProperty(
                                             description = "",
                                             default = True)
 
+class YAFWORLD_PT_preview(bpy.types.Panel):
+    bl_label = "Background Preview"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "world"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
 
-class YAF_PT_world(bpy.types.Panel):
+    @classmethod
+    def poll(cls, context):
+        rd = context.scene.render
+        return (context.world) and (not rd.use_game_engine) and (rd.engine in cls.COMPAT_ENGINES)
 
-    bl_label = 'YafaRay Background'
+    def draw(self, context):
+        self.layout.template_preview(context.world)
+        self.layout.operator("WORLD_OT_refresh_preview", "Refresh Preview", "WORLD")
+
+class YAFWORLD_PT_world(bpy.types.Panel):
+
+    bl_label = 'Background Settings'
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = 'world'
+    bl_options = {'DEFAULT_CLOSED'}
     COMPAT_ENGINES =['YAFA_RENDER']
 
     @classmethod
@@ -192,7 +208,7 @@ class YAF_PT_world(bpy.types.Panel):
             col.operator("world.get_angle", text = "Get Angle")
             col.operator("world.update_sun", text = "Update Sun")
 
-            col.prop(context.world, "bg_from", text = "From")
+            col.prop(context.world, "bg_from", text = "From", icon='VIEW3D_VEC')
             col.prop(context.world, "bg_dsaltitude", text = "Altitude")
             col.prop(context.world, "bg_add_sun", text = "Add Sun")
 
@@ -215,12 +231,5 @@ class YAF_PT_world(bpy.types.Panel):
             col.prop(context.world, "bg_ibl_samples", text = "IBL Samples")
             col.prop(context.world, "bg_power", text = "Power")
 
-# re-use modules from Blender
-
-import properties_world
-
-properties_world.WORLD_PT_preview.COMPAT_ENGINES.add('YAFA_RENDER')
-properties_world.WORLD_PT_context_world.COMPAT_ENGINES.add('YAFA_RENDER')
-
-del properties_world
+from yafaray.ui import properties_yaf_volume_integrator
 

@@ -34,14 +34,15 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.yi = yi
 
         if self.preview:
-            self.yi.setVerbosityMute()
+            pass
+            #self.yi.setVerbosityMute()
         else:
             # TODO: add verbosity control in the general settings
             self.yi.setVerbosityInfo()
 
         self.yi.loadPlugins(PLUGIN_PATH)
         self.yaf_object     = yafObject(self.yi, self.materialMap)
-        self.yaf_lamp       = yafLight(self.yi)
+        self.yaf_lamp       = yafLight(self.yi, self.preview)
         self.yaf_world      = yafWorld(self.yi)
         self.yaf_integrator = yafIntegrator(self.yi)
         self.yaf_texture    = yafTexture(self.yi)
@@ -52,7 +53,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.yaf_world.exportWorld(self.scene)
         self.exportTextures()
         self.exportMaterials()
-        self.yaf_object.createCamera(self.yi, self.scene)
+        self.yaf_object.setScene(self.scene)
+        self.yaf_object.createCamera()
         self.exportObjects()
 
     def exportTextures(self):
@@ -66,48 +68,24 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                     self.yaf_texture.writeTexture(self.scene, tex.texture)
 
     def exportObjects(self):
-        self.yi.printInfo("Exporter: Processing Objects...")
+        self.yi.printInfo("Exporter: Processing Lamps...")
 
-        idx=0      #TODO: REMOVE
-
-        # export only visible objects
-        for obj in [o for o in self.scene.objects if not o.hide_render and o.is_visible(self.scene)]:
-            # if ob.is_duplicator and len(ob.particle_systems) < 1:
+        # export only visible lamps
+        for obj in [o for o in self.scene.objects if not o.hide_render and o.is_visible(self.scene) and o.type == 'LAMP']:
             if obj.is_duplicator:
-                if obj.particle_systems:
-                    # Check if we need to render emitter, if so do it
-                    for psys in obj.particle_systems:
-                        if psys.settings.use_render_emitter:
-                            self.exportObject(obj, obj.matrix_local)
-                            break
                 obj.create_dupli_list(self.scene)
                 for obj_dupli in obj.dupli_list:
-                    #print ("Exporting INSTANCE OBJECT:",obj.object,obj.object.type)
-                    self.exportObject(obj_dupli.object, obj_dupli.matrix, idx)    #TODO: Please kill that idx
-                    idx += 1    #TODO: REMOVE
+                    self.yaf_lamp.createLight(self.yi, obj_dupli.object, obj_dupli.matrix)
 
                 if obj.dupli_list:
                     obj.free_dupli_list()
             else:
                 if obj.parent and obj.parent.is_duplicator:
-                    # this is an instanced object
                     continue
-                #print ("Exporting REAL OBJECT:",o,o.type)
-                self.exportObject(obj)
-
-
-    def exportObject(self, obj, matrix=None, idx=None):
-        # obj can be any object, even EMPTY or CAMERA
-
-        # TODO: set a proper matrix if none?
-        if matrix == None:
-            matrix = obj.matrix_local #this change is at 18.7.10
-
-        if obj.type == "MESH" or obj.type == "CURVE" or obj.type == "SURFACE":
-                self.yaf_object.writeObject(self.yi, self.scene, obj, matrix)
-        if obj.type == "LAMP":
-                self.yaf_lamp.createLight(self.yi, obj, matrix, idx, self.preview)
-
+                self.yaf_lamp.createLight(self.yi, obj, obj.matrix_world)
+        
+        self.yi.printInfo("Exporter: Processing Geometry...")
+        self.yaf_object.writeObjects()
 
     def handleBlendMat(self, mat):
         mat1_name = mat.material1
@@ -258,7 +236,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                         self.tag = args[0]
                     elif command == "progress":
                         self.prog = args[0]
-                    self.update_stats("", "%s - %.2f %%" % (self.tag, self.prog))
+                    self.update_stats("YafaRay Rendering... ", "%s - %.2f %%" % (self.tag, self.prog))
 
             def drawAreaCallback(*args):
                 x, y, w, h, tile = args

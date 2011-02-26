@@ -60,18 +60,28 @@ for dll in dllArray:
 
 if "bpy" in locals():
     import imp
+    imp.reload(prop)
     imp.reload(io)
     imp.reload(ui)
     imp.reload(ot)
 else:
     import bpy
-    from yafaray import io, ui, ot
+    from yafaray import prop, io, ui, ot
 
 def register():
+    prop.register()
     bpy.utils.register_module(__name__)
 
+    kitems = bpy.context.window_manager.keyconfigs.active.keymaps["Screen"].items
+    #if not kitems.from_id(bpy.types.YAFA_RENDER.viewRenderKey):
+    #   bpy.types.YAFA_RENDER.viewRenderKey = kitems.new("RENDER_OT_render_view", 'F12', 'RELEASE', False, False, False, True).id
+    kitems.new("RENDER_OT_render_view", 'F12', 'RELEASE', False, False, False, True)
+
+
 def unregister():
-    bpy.utils.unregister_module(__name__)
+    print("unregister called")
+    bpy.utils.unregister_module(__name__, True)
+    prop.unregister()
 
 if __name__ == '__main__':
     register()

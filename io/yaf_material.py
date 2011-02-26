@@ -326,10 +326,10 @@ class yafMaterial:
         bTransl   = mat.translucency
         bTransmit = mat.transmit_filter
         bEmit     = mat.emit
-
-        if self.preview and mat.name.find("check") != -1:
-            bCol = mat.diffuse_color
-            bEmit = 0.35
+        
+        if self.preview:
+            if mat.name.find("check") != -1:
+                bEmit = 0.35
 
         i = 0
         used_textures = self.getUsedTextures(mat)

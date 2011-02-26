@@ -6,7 +6,6 @@ World.v_int_type = EnumProperty(
 	items = (
 		("None","None",""),
         ("Single Scatter","Single Scatter","")
-        #("Sky","Sky",""),
     ),
     default="None",
     name = "Volume Integrator")
@@ -41,20 +40,10 @@ class YAF_PT_vol_integrator(bpy.types.Panel):
 
 		col.prop(context.world,"v_int_type", text= "Volume Integrator")
 
-		#if context.world.v_int_type == 'None':
-		#	col.prop(context.world,"v_int_step_size", text= "Step Size")
-
 		if context.world.v_int_type == 'Single Scatter':
 			col.prop(context.world,"v_int_step_size", text= "Step Size")
 			col.prop(context.world,"v_int_attgridres", text= "Att. grid resolution")
 			row = layout.row()
 			row.prop(context.world,"v_int_adaptive", text= "Adaptive")
 			row.prop(context.world,"v_int_optimize", text= "Optimize")
-			
-
-		#if context.world.v_int_type == 'Sky':
-		#	col.prop(context.world,"v_int_step_size", text= "Step Size")
-		#	col.prop(context.world,"v_int_dsturbidity", text= "Turbidity")
-		#	col.prop(context.world,"v_int_scale", text= "Scale")
-		#	col.prop(context.world,"v_int_alpha", text= "Alpha")
 

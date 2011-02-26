@@ -165,6 +165,16 @@ class RENDER_OT_refresh_preview(bpy.types.Operator):
         mat.preview_render_type = mat.preview_render_type
         return {'FINISHED'}
 
+class WORLD_OT_refresh_preview(bpy.types.Operator):
+    bl_label = "Refresh World Preview"
+    bl_idname = "world.refresh_preview"
+    bl_description = "Refreshes the world preview"
+    
+    def invoke(self, context, event):
+        wrld = context.scene.world
+        wrld.ambient_color = wrld.ambient_color
+        return {'FINISHED'}
+
 class LAMP_OT_sync_3dview(bpy.types.Operator):
     bl_label = "Sync type with 3D view"
     bl_idname = "lamp.sync_3dview"

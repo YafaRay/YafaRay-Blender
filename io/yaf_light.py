@@ -4,11 +4,13 @@ from math import *
 import mathutils
 
 class yafLight:
-    def __init__(self, interface):
+    def __init__(self, interface, preview):
         self.yi = interface
         self.lightMat = None
+        self.preview = preview
 
     def makeSphere(self, nu, nv, x, y, z, rad, mat):
+
         yi = self.yi
 
         # get next free id from interface
@@ -39,24 +41,22 @@ class yafLight:
                 yi.addTriangle( 2+v*(nu-1)+u, 2+v*(nu-1)+u+1, 2+((v+1)%nv)*(nu-1)+u, mat );
                 yi.addTriangle( 2+v*(nu-1)+u+1, 2+((v+1)%nv)*(nu-1)+u+1, 2+((v+1)%nv)*(nu-1)+u, mat );
 
-        #print("before starting end trimesh ...")
         yi.endTriMesh();
-        #print("before starting end geometry ...")
         yi.endGeometry();
-        #print("ID is :" + str(ID+100))
+
         return ID
 
 
-    def createLight(self, yi, lamp_object, matrix = None, dupliNum = None, preview = False):
+    def createLight(self, yi, lamp_object, matrix = None):
 
         lamp = lamp_object.data
         name = lamp_object.name
         #name = "spot"
-        if dupliNum != None:
-            name += str(dupliNum)
+        #if dupliNum != None:
+        #    name += str(dupliNum)
 
         if matrix == None:
-            matrix = lamp_object.matrix_local #this change is at 18.7.10
+            matrix = lamp_object.matrix_world
         pos = matrix[3]
         dir = matrix[2]
         up = matrix[1]
@@ -66,7 +66,7 @@ class yafLight:
         power = lamp.energy
         color = lamp.color
         
-        if preview:
+        if self.preview:
             if name == "Lamp":
                 pos = (-6, -4, 8, 1.0)
                 power = 5
@@ -77,10 +77,12 @@ class yafLight:
                 pos = (-2.9123109, -7.270790733, 4.439187765, 1.0)
                 to = (-0.0062182024121284485, 0.6771485209465027, 1.8015732765197754, 1.0)
                 power = 5
+            elif name == "Lamp.008":
+                power = 15
 
         yi.paramsClearAll()
 
-        yi.printInfo("Exporting Lamp:" + str(name) +  " type: " + str(lampType) )
+        yi.printInfo("Exporting Lamp: " + str(name) +  " [" + str(lampType) + "]" )
         
         if lamp.create_geometry and not self.lightMat:
             self.yi.paramsClearAll()
@@ -107,7 +109,7 @@ class yafLight:
                 yi.paramsSetFloat("radius", radius)
 
         elif lampType == "spot":
-            if preview and name == "Lamp.002":
+            if self.preview and name == "Lamp.002":
                 angle = 50
             else:
                 # Blender reports the angle of the full cone in radians

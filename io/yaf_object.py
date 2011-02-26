@@ -1,6 +1,7 @@
 import bpy
 import time
 import mathutils
+from yafrayinterface import matrix4x4_t
 
 def multiplyMatrix4x4Vector4(matrix, vector):
     result = mathutils.Vector((0.0, 0.0, 0.0, 0.0))
@@ -13,13 +14,18 @@ class yafObject(object):
     def __init__(self, yi, mMap):
         self.yi = yi
         self.materialMap = mMap
-
-    def createCamera(self, yi, scene, useView = False):
+    
+    def setScene(self, scene):
         
-        self.yi.printInfo("Exporting Camera")
+        self.scene = scene
+    
+    def createCamera(self):
+        
+        yi = self.yi
+        yi.printInfo("Exporting Camera")
 
-        camera = scene.camera
-        render = scene.render
+        camera = self.scene.camera
+        render = self.scene.render
 
         if bpy.types.YAFA_RENDER.useViewToRender and bpy.types.YAFA_RENDER.viewMatrix:
             # use the view matrix to calculate the inverted transformed
@@ -121,26 +127,244 @@ class yafObject(object):
 
         return min, max
 
+    def get4x4Matrix(self, matrix):
 
+        ret = matrix4x4_t()
 
-    #extracts data from all the meshes of a scene    
-    def writeMesh(self,yi,scene, ID, obj, matrix, ymat = None, isSmooth = False):
+        for i in range(4):
+            for j in range(4):
+                ret.setVal(i, j, matrix[i][j])
 
-        #matrix = obj.matrix_local #recent change
+        return ret
+
+    def writeObjects(self):
+        
+        baseIds = {}
+        # export only visible objects
+        for obj in [o for o in self.scene.objects if not o.hide_render and o.is_visible(self.scene) and (o.type == 'MESH' or o.type == 'SURFACE' or o.type == 'CURVE')]:
+            if obj.is_duplicator: # Exporting dupliObjects as instances
+
+                self.writeObject(obj)
+
+                oID = None
+                obj.create_dupli_list(self.scene)
+
+                for obj_dupli in obj.dupli_list:
+                    
+                    if not oID:
+                        oID = self.writeInstanceBase(obj_dupli.object)
+                        
+                    self.writeInstance(oID, obj_dupli.matrix)
+                    
+                if obj.dupli_list:
+                    obj.free_dupli_list()
+
+            elif obj.data.users > 1: # Exporting objects with shared mesh data blocks as instances
+
+                if not obj.data.name in baseIds:
+                    baseIds[obj.data.name] = self.writeInstanceBase(obj)
+                    
+                self.writeInstance(baseIds[obj.data.name], obj.matrix_world)
+
+            else:
+                self.writeObject(obj)
+
+    def writeObject(self, obj, matrix = None):
+
+        if not matrix:
+            matrix = obj.matrix_world
+            
+        if obj.vol_enable: # Volume region
+            self.writeVolumeObject(obj, matrix)
+    
+        elif obj.ml_enable: # Meshlight
+            self.writeMeshLight(obj, matrix)
+    
+        elif obj.bgp_enable: # BGPortal Light
+            self.writeBGPortal(obj, matrix)
+    
+        else: # The rest of the object types
+            self.writeMesh(obj, matrix)
+    
+    def writeInstanceBase(self, obj):
+    
+        # Generate unique object ID
+        ID = self.yi.getNextFreeID()
+
+        self.yi.printInfo("Exporting Base Mesh: " + obj.name + " with ID " + str(ID))
+        
+        obType = 512 # Create this geometry object as a base object for instances
+
+        self.writeGeometry(ID, obj, None, obType) # We want the vertices in object space
+        
+        return ID
+    
+    def writeInstance(self, oID, obj2WorldMatrix):
+
+        self.yi.printInfo("Exporting Instance of ID: " + str(oID))
+
+        mat4 = obj2WorldMatrix.to_4x4()
+        mat4.transpose()
+        
+        o2w = self.get4x4Matrix(mat4)
+    
+        self.yi.addInstance(oID, o2w)
+    
+    def writeMesh(self, obj, matrix):
+
+        self.yi.printInfo("Exporting Mesh: " + obj.name)
+
+        # Generate unique object ID
+        ID = self.yi.getNextFreeID()
+
+        self.writeGeometry(ID, obj, matrix) # obType in 0, default, the object is rendered
+    
+    def writeBGPortal(self, obj, matrix):
+
+        self.yi.printInfo("Exporting Background Portal Light: " + obj.name)
+
+        # Generate unique object ID
+        ID = self.yi.getNextFreeID()
+
+        self.yi.paramsClearAll()
+        self.yi.paramsSetString("type", "bgPortalLight")
+        self.yi.paramsSetFloat("power", obj.bgp_power)
+        self.yi.paramsSetInt("samples", obj.bgp_samples)
+        self.yi.paramsSetInt("object", ID)
+        self.yi.paramsSetBool("with_caustic", obj.bgp_with_caustic)
+        self.yi.paramsSetBool("with_diffuse", obj.bgp_with_diffuse)
+        self.yi.paramsSetBool("photon_only", obj.bgp_photon_only)
+        self.yi.createLight(obj.name)
+
+        obType = 256 # Makes object invisible to the renderer (doesn't enter the kdtree)
+        
+        self.writeGeometry(ID, obj, matrix, obType)
+    
+    def writeMeshLight(self, obj, matrix):
+
+        self.yi.printInfo("Exporting Meshlight: " + obj.name)
+
+        # Generate unique object ID
+        ID = self.yi.getNextFreeID()
+
+        ml_matname = "ML_"
+        ml_matname += obj.name + "." + str(obj.__hash__())
+        
+        self.yi.paramsClearAll();
+        self.yi.paramsSetString("type", "light_mat");
+        self.yi.paramsSetBool("double_sided", obj.ml_double_sided)
+        c = obj.ml_color
+        self.yi.paramsSetColor("color", c[0], c[1], c[2])
+        self.yi.paramsSetFloat("power", obj.ml_power)
+        ml_mat = self.yi.createMaterial(ml_matname);
+        
+        self.materialMap[ml_matname] = ml_mat
+        
+        # Export mesh light
+        self.yi.paramsClearAll()
+        self.yi.paramsSetString("type", "meshlight")
+        self.yi.paramsSetBool("double_sided", obj.ml_double_sided)
+        c = obj.ml_color
+        self.yi.paramsSetColor("color", c[0], c[1], c[2])
+        self.yi.paramsSetFloat("power", obj.ml_power)
+        self.yi.paramsSetInt("samples", obj.ml_samples)
+        self.yi.paramsSetInt("object", ID)
+        self.yi.createLight(obj.name)
+        
+        self.writeGeometry(ID, obj, matrix, 0, ml_mat) # obType in 0, default, the object is rendered
+        
+    def writeVolumeObject(self, obj, matrix):
+
+        self.yi.printInfo("Exporting Volume Region: " + obj.name)
+
+        yi = self.yi
         me = obj.data
         me_materials = me.materials
-        mesh = obj.create_mesh(scene, True, 'RENDER') # mesh is created for an object here.
+        
+        mesh = obj.create_mesh(self.scene, True, 'RENDER')   #mesh is created for an object here.
             
+        if matrix:
+            mesh.transform(matrix)
+        else:
+            return
+        
+        yi.paramsClearAll()
+        
+        
+        if obj.vol_region == 'ExpDensity Volume':
+            yi.paramsSetString("type", "ExpDensityVolume")
+            yi.paramsSetFloat("a", obj.vol_height)
+            yi.paramsSetFloat("b", obj.vol_steepness)
+        
+        elif obj.vol_region == 'Uniform Volume':
+            yi.paramsSetString("type", "UniformVolume");
+        
+        elif obj.vol_region == 'Noise Volume':
+            if not obj.data.materials[0]:
+                yi.printError("Volume object (" + obj.name + ") is missing the material")
+            elif not obj.data.materials[0].texture_slots[0].texture:
+                yi.printError("Volume object's material (" + obj.name + ") is missing the noise texture")#
+            else:
+                texture = obj.data.materials[0].texture_slots[0].texture
+
+                yi.paramsSetString("type", "NoiseVolume");
+                yi.paramsSetFloat("sharpness", obj.vol_sharpness)
+                yi.paramsSetFloat("cover", obj.vol_cover)
+                yi.paramsSetFloat("density", obj.vol_density)
+                yi.paramsSetString("texture", texture.name)
+        
+        elif obj.vol_region == 'Grid Volume':
+            yi.paramsSetString("type", "GridVolume");
+        
+#        elif obj.vol_region == 'Sky Volume':
+#            yi.paramsSetString("type", "SkyVolume");
+        
+        yi.paramsSetFloat("sigma_a", obj.vol_absorp)
+        yi.paramsSetFloat("sigma_s", obj.vol_scatter)
+        # yi.paramsSetFloat("l_e", obj.vol_l_e)
+        # yi.paramsSetFloat("g", obj.vol_g)
+        yi.paramsSetInt("attgridScale", self.scene.world.v_int_attgridres)
+        
+        
+        min = [1e10, 1e10, 1e10]
+        max = [-1e10, -1e10, -1e10]
+        vertLoc =[]
+        for v in mesh.vertices:
+            #print("Scanning vertices ... ")
+            vertLoc.append(v.co[0])
+            vertLoc.append(v.co[1])
+            vertLoc.append(v.co[2])
+            
+            if vertLoc[0] < min[0]: min[0] = vertLoc[0]
+            if vertLoc[1] < min[1]: min[1] = vertLoc[1]
+            if vertLoc[2] < min[2]: min[2] = vertLoc[2]
+            if vertLoc[0] > max[0]: max[0] = vertLoc[0]
+            if vertLoc[1] > max[1]: max[1] = vertLoc[1]
+            if vertLoc[2] > max[2]: max[2] = vertLoc[2]
+            
+            vertLoc = []
+                
+        yi.paramsSetFloat("minX", min[0])
+        yi.paramsSetFloat("minY", min[1])
+        yi.paramsSetFloat("minZ", min[2])
+        yi.paramsSetFloat("maxX", max[0])
+        yi.paramsSetFloat("maxY", max[1])
+        yi.paramsSetFloat("maxZ", max[2])
+        
+        yi.createVolumeRegion("VR_" + obj.name + "." + str(obj.__hash__()))
+
+    def writeGeometry(self, ID, obj, matrix, obType = 0, oMat = None):
+
+        mesh = obj.create_mesh(self.scene, True, 'RENDER') # mesh is created for an object here.
+
+        isSmooth = False
         hasOrco = False
         # TODO: this may not be the best way to check for uv maps
-        hasUV   = (len(mesh.uv_textures) > 0)
+        hasUV = (len(mesh.uv_textures) > 0)
 
         # Check if the object has an orco mapped texture
-        for mat in mesh.materials:
-            if mat == None: continue
-            for m in mat.texture_slots:
-                if m is None:
-                    continue
+        for mat in [mmat for mmat in mesh.materials if mmat]:
+            for m in [mtex for mtex in mat.texture_slots if mtex]:
                 if m.texture_coords == 'ORCO':
                     hasOrco = True
                     break
@@ -169,21 +393,14 @@ class yafObject(object):
 
                 ov.append([normCo[0], normCo[1], normCo[2]])
 
-        # only transform the mesh after orcos have been stored
+        # Transform the mesh after orcos have been stored and only if matrix exists
         if matrix:
             mesh.transform(matrix)
-        else:
-            return
-        
+
         self.yi.paramsClearAll()
         self.yi.startGeometry()
         
-        obType = 0
-            
-        #ID = self.yi.getNextFreeID()
-
         self.yi.startTriMesh(ID, len(mesh.vertices), len(mesh.faces), hasOrco, hasUV, obType)
-        #print("The name of id is : " + str(ID) )
             
         for ind, v in enumerate(mesh.vertices):
             if hasOrco:
@@ -192,43 +409,30 @@ class yafObject(object):
                 self.yi.addVertex(v.co[0], v.co[1], v.co[2])
 
         for index, f in enumerate(mesh.faces):
-            if f.use_smooth == True:
+            if f.use_smooth:
                 isSmooth = True
                 
-            fmat = self.materialMap["default"] # fallback is always the default mat
-            
-            # get the face material if none is provided to override
-            if scene.gs_clay_render:
-                fmat = self.materialMap["default"]
-            elif len(mesh.materials):
-                mat = mesh.materials[f.material_index]
-                if mat in self.materialMap:
-                    fmat = self.materialMap[mat]
-                elif ymat:
-                    fmat = ymat
-            elif ymat:
-                fmat = ymat
-
+            if oMat:
+                ymaterial = oMat
+            else:
+                ymaterial = self.getFaceMaterial(mesh.materials, f.material_index, obj.material_slots)
+                            
             co = None
             if hasUV:
                 co = mesh.uv_textures.active.data[index]
-            
-            if hasUV:
-                uv0 = yi.addUV(co.uv1[0], co.uv1[1])
-                uv1 = yi.addUV(co.uv2[0], co.uv2[1])
-                uv2 = yi.addUV(co.uv3[0], co.uv3[1])
-                yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2, fmat)
+                uv0 = self.yi.addUV(co.uv1[0], co.uv1[1])
+                uv1 = self.yi.addUV(co.uv2[0], co.uv2[1])
+                uv2 = self.yi.addUV(co.uv3[0], co.uv3[1])
+                self.yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2, ymaterial)
             else:
-                self.yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2], fmat)
+                self.yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2], ymaterial)
                 
-            #print("trying to locate error " + str(index))
-        
             if len(f.vertices) == 4:
                 if hasUV:
-                    uv3 = yi.addUV(co.uv4[0], co.uv4[1])
-                    yi.addTriangle(f.vertices[2], f.vertices[3], f.vertices[0], uv2, uv3, uv0, fmat)
+                    uv3 = self.yi.addUV(co.uv4[0], co.uv4[1])
+                    self.yi.addTriangle(f.vertices[2], f.vertices[3], f.vertices[0], uv2, uv3, uv0, ymaterial)
                 else:
-                    self.yi.addTriangle(f.vertices[2], f.vertices[3], f.vertices[0], fmat)
+                    self.yi.addTriangle(f.vertices[2], f.vertices[3], f.vertices[0], ymaterial)
                     
         self.yi.endTriMesh()
         
@@ -236,115 +440,28 @@ class yafObject(object):
             self.yi.smoothMesh(0, mesh.auto_smooth_angle)
         
         self.yi.endGeometry()
+
         bpy.data.meshes.remove(mesh)
 
-
-    # write the object using the given transformation matrix (for duplis)
-    # if no matrix is given (usual case) use the object's matrix
-    
-    def writeObject(self, yi, scene, obj, matrix = None):
+    def getFaceMaterial(self, meshMats, matIndex, matSlots):
         
-        yi.printInfo("Exporting Object: " + obj.name)
+        ymaterial = self.materialMap["default"]
         
-        #create a default material
-        self.yi.paramsClearAll()
-        ymat = self.materialMap["default"]
-
-        # Generate unique object ID
-        ID = self.yi.getNextFreeID()
-
-        isMeshlight = obj.ml_enable
-        isVolume = obj.vol_enable
-        isBGPL = obj.bgp_enable
-        
-        #more codes can be added in this part later
-        if isMeshlight:
-            
-            ml_matname = "ML_"
-            ml_matname += obj.name + "." + str(obj.__hash__())
-            
-            yi.paramsClearAll();
-            yi.paramsSetString("type", "light_mat");
-            yi.paramsSetBool("double_sided", obj.ml_double_sided)
-            c = obj.ml_color
-            yi.paramsSetColor("color", c[0], c[1], c[2])
-            yi.paramsSetFloat("power", obj.ml_power)
-            ml_mat = yi.createMaterial(ml_matname);
-            
-            self.materialMap[ml_matname] = ml_mat
-            
-            
-            # Export mesh light
-            self.yi.paramsClearAll()
-            self.yi.paramsSetString("type", "meshlight")
-            self.yi.paramsSetBool("double_sided", obj.ml_double_sided)
-            c = obj.ml_color
-            self.yi.paramsSetColor("color", c[0], c[1], c[2])
-            self.yi.paramsSetFloat("power", obj.ml_power)
-            self.yi.paramsSetInt("samples", obj.ml_samples)
-            self.yi.paramsSetInt("object", ID)
-            self.yi.createLight(obj.name)
-        
-        # Export BGPortalLight DT
-        if isBGPL:
-            self.yi.paramsClearAll()
-            self.yi.paramsSetString("type", "bgPortalLight")
-            self.yi.paramsSetFloat("power", obj.bgp_power)
-            self.yi.paramsSetInt("samples", obj.bgp_samples)
-            self.yi.paramsSetInt("object", ID)
-            self.yi.paramsSetBool("with_caustic", obj.bgp_with_caustic)
-            self.yi.paramsSetBool("with_diffuse", obj.bgp_with_diffuse)
-            self.yi.paramsSetBool("photon_only", obj.bgp_photon_only)
-            self.yi.createLight(obj.name)
-        
-        # Object Material
-
-        ymaterial = None
-
-        if isMeshlight:
-            ymaterial = ml_mat
-        else:
-            if scene.gs_clay_render:
-                ymaterial = ymat
-            elif obj.type == 'CURVE':
-                curve = obj.data
-                if len(curve.materials) > 0:
-                    mat = curve.materials[0]
+        if not self.scene.gs_clay_render:
+            if len(meshMats) and meshMats[matIndex]:
+                mat = meshMats[matIndex]
+                
+                if mat in self.materialMap:
                     ymaterial = self.materialMap[mat]
-                else:
-                    ymaterial = self.materialMap["default"]
             else:
-                if len(obj.data.materials) and obj.data.materials[0]:
-                    mat = obj.data.materials[0]
-                    
-                    if mat in self.materialMap:
-                        ymaterial = self.materialMap[mat]
-                    else:
-                        ymaterial = self.materialMap["default"]
-                else:
-                    for mat_slot in obj.material_slots:
-                        if mat_slot.material in self.materialMap:
-                            ymaterial = self.materialMap[mat_slot.material]
-                        else:
-                            ymaterial = self.materialMap["default"]
-                            
-                    if not ymaterial:
-                        yi.printWarning("Object \"" + obj.name + "\" has no material asigned.")
-                        ymaterial = self.materialMap["default"]
-        
-        if isBGPL:
-            self.writeMesh(yi, scene, ID, obj, matrix, ymaterial)
-        
-        elif isVolume:
-            self.writeVolumeObject(yi, scene, obj, ID, ymaterial)
-            
-        elif type(obj.particle_systems)==bpy.types.ParticleSystems:
-            self.writeParticlesObject(yi, scene, obj, ID)
-            
-        else:
-            self.writeMesh(yi, scene, ID, obj, matrix, ymaterial)
+                for mat_slot in matSlots:
+                    if mat_slot.material in self.materialMap:
+                        ymaterial = self.materialMap[mat_slot.material]
 
-    def writeParticlesObject(self, yi, scene, object, ID):
+        return ymaterial
+
+    """
+    def writeParticlesObject(self, yi, scene, object):
         
         renderEmitter = False
         
@@ -406,90 +523,6 @@ class yafObject(object):
         # We only need to render emitter object once
         if renderEmitter:
             ymat = self.materialMap["default"]
-            self.writeMesh(yi, scene, ID, object, None, ymat)
-
-    def writeVolumeObject(self, yi, scene, obj, ID, ymaterial = None):
-
-        
-        matrix = obj.matrix_local #recent change
-        me = obj.data
-        me_materials = me.materials
-        
-        if scene is None:
-            yi.printError("scene is None ...")
-        else:
-            yi.printInfo(str(scene))
-        mesh = obj.create_mesh(scene,True, 'RENDER')   #mesh is created for an object here.
-        
-            
-        if matrix:
-            mesh.transform(matrix)
-        else:
-            return
-        
-        yi.paramsClearAll()
-        
-        
-        if obj.vol_region == 'ExpDensity Volume':
-            yi.paramsSetString("type", "ExpDensityVolume")
-            yi.paramsSetFloat("a", obj.vol_height)
-            yi.paramsSetFloat("b", obj.vol_steepness)
-        
-        elif obj.vol_region == 'Uniform Volume':
-            yi.paramsSetString("type", "UniformVolume");
-        
-        elif obj.vol_region == 'Noise Volume':
-            if not obj.data.materials[0]:
-                yi.printError("Volume object (" + obj.name + ") is missing the material")
-            elif not obj.data.materials[0].texture_slots[0].texture:
-                yi.printError("Volume object's material (" + obj.name + ") is missing the noise texture")#
-            else:
-                texture = obj.data.materials[0].texture_slots[0].texture
-
-                yi.paramsSetString("type", "NoiseVolume");
-                yi.paramsSetFloat("sharpness", obj.vol_sharpness)
-                yi.paramsSetFloat("cover", obj.vol_cover)
-                yi.paramsSetFloat("density", obj.vol_density)
-                yi.paramsSetString("texture", texture.name)
-        
-        elif obj.vol_region == 'Grid Volume':
-            yi.paramsSetString("type", "GridVolume");
-        
-#        elif obj.vol_region == 'Sky Volume':
-#            yi.paramsSetString("type", "SkyVolume");
-        
-        yi.paramsSetFloat("sigma_a", obj.vol_absorp)
-        yi.paramsSetFloat("sigma_s", obj.vol_scatter)
-        # yi.paramsSetFloat("l_e", obj.vol_l_e)
-        # yi.paramsSetFloat("g", obj.vol_g)
-        yi.paramsSetInt("attgridScale", scene.world.v_int_attgridres)
-        
-        
-        min = [1e10, 1e10, 1e10]
-        max = [-1e10, -1e10, -1e10]
-        vertLoc =[]
-        for v in mesh.vertices:
-            #print("Scanning vertices ... ")
-            vertLoc.append(v.co[0])
-            vertLoc.append(v.co[1])
-            vertLoc.append(v.co[2])
-            
-            if vertLoc[0] < min[0]: min[0] = vertLoc[0]
-            if vertLoc[1] < min[1]: min[1] = vertLoc[1]
-            if vertLoc[2] < min[2]: min[2] = vertLoc[2]
-            if vertLoc[0] > max[0]: max[0] = vertLoc[0]
-            if vertLoc[1] > max[1]: max[1] = vertLoc[1]
-            if vertLoc[2] > max[2]: max[2] = vertLoc[2]
-            
-            vertLoc = []
-                
-        yi.paramsSetFloat("minX", min[0])
-        yi.paramsSetFloat("minY", min[1])
-        yi.paramsSetFloat("minZ", min[2])
-        yi.paramsSetFloat("maxX", max[0])
-        yi.paramsSetFloat("maxY", max[1])
-        yi.paramsSetFloat("maxZ", max[2])
-        
-        yi.createVolumeRegion(obj.name + "." + str(obj.__hash__()) + "." + str(ID))
-        return
-
+            self.writeMesh(yi, scene, object)
+    """
+    

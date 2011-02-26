@@ -1,17 +1,15 @@
 #This file is part of Yafaray Exporter Integration for Blender 2.5
 
-from yafaray.ui import properties_yaf_render_control
-from yafaray.ui import properties_yaf_general_settings
-from yafaray.ui import properties_yaf_integrator
-from yafaray.ui import properties_yaf_AA_settings
-from yafaray.ui import properties_yaf_render_output
+from yafaray.ui import properties_yaf_render
 
 from yafaray.ui import properties_yaf_camera
 from yafaray.ui import properties_yaf_material
 from yafaray.ui import properties_yaf_texture
-from yafaray.ui import properties_yaf_volume_integrator
 from yafaray.ui import properties_yaf_world
-from yafaray.ui import properties_yaf_object_light
+import properties_object
+properties_object.unregister()
+from yafaray.ui import properties_yaf_object
+properties_object.register()
 from yafaray.ui import properties_yaf_light
 from yafaray.ui import properties_yaf_convert
 
