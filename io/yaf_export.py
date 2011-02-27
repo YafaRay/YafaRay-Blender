@@ -35,7 +35,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         if self.preview:
             pass
-            #self.yi.setVerbosityMute()
+            self.yi.setVerbosityMute()
         else:
             # TODO: add verbosity control in the general settings
             self.yi.setVerbosityInfo()
