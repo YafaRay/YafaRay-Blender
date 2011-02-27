@@ -140,34 +140,37 @@ class yafObject(object):
     def writeObjects(self):
         
         baseIds = {}
+        dupBaseIds = {}
         # export only visible objects
         for obj in [o for o in self.scene.objects if not o.hide_render and o.is_visible(self.scene) and (o.type == 'MESH' or o.type == 'SURFACE' or o.type == 'CURVE')]:
             if obj.is_duplicator: # Exporting dupliObjects as instances
 
-                self.writeObject(obj)
-
-                oID = None
+                #self.writeObject(obj)
+                self.yi.printInfo("Processing duplis for: " + obj.name)
                 obj.create_dupli_list(self.scene)
 
                 for obj_dupli in obj.dupli_list:
                     
-                    if not oID:
-                        oID = self.writeInstanceBase(obj_dupli.object)
-                        
-                    self.writeInstance(oID, obj_dupli.matrix)
+                    if obj_dupli.object.name not in dupBaseIds:
+                        dupBaseIds[obj_dupli.object.name] = self.writeInstanceBase(obj_dupli.object)
+                    
+                    self.writeInstance(dupBaseIds[obj_dupli.object.name], obj_dupli.matrix, obj_dupli.object.name)
                     
                 if obj.dupli_list:
                     obj.free_dupli_list()
 
             elif obj.data.users > 1: # Exporting objects with shared mesh data blocks as instances
 
-                if not obj.data.name in baseIds:
+                self.yi.printInfo("Processing shared mesh data node object: " + obj.name)
+                if obj.data.name not in baseIds:
                     baseIds[obj.data.name] = self.writeInstanceBase(obj)
                     
-                self.writeInstance(baseIds[obj.data.name], obj.matrix_world)
+                if obj.name not in dupBaseIds:
+                    self.writeInstance(baseIds[obj.data.name], obj.matrix_world, obj.data.name)
 
             else:
-                self.writeObject(obj)
+                if obj.data.name not in baseIds and obj.name not in dupBaseIds:
+                    self.writeObject(obj)
 
     def writeObject(self, obj, matrix = None):
 
@@ -199,9 +202,9 @@ class yafObject(object):
         
         return ID
     
-    def writeInstance(self, oID, obj2WorldMatrix):
+    def writeInstance(self, oID, obj2WorldMatrix, name):
 
-        self.yi.printInfo("Exporting Instance of ID: " + str(oID))
+        self.yi.printInfo("Exporting Instance of " + name + " [ID = " + str(oID) + "]")
 
         mat4 = obj2WorldMatrix.to_4x4()
         mat4.transpose()
@@ -209,6 +212,8 @@ class yafObject(object):
         o2w = self.get4x4Matrix(mat4)
     
         self.yi.addInstance(oID, o2w)
+        del mat4
+        del o2w
     
     def writeMesh(self, obj, matrix):
 
