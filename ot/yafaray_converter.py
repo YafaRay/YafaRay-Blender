@@ -63,6 +63,65 @@ def convertObject(obj):
     return problemList
 
 
+def convertCameras(cameraObjects):
+    problemList = []
+
+    for camera in cameraObjects:
+        problemList += convertCamera(camera)
+
+    return problemList
+
+def convertCamera(cameraObj):
+    problemList = []
+
+    camera = cameraObj.data
+
+    props = cameraObj.get("YafRay", None)
+    if not props:
+        problemList.append("No properties on camera" + camera.name)
+        return problemList
+
+    variableDict = dict(
+        scale = "ortho_scale",
+        angle = "angular_angle")
+
+    if props["type"] == "perspective":      camera.camera_type = "perspective"
+    elif props["type"] == "architect":      camera.camera_type = "architect"
+    elif props["type"] == "angular":        camera.camera_type = "angular"
+    elif props["type"] == "orthographic":   camera.camera_type = "orthographic"
+    else: print("No Camera type fits!")
+
+    # Test if there is a DOF Object -> if there is one than convert...
+    for dof in props:
+        if dof == "dof_object_focus":
+            if props["dof_object_focus"] == 1:      camera.dof_object = bpy.data.objects[props["dof_object"]]
+        else:
+            print("No DOF Objects")
+
+
+    print("camera", camera.name, camera.camera_type)
+
+    for p in props:
+        if p == "type":
+            continue
+
+        value = props[p]
+        #print(p, value)
+
+        if p in variableDict:
+            p = variableDict[p]
+
+        try:
+            if type(value) in [float, int, bool]:
+                exec("camera." + p + " = " + str(value))
+            elif type(value) in [str]:
+                exec("camera." + p + " = \"" + value + "\"")
+            else:
+                exec("camera." + p + " = [" + str(value[0]) + ", " + str(value[1]) + ", " + str(value[2]) + "]")
+        except:
+            problemList.append("Camera: Problem inserting: " + p)
+
+    return problemList
 
 
 def convertLights(lightObjects):
@@ -429,6 +488,7 @@ class ConvertYafarayProperties(bpy.types.Operator):
 
         problemList += convertMaterials(data.materials)
         problemList += convertLights([l for l in data.objects if l.type == "LAMP"])
+        problemList += convertCameras([c for c in data.objects if c.type == "CAMERA"])
         problemList += convertWorld(data.worlds[0])
         problemList += convertSceneSettings(scene)
         problemList += convertObjects([o for o in data.objects if o.type == "MESH"])

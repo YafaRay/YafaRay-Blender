@@ -1,7 +1,7 @@
 import bpy
 import time
 import mathutils
-from yafrayinterface import matrix4x4_t
+import yafrayinterface
 
 def multiplyMatrix4x4Vector4(matrix, vector):
     result = mathutils.Vector((0.0, 0.0, 0.0, 0.0))
@@ -129,7 +129,7 @@ class yafObject(object):
 
     def get4x4Matrix(self, matrix):
 
-        ret = matrix4x4_t()
+        ret = yafrayinterface.matrix4x4_t()
 
         for i in range(4):
             for j in range(4):
