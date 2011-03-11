@@ -46,9 +46,12 @@ def convertObject(obj):
         if p in variableDict:
             p = variableDict[p]
 
-        if value == "ExpDensityVolume": obj.vol_region = "ExpDensity Volume"
-        elif value == "UniformVolume":  obj.vol_region = "Uniform Volume"
-        elif value == "NoiseVolume":    obj.vol_region = "Noise Volume"
+        if value == "ExpDensityVolume":
+            obj.vol_region = "ExpDensity Volume"
+        elif value == "UniformVolume":
+            obj.vol_region = "Uniform Volume"
+        elif value == "NoiseVolume":
+            obj.vol_region = "Noise Volume"
 
         try:
             if type(value) in [float, int, bool]:
@@ -71,6 +74,7 @@ def convertCameras(cameraObjects):
 
     return problemList
 
+
 def convertCamera(cameraObj):
     problemList = []
 
@@ -85,28 +89,23 @@ def convertCamera(cameraObj):
         scale = "ortho_scale",
         angle = "angular_angle")
 
-    if props["type"] == "perspective":      camera.camera_type = "perspective"
-    elif props["type"] == "architect":      camera.camera_type = "architect"
-    elif props["type"] == "angular":        camera.camera_type = "angular"
-    elif props["type"] == "orthographic":   camera.camera_type = "orthographic"
-    else: print("No Camera type fits!")
+    camera_type = props["type"]
 
-    # Test if there is a DOF Object -> if there is one than convert...
-    for dof in props:
-        if dof == "dof_object_focus":
-            if props["dof_object_focus"] == 1:      camera.dof_object = bpy.data.objects[props["dof_object"]]
-        else:
-            print("No DOF Objects")
+    cameraTypeDict = dict()
+    cameraTypeDict["perspective"] = "perspective"
+    cameraTypeDict["architect"] = "architect"
+    cameraTypeDict["angular"] = "angular"
+    cameraTypeDict["orthographic"] = "orthographic"
 
-
+    camera.camera_type = cameraTypeDict[camera_type]
     print("camera", camera.name, camera.camera_type)
 
     for p in props:
-        if p == "type":
-            continue
 
         value = props[p]
-        #print(p, value)
+        # print(p, value)
+        if p == "dof_object_focus" and value == 1:
+            camera.dof_object = bpy.data.objects[props["dof_object"]]
 
         if p in variableDict:
             p = variableDict[p]
@@ -150,14 +149,22 @@ def convertLight(lightObj):
         createGeometry = "create_geometry")
 
     # set just the lamp type correctly so the blender type will be also correct
-    if props["type"] == "Area":          light.lamp_type = "area"
-    elif props["type"] == "Point":       light.lamp_type = "point"
-    elif props["type"] == "Sphere":      light.lamp_type = "point"
-    elif props["type"] == "IES Light":   light.lamp_type = "ies"
-    elif props["type"] == "Spot":        light.lamp_type = "spot"
-    elif props["type"] == "Sun":         light.lamp_type = "sun"
-    elif props["type"] == "Directional": light.lamp_type = "sun"
-    else: print("No lamp type fits!")
+    if props["type"] == "Area":
+        light.lamp_type = "area"
+    elif props["type"] == "Point":
+        light.lamp_type = "point"
+    elif props["type"] == "Sphere":
+        light.lamp_type = "point"
+    elif props["type"] == "IES Light":
+        light.lamp_type = "ies"
+    elif props["type"] == "Spot":
+        light.lamp_type = "spot"
+    elif props["type"] == "Sun":
+        light.lamp_type = "sun"
+    elif props["type"] == "Directional":
+        light.lamp_type = "sun"
+    else:
+        print("No lamp type fits!")
 
     print("lamp", light.name, light.lamp_type)
 
@@ -184,9 +191,6 @@ def convertLight(lightObj):
     return problemList
 
 
-
-
-
 def convertMaterials(materials):
     problemList = []
 
@@ -201,7 +205,6 @@ def convertMaterials(materials):
         problemList += convertMaterial(mat)
 
     return problemList
-
 
 
 def convertMaterial(mat):
@@ -223,11 +226,11 @@ def convertMaterial(mat):
 
     materialList = []
     for item in [m for m in bpy.data.materials if not m.name == mat.name]:
-        materialList.append((item.name, item.name,""))
+        materialList.append((item.name, item.name, ""))
 
     Material = bpy.types.Material
-    Material.material1 = EnumProperty(items = materialList, name = "Material One")
-    Material.material2 = EnumProperty(items = materialList, name = "Material Two")
+    Material.material1 = EnumProperty(items = materialList, name="Material One")
+    Material.material2 = EnumProperty(items = materialList, name="Material Two")
 
     # print("type", props["type"])
 
@@ -248,8 +251,10 @@ def convertMaterial(mat):
             print("p in dict:", p, variableDict[p])
             p = variableDict[p]
 
-        if p == "type": continue
-        if p == "mask": continue
+        if p == "type":
+            continue
+        if p == "mask":
+            continue
         if p in ["material1", "material2"]:
             if value not in materialNames:
                 problemList.append("Broken blend material: " + mat.name + " replacing ...")
@@ -334,18 +339,17 @@ def convertWorld(world):
             exec("world.bg_gamma_enc = " + str(value))
             continue
         # FIXME: ignore following properties, may not be correct
-        if p in ['alpha', 'sigma_t', 'attgridScale', 'optimize', 'adaptive', 'stepSize', 'volType', 'dscolorspace', 'with_caustic', 'with_diffuse', 'bg_type', 'dsa', 'dsb', 'dsc', 'dsd', 'dse', 'dsf']: continue
+        if p in ['alpha', 'sigma_t', 'attgridScale', 'optimize', 'adaptive', 'stepSize', 'volType', 'dscolorspace', 'with_caustic', 'with_diffuse', 'bg_type', 'dsa', 'dsb', 'dsc', 'dsd', 'dse', 'dsf']:
+            continue
 
         if type(value) in [float, int, bool]:
             exec("world.bg_" + p + " = " + str(value))
         elif type(value) in [str]:
             exec("world.bg_" + p + " = \"" + value + "\"")
         else:
-            exec("world.bg_" + p + " = [" + str(value[0]) + ", " + str(value[1]) + ", " + str(value[2]) + "]")  
-
+            exec("world.bg_" + p + " = [" + str(value[0]) + ", " + str(value[1]) + ", " + str(value[2]) + "]")
 
     return problemList
-
 
 
 def convertAASettings(scene):
@@ -375,7 +379,7 @@ def convertAASettings(scene):
             elif type(value) in [str]:
                 exec("scene." + p + " = \"" + value + "\"")
             else:
-                exec("scene." + p + " = [" + str(value[0]) + ", " + str(value[1]) + ", " + str(value[2]) + "]")  
+                exec("scene." + p + " = [" + str(value[0]) + ", " + str(value[1]) + ", " + str(value[2]) + "]")
         except:
             problemList.append("AA: Problem inserting: " + p)
 
@@ -462,11 +466,12 @@ def convertIntegratorSettings(scene):
             elif type(value) in [str]:
                 exec("scene.intg_." + p + " = \"" + value + "\"")
             else:
-                exec("scene.intg_" + p + " = [" + str(value[0]) + ", " + str(value[1]) + ", " + str(value[2]) + "]")  
+                exec("scene.intg_" + p + " = [" + str(value[0]) + ", " + str(value[1]) + ", " + str(value[2]) + "]")
         except:
             problemList.append("Intg: Problem inserting: " + p)
 
     return problemList
+
 
 def convertSceneSettings(scene):
     problemList = []
@@ -498,5 +503,3 @@ class ConvertYafarayProperties(bpy.types.Operator):
             print(p)
 
         return {'FINISHED'}
-
-
