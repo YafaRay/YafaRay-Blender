@@ -147,7 +147,12 @@ class yafObject(object):
 
                 #self.writeObject(obj)
                 self.yi.printInfo("Processing duplis for: " + obj.name)
-                obj.create_dupli_list(self.scene)
+
+                if hasattr(obj, "create_dupli_list"): # method name changed
+                    obj.create_dupli_list(self.scene)
+                else:
+                    obj.dupli_list_create(self.scene)
+
 
                 for obj_dupli in obj.dupli_list:
                     
@@ -157,7 +162,11 @@ class yafObject(object):
                     self.writeInstance(dupBaseIds[obj_dupli.object.name], obj_dupli.matrix, obj_dupli.object.name)
                     
                 if obj.dupli_list:
-                    obj.free_dupli_list()
+                    if hasattr(obj, "free_dupli_list"): # method name changed
+                        obj.free_dupli_list()
+                    else:
+                        obj.dupli_list_clear()
+
 
             elif obj.data.users > 1: # Exporting objects with shared mesh data blocks as instances
 
@@ -286,8 +295,11 @@ class yafObject(object):
         me = obj.data
         me_materials = me.materials
         
-        mesh = obj.create_mesh(self.scene, True, 'RENDER')   #mesh is created for an object here.
-            
+        if hasattr(obj, "create_mesh"): # method name changed
+            mesh = obj.create_mesh(self.scene, True, 'RENDER')
+        else:
+            mesh = obj.to_mesh(self.scene, True, 'RENDER')
+
         if matrix:
             mesh.transform(matrix)
         else:
@@ -360,7 +372,11 @@ class yafObject(object):
 
     def writeGeometry(self, ID, obj, matrix, obType = 0, oMat = None):
 
-        mesh = obj.create_mesh(self.scene, True, 'RENDER') # mesh is created for an object here.
+        if hasattr(obj, "create_mesh"): # method name changed
+            mesh = obj.create_mesh(self.scene, True, 'RENDER')
+        else:
+            mesh = obj.to_mesh(self.scene, True, 'RENDER')
+
 
         isSmooth = False
         hasOrco = False
