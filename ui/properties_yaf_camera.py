@@ -30,7 +30,7 @@ Camera.bokeh_type    =      EnumProperty(attr = "bokeh_type",
     ),
     default="disk1",
     name = "Bokeh Type")
-Camera.aperture =       FloatProperty(attr = "aperture", min = 0.0, max = 1.0)
+Camera.aperture =       FloatProperty(attr = "aperture", min = 0.0, max = 1.0, precision = 4)
 Camera.bokeh_rotation = FloatProperty(attr = "bokeh_rotation")
 Camera.bokeh_bias =     EnumProperty(attr = "bokeh_bias",
     items = (
@@ -59,7 +59,7 @@ class YAF_PT_camera(bpy.types.Panel):
 
         engine = context.scene.render.engine
 
-        import properties_data_camera
+        import bl_ui.properties_data_camera as properties_data_camera
 
         if (context.camera and (engine in self.COMPAT_ENGINES)):
             try:
@@ -72,7 +72,6 @@ class YAF_PT_camera(bpy.types.Panel):
             except:
                 pass
         return (context.camera and (engine in self.COMPAT_ENGINES))
-
 
     def draw(self, context):
         layout = self.layout
@@ -117,7 +116,6 @@ class YAF_PT_camera(bpy.types.Panel):
             col.prop(context.camera, "bokeh_rotation", text = "Bokeh Rotation")
 
 
-
 class YAF_PT_camera_display(bpy.types.Panel):
 
     bl_label = 'Display'
@@ -131,7 +129,7 @@ class YAF_PT_camera_display(bpy.types.Panel):
 
         engine = context.scene.render.engine
 
-        import properties_data_camera
+        import bl_ui.properties_data_camera as properties_data_camera
 
         if (context.camera and (engine in self.COMPAT_ENGINES)):
             try:

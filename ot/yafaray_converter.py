@@ -229,8 +229,8 @@ def convertMaterial(mat):
         materialList.append((item.name, item.name, ""))
 
     Material = bpy.types.Material
-    Material.material1 = EnumProperty(items = materialList, name="Material One")
-    Material.material2 = EnumProperty(items = materialList, name="Material Two")
+    Material.material1 = EnumProperty(items = materialList, name = "Material One")
+    Material.material2 = EnumProperty(items = materialList, name = "Material Two")
 
     # print("type", props["type"])
 

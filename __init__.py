@@ -32,7 +32,7 @@ Michele Castigliego (subcomandante), Bert Buchholz, \
 Rodrigo Placencia (DarkTide), Alexander Smirnov (Exvion)",
     "version": (0, 1, 2, 'alpha'),
     "blender": (2, 5, 6),
-    "api": 34773,
+    "api": 35667,
     "location": "Info Header (engine dropdown)",
     "description": "YafaRay integration for blender",
     "warning" : "Alpha state",
