@@ -18,6 +18,7 @@ Camera.angular_angle =      FloatProperty(attr = "angular_angle", max = 360.0)
 Camera.max_angle     =      FloatProperty(attr = "max_angle", max = 360.0)
 Camera.mirrored      =      BoolProperty(attr = "mirrored")
 Camera.circular      =      BoolProperty(attr = "circular")
+Camera.use_clipping  =      BoolProperty(default = False)
 Camera.bokeh_type    =      EnumProperty(attr = "bokeh_type",
     items = (
         ("disk1", "Disk1", ""),
@@ -166,9 +167,9 @@ class YAF_PT_camera_display(bpy.types.Panel):
         sub.active = camera.show_passepartout
         sub.prop(camera, "passepartout_alpha", text="Alpha", slider=True)
 
-        # added for convinience only, has no effect on Yafaray's rendering
         col = layout.column()
         col.separator()
+        col.prop(context.camera, "use_clipping", text = "Use Clipping in render")
         row = col.row()
         row.label("Clipping:")
         row.prop(context.camera, "clip_start", text = "Start")
