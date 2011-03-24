@@ -70,6 +70,10 @@ class yafObject(object):
 
             yi.paramsSetString("type", camType);
 
+            if (camera.use_clipping):
+                yi.paramsSetFloat("nearClip", camera.clip_start);
+                yi.paramsSetFloat("farClip", camera.clip_end);
+
             if camType == "orthographic":
                 yi.paramsSetFloat("scale", camera.ortho_scale)
 
