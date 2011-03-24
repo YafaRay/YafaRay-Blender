@@ -230,6 +230,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             
             import threading
 
+
             def progressCallback(command, *args):
                 if not self.test_break():
                     if command == "tag":
@@ -243,15 +244,17 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 res = self.begin_result(x, y, w, h)
                 try:
                     res.layers[0].rect = tile
+                    #res.layers[0].passes[0].rect = tile
                 except:
                     pass
-                self.update_result(res)
+                self.end_result(res)
 
             def flushCallback(*args):
                 w, h, tile = args
                 res = self.begin_result(0, 0, w, h)
                 try:
                     res.layers[0].rect = tile
+                    #res.layers[0].passes[0].rect = tile
                 except BaseException as e:
                     pass
                 self.end_result(res)
