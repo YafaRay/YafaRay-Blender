@@ -55,7 +55,10 @@ Texture.tex_file_name = StringProperty(attr='tex_file_name', subtype = 'FILE_PAT
 
 Texture.yaf_is_normal_map = BoolProperty(default = False, name = "Normal map")
 
-from bl_ui.properties_material import active_node_mat
+try:
+    from properties_material import active_node_mat
+except ImportError:
+    from bl_ui.properties_material import active_node_mat  # API changes since rev. 35667
 
 
 def context_tex_datablock(context):

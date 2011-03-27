@@ -60,7 +60,10 @@ class YAF_PT_camera(bpy.types.Panel):
 
         engine = context.scene.render.engine
 
-        import bl_ui.properties_data_camera as properties_data_camera
+        try:
+            import properties_data_camera
+        except ImportError:
+            from bl_ui import properties_data_camera  # API changes since rev. 35667
 
         if (context.camera and (engine in self.COMPAT_ENGINES)):
             try:
@@ -130,7 +133,10 @@ class YAF_PT_camera_display(bpy.types.Panel):
 
         engine = context.scene.render.engine
 
-        import bl_ui.properties_data_camera as properties_data_camera
+        try:
+            import properties_data_camera
+        except ImportError:
+            from bl_ui import properties_data_camera  # API changes since rev. 35667
 
         if (context.camera and (engine in self.COMPAT_ENGINES)):
             try:
