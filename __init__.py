@@ -16,7 +16,10 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-import sys, os, threading, time
+import sys
+import os
+import threading
+import time
 
 PLUGIN_PATH = os.path.join(__path__[0], 'bin', 'plugins')
 BIN_PATH = os.path.join(__path__[0], 'bin')
@@ -32,10 +35,10 @@ Michele Castigliego (subcomandante), Bert Buchholz, \
 Rodrigo Placencia (DarkTide), Alexander Smirnov (Exvion)",
     "version": (0, 1, 2, 'alpha'),
     "blender": (2, 5, 6),
-    "api": 34773,
+    "api": 35566,
     "location": "Info Header (engine dropdown)",
     "description": "YafaRay integration for blender",
-    "warning" : "Alpha state",
+    "warning": "Alpha state",
     "wiki_url": "http://www.yafaray.org/community/forum",
     "tracker_url": "http://www.yafaray.org/development/bugtracker/yafaray",
     "category": "Render"
@@ -45,18 +48,18 @@ Rodrigo Placencia (DarkTide), Alexander Smirnov (Exvion)",
 
 if sys.platform == 'win32':
     # Loading order of the dlls is sensible please do not alter it
-    dllArray = ['zlib1','libxml2-2','libgcc_s_sjlj-1','Half','Iex','IlmThread','IlmImf','libjpeg-8','libpng14','libtiff-3','libfreetype-6','libyafaraycore','libyafarayplugin']
+    dllArray = ['zlib1', 'libxml2-2', 'libgcc_s_sjlj-1', 'Half', 'Iex', 'IlmThread', 'IlmImf', 'libjpeg-8', 'libpng14', 'libtiff-3', 'libfreetype-6', 'libyafaraycore', 'libyafarayplugin']
 elif sys.platform == 'darwin':
-    dllArray = ['libyafaraycore.dylib','libyafarayplugin.dylib']
+    dllArray = ['libyafaraycore.dylib', 'libyafarayplugin.dylib']
 else:
-    dllArray = ['libyafaraycore.so','libyafarayplugin.so']
+    dllArray = ['libyafaraycore.so', 'libyafarayplugin.so']
 
 import ctypes
 for dll in dllArray:
     try:
         ctypes.cdll.LoadLibrary(os.path.join(BIN_PATH, dll))
     except Exception as e:
-        print("ERROR: Failed to load library " + dll + ", " + repr(e));
+        print("ERROR: Failed to load library " + dll + ", " + repr(e))
 
 if "bpy" in locals():
     import imp
@@ -68,14 +71,17 @@ else:
     import bpy
     from yafaray import prop, io, ui, ot
 
+
 def register():
     prop.register()
     bpy.utils.register_module(__name__)
 
-    kitems = bpy.context.window_manager.keyconfigs.active.keymaps["Screen"].items
-    #if not kitems.from_id(bpy.types.YAFA_RENDER.viewRenderKey):
-    #   bpy.types.YAFA_RENDER.viewRenderKey = kitems.new("RENDER_OT_render_view", 'F12', 'RELEASE', False, False, False, True).id
-    kitems.new("RENDER_OT_render_view", 'F12', 'RELEASE', False, False, False, True)
+    kitems = bpy.context.window_manager.keyconfigs.active.keymaps["Screen"]
+
+    if hasattr(kitems, "keymap_items"):  # check for api changes in Blender 2.56 rev. 35764
+        kitems.keymap_items.new("RENDER_OT_render_view", 'F12', 'RELEASE', False, False, False, True)
+    else:
+        kitems.items.new("RENDER_OT_render_view", 'F12', 'RELEASE', False, False, False, True)
 
 
 def unregister():
@@ -85,4 +91,3 @@ def unregister():
 
 if __name__ == '__main__':
     register()
-

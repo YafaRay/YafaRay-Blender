@@ -24,38 +24,41 @@ Texture = bpy.types.Texture
 Texture.yaf_tex_type = EnumProperty(
     items = (
             # ("TEXTURE_TYPE","Texture Type",""),
-            ("NONE","None",""),
-            ("BLEND","Blend",""),
-            ("CLOUDS","Clouds",""),
-            ("WOOD","Wood",""),
-            ("MARBLE","Marble",""),
-            ("VORONOI","Voronoi",""),
-            ("MUSGRAVE","Musgrave",""),
-            ("DISTORTED_NOISE","Distorted Noise",""),
-            ("IMAGE","Image","")),
+            ("NONE", "None", ""),
+            ("BLEND", "Blend", ""),
+            ("CLOUDS", "Clouds", ""),
+            ("WOOD", "Wood", ""),
+            ("MARBLE", "Marble", ""),
+            ("VORONOI", "Voronoi", ""),
+            ("MUSGRAVE", "Musgrave", ""),
+            ("DISTORTED_NOISE", "Distorted Noise", ""),
+            ("IMAGE", "Image", "")),
     default = "NONE",
     name = "Texture Type")
 
-Texture.yaf_texture_coordinates = EnumProperty(attr="yaf_texture_coordinates",
+Texture.yaf_texture_coordinates = EnumProperty(attr = "yaf_texture_coordinates",
         items = (
-                ("TEXTURE_COORDINATES","Texture Co-Ordinates",""),
-                ("GLOBAL","Global",""),
-                ("ORCO","Orco",""),
-                ("WINDOW","Window",""),
-                ("NORMAL","Normal",""),
-                ("REFLECTION","Reflection",""),
-                ("STICKY","Sticky",""),
-                ("STRESS","Stress",""),
-                ("TANGENT","Tangent",""),
-                ("OBJECT","Object",""),
-                ("UV","UV",""),
-),default="GLOBAL")
+                ("TEXTURE_COORDINATES", "Texture Co-Ordinates", ""),
+                ("GLOBAL", "Global", ""),
+                ("ORCO", "Orco", ""),
+                ("WINDOW", "Window", ""),
+                ("NORMAL", "Normal", ""),
+                ("REFLECTION", "Reflection", ""),
+                ("STICKY", "Sticky", ""),
+                ("STRESS", "Stress", ""),
+                ("TANGENT", "Tangent", ""),
+                ("OBJECT", "Object", ""),
+                ("UV", "UV", ""),
+), default = "GLOBAL")
 
 Texture.tex_file_name = StringProperty(attr='tex_file_name', subtype = 'FILE_PATH')
 
 Texture.yaf_is_normal_map = BoolProperty(default = False, name = "Normal map")
 
-from properties_material import active_node_mat
+try:
+    from properties_material import active_node_mat
+except ImportError:
+    from bl_ui.properties_material import active_node_mat  # API changes since rev. 35667
 
 
 def context_tex_datablock(context):
@@ -74,13 +77,14 @@ def context_tex_datablock(context):
     idblock = context.brush
     return idblock
 
+
 class YAF_TextureButtonsPanel():
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "texture"
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
-    @classmethod #no 2.53
+    @classmethod  # no 2.53
     def poll(self, context):
         tex = context.texture
         engine = context.scene.render.engine
@@ -90,7 +94,7 @@ class YAF_TextureButtonsPanel():
 
 class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel, bpy.types.Panel):
     bl_label = "YafaRay Textures"
-    bl_show_header = True # False orig.
+    bl_show_header = True  # False orig.
     COMPAT_ENGINES = {'YAFA_RENDER'}
     count = 0
 
@@ -130,7 +134,6 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel, bpy.types.Panel):
         return ((context.material or context.world or context.lamp or context.brush or context.texture)
             and (engine in self.COMPAT_ENGINES))
 
-
     def draw(self, context):
         layout = self.layout
         slot = context.texture_slot
@@ -140,7 +143,7 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel, bpy.types.Panel):
         idblock = context_tex_datablock(context)
         pin_id = space.pin_id
 
-        if not isinstance(pin_id, bpy.types.Material): # isinstance, recen change  for beta 2.56
+        if not isinstance(pin_id, bpy.types.Material):  # isinstance, recen change  for beta 2.56
             pin_id = None
 
         tex_collection = (pin_id is None) and (node is None) and (not isinstance(idblock, bpy.types.Brush))
@@ -199,6 +202,7 @@ class YAF_TEXTURE_PT_preview(YAF_TextureButtonsPanel, bpy.types.Panel):
 
 # Texture Slot Panels #
 
+
 class YAF_TextureSlotPanel(YAF_TextureButtonsPanel):
     #bl_label = "Slots Textures"
     COMPAT_ENGINES = {'YAFA_RENDER'}
@@ -239,10 +243,10 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel, bpy.types.Panel):
 
         if not isinstance(idblock, bpy.types.Brush):
             col = layout.column()
-            col.prop(tex, "texture_coords", text="Coordinates") # 2.55
+            col.prop(tex, "texture_coords", text="Coordinates")  # 2.55
             # change to same type of blender mapping, for make stable
 
-            if tex.texture_coords == 'ORCO': # 2.55
+            if tex.texture_coords == 'ORCO':  # 2.55
                 ob = context.object
                 if ob and ob.type == 'MESH':
                     col.prop(ob.data, "texco_mesh", text="Mesh")
@@ -257,7 +261,7 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel, bpy.types.Panel):
             elif tex.texture_coords == 'OBJECT':
                 col.prop(tex, "object", text="Object")
 
-        if isinstance(idblock, bpy.types.Brush): # recent change for beta 2.56
+        if isinstance(idblock, bpy.types.Brush):  # recent change for beta 2.56
             if context.sculpt_object:
                 layout.label(text="Brush Mapping:")
                 layout.prop(tex, "map_mode", expand=True)
@@ -272,9 +276,9 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel, bpy.types.Panel):
                 split = layout.split()
 
                 if tex.texture_coords in ('ORCO', 'UV'):
-                  col.prop(tex, "use_from_dupli")
+                    col.prop(tex, "use_from_dupli")
                 elif tex.texture_coords == 'OBJECT':
-                  col.prop(tex, "use_from_original")
+                    col.prop(tex, "use_from_original")
 
                 row = col.row()
                 row.prop(tex, "mapping_x", text="")
@@ -295,7 +299,7 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, bpy.types.Panel):
     @classmethod
     def poll(self, context):
         idblock = context_tex_datablock(context)
-        if isinstance(idblock, bpy.types.Brush): # recent change
+        if isinstance(idblock, bpy.types.Brush):  # recent change
             return False
 
         if not getattr(context, "texture_slot", None):
@@ -304,14 +308,13 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, bpy.types.Panel):
         engine = context.scene.render.engine
         return (engine in self.COMPAT_ENGINES)
 
-
-    def factor_but(self, tex, layout, toggle, factor, name): # new in last rev. of Blender
+    def factor_but(self, tex, layout, toggle, factor, name):  # new in last rev. of Blender
         row = layout.row(align = True)
         row.prop(tex, toggle, text = "")
         sub = row.row()
         sub.enabled = getattr(tex, toggle)
         sub.prop(tex, factor, text = name, slider = True)
-        return sub # XXX, temp. use_map_normal needs to override.
+        return sub  # XXX, temp. use_map_normal needs to override.
 
     def draw(self, context):
 
@@ -334,13 +337,12 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, bpy.types.Panel):
         shaderNodes["BlendAmount"]  = ["use_map_diffuse", "diffuse_factor", "Blending Amount"]
 
         materialShaderNodes = dict()
-        materialShaderNodes["glass"]           = [ "Bump", "MirrorColor" ]
-        materialShaderNodes["rough_glass"]     = [ "Bump", "MirrorColor" ]
-        materialShaderNodes["glossy"]          = [ "DiffuseColor", "GlossyColor", "GlossyAmount", "Bump" ]
-        materialShaderNodes["coated_glossy"]   = [ "DiffuseColor", "GlossyColor", "GlossyAmount", "Bump" ]
-        materialShaderNodes["shinydiffusemat"] = [ "DiffuseColor", "MirrorAmount", "MirrorColor", "Transparency", "Translucency", "Bump" ]
-        materialShaderNodes["blend"]           = [ "BlendAmount" ]
-
+        materialShaderNodes["glass"]           = ["Bump", "MirrorColor"]
+        materialShaderNodes["rough_glass"]     = ["Bump", "MirrorColor"]
+        materialShaderNodes["glossy"]          = ["DiffuseColor", "GlossyColor", "GlossyAmount", "Bump"]
+        materialShaderNodes["coated_glossy"]   = ["DiffuseColor", "GlossyColor", "GlossyAmount", "Bump"]
+        materialShaderNodes["shinydiffusemat"] = ["DiffuseColor", "MirrorAmount", "MirrorColor", "Transparency", "Translucency", "Bump"]
+        materialShaderNodes["blend"]           = ["BlendAmount"]
 
         if isinstance(idblock, bpy.types.Material):
             material = context.material
@@ -366,7 +368,7 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, bpy.types.Panel):
             col.prop(tex_slot, "invert", text = "Negative")
             col.prop(tex_slot, "use_stencil")
 
-        elif isinstance(idblock, bpy.types.World): # for setup world texture
+        elif isinstance(idblock, bpy.types.World):  # for setup world texture
             split = layout.split()
 
             col = split.column()
@@ -382,6 +384,7 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, bpy.types.Panel):
             col.prop(tex_slot, "default_value", text="Default Value", slider=True)
 
 # Texture Type Panels #
+
 
 class YAF_TextureTypePanel(YAF_TextureButtonsPanel):
     bl_label = "Texture Type "
@@ -683,4 +686,3 @@ class YAF_TEXTURE_PT_distortednoise(YAF_TextureTypePanel, bpy.types.Panel):
         col = split.column()
         col.prop(tex, "distortion", text="Distortion")
         col.prop(tex, "noise_scale", text="Size")
-

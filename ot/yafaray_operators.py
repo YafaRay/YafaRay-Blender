@@ -113,7 +113,13 @@ class RENDER_OT_render_view(bpy.types.Operator):
     @classmethod
     def poll(self, context):
 
-        kitems = context.window_manager.keyconfigs.active.keymaps["Screen"].items
+        check_kitems = context.window_manager.keyconfigs.active.keymaps["Screen"]
+
+        if hasattr(check_kitems, "keymap_items"):  # check for api changes in Blender 2.56 rev. 35764
+            kitems = check_kitems.keymap_items
+        else:
+            kitems = check_kitems.items
+
         if not kitems.from_id(bpy.types.YAFA_RENDER.viewRenderKey):
             bpy.types.YAFA_RENDER.viewRenderKey = kitems.new("RENDER_OT_render_view", 'F12', 'RELEASE', False, False, False, True).id
 
