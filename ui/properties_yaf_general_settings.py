@@ -3,6 +3,7 @@ import sys
 import os
 # import all props
 from bpy.props import *
+from yafaray.ot import yafaray_presets
 
 Scene = bpy.types.Scene
 
@@ -88,9 +89,9 @@ Scene.gs_type_render =  EnumProperty(
 
 class YAFARAY_MT_presets_render(bpy.types.Menu):
     bl_label = "Yafaray Render Presets"
-    preset_subdir = os.path.join("..", "addons", "yafaray", "presets", "render")
+    preset_subdir = "render"
     preset_operator = "script.execute_preset"
-    draw = bpy.types.Menu.draw_preset
+    draw = yafaray_presets.Yafaray_Menu.draw_preset
 
 
 class YAF_PT_general_settings(bpy.types.Panel):
