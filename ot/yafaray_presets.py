@@ -5,6 +5,25 @@ from bpy.path import clean_name, display_name
 from bpy_types import StructRNA, _GenericUI, RNAMeta
 
 
+def yaf_preset_find(name, preset_path, disp_name = False):
+    if not name:
+        return None
+
+    if display_name:
+        filename = ""
+        for fn in os.listdir(preset_path):
+            if fn.endswith(".py") and name == display_name(fn):
+                filename = fn
+                break
+    else:
+        filename = name + ".py"
+
+    if filename:
+        filepath = os.path.join(preset_path, filename)
+        if os.path.exists(filepath):
+            return filepath
+
+
 class YAF_AddPresetBase():
     bl_options = {'REGISTER'}  # only because invoke_props_popup requires.
     name = bpy.props.StringProperty(name="Name", description="Name of the preset, used to make the path name", maxlen=64, default="")
@@ -58,9 +77,12 @@ class YAF_AddPresetBase():
             preset_menu_class.bl_label = display_name(filename)
 
         else:
-            preset_active = clean_name(preset_menu_class.bl_label)
+            preset_active = preset_menu_class.bl_label
             target_path = os.path.join(sys.path[0], "yafaray", "presets", self.preset_subdir)
-            filepath = os.path.join(target_path, preset_active + ".py")
+            filepath = yaf_preset_find(preset_active, target_path)
+
+            if not filepath:
+                filepath = yaf_preset_find(preset_active, target_path, disp_name = True)
 
             if not filepath:
                 return {'CANCELLED'}
@@ -187,7 +209,7 @@ class Yafaray_Menu(StructRNA, _GenericUI, metaclass=RNAMeta):  # Yafaray's own P
             if f.startswith("."):
                 continue
 
-            preset_name = bpy.path.display_name(f)
+            preset_name = display_name(f)
             props = layout.operator(operator, text=preset_name)
 
             for attr, value in props_default.items():
