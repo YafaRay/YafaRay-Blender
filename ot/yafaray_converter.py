@@ -238,10 +238,19 @@ def convertMaterial(mat):
 
     if mat.mat_type in ["glossy", "coated_glossy"]:
         variableDict["color"] = "glossy_color"
+        variableDict["IOR"] = "IOR_reflection"
+        variableDict["mirror_color"] = "coat_mir_col"
 
     elif mat.mat_type == "shinydiffusemat":
         variableDict["color"] = "diffuse_color"
         variableDict["diffuse_color"] = ""
+        variableDict["IOR"] = "IOR_reflection"
+
+    elif mat.mat_type in ["glass", "rough_glass"]:
+        variableDict["IOR"] = "IOR_refraction"
+        variableDict["alpha"] = "refr_roughness"
+        variableDict["mirror_color"] = "glass_mir_col"
+        variableDict["transmit_filter"] = "glass_transmit"
 
     for p in props:
         value = props[p]

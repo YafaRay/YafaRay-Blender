@@ -1,14 +1,27 @@
 import bpy
 import os
-from bpy.utils import script_paths
+import sys
 from bpy.path import clean_name, display_name
+from bpy_types import StructRNA, _GenericUI, RNAMeta
 
 
-def yaf_script_path():
-    for yaf_path in script_paths(os.path.join("addons", "yafaray")):
-        if yaf_path:
-            return yaf_path
-    return ''
+def yaf_preset_find(name, preset_path, disp_name = False):
+    if not name:
+        return None
+
+    if display_name:
+        filename = ""
+        for fn in os.listdir(preset_path):
+            if fn.endswith(".py") and name == display_name(fn):
+                filename = fn
+                break
+    else:
+        filename = name + ".py"
+
+    if filename:
+        filepath = os.path.join(preset_path, filename)
+        if os.path.exists(filepath):
+            return filepath
 
 
 class YAF_AddPresetBase():
@@ -29,7 +42,7 @@ class YAF_AddPresetBase():
                 return {'FINISHED'}
 
             filename = clean_name(self.name)
-            target_path = os.path.normpath(os.path.join(yaf_script_path(), "presets", self.preset_subdir))
+            target_path = os.path.join(sys.path[0], "yafaray", "presets", self.preset_subdir)
 
             if not target_path:
                 self.report({'WARNING'}, "Failed to create presets path")
@@ -64,8 +77,12 @@ class YAF_AddPresetBase():
             preset_menu_class.bl_label = display_name(filename)
 
         else:
-            preset_active = clean_name(preset_menu_class.bl_label)
-            filepath = os.path.join(yaf_script_path(), "presets", self.preset_subdir, preset_active + ".py")
+            preset_active = preset_menu_class.bl_label
+            target_path = os.path.join(sys.path[0], "yafaray", "presets", self.preset_subdir)
+            filepath = yaf_preset_find(preset_active, target_path)
+
+            if not filepath:
+                filepath = yaf_preset_find(preset_active, target_path, disp_name = True)
 
             if not filepath:
                 return {'CANCELLED'}
@@ -163,3 +180,49 @@ class YAFARAY_OT_presets_renderset(YAF_AddPresetBase, bpy.types.Operator):
     ]
 
     preset_subdir = "render"
+
+
+class Yafaray_Menu(StructRNA, _GenericUI, metaclass=RNAMeta):  # Yafaray's own Preset Menu drawing: search method for files changed
+    __slots__ = ()
+
+    def path_menu(self, searchpaths, operator, props_default={}):
+        layout = self.layout
+        # hard coded to set the operators 'filepath' to the filename.
+
+        import os
+        import bpy.utils
+
+        layout = self.layout
+
+        if not searchpaths:
+            layout.label("* Missing Paths *")
+
+        # collect paths
+        files = []
+        for directory in searchpaths:
+            files.extend([(f, os.path.join(directory, f)) for f in os.listdir(directory)])
+
+        files.sort()
+
+        for f, filepath in files:
+
+            if f.startswith("."):
+                continue
+
+            preset_name = display_name(f)
+            props = layout.operator(operator, text=preset_name)
+
+            for attr, value in props_default.items():
+                setattr(props, attr, value)
+
+            props.filepath = filepath
+            if operator == "script.execute_preset":
+                props.menu_idname = self.bl_idname
+
+    def draw_preset(self, context):
+        """Define these on the subclass
+         - preset_operator
+         - preset_subdir
+        """
+        search_path = [os.path.join(sys.path[0], "yafaray", "presets", self.preset_subdir)]
+        self.path_menu(search_path, self.preset_operator)

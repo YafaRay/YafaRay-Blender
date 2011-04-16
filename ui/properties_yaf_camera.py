@@ -14,8 +14,8 @@ Camera.camera_type = EnumProperty(
         ("orthographic", "Ortho", "")),
     default = "perspective",
     name = "Camera Type")
-Camera.angular_angle =      FloatProperty(attr = "angular_angle", max = 360.0)
-Camera.max_angle     =      FloatProperty(attr = "max_angle", max = 360.0)
+Camera.angular_angle =      FloatProperty(attr = "angular_angle", max = 180.0, default = 90.0, precision = 3)
+Camera.max_angle     =      FloatProperty(attr = "max_angle", max = 180.0, default = 90.0, precision = 3)
 Camera.mirrored      =      BoolProperty(attr = "mirrored")
 Camera.circular      =      BoolProperty(attr = "circular")
 Camera.use_clipping  =      BoolProperty(default = False)
@@ -29,10 +29,10 @@ Camera.bokeh_type    =      EnumProperty(attr = "bokeh_type",
         ("hexagon", "Hexagon", ""),
         ("ring", "Ring", "")
     ),
-    default="disk1",
+    default = "disk1",
     name = "Bokeh Type")
-Camera.aperture =       FloatProperty(attr = "aperture", min = 0.0, max = 1.0, precision = 4)
-Camera.bokeh_rotation = FloatProperty(attr = "bokeh_rotation")
+Camera.aperture =       FloatProperty(attr = "aperture", min = 0.0, max = 20.0, precision = 3)
+Camera.bokeh_rotation = FloatProperty(attr = "bokeh_rotation", min = 0.0, max = 180, precision =3)
 Camera.bokeh_bias =     EnumProperty(attr = "bokeh_bias",
     items = (
         ("uniform", "Uniform", ""),
@@ -40,11 +40,7 @@ Camera.bokeh_bias =     EnumProperty(attr = "bokeh_bias",
         ("edge", "Edge", "")),
     default = "uniform",
     name = "Bokeh Bias")
-Camera.color_data =     FloatVectorProperty(attr = "color_data",
-                                        description = "Point Info",
-                                        subtype = "XYZ",
-                                        step = 10,
-                                        precision = 3)
+Camera.color_data =     FloatVectorProperty(attr = "color_data", description = "Point Info", subtype = "XYZ", step = 10, precision = 3)
 
 
 class YAF_PT_camera(bpy.types.Panel):
@@ -63,7 +59,7 @@ class YAF_PT_camera(bpy.types.Panel):
         try:
             import properties_data_camera
         except ImportError:
-            import bl_ui.properties_data_camera as properties_data_camera  # API changes since rev. 35667
+            from bl_ui import properties_data_camera  # API changes since rev. 35667
 
         if (context.camera and (engine in self.COMPAT_ENGINES)):
             try:
@@ -136,7 +132,7 @@ class YAF_PT_camera_display(bpy.types.Panel):
         try:
             import properties_data_camera
         except ImportError:
-            import bl_ui.properties_data_camera as properties_data_camera  # API changes since rev. 35667
+            from bl_ui import properties_data_camera  # API changes since rev. 35667
 
         if (context.camera and (engine in self.COMPAT_ENGINES)):
             try:
@@ -158,18 +154,17 @@ class YAF_PT_camera_display(bpy.types.Panel):
         split = layout.split()
 
         col = split.column()
-        col.prop(camera, "show_limits", text="Limits")
-        # col.prop(camera, "show_mist", text="Mist")
-        col.prop(camera, "show_title_safe", text="Title Safe")
-        col.prop(camera, "show_name", text="Name")
+        col.prop(camera, "show_limits", text = "Limits")
+        col.prop(camera, "show_title_safe", text = "Title Safe")
+        col.prop(camera, "show_name", text = "Name")
 
         col = split.column()
-        col.prop(camera, "draw_size", text="Size")
+        col.prop(camera, "draw_size", text = "Size")
         col.separator()
-        col.prop(camera, "show_passepartout", text="Passepartout")
+        col.prop(camera, "show_passepartout", text = "Passepartout")
         sub = col.column()
         sub.active = camera.show_passepartout
-        sub.prop(camera, "passepartout_alpha", text="Alpha", slider=True)
+        sub.prop(camera, "passepartout_alpha", text = "Alpha", slider = True)
 
         col = layout.column()
         col.separator()

@@ -22,7 +22,8 @@ Scene.AA_threshold =   FloatProperty(
 Scene.AA_pixelwidth =  FloatProperty(
                         description = "AA filter size",
                         min = 1,
-                        default = 1.5)
+                        default = 1.5,
+                        precision = 3)
 Scene.AA_filter_type = EnumProperty(
                     items = (
                         ("box", "Box", ""),
@@ -40,29 +41,26 @@ class YAF_PT_AA_settings(bpy.types.Panel):
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = 'render'
-    COMPAT_ENGINES =['YAFA_RENDER']
+    COMPAT_ENGINES = ['YAFA_RENDER']
 
     @classmethod
     def poll(self, context):
         engine = context.scene.render.engine
-        return (True  and  (engine in self.COMPAT_ENGINES) ) 
-
+        return (True  and  (engine in self.COMPAT_ENGINES))
 
     def draw(self, context):
 
         layout = self.layout
         split = layout.split()
         col = split.column()
-        col.prop(context.scene,"AA_filter_type", text= "AA Filter Type")
-        col.prop(context.scene,"AA_min_samples", text= "AA Samples")
-        col.prop(context.scene,"AA_pixelwidth", text= "AA Pixelwidth")
+        col.prop(context.scene, "AA_filter_type", text = "AA Filter Type")
+        col.prop(context.scene, "AA_min_samples", text = "AA Samples")
+        col.prop(context.scene, "AA_pixelwidth", text = "AA Pixelwidth")
         col = split.column()
-        col.prop(context.scene,"AA_passes", text= "AA Passes")
+        col.prop(context.scene, "AA_passes", text = "AA Passes")
 
         sub = col.column()
 
         sub.enabled = (context.scene.AA_passes > 1)
-        sub.prop(context.scene,"AA_inc_samples", text= "AA Inc. Samples")
-        sub.prop(context.scene,"AA_threshold", text= "AA Threshold")
-
-
+        sub.prop(context.scene, "AA_inc_samples", text = "AA Inc. Samples")
+        sub.prop(context.scene, "AA_threshold", text = "AA Threshold")

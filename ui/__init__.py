@@ -14,7 +14,6 @@ try:
     bl_ui = False
 
 except ImportError:  # API changes since rev. 35667
-    import bpy
     from bl_ui import properties_object
     from yafaray.ui import properties_yaf_object
     bl_ui = True
