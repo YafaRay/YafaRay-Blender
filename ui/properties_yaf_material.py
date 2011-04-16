@@ -10,7 +10,7 @@ Material.mat_type = EnumProperty(
         ("coated_glossy", "Coated Glossy", "Assign a Material Type"),
         ("glass", "Glass", "Assign a Material Type"),
         ("rough_glass", "Rough Glass", "Assign a Material Type"),
-        ("blend", "Blend", "")],  # <-- not implemented yet...
+        ("blend", "Blend", "")],
     default = "shinydiffusemat",
     name = "Material Types")
 
@@ -43,10 +43,10 @@ Material.fresnel_effect =   BoolProperty(
                                         default = False)
 Material.brdf_type = EnumProperty(
     items = (
-        ("oren-nayar", "Oren-Nayar", "BRDF Shader Type"),
-        ("lambert", "Normal (Lambert)", "BRDF Shader Type")),
+        ("oren-nayar", "Oren-Nayar", "Reflectance Model"),
+        ("lambert", "Lambert", "Reflectance Model")),
     default = "lambert",
-    name = "BRDF Type")
+    name = "Reflectance Model")
 
 Material.glossy_color =         FloatVectorProperty(
                                         description = "Glossy Color",
@@ -205,7 +205,6 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                 ob = context.object
                 slot = context.material_slot
                 space = context.space_data
-                #wide_ui = context.region.width > narrowui
 
                 #load preview
                 layout.template_preview(context.material, True, context.material)
@@ -218,7 +217,6 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                     col = row.column(align=True)
                     col.operator("object.material_slot_add", icon='ZOOMIN', text="")
                     col.operator("object.material_slot_remove", icon='ZOOMOUT', text="")
-                    #col.menu("MATERIAL_MT_specials", icon='DOWNARROW_HLT', text="")
 
                     if ob.mode == 'EDIT':
                         row = layout.row(align=True)
@@ -248,7 +246,7 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                     col.separator()
 
                 col.prop(context.material, "mat_type", text= "Material Type")
-                col.separator()
+                layout.separator()
 
                 # Shiny Diffuse Material Settings
 
@@ -273,9 +271,7 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                     sub.prop(yaf_mat, "transmit_filter", text= "Transmit Filter", slider = True)
                     col.prop(yaf_mat, "emit", text= "Emit", slider = True)  # linked to Blender Material
 
-                    row = layout.row()
-                    for i in range(2):
-                        row.separator()
+                    layout.separator()
 
                     split = layout.split()
                     col = split.column()
@@ -299,22 +295,18 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                     sub = col.column(align = True)
                     sub.label(text = "Diffuse:")
                     sub.prop(yaf_mat, "diffuse_color", text= "")  # linked to Blender Material
-                    sub.prop(yaf_mat, "diffuse_reflect", text= "Diffuse Refl.", slider = True)
+                    sub.prop(yaf_mat, "diffuse_reflect", text= "Factor", slider = True)
 
                     col = split.column()
                     sub = col.column(align = True)
                     sub.label(text = "")
-                    brdf = sub.column()
-                    brdf.enabled = yaf_mat.mat_type == 'glossy'
-                    brdf.prop(yaf_mat, "brdf_type", text = "")
-                    brdf1 = col.column()
-                    brdf1.enabled = yaf_mat.brdf_type == 'oren-nayar' and yaf_mat.mat_type == 'glossy'
-                    brdf1.prop(yaf_mat, "sigma", text = "Sigma", slider = True)
+                    sub.prop(yaf_mat, "brdf_type", text = "")
+                    sig = col.column()
+                    sig.enabled = yaf_mat.brdf_type == 'oren-nayar'
+                    sig.prop(yaf_mat, "sigma", text = "Sigma", slider = True)
                     col.prop(yaf_mat, "as_diffuse", text = "As Diffuse")
 
-                    row = layout.row()
-                    for i in range(2):
-                        row.separator()
+                    layout.separator()
 
                     split = layout.split()
                     col = split.column()
@@ -335,26 +327,26 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                     ani.prop(yaf_mat, "exp_u", text = "Exponent U", slider = True)
                     ani.prop(yaf_mat, "exp_v", text = "Exponent V", slider = True)
 
-                    split = layout.split()
-                    col = split.column()
-                    mirc = col.column(align = True)
-                    mirc.enabled = yaf_mat.mat_type == 'coated_glossy'
-                    mirc.label(text = "Coated Layer:")
-                    mirc.prop(yaf_mat, "coat_mir_col", text = "")  # mirror color for 'coated glossy' added
-                    mirc.prop(yaf_mat, "IOR_reflection", text= "IOR", slider = True)  # added IOR reflection for coated glossy
+                    if yaf_mat.mat_type == 'coated_glossy':
+                        split = layout.split()
+                        col = split.column()
+                        mirc = col.column(align = True)
+                        mirc.label(text = "Coated Layer:")
+                        mirc.prop(yaf_mat, "coat_mir_col", text = "")  # mirror color for 'coated glossy' added
+                        mirc.prop(yaf_mat, "IOR_reflection", text= "IOR", slider = True)  # added IOR reflection for coated glossy
 
-                    col = split.column()
-                    col.label(text = "")
+                        col = split.column()
+                        col.label(text = "")
 
                 # Glass and Roughglass Material Settings
-                
+
                 if yaf_mat.mat_type == 'glass' or yaf_mat.mat_type == 'rough_glass':
                     split = layout.split()
                     col = split.column()
                     sub = col.column(align = True)
                     sub.label(text = "Refraction:")
                     sub.prop(yaf_mat, "absorption", text = "")
-                    sub.prop(yaf_mat, "absorption_dist", text = "Absorption Dist.", slider = True)
+                    sub.prop(yaf_mat, "absorption_dist", text = "Abs. Distance", slider = True)
                     col.prop(yaf_mat, "IOR_refraction", text = "IOR", slider = True)  # added IOR refraction for glass
 
                     col = split.column()
@@ -362,13 +354,9 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                     sub.label(text = "")
                     sub.prop(yaf_mat, "filter_color", text = "")
                     sub.prop(yaf_mat, "glass_transmit", text = "Transmit Filter", slider = True)  # added transmit filter propertie for glass
-                    fak = col.column()
-                    fak.enabled = yaf_mat.dispersion_power == 0
-                    fak.prop(yaf_mat, "fake_shadows", text = "Fake Shadows")
+                    col.prop(yaf_mat, "fake_shadows", text = "Fake Shadows")
 
-
-                    for i in range(3):
-                        col.separator()
+                    layout.separator()
 
                     split = layout.split()
                     col = split.column()
@@ -381,7 +369,6 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                     col.label(text = "Reflection:")
                     col.prop(yaf_mat, "glass_mir_col", text = "")  # added glass mirror color propertie for glass
 
-
                 # Blend Material Settings
 
                 if yaf_mat.mat_type == 'blend':
@@ -390,11 +377,9 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
                     col.label(text = "")
                     col.prop(yaf_mat, "blend_value", text= "Blend Value", slider = True)
 
-                    for i in range(3):
-                        col.separator()
+                    layout.separator()
 
                     box = layout.box()
-
                     box.label(text = "Choose the two materials you wish to blend.")
                     split = box.split()
                     col = split.column()
