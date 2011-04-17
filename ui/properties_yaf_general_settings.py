@@ -79,12 +79,13 @@ Scene.gs_z_channel =    BoolProperty(attr = "gs_z_channel",
                         description = "Render depth map (Z-Buffer)",
                         default = False)
 Scene.gs_type_render =  EnumProperty(
-                        description = "Render to view Blender or to File, (load at the end)",
+                        description = "Choose the Render Method",
                         items = (
-                            ("file", "File, load at the end", ""),
-                            ("into_blender", "Into Blender", "")),
+                            ("file", "Image File", "Render the Scene and write it to an Image File when finished"),
+                            ("into_blender", "Into Blender", "Render the Scene into Blenders Renderbuffer"),
+                            ("xml", "XML File", "Export the Scene to a XML File")),
                         default = "into_blender",
-                        name = "Render Type")
+                        name = "Output Method")
 
 
 class YAFARAY_MT_presets_render(bpy.types.Menu):
