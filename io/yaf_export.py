@@ -200,7 +200,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             from datetime import datetime
             dt = datetime.now()
             File = 'yafaray-' + dt.strftime("%Y-%m-%d_%H%M%S") + ".xml"
-            outputFile = os.path.abspath(os.path.join(r.filepath, File))
+            outputFile = os.path.join(os.path.abspath(bpy.path.abspath(r.filepath)), File)
             self.setInterface(yafrayinterface.xmlInterface_t())
             co = yafrayinterface.imageOutput_t()
             self.yi.setOutfile(outputFile)
