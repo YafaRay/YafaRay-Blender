@@ -9,4 +9,3 @@ from yafaray.io import yaf_light
 from yafaray.io import yaf_material
 
 import yafrayinterface
-
