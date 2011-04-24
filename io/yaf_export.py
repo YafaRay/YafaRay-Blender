@@ -26,8 +26,11 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
     prog = 0.0
     tag = ""
     useViewToRender = False
+    render_Animation = False  # bool prop: check if render animation was invoked
     viewMatrix = None
     viewRenderKey = -65535
+    renderAnimationKey = -65534  # key for own operator -> render animation
+    renderStillKey = -65533  # key for own operator -> render image
 
     def setInterface(self, yi):
         self.materialMap = {}
@@ -148,12 +151,31 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             filetype = 'png'
         elif filetype == 'TARGA':
             filetype = 'tga'
+        elif filetype == 'TIFF':  # add tiff imageHandler
+            filetype = 'tif'
+        elif filetype == 'JPEG':  # add jpeg imageHandler 
+            filetype = 'jpg'
+        elif filetype == 'HDR':  # add hdr imgeHandler
+            filetype = 'hdr'
         elif filetype == 'OPEN_EXR':
             filetype = 'exr'
+        elif filetype == 'XML':  # added filetype 'XML'
+            filetype = 'xml'
         else:
-            filetype = 'png'
+            filetype = 'exr'
         extension = '.' + filetype
-        output = tempfile.mktemp(dir = output_path)
+        if bpy.types.YAFA_RENDER.render_Animation:  # check for animation rendering -> write image with filename from framenumber
+            output = os.path.abspath(os.path.join(output_path , ("%0" + str(len(str(self.scene.frame_end))) + "d") % self.scene.frame_current))
+        else:
+            output = tempfile.mktemp(dir = output_path)
+        if not os.path.exists(output_path):  # try to create dir if it not exists...
+            try:
+                os.makedirs(output_path)
+            except:
+                print("Unable to create directory...")
+                import traceback
+                traceback.print_exc()
+                output = ""
         outputFile = output + extension
 
         return outputFile, output, filetype
@@ -184,9 +206,21 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         self.yi.setInputGamma(scene.gs_gamma_input, True)
 
+        rfilepath = os.path.abspath(os.path.normpath(r.filepath))
+
+        if bpy.types.YAFA_RENDER.render_Animation:
+            absolute_outpath = os.path.abspath(os.path.join(rfilepath, 'yaf_ani'))  # output folder for animation imagefiles saving from yafaray
+        else:
+            absolute_outpath = os.path.abspath(os.path.join(rfilepath, 'yaf_tmp'))  # output folder for tmp imagefile saving from yafaray
+        if not r.file_format == scene.img_output and not self.preview:  # set the image file format once for saving from Blender 
+            r.file_format = scene.img_output
+        if not r.filepath == absolute_outpath[:-7] and not self.preview:
+            r.filepath = absolute_outpath[:-7]  # set image path once for animation (Button "Render Animation") to the original output setting
+        if not r.exr_zbuf == scene.gs_z_channel and not self.preview:  # set z-buffer on for exr image saving from blender
+            r.exr_zbuf = scene.gs_z_channel
+
         if scene.gs_type_render == "file":
-            outputFile, output, file_type = self.decideOutputFileName(r.filepath, r.file_format)
-            print(r.filepath, file_type)
+            outputFile, output, file_type = self.decideOutputFileName(absolute_outpath, scene.img_output)
             self.yi.paramsClearAll()
             self.yi.paramsSetString("type", file_type)
             self.yi.paramsSetBool("alpha_channel", r.color_mode == "RGBA")
@@ -197,10 +231,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             co = yafrayinterface.imageOutput_t(ih, str(outputFile), 0, 0)
 
         if scene.gs_type_render == "xml":  # Export the Scene to XML File
-            from datetime import datetime
-            dt = datetime.now()
-            File = 'yafaray-' + dt.strftime("%Y-%m-%d_%H%M%S") + ".xml"
-            outputFile = os.path.join(os.path.abspath(bpy.path.abspath(r.filepath)), File)
+            absolute_outpath = os.path.abspath(os.path.join(rfilepath, 'yaf_xml'))  # output folder for xml file saving from yafaray
+            outputFile, output, file_type = self.decideOutputFileName(absolute_outpath, 'XML')
             self.setInterface(yafrayinterface.xmlInterface_t())
             co = yafrayinterface.imageOutput_t()
             self.yi.setOutfile(outputFile)
@@ -219,7 +251,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             result = self.begin_result(bStartX, bStartY, x + bStartX, y + bStartY)
             lay = result.layers[0]
 
-            if scene.gs_z_channel:
+            if scene.gs_z_channel and not r.file_format == 'OPEN_EXR':  # exr format has z-buffer included, so no need to load '_zbuffer' - file
                 lay.load_from_file(output + '_zbuffer.' + file_type)
             else:
                 lay.load_from_file(outputFile)
@@ -261,8 +293,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                     pass
                 self.end_result(res)
 
-            t = threading.Thread(target=self.yi.render,
-                                 args=(sizeX, sizeY, 0, 0,
+            t = threading.Thread(target = self.yi.render,
+                                 args = (sizeX, sizeY, 0, 0,
                                  self.preview,
                                  drawAreaCallback,
                                  flushCallback,

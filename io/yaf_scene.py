@@ -50,6 +50,7 @@ def getRenderCoords(scene):
 
     return [sizeX, sizeY, bStartX, bStartY, bsizeX, bsizeY, cam_data]
 
+
 def exportAA(yi, scene):
     yi.paramsSetInt("AA_passes", scene.AA_passes)
     yi.paramsSetInt("AA_minsamples", scene.AA_min_samples)
@@ -57,7 +58,6 @@ def exportAA(yi, scene):
     yi.paramsSetFloat("AA_pixelwidth", scene.AA_pixelwidth)
     yi.paramsSetFloat("AA_threshold", scene.AA_threshold)
     yi.paramsSetString("filter_type", scene.AA_filter_type)
-
 
 
 def exportRenderSettings(yi, scene):
@@ -74,10 +74,10 @@ def exportRenderSettings(yi, scene):
     yi.paramsSetFloat("gamma", scene.gs_gamma)
 
     exportAA(yi, scene)
-    
+
     yi.paramsSetInt("xstart", bStartX)
     yi.paramsSetInt("ystart", bStartY)
-    
+
     # no border when rendering to view
     if render.use_border and cam_data:
         yi.paramsSetInt("width", bsizeX)
@@ -90,13 +90,14 @@ def exportRenderSettings(yi, scene):
     yi.paramsSetBool("show_sam_pix", scene.gs_show_sam_pix)
     yi.paramsSetBool("premult", scene.gs_premult)
 
-    yi.paramsSetInt("tile_size",scene.gs_tile_size)
+    yi.paramsSetInt("tile_size", scene.gs_tile_size)
     yi.paramsSetString("tiles_order", scene.gs_tile_order)
 
     if scene.gs_type_render == "into_blender":
         yi.paramsSetBool("z_channel", True)
     else:
         yi.paramsSetBool("z_channel", scene.gs_z_channel)
+
     yi.paramsSetBool("drawParams", scene.gs_draw_params)
     yi.paramsSetString("customString", scene.gs_custom_string)
 

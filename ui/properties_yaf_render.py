@@ -1,4 +1,19 @@
 import bpy
+#import types and props ---->
+from bpy.props import *
+Scene = bpy.types.Scene
+
+Scene.img_output     =  EnumProperty(
+                        description = "Image will be saved in this file format",  # yafarays own image output selection, default is open exr
+                        items = (
+                            ("PNG", " PNG (Portable Network Graphics)", ""),
+                            ("TARGA", " TGA (Truevision TARGA)", ""),
+                            ("JPEG", " JPEG (Joint Photographic Experts Group)", ""),
+                            ("TIFF", " TIFF (Tag Image File Format)", ""),
+                            ("OPEN_EXR", " EXR (IL&M OpenEXR)", ""),
+                            ("HDR", " HDR (Radiance RGBE)", "")),
+                        default = "OPEN_EXR",
+                        name = "Image File Type")
 
 
 class YafarayRenderButtonsPanel():
@@ -21,8 +36,8 @@ class YAFRENDER_PT_render(YafarayRenderButtonsPanel, bpy.types.Panel):
 
         split = self.layout.split()
 
-        split.column().operator("RENDER_OT_render", "Render Image", "RENDER_STILL")
-        split.column().operator("RENDER_OT_render", "Render Animation", "RENDER_ANIMATION").animation = True
+        split.column().operator("RENDER_OT_render_animation", "Render Image", "RENDER_STILL").animation = False
+        split.column().operator("RENDER_OT_render_animation", "Render Animation", "RENDER_ANIMATION").animation = True
 
         if context.scene.render.engine == "YAFA_RENDER":
             self.layout.row().operator("RENDER_OT_render_view", "Render 3D View", "VIEW3D")
@@ -73,44 +88,20 @@ from yafaray.ui import properties_yaf_AA_settings
 class YAFRENDER_PT_output(YafarayRenderButtonsPanel, bpy.types.Panel):
 
     bl_label = "Output Settings"
-    bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
         layout = self.layout
 
         rd = context.scene.render
-        file_format = rd.file_format
+        sc = context.scene
 
         layout.prop(rd, "filepath", text = "")
 
-        split = layout.split()
+        split = layout.split(percentage = 0.6)
         col = split.column()
-        col.prop(rd, "file_format", text = "")
-
-        if file_format == 'JPEG':
-            split = layout.split()
-            split.label("Using 8 Bit color depth, full quality")
-
-        elif file_format == 'PNG':
-            split = layout.split()
-            split.label("Using 8 Bit color depth, no compression")
-
-        elif file_format == 'TARGA':
-            split = layout.split()
-            split.label("Using 8 Bit color depth, no RLE")
-
-        elif file_format == 'OPEN_EXR':
-            layout.label("Using Half Float format with Z-Buffer")
-            layout.label("(If Z-Buffer is enabled on the render settings)")
-
-        elif file_format == 'TIFF':
-            split = layout.split()
-            split.label("Using 8 bit depth TIFF")
-
-        else:
-            split = layout.split()
-            split.label("Not supported by YafaRay")
-
+        col.prop(sc, "img_output", text = "", icon = "IMAGE_DATA")
+        col = split.column()
+        col.row().prop(rd, "color_mode", text="Color", expand=True)
 
 class YAFRENDER_PT_post_processing(YafarayRenderButtonsPanel, bpy.types.Panel):
 

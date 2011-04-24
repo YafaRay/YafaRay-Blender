@@ -1,6 +1,6 @@
 import bpy
+#import types and props ---->
 from bpy.props import *
-
 Material = bpy.types.Material
 
 Material.mat_type = EnumProperty(
