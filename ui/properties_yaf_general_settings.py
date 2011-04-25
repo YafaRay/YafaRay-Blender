@@ -1,11 +1,11 @@
 import bpy
 import sys
 import os
-# import all props
-from bpy.props import *
 from yafaray.ot import yafaray_presets
-
+#import types and props ---->
+from bpy.props import *
 Scene = bpy.types.Scene
+
 
 # Default Gamma values for Windows Platform = 2.2 other Platforms (Linux/MacOS) = 1.8
 if sys.platform == 'win32':

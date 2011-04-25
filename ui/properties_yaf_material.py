@@ -1,6 +1,6 @@
 import bpy
+#import types and props ---->
 from bpy.props import *
-
 Material = bpy.types.Material
 
 Material.mat_type = EnumProperty(
@@ -118,7 +118,7 @@ Material.absorption_dist =      FloatProperty(
                                         description = "Absorption distance scale",
                                         min = 0.0, max = 100.0,
                                         default = 1.0, step = 1,
-                                        precision = 3,
+                                        precision = 4,
                                         soft_min = 0.0, soft_max = 100.0)
 Material.glass_transmit =       FloatProperty(  # added transmit filter for glass material
                                         description = "Filter strength applied to refracted light",
@@ -135,7 +135,7 @@ Material.dispersion_power =     FloatProperty(
                                         description = "Strength of dispersion effect, disabled when 0",
                                         min = 0.0, max = 5.0,
                                         default = 0.0, step = 1,
-                                        precision = 3,
+                                        precision = 4,
                                         soft_min = 0.0, soft_max = 5.0)
 Material.refr_roughness =       FloatProperty(  # added refraction roughness propertie for roughglass material
                                         description = "Roughness factor for glass material",

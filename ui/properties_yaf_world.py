@@ -1,10 +1,8 @@
 import bpy
-
 # import types and props ---->
 from bpy.props import *
 World = bpy.types.World
 #TODO: Update default values, edit description
-
 
 World.bg_type = EnumProperty(
     items = (
@@ -20,17 +18,17 @@ World.bg_type = EnumProperty(
 World.bg_zenith_ground_color = FloatVectorProperty(
                                             subtype = "COLOR",
                                             min = 0.0, max = 1.0,
-                                            default = (1, .9, .8))
+                                            default = (1, 0.9, 0.8))
 
 World.bg_horizon_ground_color = FloatVectorProperty(
                                             subtype = "COLOR",
                                             min = 0.0, max = 1.0,
-                                            default = (.8, .6, .3))
+                                            default = (0.8, 0.6, 0.3))
 
 World.bg_single_color =     FloatVectorProperty(description = "Background color",
                                             subtype = 'COLOR',
                                             min = 0.0, max = 1.0,
-                                            default = (0.7,0.7,0.7))
+                                            default = (0.7, 0.7, 0.7))
 
 World.bg_use_ibl =          BoolProperty(
                                             description = "Use IBL",
@@ -110,6 +108,7 @@ World.bg_gamma_enc =        BoolProperty(
                                             description = "",
                                             default = True)
 
+
 class YAFWORLD_PT_preview(bpy.types.Panel):
     bl_label = "Background Preview"
     bl_space_type = 'PROPERTIES'
@@ -126,26 +125,25 @@ class YAFWORLD_PT_preview(bpy.types.Panel):
         self.layout.template_preview(context.world)
         self.layout.operator("WORLD_OT_refresh_preview", "Refresh Preview", "WORLD")
 
+
 class YAFWORLD_PT_world(bpy.types.Panel):
 
     bl_label = 'Background Settings'
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = 'world'
-    bl_options = {'DEFAULT_CLOSED'}
-    COMPAT_ENGINES =['YAFA_RENDER']
+    COMPAT_ENGINES = ['YAFA_RENDER']
 
     @classmethod
     def poll(self, context):
 
-        return context.world and  (context.scene.render.engine in self.COMPAT_ENGINES)
-
+        return context.world and (context.scene.render.engine in self.COMPAT_ENGINES)
 
     def draw(self, context):
 
         layout = self.layout
         split = layout.split()
-        col = split.column()
+        col = layout.column()
 
         col.prop(context.world, "bg_type", text = "Background")
 
@@ -162,20 +160,20 @@ class YAFWORLD_PT_world(bpy.types.Panel):
 
             tex = context.scene.world.active_texture
 
-            if tex is not None: # and tex.type == 'IMAGE': # revised if changed to yaf_tex_type
+            if tex is not None:  # and tex.type == 'IMAGE': # revised if changed to yaf_tex_type
                 try:
-                    col.template_ID(context.world, "active_texture")#, new="texture.new")
+                    col.template_ID(context.world, "active_texture")  # new="texture.new")
                 except:
                     pass
-                if  tex.type == 'IMAGE': # it allows to change the used image
+                if  tex.type == 'IMAGE':  # it allows to change the used image
                     try:
-                        col.template_image(tex, "image", tex.image_user, compact=True)
+                        col.template_image(tex, "image", tex.image_user, compact = True)
                     except:
                         pass
             else:
                 try:
                     col.template_ID(context.world, "active_texture", new="texture.new")
-                except: # TODO: create only image texture? procedural not supported.. ?
+                except:  # TODO: create only image texture? procedural not supported.. ?
                     pass
 
         elif context.world.bg_type == 'Sunsky':
@@ -190,12 +188,12 @@ class YAFWORLD_PT_world(bpy.types.Panel):
             col.operator("world.update_sun", text = "Update Sun")
             col.prop(context.world, "bg_from", text = "From")
             col.prop(context.world, "bg_add_sun", text = "Add Sun")
-            if context.world.bg_add_sun :
+            if context.world.bg_add_sun:
                 col.prop(context.world, "bg_sun_power", text = "Sun Power")
 
             col.prop(context.world, "bg_background_light", text = "Skylight")
             col.prop(context.world, "bg_light_samples", text = "Samples")
-## DarkTide Sunsky NOT  more updated? ----->
+        ## DarkTide Sunsky NOT  more updated? ----->
         elif context.world.bg_type == 'Darktide\'s Sunsky':
             col.prop(context.world, "bg_turbidity", text = "Turbidity")
             col.prop(context.world, "bg_a_var", text = "Brightness of horizon gradient")
@@ -224,12 +222,19 @@ class YAFWORLD_PT_world(bpy.types.Panel):
             col.prop(context.world, "bg_gamma_enc", text = "Gamma Encoding")
 
         elif context.world.bg_type == 'Single Color':
-            col.prop(context.world, "bg_single_color", text = "Color")
+            split = layout.split(percentage = 0.33)
+            col = split.column()
+            col.label("Color:")
+            col = split.column()
+            col.prop(context.world, "bg_single_color", text = "")
+            split = layout.split(percentage = 0.33)
+            col = split.column(align = True)
             col.prop(context.world, "bg_use_ibl", text = "Use IBL")
+            col.label(text = " ")
 
-        if context.world.bg_use_ibl: # for all options used IBL
+        if context.world.bg_use_ibl:  # for all options used IBL
+            col = split.column(align = True)
             col.prop(context.world, "bg_ibl_samples", text = "IBL Samples")
             col.prop(context.world, "bg_power", text = "Power")
 
 from yafaray.ui import properties_yaf_volume_integrator
-

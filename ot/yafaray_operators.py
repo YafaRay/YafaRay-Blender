@@ -2,6 +2,7 @@ import bpy
 import math
 import mathutils
 import time
+from bpy.props import *
 
 
 class OBJECT_OT_get_position(bpy.types.Operator):
@@ -159,6 +160,43 @@ class RENDER_OT_render_view(bpy.types.Operator):
         bpy.types.YAFA_RENDER.viewMatrix = view3d.view_matrix.copy()
 
         bpy.ops.render.render('INVOKE_DEFAULT')
+
+        return {'FINISHED'}
+
+
+class RENDER_OT_render_animation(bpy.types.Operator):  # own operator for rendering and to check if render animation was invoked
+    bl_label = "Render Active Scene"
+    bl_idname = "render.render_animation"
+    bl_description = "Render active scene"
+    animation = bpy.props.BoolProperty()
+
+    @classmethod
+    def poll(self, context):
+
+        check_kitems = context.window_manager.keyconfigs.active.keymaps["Screen"]
+
+        if hasattr(check_kitems, "keymap_items"):  # check for api changes in Blender 2.56 rev. 35764
+            kitems = check_kitems.keymap_items
+        else:
+            kitems = check_kitems.items
+
+        if not kitems.from_id(bpy.types.YAFA_RENDER.renderAnimationKey):
+            if self.animation:
+                bpy.types.YAFA_RENDER.renderAnimationKey = kitems.new("RENDER_OT_render_animation", 'F12', 'RELEASE', False, False, True, False).id
+            else:
+                bpy.types.YAFA_RENDER.renderStillKey = kitems.new("RENDER_OT_render_animation", 'F12', 'RELEASE', False, False, False, False).id
+
+        return context.scene.render.engine  == 'YAFA_RENDER'
+
+
+    def invoke(self, context, event):
+
+        if self.animation:
+            bpy.types.YAFA_RENDER.render_Animation = True  # set propertie, so exporter could recognize that render animation was invoked
+            bpy.ops.render.render('INVOKE_DEFAULT', animation = True)
+        else:
+            bpy.types.YAFA_RENDER.render_Animation = False  # set propertie, so exporter could recognize that render animation was invoked
+            bpy.ops.render.render('INVOKE_DEFAULT')
 
         return {'FINISHED'}
 

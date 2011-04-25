@@ -1,10 +1,8 @@
 import bpy
-
 #import types and props ---->
 from bpy.props import *
-
-
 Camera = bpy.types.Camera
+
 
 Camera.camera_type = EnumProperty(
     items = (
@@ -31,7 +29,7 @@ Camera.bokeh_type    =      EnumProperty(attr = "bokeh_type",
     ),
     default = "disk1",
     name = "Bokeh Type")
-Camera.aperture =       FloatProperty(attr = "aperture", min = 0.0, max = 20.0, precision = 3)
+Camera.aperture =       FloatProperty(attr = "aperture", min = 0.0, max = 20.0, precision = 5)
 Camera.bokeh_rotation = FloatProperty(attr = "bokeh_rotation", min = 0.0, max = 180, precision =3)
 Camera.bokeh_bias =     EnumProperty(attr = "bokeh_bias",
     items = (
