@@ -118,7 +118,7 @@ Material.absorption_dist =      FloatProperty(
                                         description = "Absorption distance scale",
                                         min = 0.0, max = 100.0,
                                         default = 1.0, step = 1,
-                                        precision = 3,
+                                        precision = 5,
                                         soft_min = 0.0, soft_max = 100.0)
 Material.glass_transmit =       FloatProperty(  # added transmit filter for glass material
                                         description = "Filter strength applied to refracted light",
