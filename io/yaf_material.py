@@ -124,6 +124,19 @@ class yafMaterial:
         yi.paramsSetBool("do_color", do_color)
         yi.paramsSetBool("do_scalar", not do_color)
 
+        # "hack", scalar maps should always convert the RGB intensity to scalar -> but not for images with transparency
+        # and use alpha checked -> bring back old behavior like in 2.49 exporter, so images with alpha channel render
+        # with color and transparency information...
+        if name[:12] == 'transp_layer':
+            noRGB = mtex.use_rgb_to_intensity
+            yi.paramsSetBool("noRGB", noRGB)
+            if factor < 0:
+                factor = factor * -1
+                yi.paramsSetFloat("valfac", factor)
+                yi.paramsSetBool("negative", True)
+            else:
+                yi.paramsSetFloat("valfac", factor)
+
         return True
 
     def writeMappingNode(self, name, texname, mtex):
@@ -192,7 +205,7 @@ class yafMaterial:
         if mtex.use_map_normal:  # || mtex->maptoneg & MAP_NORM )
             # scale up the normal factor, it resembles
             # blender a bit more
-            nf = mtex.normal_factor * 5
+            nf = mtex.normal_factor * 2
             yi.paramsSetFloat("bump_strength", nf)
 
     def writeGlassShader(self, mat, rough):

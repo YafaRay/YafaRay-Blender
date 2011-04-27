@@ -132,6 +132,7 @@ class YAFWORLD_PT_world(bpy.types.Panel):
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = 'world'
+    ibl = True
     COMPAT_ENGINES = ['YAFA_RENDER']
 
     @classmethod
@@ -148,35 +149,49 @@ class YAFWORLD_PT_world(bpy.types.Panel):
         col.prop(context.world, "bg_type", text = "Background")
 
         if context.world.bg_type == 'Gradient':
-            col.prop(context.world, "zenith_color", text = "Zenith Color")
-            col.prop(context.world, "horizon_color", text = "Horizon Color")
-            col.prop(context.world, "bg_horizon_ground_color", text = "Horizon Ground Color")
-            col.prop(context.world, "bg_zenith_ground_color", text = "Zenith Ground Color")
+            split = layout.split(percentage = 0.40)
+            col = split.column()
+            col.label(text = "Zenith Color:")
+            col.label(text = "Horizon Color:")
+            col.label(text = "Horizon Ground Color:")
+            col.label(text = "Zenith Ground Color:")
+            col = split.column()
+            col.prop(context.world, "zenith_color", text = "")
+            col.prop(context.world, "horizon_color", text = "")
+            col.prop(context.world, "bg_horizon_ground_color", text = "")
+            col.prop(context.world, "bg_zenith_ground_color", text = "")
+            split = layout.split(percentage = 0.40)
+            col = split.column(align = True)
             col.prop(context.world, "bg_use_ibl", text = "Use IBL")
+            col.label(text = " ")
 
         elif context.world.bg_type == 'Texture':
-            col.prop(context.world, "bg_use_ibl", text = "Use IBL")
-            col.prop(context.world, "bg_rotation", text = "Rotation")
-
+            
             tex = context.scene.world.active_texture
 
             if tex is not None:  # and tex.type == 'IMAGE': # revised if changed to yaf_tex_type
                 try:
-                    col.template_ID(context.world, "active_texture")  # new="texture.new")
+                    layout.template_ID(context.world, "active_texture")  # new="texture.new")
                 except:
                     pass
                 if  tex.type == 'IMAGE':  # it allows to change the used image
                     try:
-                        col.template_image(tex, "image", tex.image_user, compact = True)
+                        layout.template_image(tex, "image", tex.image_user, compact = True)
                     except:
                         pass
             else:
                 try:
-                    col.template_ID(context.world, "active_texture", new="texture.new")
+                    layout.template_ID(context.world, "active_texture", new="texture.new")
                 except:  # TODO: create only image texture? procedural not supported.. ?
                     pass
+            layout.prop(context.world, "bg_rotation", text = "Rotation")
+            split = layout.split(percentage = 0.33)
+            col = split.column(align = True)
+            col.prop(context.world, "bg_use_ibl", text = "Use IBL")
+            col.label(text = " ")
 
         elif context.world.bg_type == 'Sunsky':
+            self.ibl = False
             col.prop(context.world, "bg_turbidity", text = "Turbidity")
             col.prop(context.world, "bg_a_var", text = "HorBrght")
             col.prop(context.world, "bg_b_var", text = "HorSprd")
@@ -195,6 +210,7 @@ class YAFWORLD_PT_world(bpy.types.Panel):
             col.prop(context.world, "bg_light_samples", text = "Samples")
         ## DarkTide Sunsky NOT  more updated? ----->
         elif context.world.bg_type == 'Darktide\'s Sunsky':
+            self.ibl = False
             col.prop(context.world, "bg_turbidity", text = "Turbidity")
             col.prop(context.world, "bg_a_var", text = "Brightness of horizon gradient")
             col.prop(context.world, "bg_b_var", text = "Luminance of horizon")
@@ -232,7 +248,7 @@ class YAFWORLD_PT_world(bpy.types.Panel):
             col.prop(context.world, "bg_use_ibl", text = "Use IBL")
             col.label(text = " ")
 
-        if context.world.bg_use_ibl:  # for all options used IBL
+        if context.world.bg_use_ibl and self.ibl:  # for all options used IBL
             col = split.column(align = True)
             col.prop(context.world, "bg_ibl_samples", text = "IBL Samples")
             col.prop(context.world, "bg_power", text = "Power")
