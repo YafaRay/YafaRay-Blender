@@ -462,7 +462,10 @@ class yafObject(object):
         self.yi.endTriMesh()
         
         if isSmooth == True:
-            self.yi.smoothMesh(0, mesh.auto_smooth_angle)
+            if mesh.use_auto_smooth:
+                self.yi.smoothMesh(0, mesh.auto_smooth_angle)
+            else:
+                self.yi.smoothMesh(0, 181)
         
         self.yi.endGeometry()
 
