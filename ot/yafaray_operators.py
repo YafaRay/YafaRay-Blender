@@ -164,7 +164,7 @@ class RENDER_OT_render_view(bpy.types.Operator):
         return {'FINISHED'}
 
 
-class RENDER_OT_render_animation(bpy.types.Operator):
+class RENDER_OT_render_animation(bpy.types.Operator):  # own operator for rendering and to check if render animation was invoked
     bl_label = "Render Active Scene"
     bl_idname = "render.render_animation"
     bl_description = "Render active scene"
