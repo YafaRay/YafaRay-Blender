@@ -72,13 +72,16 @@ class yafMaterial:
         yi.paramsSetBool("stencil", mtex.use_stencil)  # sync. values to Blender for re-link textures
 
         negative = mtex.invert
-
         yi.paramsSetBool("negative", negative)
+
+        if factor < 0:  # check for negative values
+            factor = factor * -1
+            yi.paramsSetBool("negative", True)
 
         # "hack", scalar maps should always convert the RGB intensity to scalar
         # not clear why without this and noRGB == False, maps on scalar values seem to be "white" everywhere
         noRGB = mtex.use_rgb_to_intensity
-        if len(dcol) == 1:
+        if len(dcol) == 1 and not name[:12] == 'transp_layer':  # hack for transparency intensity maps with 'use alpha'
             noRGB = True
 
         yi.paramsSetBool("noRGB", noRGB)
@@ -123,19 +126,6 @@ class yafMaterial:
 
         yi.paramsSetBool("do_color", do_color)
         yi.paramsSetBool("do_scalar", not do_color)
-
-        # "hack", scalar maps should always convert the RGB intensity to scalar -> but not for images with transparency
-        # and use alpha checked -> bring back old behavior like in 2.49 exporter, so images with alpha channel render
-        # with color and transparency information...
-        if name[:12] == 'transp_layer':
-            noRGB = mtex.use_rgb_to_intensity
-            yi.paramsSetBool("noRGB", noRGB)
-            if factor < 0:
-                factor = factor * -1
-                yi.paramsSetFloat("valfac", factor)
-                yi.paramsSetBool("negative", True)
-            else:
-                yi.paramsSetFloat("valfac", factor)
 
         return True
 
@@ -384,7 +374,7 @@ class yafMaterial:
                 diffRoot = lname
 
             lname = "mircol_layer%x" % i
-            if self.writeTexLayer(lname, mappername, mcolRoot, mtex, mtex.use_map_color_spec, mirCol, mtex.specular_color_factor):
+            if self.writeTexLayer(lname, mappername, mcolRoot, mtex, mtex.use_map_mirror, mirCol, mtex.mirror_factor):
                 used = True
                 mcolRoot = lname
 
@@ -399,7 +389,7 @@ class yafMaterial:
                 translRoot = lname
 
             lname = "mirr_layer%x" % i
-            if self.writeTexLayer(lname, mappername, mirrorRoot, mtex, mtex.use_map_specular, [bSpecr], mtex.specular_factor):
+            if self.writeTexLayer(lname, mappername, mirrorRoot, mtex, mtex.use_map_raymir, [bSpecr], mtex.raymir_factor):
                 used = True
                 mirrorRoot = lname
 

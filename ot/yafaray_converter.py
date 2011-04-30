@@ -312,9 +312,14 @@ def convertWorld(world):
         dssun_power = "bg_sun_power",
         dsbackgroundlight = "bg_background_light",
         dslight_samples = "bg_light_samples",
-        dspower = "bg_power",
+        dspower = "bg_dsbright",
         dsexposure = "bg_exposure",
-        dsgammenc = "bg_gamma_enc")
+        dsgammenc = "bg_gamma_enc",
+        volType = "v_int_type",
+        stepSize = "v_int_step_size",
+        adaptive = "v_int_adaptive",
+        optimize = "v_int_optimize",
+        attgridScale = "v_int_attgridres")
 
     bgTypeDict = dict()
     bgTypeDict["Single Color"] = "Single Color"
@@ -398,6 +403,15 @@ def convertGeneralSettings(scene):
         customString = "custom_string",
         autoalpha = "auto_alpha",
         transpShad = "transp_shad")
+
+    try:  # not for old 0.1.1 yafaray
+        tileOrder = props["tiles_order"]
+        tileOrderDict = dict()
+        tileOrderDict["Linear"] = "linear"
+        tileOrderDict["Random"] = "random"
+        scene.gs_tile_order = tileOrderDict[tileOrder]
+    except:
+        print("No tile order propertie found, file from old yafaray 0.1.1 exporter")
 
     for p in props:
         value = props[p]

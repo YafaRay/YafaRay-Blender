@@ -310,8 +310,8 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, bpy.types.Panel):
 
         shaderNodes = dict()
         shaderNodes["Bump"]         = ["use_map_normal", "normal_factor", "Bump"]
-        shaderNodes["MirrorAmount"] = ["use_map_specular", "specular_factor", "Mirror Amount"]
-        shaderNodes["MirrorColor"]  = ["use_map_color_spec", "specular_color_factor", "Mirror Color"]
+        shaderNodes["MirrorAmount"] = ["use_map_raymir", "raymir_factor", "Mirror Amount"]
+        shaderNodes["MirrorColor"]  = ["use_map_mirror", "mirror_factor", "Mirror Color"]
         shaderNodes["DiffuseColor"] = ["use_map_color_diffuse", "diffuse_color_factor", "Diffuse Color"]
         shaderNodes["GlossyColor"]  = ["use_map_color_spec", "specular_color_factor", "Glossy Color"]
         shaderNodes["GlossyAmount"] = ["use_map_specular", "specular_factor", "Glossy Amount"]
