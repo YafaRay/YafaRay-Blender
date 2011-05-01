@@ -3,6 +3,8 @@
 from yafaray.ui import properties_yaf_render
 from yafaray.ui import properties_yaf_camera
 from yafaray.ui import properties_yaf_material
+from yafaray.ui import properties_yaf_mat_diffuse
+from yafaray.ui import properties_yaf_mat_specular
 from yafaray.ui import properties_yaf_texture
 from yafaray.ui import properties_yaf_world
 

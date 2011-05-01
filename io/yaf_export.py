@@ -57,9 +57,9 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.exportTextures()
         self.exportMaterials()
         self.yaf_object.setScene(self.scene)
-        self.exportObjects() # povmaniaco: my test for correct order exporter into xml file (like 2.49)
+        self.exportObjects()  # povmaniaco: my test for correct order exporter into xml file (like 2.49)
         self.yaf_object.createCamera()
-        self.yaf_world.exportWorld(self.scene) # povmaniaco: my test for correct order exporter into xml file (like 2.49)
+        self.yaf_world.exportWorld(self.scene)  # povmaniaco: my test for correct order exporter into xml file (like 2.49)
         #self.exportObjects()
 
     def exportTextures(self):

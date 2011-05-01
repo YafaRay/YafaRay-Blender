@@ -166,7 +166,7 @@ class YAFWORLD_PT_world(bpy.types.Panel):
             col.label(text = " ")
 
         elif context.world.bg_type == 'Texture':
-            
+
             tex = context.scene.world.active_texture
 
             if tex is not None:  # and tex.type == 'IMAGE': # revised if changed to yaf_tex_type

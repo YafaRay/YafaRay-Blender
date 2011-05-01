@@ -188,7 +188,6 @@ class RENDER_OT_render_animation(bpy.types.Operator):  # own operator for render
 
         return context.scene.render.engine  == 'YAFA_RENDER'
 
-
     def invoke(self, context, event):
 
         if self.animation:
@@ -235,4 +234,20 @@ class LAMP_OT_sync_3dview(bpy.types.Operator):
             lampTypeMap = {'area': 'AREA', 'spot': 'SPOT', 'sun': 'SUN', 'point': 'POINT', 'ies': 'SPOT'}
             lamp.data.type = lampTypeMap[lamp.data.lamp_type]
 
+        return {'FINISHED'}
+
+
+class YAF_OT_presets_ior_list(bpy.types.Operator):
+    bl_idname = 'material.set_ior_preset'
+    bl_label = 'IOR presets'
+    index = bpy.props.FloatProperty()
+
+    @classmethod
+    def poll(self, context):
+        yaf_mat = context.material
+        return yaf_mat
+
+    def execute(self, context):
+        yaf_mat = context.material
+        yaf_mat.IOR_refraction = self.index
         return {'FINISHED'}

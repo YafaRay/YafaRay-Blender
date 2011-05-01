@@ -299,7 +299,7 @@ def convertWorld(world):
         return problemList
 
     bg_type = props["bg_type"]
-    
+
     variableDict = dict(
         zenith_color = "zenith_color",
         horizon_color = "horizon_color",

@@ -103,6 +103,7 @@ class YAFRENDER_PT_output(YafarayRenderButtonsPanel, bpy.types.Panel):
         col = split.column()
         col.row().prop(rd, "color_mode", text="Color", expand=True)
 
+
 class YAFRENDER_PT_post_processing(YafarayRenderButtonsPanel, bpy.types.Panel):
 
     bl_label = "Post Processing"
