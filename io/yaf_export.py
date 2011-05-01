@@ -53,12 +53,14 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.yaf_material   = yafMaterial(self.yi, self.materialMap, self.yaf_texture.loadedTextures)
 
     def exportScene(self):
-        self.yaf_world.exportWorld(self.scene)
+        #self.yaf_world.exportWorld(self.scene)
         self.exportTextures()
         self.exportMaterials()
         self.yaf_object.setScene(self.scene)
+        self.exportObjects()  # povmaniaco: my test for correct order exporter into xml file (like 2.49)
         self.yaf_object.createCamera()
-        self.exportObjects()
+        self.yaf_world.exportWorld(self.scene)  # povmaniaco: my test for correct order exporter into xml file (like 2.49)
+        #self.exportObjects()
 
     def exportTextures(self):
         # export textures from visible objects only. Won't work with
@@ -153,7 +155,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             filetype = 'tga'
         elif filetype == 'TIFF':  # add tiff imageHandler
             filetype = 'tif'
-        elif filetype == 'JPEG':  # add jpeg imageHandler 
+        elif filetype == 'JPEG':  # add jpeg imageHandler
             filetype = 'jpg'
         elif filetype == 'HDR':  # add hdr imgeHandler
             filetype = 'hdr'
@@ -165,7 +167,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             filetype = 'exr'
         extension = '.' + filetype
         if bpy.types.YAFA_RENDER.render_Animation:  # check for animation rendering -> write image with filename from framenumber
-            output = os.path.abspath(os.path.join(output_path , ("%0" + str(len(str(self.scene.frame_end))) + "d") % self.scene.frame_current))
+            output = os.path.abspath(os.path.join(output_path, ("%0" + str(len(str(self.scene.frame_end))) + "d") % self.scene.frame_current))
         else:
             output = tempfile.mktemp(dir = output_path)
         if not os.path.exists(output_path):  # try to create dir if it not exists...
@@ -212,7 +214,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             absolute_outpath = os.path.abspath(os.path.join(rfilepath, 'yaf_ani'))  # output folder for animation imagefiles saving from yafaray
         else:
             absolute_outpath = os.path.abspath(os.path.join(rfilepath, 'yaf_tmp'))  # output folder for tmp imagefile saving from yafaray
-        if not r.file_format == scene.img_output and not self.preview:  # set the image file format once for saving from Blender 
+        if not r.file_format == scene.img_output and not self.preview:  # set the image file format once for saving from Blender
             r.file_format = scene.img_output
         if not r.filepath == absolute_outpath[:-7] and not self.preview:
             r.filepath = absolute_outpath[:-7]  # set image path once for animation (Button "Render Animation") to the original output setting
