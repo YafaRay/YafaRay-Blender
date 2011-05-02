@@ -240,7 +240,7 @@ class LAMP_OT_sync_3dview(bpy.types.Operator):
 class YAF_OT_presets_ior_list(bpy.types.Operator):
     bl_idname = 'material.set_ior_preset'
     bl_label = 'IOR presets'
-    index = bpy.props.FloatProperty()
+    index = bpy.props.StringProperty()
 
     @classmethod
     def poll(self, context):
@@ -249,5 +249,7 @@ class YAF_OT_presets_ior_list(bpy.types.Operator):
 
     def execute(self, context):
         yaf_mat = context.material
-        yaf_mat.IOR_refraction = self.index
+        ior = self.index.split("+")
+        bpy.types.YAF_MT_presets_ior_list.bl_label = ior[0]
+        yaf_mat.IOR_refraction = float(ior[1])
         return {'FINISHED'}

@@ -8,7 +8,7 @@ def draw_generator(ior_n):
         sl = self.layout
         for values in ior_n:
             ior_name, ior_index = values
-            sl.operator('material.set_ior_preset', text = ior_name).index = ior_index
+            sl.operator('material.set_ior_preset', text = ior_name).index = ior_name + "+" + str(ior_index)
     return draw
 
 submenus = []
@@ -28,7 +28,7 @@ for ior_group, ior_n in ior_list:
 
 
 class YAF_MT_presets_ior_list(bpy.types.Menu):
-    bl_label = 'IOR Presets'
+    bl_label = "Glass"
 
     def draw(self, context):
         sl = self.layout
