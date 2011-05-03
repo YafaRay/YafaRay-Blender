@@ -8,7 +8,9 @@ def draw_generator(ior_n):
         sl = self.layout
         for values in ior_n:
             ior_name, ior_index = values
-            sl.operator('material.set_ior_preset', text = ior_name).index = ior_name + "+" + str(ior_index)
+            props = sl.operator('material.set_ior_preset', text = ior_name)
+            props.index = ior_index  # two values given to ior preset operator
+            props.name = ior_name
     return draw
 
 submenus = []
