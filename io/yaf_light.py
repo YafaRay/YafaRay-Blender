@@ -1,6 +1,8 @@
 import bpy
+import os
 import math
 from math import *
+from bpy.path import *
 import mathutils
 
 class yafLight:
@@ -144,11 +146,10 @@ class yafLight:
             # use for IES light
             yi.paramsSetString("type", "ieslight")
             yi.paramsSetPoint("to", to[0], to[1], to[2])
-            import os
-            if lamp.ies_file != "" and not os.path.exists(lamp.ies_file):
+            ies_file = abspath(lamp.ies_file)
+            if ies_file != "" and not os.path.exists(ies_file):
                 return False
-
-            yi.paramsSetString("file", lamp.ies_file)
+            yi.paramsSetString("file", ies_file)
             yi.paramsSetInt("samples", lamp.yaf_samples)
             yi.paramsSetBool("soft_shadows", lamp.ies_soft_shadows)
             yi.paramsSetFloat("cone_angle", lamp.ies_cone_angle)

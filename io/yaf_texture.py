@@ -149,9 +149,9 @@ class yafTexture:
             yi.paramsSetFloat("sharpness", sharp)
             yi.paramsSetString("noise_type", noise2string(tex.noise_basis) )
 
-            if tex.noisebasis_2 == 'SAW'  :
+            if tex.noise_basis_2 == 'SAW'  :
                 ts="saw"
-            elif tex.noisebasis_2 == 'TRI':
+            elif tex.noise_basis_2 == 'TRI':
                 ts="tri"
             else:
                 ts = "sin"

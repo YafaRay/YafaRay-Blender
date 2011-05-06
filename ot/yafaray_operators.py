@@ -241,6 +241,7 @@ class YAF_OT_presets_ior_list(bpy.types.Operator):
     bl_idname = 'material.set_ior_preset'
     bl_label = 'IOR presets'
     index = bpy.props.FloatProperty()
+    name = bpy.props.StringProperty()
 
     @classmethod
     def poll(self, context):
@@ -249,5 +250,6 @@ class YAF_OT_presets_ior_list(bpy.types.Operator):
 
     def execute(self, context):
         yaf_mat = context.material
+        bpy.types.YAF_MT_presets_ior_list.bl_label = self.name
         yaf_mat.IOR_refraction = self.index
         return {'FINISHED'}

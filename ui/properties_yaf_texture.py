@@ -415,7 +415,7 @@ class YAF_TEXTURE_PT_wood(YAF_TextureTypePanel, bpy.types.Panel):
 
         tex = context.texture
 
-        layout.prop(tex, "noisebasis_2", expand=True)
+        layout.prop(tex, "noise_basis_2", expand=True)
         layout.prop(tex, "wood_type", text="Wood Type")
 
         col = layout.column()
@@ -443,7 +443,7 @@ class YAF_TEXTURE_PT_marble(YAF_TextureTypePanel, bpy.types.Panel):
         tex = context.texture
 
         layout.prop(tex, "marble_type", expand=True)
-        layout.prop(tex, "noisebasis_2", expand=True)
+        layout.prop(tex, "noise_basis_2", expand=True)
         layout.label(text = "Noise:")
         layout.prop(tex, "noise_type", text="Type", expand=True)
         layout.prop(tex, "noise_basis", text="Basis")
