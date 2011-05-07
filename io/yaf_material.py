@@ -336,10 +336,7 @@ class yafMaterial:
 
         yi.paramsSetString("type", "shinydiffusemat")
 
-        #  link values Yafaray / Blender
-        #  provisional, for test only
-        #  TODO: change name of 'variables'?
-
+        
         bCol = mat.diffuse_color
         mirCol = mat.mirror_color
         bSpecr = mat.specular_reflect
