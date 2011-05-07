@@ -41,7 +41,7 @@ def convertObject(obj):
 
     for p in props:
         value = props[p]
-        # print(p, props[p])
+
 
         if p in variableDict:
             p = variableDict[p]
@@ -77,9 +77,7 @@ def convertCameras(cameraObjects):
 
 def convertCamera(cameraObj):
     problemList = []
-
     camera = cameraObj.data
-
     props = cameraObj.get("YafRay", None)
     if not props:
         problemList.append("No properties on camera" + camera.name)
@@ -98,12 +96,11 @@ def convertCamera(cameraObj):
     cameraTypeDict["orthographic"] = "orthographic"
 
     camera.camera_type = cameraTypeDict[camera_type]
-    print("camera", camera.name, camera.camera_type)
 
     for p in props:
 
         value = props[p]
-        # print(p, value)
+
         if p == "dof_object_focus" and value == 1:
             camera.dof_object = bpy.data.objects[props["dof_object"]]
 
@@ -173,7 +170,6 @@ def convertLight(lightObj):
             continue
 
         value = props[p]
-        # print(p, value)
 
         if p in variableDict:
             p = variableDict[p]
@@ -228,11 +224,10 @@ def convertMaterial(mat):
     for item in [m for m in bpy.data.materials if not m.name == mat.name]:
         materialList.append((item.name, item.name, ""))
 
-    Material = bpy.types.Material
-    Material.material1 = EnumProperty(items = materialList, name = "Material One")
-    Material.material2 = EnumProperty(items = materialList, name = "Material Two")
-
-    # print("type", props["type"])
+    # no need to convert blend material anymore...
+    # Material = bpy.types.Material
+    # Material.material1 = EnumProperty(items = materialList, name = "Material One")
+    # Material.material2 = EnumProperty(items = materialList, name = "Material Two")
 
     variableDict = dict()
 
@@ -254,28 +249,26 @@ def convertMaterial(mat):
 
     for p in props:
         value = props[p]
-        # print(p, value)
 
         if p in variableDict:
-            print("p in dict:", p, variableDict[p])
+            # print("p in dict:", p, variableDict[p])
             p = variableDict[p]
 
         if p == "type":
             continue
         if p == "mask":
             continue
-        if p in ["material1", "material2"]:
-            if value not in materialNames:
-                problemList.append("Broken blend material: " + mat.name + " replacing ...")
-                exec("mat." + p + " = \"" + materialList[0][0] + "\"")
-                continue
+
+        # if p in ["material1", "material2"]:
+        #    if value not in materialNames:
+        #        problemList.append("Broken blend material: " + mat.name + " replacing ...")
+        #        exec("mat." + p + " = \"" + materialList[0][0] + "\"")
+        #        continue
 
         if p == "brdf_type" or p == "brdfType":
             if value == "Oren-Nayar":
                 mat.brdf_type = "oren-nayar"
             continue
-
-        # print("type:", type(value))
 
         try:
             if type(value) in [float, int, bool]:
@@ -332,7 +325,6 @@ def convertWorld(world):
 
     for p in props:
         value = props[p]
-        # print(p, props[p])
 
         if p in variableDict:
             p = variableDict[p]
@@ -366,7 +358,6 @@ def convertAASettings(scene):
 
     for p in props:
         value = props[p]
-        # print(p, props[p])
 
         if p in variableDict:
             p = variableDict[p]
