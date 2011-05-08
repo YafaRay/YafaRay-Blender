@@ -1,4 +1,4 @@
-import os as real_os # somehow, os as a module name becomes unavailable with bpy import
+import os
 import bpy
 import re
 from  math import *
@@ -257,11 +257,10 @@ class yafTexture:
         elif tex.type == 'IMAGE' and tex.image:
             image_tex = tex.image
             image_file = bpy.path.abspath(image_tex.filepath)
-            image_file = real_os.path.realpath(image_file)
-            image_file = real_os.path.normpath(image_file)
+            image_file = os.path.realpath(image_file)
+            image_file = os.path.normpath(image_file)
 
-            #if tex.tex_file_name != "" and not os.path.exists(tex.tex_file_name): # org
-            if image_file != "" and not real_os.path.exists(image_file):
+            if image_file != "" and not os.path.exists(image_file):
                 yi.printInfo("Exporter: No valid texture image supplied.")
                 return False
 
@@ -274,6 +273,9 @@ class yafTexture:
             yi.paramsSetBool("calc_alpha", tex.use_calculate_alpha)
             yi.paramsSetBool("normalmap", tex.yaf_is_normal_map)
             yi.paramsSetFloat("gamma", scene.gs_gamma_input)
+            yi.paramsSetFloat("exposure_adjust", tex.yaf_tex_expadj)  # experimental?
+            if not tex.yaf_tex_interpolate == 'bilinear':  # bilinear is set by default
+                yi.paramsSetString("interpolate", tex.yaf_tex_interpolate)
 
             # repeat
             repeat_x = 1

@@ -237,7 +237,7 @@ class yafMaterial:
             mappername = "map%x" % i
 
             lname = "mircol_layer%x" % i
-            if self.writeTexLayer(lname, mappername, mcolRoot, mtex, mtex.use_map_color_spec, mir_col, mtex.specular_color_factor):
+            if self.writeTexLayer(lname, mappername, mcolRoot, mtex, mtex.use_map_mirror, mir_col, mtex.mirror_factor):
                 used = True
                 mcolRoot = lname
             lname = "bump_layer%x" % i
@@ -335,10 +335,6 @@ class yafMaterial:
         yi.paramsClearAll()
 
         yi.paramsSetString("type", "shinydiffusemat")
-
-        #  link values Yafaray / Blender
-        #  provisional, for test only
-        #  TODO: change name of 'variables'?
 
         bCol = mat.diffuse_color
         mirCol = mat.mirror_color

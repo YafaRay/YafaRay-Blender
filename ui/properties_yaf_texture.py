@@ -6,7 +6,6 @@ Texture = bpy.types.Texture
 
 Texture.yaf_tex_type = EnumProperty(
     items = (
-            # ("TEXTURE_TYPE","Texture Type",""),
             ("NONE", "None", ""),
             ("BLEND", "Blend", ""),
             ("CLOUDS", "Clouds", ""),
@@ -18,25 +17,40 @@ Texture.yaf_tex_type = EnumProperty(
             ("IMAGE", "Image", "")),
     default = "NONE",
     name = "Texture Type")
+    
+Texture.yaf_tex_interpolate = EnumProperty(
+    items = (
+            ("bilinear", "Bilinear", ""),
+            ("bicubic", "Bicubic", ""),
+            ("none", "None", "")),
+    default = "bilinear",
+    name = "Interpolation type")
 
 Texture.yaf_texture_coordinates = EnumProperty(attr = "yaf_texture_coordinates",
-        items = (
-                ("TEXTURE_COORDINATES", "Texture Co-Ordinates", ""),
-                ("GLOBAL", "Global", ""),
-                ("ORCO", "Orco", ""),
-                ("WINDOW", "Window", ""),
-                ("NORMAL", "Normal", ""),
-                ("REFLECTION", "Reflection", ""),
-                ("STICKY", "Sticky", ""),
-                ("STRESS", "Stress", ""),
-                ("TANGENT", "Tangent", ""),
-                ("OBJECT", "Object", ""),
-                ("UV", "UV", ""),
-), default = "GLOBAL")
+    items = (
+            ("TEXTURE_COORDINATES", "Texture Co-Ordinates", ""),
+            ("GLOBAL", "Global", ""),
+            ("ORCO", "Orco", ""),
+            ("WINDOW", "Window", ""),
+            ("NORMAL", "Normal", ""),
+            ("REFLECTION", "Reflection", ""),
+            ("STICKY", "Sticky", ""),
+            ("STRESS", "Stress", ""),
+            ("TANGENT", "Tangent", ""),
+            ("OBJECT", "Object", ""),
+            ("UV", "UV", "")),
+    default = "GLOBAL")
+
+Texture.yaf_tex_expadj = FloatProperty(
+            description = "Exposure adjustment of image texture",
+            min = 0.0, max = 10.0,
+            default = 0.0, step = 1,
+            precision = 3,
+            soft_min = 0.0, soft_max = 10.0)
 
 Texture.tex_file_name = StringProperty(attr='tex_file_name', subtype = 'FILE_PATH')
-
 Texture.yaf_is_normal_map = BoolProperty(default = False, name = "Normal map")
+
 
 try:
     from properties_material import active_node_mat
@@ -126,7 +140,7 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel, bpy.types.Panel):
         idblock = context_tex_datablock(context)
         pin_id = space.pin_id
 
-        if not isinstance(pin_id, bpy.types.Material):  # isinstance, recen change  for beta 2.56
+        if not isinstance(pin_id, bpy.types.Material):  # isinstance, recent change  for beta 2.56
             pin_id = None
 
         tex_collection = (pin_id is None) and (node is None) and (not isinstance(idblock, bpy.types.Brush))
@@ -139,7 +153,6 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel, bpy.types.Panel):
             col = row.column(align=True)
             col.operator("texture.slot_move", text="", icon='TRIA_UP').type = 'UP'
             col.operator("texture.slot_move", text="", icon='TRIA_DOWN').type = 'DOWN'
-            #col.menu("TEXTURE_MT_specials", icon='DOWNARROW_HLT', text="")
 
         col = layout.column()
 
@@ -187,7 +200,6 @@ class YAF_TEXTURE_PT_preview(YAF_TextureButtonsPanel, bpy.types.Panel):
 
 
 class YAF_TextureSlotPanel(YAF_TextureButtonsPanel):
-    #bl_label = "Slots Textures"
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
     @classmethod
@@ -501,41 +513,31 @@ def texture_filter_common(tex, layout):
     layout.prop(tex, "use_filter_size_min")
 
 
-#   class YAF_TEXTURE_PT_image_sampling(YAF_TextureTypePanel, bpy.types.Panel):
-#   bl_label = "Image Sampling"
-#   bl_options = {'DEFAULT_CLOSED'}
-#   tex_type = 'IMAGE'
-#   COMPAT_ENGINES = {'YAFA_RENDER'}
-#
-#   def draw(self, context):
-#       layout = self.layout
-#
-#       idblock = context_tex_datablock(context)
-#       tex = context.texture
-#
-#       split = layout.split()
-#
-#       col = split.column()
-#       col.label(text="Alpha:")
-#       col.prop(tex, "use_alpha", text="Use")
-#       col.prop(tex, "use_calculate_alpha", text="Calculate")
-#       col.prop(tex, "use_flip_axis", text="Flip X/Y Axis")
-#
-#       col.separator()
-#
-#       #Only for Material based textures, not for Lamp/World...
-#       if isinstance(idblock, bpy.types.Material):
-#           col.prop(tex, "use_normal_map")
-#           row = col.row()
-#           row.active = tex.use_normal_map
-#
-#       col.prop(tex, "use_mipmap")
-#       row = col.row()
-#       row.active = tex.use_mipmap
-#       row.prop(tex, "use_mipmap_gauss")
-#       col.prop(tex, "use_interpolation")
-#
-#       texture_filter_common(tex, col)
+class YAF_TEXTURE_PT_image_sampling(YAF_TextureTypePanel, bpy.types.Panel):
+    bl_label = "Image Sampling"
+    bl_options = {'DEFAULT_CLOSED'}
+    tex_type = 'IMAGE'
+    COMPAT_ENGINES = {'YAFA_RENDER'}
+
+    def draw(self, context):
+        layout = self.layout
+
+        idblock = context_tex_datablock(context)
+        tex = context.texture
+
+        split = layout.split()
+
+        col = split.column()
+        col.label(text="Image:")
+        col.prop(tex, "use_alpha", text="Use Alpha")
+        col.prop(tex, "use_calculate_alpha", text="Calculate Alpha")
+        col.prop(tex, "use_flip_axis", text="Flip X/Y Axis") 
+
+        col = split.column()
+        col.label(text = "Interpolation:")
+        col.prop(tex, "yaf_tex_interpolate", text = "")
+        col.label(text = "Exposure adjust:")
+        col.prop(tex, "yaf_tex_expadj", text = "", slider = True)
 
 
 class YAF_TEXTURE_PT_image_mapping(YAF_TextureTypePanel, bpy.types.Panel):
