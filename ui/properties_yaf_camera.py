@@ -155,19 +155,25 @@ class YAF_PT_camera_display(bpy.types.Panel):
         col.prop(camera, "show_limits", text = "Limits")
         col.prop(camera, "show_title_safe", text = "Title Safe")
         col.prop(camera, "show_name", text = "Name")
+        col.separator()
+        col.separator()
+        col.label(text = "Clipping:")
+        col.prop(context.camera, "use_clipping", text = "Use Clipping in render")
 
         col = split.column()
-        col.prop(camera, "draw_size", text = "Size")
-        col.separator()
         col.prop(camera, "show_passepartout", text = "Passepartout")
         sub = col.column()
         sub.active = camera.show_passepartout
         sub.prop(camera, "passepartout_alpha", text = "Alpha", slider = True)
-
-        col = layout.column()
+        col.label(text = "Camera size:")
+        col.prop(camera, "draw_size", text = "")
         col.separator()
-        col.prop(context.camera, "use_clipping", text = "Use Clipping in render")
-        row = col.row()
-        row.label("Clipping:")
-        row.prop(context.camera, "clip_start", text = "Start")
-        row.prop(context.camera, "clip_end", text = "End")
+        col.separator()
+        clip = col.column(align = True)
+        clip.active = camera.use_clipping
+        clip.prop(context.camera, "clip_start", text = "Start")
+        clip.prop(context.camera, "clip_end", text = "End")
+
+        if hasattr(camera, "show_guide"):  # enable compositon guide presets in camera display panel Blender 2.57 rev. >= 36590
+            layout.separator()
+            layout.prop_menu_enum(camera, "show_guide")

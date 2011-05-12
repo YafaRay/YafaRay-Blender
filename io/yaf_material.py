@@ -69,7 +69,7 @@ class yafMaterial:
             mode = 8
 
         yi.paramsSetInt("mode", mode)
-        yi.paramsSetBool("stencil", mtex.use_stencil)  # sync. values to Blender for re-link textures
+        yi.paramsSetBool("stencil", mtex.use_stencil)  
 
         negative = mtex.invert
         yi.paramsSetBool("negative", negative)
