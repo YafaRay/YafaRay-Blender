@@ -1,11 +1,10 @@
-Yafaray exporter for Blender 2.55
+Yafaray exporter for Blender 2.57
 
 The exporter is in a very experimental stage so use it for testing purposes only
 
 For the latest builds check http://www.yafaray.org/development and graphicall.org
 
-Downloading and extract at Blender/2.56/scripts/addons/yafaray directory
-This will create a dir /bin/plugins containing the necessary files.
+Downloading and extract at Blender/2.57/scripts/addons/yafaray directory
 
 We need to test it and report errors found.
 Thanks.
