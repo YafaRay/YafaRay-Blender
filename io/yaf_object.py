@@ -184,6 +184,30 @@ class yafObject(object):
                 if obj.data.name not in baseIds and obj.name not in dupBaseIds:
                     self.writeObject(obj)
 
+        # checking for empty objects with duplis on them also...
+        for empt in [e for e in self.scene.objects if not e.hide_render and e.is_visible(self.scene) and e.type == 'EMPTY']:
+
+            if empt.is_duplicator:
+                self.yi.printInfo("Processing duplis for: " + empt.name)
+
+                if hasattr(empt, "create_dupli_list"):  # method name changed
+                    empt.create_dupli_list(self.scene)
+                else:
+                    empt.dupli_list_create(self.scene)
+
+                for empt_dupli in empt.dupli_list:
+
+                    if empt_dupli.object.name not in dupBaseIds:
+                        dupBaseIds[empt_dupli.object.name] = self.writeInstanceBase(empt_dupli.object)
+
+                    self.writeInstance(dupBaseIds[empt_dupli.object.name], empt_dupli.matrix, empt_dupli.object.name)
+
+                if empt.dupli_list:
+                    if hasattr(empt, "free_dupli_list"):  # method name changed
+                        empt.free_dupli_list()
+                    else:
+                        empt.dupli_list_clear()
+
     def writeObject(self, obj, matrix = None):
 
         if not matrix:
