@@ -49,7 +49,7 @@ class yafObject(object):
             up = aboveCam
 
         else:
-            matrix = camera.matrix_local  # this change is recent
+            matrix = camera.matrix_world  # get cam worldspace transformation matrix, e.g. if cam is parented local does not work
             pos = matrix[3]
             dir = matrix[2]
             up = pos + matrix[1]
