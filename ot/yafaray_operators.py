@@ -207,8 +207,11 @@ class RENDER_OT_refresh_preview(bpy.types.Operator):
 
     def invoke(self, context, event):
         mat = context.scene.objects.active.active_material
-        mat.preview_render_type = mat.preview_render_type
-        return {'FINISHED'}
+        if mat != None:  # check if a material is assigned to an object
+            mat.preview_render_type = mat.preview_render_type
+            return {'FINISHED'}
+        else:
+            return {'CANCELLED'}
 
 
 class WORLD_OT_refresh_preview(bpy.types.Operator):

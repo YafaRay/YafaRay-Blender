@@ -147,7 +147,7 @@ class yafObject(object):
         baseIds = {}
         dupBaseIds = {}
         # export only visible objects
-        for obj in [o for o in self.scene.objects if not o.hide_render and o.is_visible(self.scene) and (o.type == 'MESH' or o.type == 'SURFACE' or o.type == 'CURVE')]:
+        for obj in [o for o in self.scene.objects if not o.hide_render and o.is_visible(self.scene) and (o.type == 'MESH' or o.type == 'SURFACE' or o.type == 'CURVE' or o.type =='FONT')]:
             if obj.is_duplicator:  # Exporting dupliObjects as instances
 
                 #self.writeObject(obj)
@@ -492,7 +492,10 @@ class yafObject(object):
             if mesh.use_auto_smooth:
                 self.yi.smoothMesh(0, mesh.auto_smooth_angle)
             else:
-                self.yi.smoothMesh(0, 181)
+                if obj.type == 'FONT':  # getting nicer result with smooth angle 60 degr. for text objects
+                    self.yi.smoothMesh(0, 60)
+                else:
+                    self.yi.smoothMesh(0, 181)
 
         self.yi.endGeometry()
 
