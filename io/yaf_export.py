@@ -208,18 +208,14 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         self.yi.setInputGamma(scene.gs_gamma_input, True)
 
-        rfilepath = os.path.abspath(os.path.normpath(r.filepath))
+        rfilepath = bpy.path.abspath(r.filepath)
+        rfilepath = os.path.realpath(rfilepath)
+        rfilepath = os.path.normpath(rfilepath)
 
         if bpy.types.YAFA_RENDER.render_Animation:
             absolute_outpath = os.path.abspath(os.path.join(rfilepath, 'yaf_ani'))  # output folder for animation imagefiles saving from yafaray
         else:
             absolute_outpath = os.path.abspath(os.path.join(rfilepath, 'yaf_tmp'))  # output folder for tmp imagefile saving from yafaray
-        if not r.file_format == scene.img_output and not self.preview:  # set the image file format once for saving from Blender
-            r.file_format = scene.img_output
-        if not r.filepath == absolute_outpath[:-7] and not self.preview:
-            r.filepath = absolute_outpath[:-7]  # set image path once for animation (Button "Render Animation") to the original output setting
-        if not r.exr_zbuf == scene.gs_z_channel and not self.preview:  # set z-buffer on for exr image saving from blender
-            r.exr_zbuf = scene.gs_z_channel
 
         if scene.gs_type_render == "file":
             outputFile, output, file_type = self.decideOutputFileName(absolute_outpath, scene.img_output)
@@ -253,7 +249,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             result = self.begin_result(bStartX, bStartY, x + bStartX, y + bStartY)
             lay = result.layers[0]
 
-            if scene.gs_z_channel and not r.file_format == 'OPEN_EXR':  # exr format has z-buffer included, so no need to load '_zbuffer' - file
+            if scene.gs_z_channel and not scene.img_output == 'OPEN_EXR':  # exr format has z-buffer included, so no need to load '_zbuffer' - file
                 lay.load_from_file(output + '_zbuffer.' + file_type)
             else:
                 lay.load_from_file(outputFile)

@@ -12,7 +12,7 @@ Scene.img_output     =  EnumProperty(
                             ("TIFF", " TIFF (Tag Image File Format)", ""),
                             ("OPEN_EXR", " EXR (IL&M OpenEXR)", ""),
                             ("HDR", " HDR (Radiance RGBE)", "")),
-                        default = "OPEN_EXR",
+                        default = "PNG",
                         name = "Image File Type")
 
 
