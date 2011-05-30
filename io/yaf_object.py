@@ -147,7 +147,7 @@ class yafObject(object):
         baseIds = {}
         dupBaseIds = {}
         # export only visible objects
-        for obj in [o for o in self.scene.objects if not o.hide_render and o.is_visible(self.scene) and (o.type == 'MESH' or o.type == 'SURFACE' or o.type == 'CURVE' or o.type =='FONT')]:
+        for obj in [o for o in self.scene.objects if not o.hide_render and o.is_visible(self.scene) and (o.type == 'MESH' or o.type == 'SURFACE' or o.type == 'CURVE' or o.type == 'FONT')]:
             if obj.is_duplicator:  # Exporting dupliObjects as instances
 
                 #self.writeObject(obj)
@@ -221,6 +221,9 @@ class yafObject(object):
 
         elif obj.bgp_enable:  # BGPortal Light
             self.writeBGPortal(obj, matrix)
+
+        elif obj.particle_systems:  # Particle system
+            self.writeParticlesObject(obj, matrix)
 
         else:  # The rest of the object types
             self.writeMesh(obj, matrix)
@@ -518,68 +521,61 @@ class yafObject(object):
 
         return ymaterial
 
-    '''
-    def writeParticlesObject(self, yi, scene, object):
+    def writeParticlesObject(self, object, matrix):
 
+        yi = self.yi
         renderEmitter = False
-
-        if hasattr(object,'particle_systems') == False:
+        if hasattr(object, 'particle_systems') == False:
             return
 
         for pSys in object.particle_systems:
 
-            if (pSys.settings.ren_as == 'PATH'):
-                # Export particles
-                #yi.printInfo("Exporter: Creating Particle System \"" + pSys.getName() + "\"")
+            if pSys.settings.render_type == 'PATH':  # Export Hair particles
+                yi.printInfo("Exporter: Creating Particle System \"" + pSys.name + "\"")
                 tstart = time.time()
-
-                # get particles material (keeps particles thikness too)
                 # TODO: clay particles uses at least materials thikness?
                 if object.active_material is not None:
                     pmaterial = object.active_material
 
-                    if pmaterial.strand.blender_units :
+                    if pmaterial.strand.use_blender_units:
                         strandStart = pmaterial.strand.root_size
                         strandEnd   = pmaterial.strand.tip_size
                         strandShape = pmaterial.strand.shape
-                    else:
-                        # Blender unit conversion
-                        strandStart = pmaterial.strand.root_size/100
-                        strandEnd   = pmaterial.strand.tip_size/100
+                    else:  # Blender unit conversion
+                        strandStart = pmaterial.strand.root_size / 100
+                        strandEnd   = pmaterial.strand.tip_size / 100
                         strandShape = pmaterial.strand.shape
                 else:
-                    # No material assigned in blender, use default one
-                    pmaterial = "default"
+                    pmaterial = "default"  # No material assigned in blender, use default one
                     strandStart = 0.01
                     strandEnd = 0.01
                     strandShape = 0.0
 
-                # Workaround to API bug, getLoc() is empty for particles system > 1
-                # (object has more than one particle system assigned)
-                #pSys.getLoc()
-                # Workaround end
-                CID = yi.getNextFreeID()
-                yi.paramsClearAll()
-                yi.startGeometry()
-                yi.startCurveMesh(CID, len(pSys.particles))
                 for particle in pSys.particles:
-                    #for vertex in path:
-                    location = particle.location
-                    yi.addVertex(location[0], location[1], location[2])
+                    if particle.is_exist and particle.is_visible:
+                        p = True
+                    else:
+                        p = False
+                    CID = yi.getNextFreeID()
+                    yi.paramsClearAll()
+                    yi.startGeometry()
+                    yi.startCurveMesh(CID, p)
+                    for location in particle.hair_keys:
+                        vertex = location.co
+                        yi.addVertex(vertex[0], vertex[1], vertex[2])
                     #this section will be changed after the material settings been exported
-                if self.materialMap[pmaterial]:
-                    yi.endCurveMesh(self.materialMap[pmaterial], strandStart, strandEnd, strandShape)
-                else:
-                    yi.endCurveMesh(self.materialMap["default"], strandStart, strandEnd, strandShape)
+                    if self.materialMap[pmaterial]:
+                        yi.endCurveMesh(self.materialMap[pmaterial], strandStart, strandEnd, strandShape)
+                    else:
+                        yi.endCurveMesh(self.materialMap["default"], strandStart, strandEnd, strandShape)
                 # TODO: keep object smooth
                 #yi.smoothMesh(0, 60.0)
-                yi.endGeometry()
-                yi.printInfo("Exporter: Particle creation time: " + str(time.time()-tstart))
+                    yi.endGeometry()
+                yi.printInfo("Exporter: Particle creation time: " + str(time.time() - tstart))
 
-                if (pSys.settings.emitter):
+                if (pSys.settings.use_render_emitter):
                     renderEmitter = True
         # We only need to render emitter object once
         if renderEmitter:
             ymat = self.materialMap["default"]
-            self.writeMesh(yi, scene, object)
-    '''
+            self.writeMesh(object, matrix)
