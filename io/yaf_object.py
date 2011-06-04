@@ -561,7 +561,7 @@ class yafObject(object):
                     yi.startGeometry()
                     yi.startCurveMesh(CID, p)
                     for location in particle.hair_keys:
-                        vertex = location.co
+                        vertex = location.co * matrix
                         yi.addVertex(vertex[0], vertex[1], vertex[2])
                     #this section will be changed after the material settings been exported
                     if self.materialMap[pmaterial]:
