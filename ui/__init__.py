@@ -7,6 +7,7 @@ from yafaray.ui import properties_yaf_mat_diffuse
 from yafaray.ui import properties_yaf_mat_specular
 from yafaray.ui import properties_yaf_texture
 from yafaray.ui import properties_yaf_world
+from yafaray.ui import properties_yaf_strand
 
 try:
     import properties_object
@@ -36,13 +37,18 @@ panelSet = [
 properties_particle.PARTICLE_PT_context_particles,
 properties_particle.PARTICLE_PT_emission,
 properties_particle.PARTICLE_PT_hair_dynamics,
+properties_particle.PARTICLE_PT_cache,
 properties_particle.PARTICLE_PT_velocity,
 properties_particle.PARTICLE_PT_rotation,
 properties_particle.PARTICLE_PT_physics,
 properties_particle.PARTICLE_PT_boidbrain,
 properties_particle.PARTICLE_PT_render,
 properties_particle.PARTICLE_PT_draw,
+properties_particle.PARTICLE_PT_children,
+properties_particle.PARTICLE_PT_field_weights,
 properties_particle.PARTICLE_PT_force_fields,
+properties_particle.PARTICLE_PT_vertexgroups,
+properties_particle.PARTICLE_PT_custom_props,
 properties_data_mesh.DATA_PT_context_mesh,
 properties_data_mesh.DATA_PT_custom_props_mesh,
 properties_data_mesh.DATA_PT_normals,
