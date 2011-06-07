@@ -3,9 +3,7 @@ from bpy.props import *
 Object = bpy.types.Object
 
 def register():
-    print("Registering object properties")
     #TODO: update default values, edit description
-
 
     Object.ml_enable =      BoolProperty(attr="ml_enable",
                                             description = "Makes the mesh emit light")
@@ -88,7 +86,6 @@ def register():
                                                 default = .1)
     
 def unregister():
-    print("Unregistering object properties")
     del Object.ml_enable
     del Object.ml_color
     del Object.ml_power
