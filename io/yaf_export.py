@@ -149,22 +149,17 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.yaf_material.writeMaterial(material, self.preview)
 
     def decideOutputFileName(self, output_path, filetype):
-        if filetype == 'PNG':
-            filetype = 'png'
-        elif filetype == 'TARGA':
-            filetype = 'tga'
-        elif filetype == 'TIFF':  # add tiff imageHandler
-            filetype = 'tif'
-        elif filetype == 'JPEG':  # add jpeg imageHandler
-            filetype = 'jpg'
-        elif filetype == 'HDR':  # add hdr imgeHandler
-            filetype = 'hdr'
-        elif filetype == 'OPEN_EXR':
-            filetype = 'exr'
-        elif filetype == 'XML':  # added filetype 'XML'
-            filetype = 'xml'
-        else:
-            filetype = 'exr'
+
+        switchFileType = {
+            'PNG': 'png',
+            'TARGA': 'tga',
+            'TIFF': 'tif',
+            'JPEG': 'jpg',
+            'HDR': 'hdr',
+            'OPEN_EXR': 'exr',
+            'XML': 'xml',
+        }
+        filetype = switchFileType.get(filetype, 'png')
         extension = '.' + filetype
         if bpy.types.YAFA_RENDER.render_Animation:  # check for animation rendering -> write image with filename from framenumber
             output = os.path.abspath(os.path.join(output_path, ("%0" + str(len(str(self.scene.frame_end))) + "d") % self.scene.frame_current))

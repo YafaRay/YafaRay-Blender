@@ -48,26 +48,19 @@ class yafMaterial:
 
         #mtex is an instance of MaterialTextureSlot class
 
-        mode = 0
-        if mtex.blend_type == 'MIX':
-            mode = 0
-        elif mtex.blend_type == 'ADD':
-            mode = 1
-        elif mtex.blend_type == 'MULTIPLY':
-            mode = 2
-        elif mtex.blend_type == 'SUBTRACT':
-            mode = 3
-        elif mtex.blend_type == 'SCREEN':
-            mode = 4
-        elif mtex.blend_type == 'DIVIDE':
-            mode = 5
-        elif mtex.blend_type == 'DIFFERENCE':
-            mode = 6
-        elif mtex.blend_type == 'DARKEN':
-            mode = 7
-        elif mtex.blend_type == 'LIGHTEN':
-            mode = 8
-
+        switchBlendMode = {
+            'MIX': 0,
+            'ADD': 1,
+            'MULTIPLY': 2,
+            'SUBTRACT': 3,
+            'SCREEN': 4,
+            'DIVIDE': 5,
+            'DIFFERENCE': 6,
+            'DARKEN': 7,
+            'LIGHTEN': 8,
+        }
+        
+        mode = switchBlendMode.get(mtex.blend_type, 0)  # set texture blend mode, if not a supported mode then set it to 'MIX'
         yi.paramsSetInt("mode", mode)
         yi.paramsSetBool("stencil", mtex.use_stencil)  
 
@@ -138,43 +131,33 @@ class yafMaterial:
         yi.paramsSetString("name", name)
         yi.paramsSetString("texture", mtex.texture.name)
 
-        # 'UV'  'GLOBAL' 'ORCO' , 'WINDOW', 'NORMAL' 'REFLECTION' 'STICKY' 'STRESS' 'TANGENT'
-        # texture coordinates, have to disable 'sticky' in Blender
-        # change to coord. type Blender, texture_coords.  for test
-        yi.paramsSetString("texco", "orco")
-        if mtex.texture_coords == 'UV':
-            yi.paramsSetString("texco", "uv")
-        elif mtex.texture_coords == 'GLOBAL':
-            yi.paramsSetString("texco", "global")
-        elif mtex.texture_coords == 'ORCO':
-            yi.paramsSetString("texco", "orco")
-        elif mtex.texture_coords == 'WINDOW':
-            yi.paramsSetString("texco", "window")
-        elif mtex.texture_coords == 'NORMAL':
-            yi.paramsSetString("texco", "normal")
-        elif mtex.texture_coords == 'REFLECTION':
-            yi.paramsSetString("texco", "reflect")
-        elif mtex.texture_coords == 'STICKY':
-            yi.paramsSetString("texco", "stick")
-        elif mtex.texture_coords == 'STRESS':
-            yi.paramsSetString("texco", "stress")
-        elif mtex.texture_coords == 'TANGENT':
-            yi.paramsSetString("texco", "tangent")
+        switchTexCoords = {
+            'UV': 'uv',
+            'GLOBAL': 'global',
+            'ORCO': 'orco',
+            'WINDOW': 'window',
+            'NORMAL': 'normal',
+            'REFLECTION': 'reflect',
+            'STICKY': 'stick',
+            'STRESS': 'stress',
+            'TANGENT': 'tangent',
+            'OBJECT': 'transformed',
+        }
 
-        elif mtex.texture_coords == 'OBJECT':
-            yi.paramsSetString("texco", "transformed")
+        texco = switchTexCoords.get(mtex.texture_coords, 'orco')  # get texture coords, default is 'orco'
+        yi.paramsSetString("texco", texco)
 
-            if mtex.object is not None:
-                texmat = mtex.object.matrix_local.copy().invert()
-                rtmatrix = yafrayinterface.new_floatArray(4 * 4)
+        if mtex.object is not None:
+            texmat = mtex.object.matrix_local.copy().invert()
+            rtmatrix = yafrayinterface.new_floatArray(4 * 4)
 
-                for x in range(4):
-                    for y in range(4):
-                        idx = (y + x * 4)
-                        yafrayinterface.floatArray_setitem(rtmatrix, idx, texmat[x][y])
+            for x in range(4):
+                for y in range(4):
+                    idx = (y + x * 4)
+                    yafrayinterface.floatArray_setitem(rtmatrix, idx, texmat[x][y])
 
-                yi.paramsSetMemMatrix("transform", rtmatrix, True)
-                yafrayinterface.delete_floatArray(rtmatrix)
+            yi.paramsSetMemMatrix("transform", rtmatrix, True)
+            yafrayinterface.delete_floatArray(rtmatrix)
 
         yi.paramsSetInt("proj_x", proj2int(mtex.mapping_x))
         yi.paramsSetInt("proj_y", proj2int(mtex.mapping_y))

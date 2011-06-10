@@ -83,22 +83,18 @@ class yafIntegrator:
             yi.paramsSetString("type", "DebugIntegrator")
 
             debugTypeStr = scene.intg_debug_type
+            switchDebugType = {
+                'N': 1,
+                'dPdU': 2,
+                'dPdV': 3,
+                'NU': 4,
+                'NV': 5,
+                'dSdU': 6,
+                'dSdV': 7,
+            }
 
-            if debugTypeStr == "N":
-                    yi.paramsSetInt("debugType", 1)
-            elif debugTypeStr == "dPdU":
-                    yi.paramsSetInt("debugType", 2)
-            elif debugTypeStr == "dPdV":
-                    yi.paramsSetInt("debugType", 3)
-            elif debugTypeStr == "NU":
-                    yi.paramsSetInt("debugType", 4)
-            elif debugTypeStr == "NV":
-                    yi.paramsSetInt("debugType", 5)
-            elif debugTypeStr ==  "dSdU":
-                    yi.paramsSetInt("debugType", 6)
-            elif debugTypeStr ==  "dSdV":
-                    yi.paramsSetInt("debugType", 7)
-
+            debugType = switchDebugType.get(debugTypeStr)
+            yi.paramsSetInt("debugType", debugType)
             yi.paramsSetBool("showPN", scene.intg_show_perturbed_normals)
 
         elif light_type == "SPPM":
