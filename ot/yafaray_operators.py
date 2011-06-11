@@ -150,7 +150,10 @@ class RENDER_OT_render_view(bpy.types.Operator):
 
         if not view3d:
             for area in [a for a in bpy.context.window.screen.areas if a.type == "VIEW_3D"]:
-                view3d = area.active_space.region_3d
+                if hasattr(area, "spaces"):  # API changed in revision 36782: area.active_space --> area.spaces.active
+                    view3d = area.spaces.active.region_3d
+                else:
+                    view3d = area.active_space.region_3d
                 break
 
         if not view3d or view3d.view_perspective == "ORTHO":
