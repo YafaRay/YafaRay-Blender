@@ -15,12 +15,10 @@ def noise2string(ntype):
         'VORONOI_F4': 'voronoi_f4',
         'VORONOI_F2_F1': 'voronoi_f2f1',
         'VORONOI_CRACKLE': 'voronoi_crackle',
-        'CELL_NOISE': 'cellnoise'}
+        'CELL_NOISE': 'cellnoise',
+        }
 
-    if ntype in a:
-        return a[ntype]
-    else:
-        return 'newperlin'
+    return a.get(ntype, 'newperlin')
 
 
 class yafTexture:
@@ -42,19 +40,18 @@ class yafTexture:
         if tex.type == 'BLEND':
             yi.printInfo("Exporter: Creating Texture: \"" + name + "\" type BLEND")
             yi.paramsSetString("type", "blend")
-            stype = "lin"
-            if tex.progression   == 'LINEAR':
-                stype = "lin"
-            elif tex.progression == 'QUADRATIC':
-                stype = "quad"
-            elif tex.progression == 'EASING':
-                stype = "ease"
-            elif tex.progression == 'DIAGONAL':
-                stype = "diag"
-            elif tex.progression == 'SPHERICAL':
-                stype = "sphere"
-            elif tex.progression == 'QUADRATIC_SPHERE':
-                stype = "halo"
+
+            switchBlendType = {
+                'LINEAR': 'lin',
+                'QUADRATIC': 'quad',
+                'EASING': 'ease',
+                'DIAGONAL': 'diag',
+                'SPHERICAL': 'sphere',
+                'QUADRATIC_SPHERE': 'halo',
+                'RADIAL': 'radial',
+            }
+
+            stype = switchBlendType.get(tex.progression, 'lin')  # set blend type for blend texture, default is 'lin'
             yi.paramsSetString("stype", stype)
 
             textureConfigured = True
@@ -193,20 +190,16 @@ class yafTexture:
                 noise_size = 1.0 / noise_size
             yi.paramsSetFloat("size", noise_size)
 
-            ts = "actual"
-            if tex.distance_metric == 'DISTANCE_SQUARED':
-                ts = "squared"
-            elif tex.distance_metric == 'MANHATTAN':
-                ts = "manhattan"
-            elif tex.distance_metric == 'CHEBYCHEV':
-                ts = "chebychev"
-            elif tex.distance_metric == 'MINKOVSKY_HALF':
-                ts = "minkovsky_half"
-            elif tex.distance_metric == 'MINKOVSKY_FOUR':
-                ts = "minkovsky_four"
-            elif tex.distance_metric == 'MINKOVSKY':
-                ts = "minkovsky"
+            switchDistMetric = {
+                'DISTANCE_SQUARED': 'squared',
+                'MANHATTAN': 'manhattan',
+                'CHEBYCHEV': 'chebychev',
+                'MINKOVSKY_HALF': 'minkovsky_half',
+                'MINKOVSKY_FOOUR': 'minkovsky_four',
+                'MINKOVSKY': 'minkovsky',
+            }
 
+            ts = switchDistMetric.get(tex.distance_metric, 'minkovsky')  # set distance metric for VORONOI Texture, default is 'minkovsky'
             yi.paramsSetString("distance_metric", ts)
 
             textureConfigured = True

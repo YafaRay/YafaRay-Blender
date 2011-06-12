@@ -4,110 +4,218 @@ from bpy.props import *
 World = bpy.types.World
 #TODO: Update default values, edit description
 
-World.bg_type = EnumProperty(
-    items = (
-        ("Gradient", "Gradient", ""),
-        ("Texture", "Texture", ""),
-        ("Sunsky", "Sunsky", ""),
-        ("Darktide's Sunsky", "Darktide's Sunsky", ""),
-        ("Single Color", "Single Color", "")
-    ),
-    default = "Single Color",
-    name = "Background Type")
+def call_world_update(self, context):
+    wrld = context.scene.world
+    wrld.ambient_color = wrld.ambient_color
 
-World.bg_zenith_ground_color = FloatVectorProperty(
-                                            subtype = "COLOR",
-                                            min = 0.0, max = 1.0,
-                                            default = (1, 0.9, 0.8))
+if int(bpy.app.build_revision) > 37297:  # callback support for custom props since Blender revision 37298, check it...
+    World.bg_type = EnumProperty(
+        items = (
+            ("Gradient", "Gradient", ""),
+            ("Texture", "Texture", ""),
+            ("Sunsky", "Sunsky", ""),
+            ("Darktide's Sunsky", "Darktide's Sunsky", ""),
+            ("Single Color", "Single Color", "")
+        ),
+        default = "Single Color",
+        name = "Background Type", update = call_world_update)
 
-World.bg_horizon_ground_color = FloatVectorProperty(
-                                            subtype = "COLOR",
-                                            min = 0.0, max = 1.0,
-                                            default = (0.8, 0.6, 0.3))
+    World.bg_zenith_ground_color = FloatVectorProperty(
+                                                subtype = "COLOR",
+                                                min = 0.0, max = 1.0,
+                                                default = (1, 0.9, 0.8), update = call_world_update)
 
-World.bg_single_color =     FloatVectorProperty(description = "Background color",
-                                            subtype = 'COLOR',
-                                            min = 0.0, max = 1.0,
-                                            default = (0.7, 0.7, 0.7))
+    World.bg_horizon_ground_color = FloatVectorProperty(
+                                                subtype = "COLOR",
+                                                min = 0.0, max = 1.0,
+                                                default = (0.8, 0.6, 0.3), update = call_world_update)
 
-World.bg_use_ibl =          BoolProperty(
-                                            description = "Use IBL",
-                                            default = False)
-World.bg_ibl_samples =      IntProperty(
-                                            description = "Amount of samples",
-                                            default = 16,
-                                            min = 1, max = 512)
-World.bg_rotation =         FloatProperty(
-                                            description = "",
-                                            default = 0.0,
-                                            min = 0, max = 360)
-World.bg_turbidity =        FloatProperty(
-                                            description = "",
-                                            default = 2.0,
-                                            min = 1.0, max = 20.0)
-World.bg_a_var =            FloatProperty(
-                                            description = "",
-                                            default = 1.0,
-                                            min = 0, max =10)
-World.bg_b_var =            FloatProperty(
-                                            default = 1.0,
-                                            min = 0, max = 10)
-World.bg_c_var =            FloatProperty(
-                                            description = "",
-                                            default = 1.0,
-                                            min = 0, max =10)
-World.bg_d_var =            FloatProperty(
-                                            description = "",
-                                            default = 1.0,
-                                            min = 0, max = 10)
-World.bg_e_var =            FloatProperty(
-                                            description = "",
-                                            default = 1.0,
-                                            min = 0, max = 10)
-World.bg_from =             FloatVectorProperty(
-                                            description = "Point Info", subtype = "DIRECTION",
-                                            default = (0.5, 0.5, 0.5),
-                                            step = 10, precision = 3,
-                                            min = -1, max = 1)
-World.bg_add_sun =          BoolProperty(default = False)
-World.bg_sun_power =        FloatProperty(
-                                            description = "",
-                                            default = 1.0,
-                                            min = 0, max = 10)
-World.bg_background_light = BoolProperty(
-                                            description = "",
-                                            default = False)
-World.bg_light_samples =    IntProperty(
-                                            description = "",
-                                            default = 16,
-                                            min = 1, max = 512)
-World.bg_dsaltitude =       FloatProperty(
-                                            description = "",
-                                            default = 0.0,
-                                            min = -1, max = 2)
-World.bg_dsnight =          BoolProperty(
-                                            description = "",
-                                            default = False)
-World.bg_dsbright =         FloatProperty(
-                                            description = "",
-                                            default = 1.0,
-                                            min = 0, max = 10)
-World.bg_power =            FloatProperty(
-                                            description = "Multiplier for Background Color",
-                                            default = 1.0,
-                                            min = 0, max = 10)
+    World.bg_single_color =     FloatVectorProperty(description = "Background color",
+                                                subtype = 'COLOR',
+                                                min = 0.0, max = 1.0,
+                                                default = (0.7, 0.7, 0.7), update = call_world_update)
 
-World.bg_exposure =         FloatProperty(
-                                            description = "",
-                                            default = 1.0,
-                                            min = 0, max = 10)
-World.bg_clamp_rgb =        BoolProperty(
-                                            description = "",
-                                            default = False)
-World.bg_gamma_enc =        BoolProperty(
-                                            description = "",
-                                            default = True)
+    World.bg_use_ibl =          BoolProperty(
+                                                description = "Use IBL",
+                                                default = False)
+    World.bg_ibl_samples =      IntProperty(
+                                                description = "Amount of samples",
+                                                default = 16,
+                                                min = 1, max = 512)
+    World.bg_rotation =         FloatProperty(
+                                                description = "",
+                                                default = 0.0,
+                                                min = 0, max = 360, update = call_world_update)
+    World.bg_turbidity =        FloatProperty(
+                                                description = "",
+                                                default = 2.0,
+                                                min = 1.0, max = 20.0, update = call_world_update)
+    World.bg_a_var =            FloatProperty(
+                                                description = "",
+                                                default = 1.0,
+                                                min = 0, max =10, update = call_world_update)
+    World.bg_b_var =            FloatProperty(
+                                                default = 1.0,
+                                                min = 0, max = 10, update = call_world_update)
+    World.bg_c_var =            FloatProperty(
+                                                description = "",
+                                                default = 1.0,
+                                                min = 0, max =10, update = call_world_update)
+    World.bg_d_var =            FloatProperty(
+                                                description = "",
+                                                default = 1.0,
+                                                min = 0, max = 10, update = call_world_update)
+    World.bg_e_var =            FloatProperty(
+                                                description = "",
+                                                default = 1.0,
+                                                min = 0, max = 10, update = call_world_update)
+    World.bg_from =             FloatVectorProperty(
+                                                description = "Point Info", subtype = "DIRECTION",
+                                                default = (0.5, 0.5, 0.5),
+                                                step = 10, precision = 3,
+                                                min = -1, max = 1, update = call_world_update)
+    World.bg_add_sun =          BoolProperty(default = False, update = call_world_update)
+    World.bg_sun_power =        FloatProperty(
+                                                description = "",
+                                                default = 1.0,
+                                                min = 0, max = 10, update = call_world_update)
+    World.bg_background_light = BoolProperty(
+                                                description = "",
+                                                default = False, update = call_world_update)
+    World.bg_light_samples =    IntProperty(
+                                                description = "",
+                                                default = 16,
+                                                min = 1, max = 512, update = call_world_update)
+    World.bg_dsaltitude =       FloatProperty(
+                                                description = "",
+                                                default = 0.0,
+                                                min = -1, max = 2, update = call_world_update)
+    World.bg_dsnight =          BoolProperty(
+                                                description = "",
+                                                default = False, update = call_world_update)
+    World.bg_dsbright =         FloatProperty(
+                                                description = "",
+                                                default = 1.0,
+                                                min = 0, max = 10, update = call_world_update)
+    World.bg_power =            FloatProperty(
+                                                description = "Multiplier for Background Color",
+                                                default = 1.0,
+                                                min = 0, max = 10, update = call_world_update)
 
+    World.bg_exposure =         FloatProperty(
+                                                description = "",
+                                                default = 1.0,
+                                                min = 0, max = 10, update = call_world_update)
+    World.bg_clamp_rgb =        BoolProperty(
+                                                description = "",
+                                                default = False, update = call_world_update)
+    World.bg_gamma_enc =        BoolProperty(
+                                                description = "",
+                                                default = True, update = call_world_update)
+else:
+    World.bg_type = EnumProperty(
+        items = (
+            ("Gradient", "Gradient", ""),
+            ("Texture", "Texture", ""),
+            ("Sunsky", "Sunsky", ""),
+            ("Darktide's Sunsky", "Darktide's Sunsky", ""),
+            ("Single Color", "Single Color", "")
+        ),
+        default = "Single Color",
+        name = "Background Type")
+
+    World.bg_zenith_ground_color = FloatVectorProperty(
+                                                subtype = "COLOR",
+                                                min = 0.0, max = 1.0,
+                                                default = (1, 0.9, 0.8))
+
+    World.bg_horizon_ground_color = FloatVectorProperty(
+                                                subtype = "COLOR",
+                                                min = 0.0, max = 1.0,
+                                                default = (0.8, 0.6, 0.3))
+
+    World.bg_single_color =     FloatVectorProperty(description = "Background color",
+                                                subtype = 'COLOR',
+                                                min = 0.0, max = 1.0,
+                                                default = (0.7, 0.7, 0.7))
+
+    World.bg_use_ibl =          BoolProperty(
+                                                description = "Use IBL",
+                                                default = False)
+    World.bg_ibl_samples =      IntProperty(
+                                                description = "Amount of samples",
+                                                default = 16,
+                                                min = 1, max = 512)
+    World.bg_rotation =         FloatProperty(
+                                                description = "",
+                                                default = 0.0,
+                                                min = 0, max = 360)
+    World.bg_turbidity =        FloatProperty(
+                                                description = "",
+                                                default = 2.0,
+                                                min = 1.0, max = 20.0)
+    World.bg_a_var =            FloatProperty(
+                                                description = "",
+                                                default = 1.0,
+                                                min = 0, max =10)
+    World.bg_b_var =            FloatProperty(
+                                                default = 1.0,
+                                                min = 0, max = 10)
+    World.bg_c_var =            FloatProperty(
+                                                description = "",
+                                                default = 1.0,
+                                                min = 0, max =10)
+    World.bg_d_var =            FloatProperty(
+                                                description = "",
+                                                default = 1.0,
+                                                min = 0, max = 10)
+    World.bg_e_var =            FloatProperty(
+                                                description = "",
+                                                default = 1.0,
+                                                min = 0, max = 10)
+    World.bg_from =             FloatVectorProperty(
+                                                description = "Point Info", subtype = "DIRECTION",
+                                                default = (0.5, 0.5, 0.5),
+                                                step = 10, precision = 3,
+                                                min = -1, max = 1)
+    World.bg_add_sun =          BoolProperty(default = False)
+    World.bg_sun_power =        FloatProperty(
+                                                description = "",
+                                                default = 1.0,
+                                                min = 0, max = 10)
+    World.bg_background_light = BoolProperty(
+                                                description = "",
+                                                default = False)
+    World.bg_light_samples =    IntProperty(
+                                                description = "",
+                                                default = 16,
+                                                min = 1, max = 512)
+    World.bg_dsaltitude =       FloatProperty(
+                                                description = "",
+                                                default = 0.0,
+                                                min = -1, max = 2)
+    World.bg_dsnight =          BoolProperty(
+                                                description = "",
+                                                default = False)
+    World.bg_dsbright =         FloatProperty(
+                                                description = "",
+                                                default = 1.0,
+                                                min = 0, max = 10)
+    World.bg_power =            FloatProperty(
+                                                description = "Multiplier for Background Color",
+                                                default = 1.0,
+                                                min = 0, max = 10)
+
+    World.bg_exposure =         FloatProperty(
+                                                description = "",
+                                                default = 1.0,
+                                                min = 0, max = 10)
+    World.bg_clamp_rgb =        BoolProperty(
+                                                description = "",
+                                                default = False)
+    World.bg_gamma_enc =        BoolProperty(
+                                                description = "",
+                                                default = True)
 
 class YAFWORLD_PT_preview(bpy.types.Panel):
     bl_label = "Background Preview"

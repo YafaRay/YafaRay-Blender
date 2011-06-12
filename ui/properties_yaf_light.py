@@ -1,18 +1,35 @@
 import bpy
-from rna_prop_ui import PropertyPanel
+#from rna_prop_ui import PropertyPanel
 #import types and props ---->
 from bpy.props import *
 Lamp = bpy.types.Lamp
 
-Lamp.lamp_type = EnumProperty(
-    items = (
-        ("point", "Point", ""),
-        ("sun", "Sun", ""),
-        ("spot", "Spot", ""),
-        ("ies", "IES", ""),
-        ("area", "Area", "")),
-    default="point",
-    name = "Light Type")
+def call_lighttype_update(self, context):
+        lamp = context.scene.objects.active
+        if lamp.type == 'LAMP':
+            switchLampType = {'area': 'AREA', 'spot': 'SPOT', 'sun': 'SUN', 'point': 'POINT', 'ies': 'SPOT'}
+            lamp.data.type = switchLampType.get(lamp.data.lamp_type)
+
+if int(bpy.app.build_revision) > 37297:  # callback support for custom props since Blender revision 37298, check it...
+    Lamp.lamp_type = EnumProperty(
+        items = (
+            ("point", "Point", ""),
+            ("sun", "Sun", ""),
+            ("spot", "Spot", ""),
+            ("ies", "IES", ""),
+            ("area", "Area", "")),
+        default="point",
+        name = "Light Type", update = call_lighttype_update)
+else:
+    Lamp.lamp_type = EnumProperty(
+        items = (
+            ("point", "Point", ""),
+            ("sun", "Sun", ""),
+            ("spot", "Spot", ""),
+            ("ies", "IES", ""),
+            ("area", "Area", "")),
+        default="point",
+        name = "Light Type")
 Lamp.directional =      BoolProperty(attr = "directional",
                                     description = "",
                                     default = False)
