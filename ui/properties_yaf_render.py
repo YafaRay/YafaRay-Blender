@@ -3,8 +3,29 @@ import bpy
 from bpy.props import *
 Scene = bpy.types.Scene
 
-Scene.img_output     =  EnumProperty(
-                        description = "Image will be saved in this file format",  # yafarays own image output selection, default is open exr
+def call_update_fileformat(self, context):  # set fileformat for image saving on same format as in yafaray, both have default PNG
+    sc = context.scene
+    rd = sc.render
+    if sc.img_output != rd.file_format:
+        rd.file_format = sc.img_output
+        if rd.file_format == 'OPEN_EXR' and sc.gs_z_channel:
+            rd.exr_zbuf = True
+
+if int(bpy.app.build_revision) > 37297:  # callback support for custom props since Blender revision 37298, check it...
+    Scene.img_output     =  EnumProperty(
+                            description = "Image will be saved in this file format",  # yafarays own image output selection, default is PNG
+                            items = (
+                                ("PNG", " PNG (Portable Network Graphics)", ""),
+                                ("TARGA", " TGA (Truevision TARGA)", ""),
+                                ("JPEG", " JPEG (Joint Photographic Experts Group)", ""),
+                                ("TIFF", " TIFF (Tag Image File Format)", ""),
+                                ("OPEN_EXR", " EXR (IL&M OpenEXR)", ""),
+                                ("HDR", " HDR (Radiance RGBE)", "")),
+                            default = "PNG",
+                            name = "Image File Type", update = call_update_fileformat)  # if fileformat has changed, set it in blender too..
+else:
+    Scene.img_output     =  EnumProperty(
+                        description = "Image will be saved in this file format",  # yafarays own image output selection, default is PNG
                         items = (
                             ("PNG", " PNG (Portable Network Graphics)", ""),
                             ("TARGA", " TGA (Truevision TARGA)", ""),
@@ -14,7 +35,6 @@ Scene.img_output     =  EnumProperty(
                             ("HDR", " HDR (Radiance RGBE)", "")),
                         default = "PNG",
                         name = "Image File Type")
-
 
 class YafarayRenderButtonsPanel():
     bl_space_type = 'PROPERTIES'
