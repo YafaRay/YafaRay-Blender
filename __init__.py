@@ -77,13 +77,9 @@ def register():
     bpy.utils.register_module(__name__)
 
     kitems = bpy.context.window_manager.keyconfigs.active.keymaps["Screen"]
+    kitems.keymap_items.new("RENDER_OT_render_view", 'F12', 'RELEASE', False, False, False, True)
+    kitems.keymap_items.new("RENDER_OT_render_animation", 'F12', 'RELEASE', False, False, True, False)
 
-    if hasattr(kitems, "keymap_items"):  # check for api changes in Blender 2.56 rev. 35764
-        kitems.keymap_items.new("RENDER_OT_render_view", 'F12', 'RELEASE', False, False, False, True)
-        kitems.keymap_items.new("RENDER_OT_render_animation", 'F12', 'RELEASE', False, False, True, False)
-    else:
-        kitems.items.new("RENDER_OT_render_view", 'F12', 'RELEASE', False, False, False, True)
-        kitems.items.new("RENDER_OT_render_animation", 'F12', 'RELEASE', False, False, True, False)
 
 
 def unregister():
