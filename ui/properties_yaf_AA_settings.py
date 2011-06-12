@@ -2,7 +2,6 @@ import bpy
 from bpy.props import *
 Scene = bpy.types.Scene
 
-
 Scene.AA_min_samples = IntProperty(
                         description = "Number of samples for first AA pass",
                         min = 1,

@@ -150,13 +150,8 @@ class yafObject(object):
         for obj in [o for o in self.scene.objects if not o.hide_render and o.is_visible(self.scene) and (o.type == 'MESH' or o.type == 'SURFACE' or o.type == 'CURVE' or o.type == 'FONT')]:
             if obj.is_duplicator:  # Exporting dupliObjects as instances
 
-                #self.writeObject(obj)
                 self.yi.printInfo("Processing duplis for: " + obj.name)
-
-                if hasattr(obj, "create_dupli_list"):  # method name changed
-                    obj.create_dupli_list(self.scene)
-                else:
-                    obj.dupli_list_create(self.scene)
+                obj.dupli_list_create(self.scene)
 
                 for obj_dupli in obj.dupli_list:
 
@@ -166,10 +161,7 @@ class yafObject(object):
                     self.writeInstance(dupBaseIds[obj_dupli.object.name], obj_dupli.matrix, obj_dupli.object.name)
 
                 if obj.dupli_list:
-                    if hasattr(obj, "free_dupli_list"):  # method name changed
-                        obj.free_dupli_list()
-                    else:
-                        obj.dupli_list_clear()
+                    obj.dupli_list_clear()
 
             elif obj.data.users > 1:  # Exporting objects with shared mesh data blocks as instances
 
@@ -190,10 +182,7 @@ class yafObject(object):
             if empt.is_duplicator:
                 self.yi.printInfo("Processing duplis for: " + empt.name)
 
-                if hasattr(empt, "create_dupli_list"):  # method name changed
-                    empt.create_dupli_list(self.scene)
-                else:
-                    empt.dupli_list_create(self.scene)
+                empt.dupli_list_create(self.scene)
 
                 for empt_dupli in empt.dupli_list:
 
@@ -203,10 +192,7 @@ class yafObject(object):
                     self.writeInstance(dupBaseIds[empt_dupli.object.name], empt_dupli.matrix, empt_dupli.object.name)
 
                 if empt.dupli_list:
-                    if hasattr(empt, "free_dupli_list"):  # method name changed
-                        empt.free_dupli_list()
-                    else:
-                        empt.dupli_list_clear()
+                    empt.dupli_list_clear()
 
     def writeObject(self, obj, matrix = None):
 
@@ -325,10 +311,7 @@ class yafObject(object):
         me = obj.data
         me_materials = me.materials
 
-        if hasattr(obj, "create_mesh"):  # method name changed
-            mesh = obj.create_mesh(self.scene, True, 'RENDER')
-        else:
-            mesh = obj.to_mesh(self.scene, True, 'RENDER')
+        mesh = obj.to_mesh(self.scene, True, 'RENDER')
 
         if matrix:
             mesh.transform(matrix)
@@ -362,20 +345,15 @@ class yafObject(object):
         elif obj.vol_region == 'Grid Volume':
             yi.paramsSetString("type", "GridVolume")
 
-#        elif obj.vol_region == 'Sky Volume':
-#            yi.paramsSetString("type", "SkyVolume");
 
         yi.paramsSetFloat("sigma_a", obj.vol_absorp)
         yi.paramsSetFloat("sigma_s", obj.vol_scatter)
-        # yi.paramsSetFloat("l_e", obj.vol_l_e)
-        # yi.paramsSetFloat("g", obj.vol_g)
         yi.paramsSetInt("attgridScale", self.scene.world.v_int_attgridres)
 
         min = [1e10, 1e10, 1e10]
         max = [-1e10, -1e10, -1e10]
         vertLoc = []
         for v in mesh.vertices:
-            #print("Scanning vertices ... ")
             vertLoc.append(v.co[0])
             vertLoc.append(v.co[1])
             vertLoc.append(v.co[2])
@@ -406,11 +384,7 @@ class yafObject(object):
 
     def writeGeometry(self, ID, obj, matrix, obType = 0, oMat = None):
 
-        if hasattr(obj, "create_mesh"):  # method name changed
-            mesh = obj.create_mesh(self.scene, True, 'RENDER')
-        else:
-            mesh = obj.to_mesh(self.scene, True, 'RENDER')
-
+        mesh = obj.to_mesh(self.scene, True, 'RENDER')
         isSmooth = False
         hasOrco = False
         # TODO: this may not be the best way to check for uv maps

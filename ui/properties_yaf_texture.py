@@ -1,5 +1,5 @@
 import bpy
-from rna_prop_ui import PropertyPanel
+from bl_ui.properties_material import active_node_mat
 #import types and props ---->
 from bpy.props import *
 Texture = bpy.types.Texture
@@ -51,13 +51,6 @@ Texture.yaf_tex_expadj = FloatProperty(
 Texture.tex_file_name = StringProperty(attr='tex_file_name', subtype = 'FILE_PATH')
 Texture.yaf_is_normal_map = BoolProperty(default = False, name = "Normal map")
 
-
-try:
-    from properties_material import active_node_mat
-except ImportError:
-    from bl_ui.properties_material import active_node_mat  # API changes since rev. 35667
-
-
 def context_tex_datablock(context):
     idblock = context.material
     if idblock:
@@ -81,7 +74,7 @@ class YAF_TextureButtonsPanel():
     bl_context = "texture"
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
-    @classmethod  # no 2.53
+    @classmethod
     def poll(self, context):
         tex = context.texture
         engine = context.scene.render.engine
@@ -91,7 +84,7 @@ class YAF_TextureButtonsPanel():
 
 class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel, bpy.types.Panel):
     bl_label = "YafaRay Textures"
-    bl_show_header = True  # False orig.
+    bl_show_header = True
     COMPAT_ENGINES = {'YAFA_RENDER'}
     count = 0
 
@@ -100,34 +93,7 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel, bpy.types.Panel):
         engine = context.scene.render.engine
         if not hasattr(context, "texture_slot"):
             return False
-        ##
-        """ #  deprecated.. usefull?
-        import properties_world
 
-        import properties_texture
-
-        if (context.world  and  (engine in self.COMPAT_ENGINES) ) :
-            try :
-                properties_world.unregister()
-            except:
-                pass
-        else:
-            try:
-                properties_world.register()
-            except:
-                pass
-        if (context.texture and  (engine in self.COMPAT_ENGINES) ) :
-            try :
-                properties_texture.unregister()
-            except:
-                pass
-        else:
-            try:
-                properties_texture.register()
-            except:
-                pass
-        """
-        #return (context.texture  or context.world and  (engine in self.COMPAT_ENGINES) )
         return ((context.material or context.world or context.lamp or context.brush or context.texture)
             and (engine in self.COMPAT_ENGINES))
 
@@ -140,7 +106,7 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel, bpy.types.Panel):
         idblock = context_tex_datablock(context)
         pin_id = space.pin_id
 
-        if not isinstance(pin_id, bpy.types.Material):  # isinstance, recent change  for beta 2.56
+        if not isinstance(pin_id, bpy.types.Material):
             pin_id = None
 
         tex_collection = (pin_id is None) and (node is None) and (not isinstance(idblock, bpy.types.Brush))
@@ -177,7 +143,7 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel, bpy.types.Panel):
                 # FIXME: this should be yaf_tex_type, but then it seems the panels need to be changed.
                 # right now with the Blender "type", we have lots of texture types we don't support
                 layout.prop(tex, "type", text = "Type", icon = "TEXTURE")
-                # layout.prop(tex, "yaf_tex_type", text = "Type", icon = "TEXTURE")
+
 
 
 class YAF_TEXTURE_PT_preview(YAF_TextureButtonsPanel, bpy.types.Panel):
@@ -195,8 +161,6 @@ class YAF_TEXTURE_PT_preview(YAF_TextureButtonsPanel, bpy.types.Panel):
             layout.template_preview(tex, parent=idblock, slot=slot)
         else:
             layout.template_preview(tex, slot=slot)
-
-# Texture Slot Panels #
 
 
 class YAF_TextureSlotPanel(YAF_TextureButtonsPanel):
@@ -231,17 +195,13 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel, bpy.types.Panel):
         layout = self.layout
 
         idblock = context_tex_datablock(context)
-
-        #yaf_tex_type = context.texture_slot
-
         tex = context.texture_slot
 
         if not isinstance(idblock, bpy.types.Brush):
             col = layout.column()
-            col.prop(tex, "texture_coords", text="Coordinates")  # 2.55
-            # change to same type of blender mapping, for make stable
+            col.prop(tex, "texture_coords", text="Coordinates")
 
-            if tex.texture_coords == 'ORCO':  # 2.55
+            if tex.texture_coords == 'ORCO':
                 ob = context.object
                 if ob and ob.type == 'MESH':
                     col.prop(ob.data, "texco_mesh", text="Mesh")
@@ -256,7 +216,7 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel, bpy.types.Panel):
             elif tex.texture_coords == 'OBJECT':
                 col.prop(tex, "object", text="Object")
 
-        if isinstance(idblock, bpy.types.Brush):  # recent change for beta 2.56
+        if isinstance(idblock, bpy.types.Brush):
             if context.sculpt_object:
                 layout.label(text="Brush Mapping:")
                 layout.prop(tex, "map_mode", expand=True)
@@ -281,9 +241,7 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel, bpy.types.Panel):
                 row.prop(tex, "mapping_z", text="")
 
         splitCol = col.split()
-
         splitCol.prop(tex, "offset")
-
         splitCol.prop(tex, "scale")
 
 
@@ -294,7 +252,7 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, bpy.types.Panel):
     @classmethod
     def poll(self, context):
         idblock = context_tex_datablock(context)
-        if isinstance(idblock, bpy.types.Brush):  # recent change
+        if isinstance(idblock, bpy.types.Brush):
             return False
 
         if not getattr(context, "texture_slot", None):
@@ -303,7 +261,7 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, bpy.types.Panel):
         engine = context.scene.render.engine
         return (engine in self.COMPAT_ENGINES)
 
-    def factor_but(self, tex, layout, toggle, factor, name):  # new in last rev. of Blender
+    def factor_but(self, tex, layout, toggle, factor, name):
         row = layout.row(align = True)
         row.prop(tex, toggle, text = "")
         sub = row.row()
@@ -390,7 +348,6 @@ class YAF_TextureTypePanel(YAF_TextureButtonsPanel):
         tex = context.texture
         engine = context.scene.render.engine
 
-        #next definition
         return tex and ((tex.type == self.tex_type and not tex.use_nodes) and (engine in self.COMPAT_ENGINES))
 
 
