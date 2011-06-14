@@ -87,8 +87,7 @@ def register():
 
 
 def unregister():
-    print("unregister called")
-    bpy.utils.unregister_module(__name__, True)
+    bpy.utils.unregister_module(__name__)
     prop.unregister()
 
 if __name__ == '__main__':
