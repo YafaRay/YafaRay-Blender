@@ -18,6 +18,8 @@ class yafWorld:
                     useIBL = world.bg_use_ibl
                     iblSamples = world.bg_ibl_samples
                     bgPower = world.bg_power
+                    with_caustic = world.bg_with_caustic
+                    with_diffuse = world.bg_with_diffuse
                     c = world.bg_single_color
                 else:
                     bg_type = "Single Color"
@@ -72,17 +74,17 @@ class yafWorld:
                             yi.paramsSetString("type", "textureback")
                             yi.paramsSetString("texture", "world_texture")
                             yi.paramsSetBool("ibl", useIBL)
-                            yi.paramsSetBool("with_caustic", True)  # this 2 lines are temporary
-                            yi.paramsSetBool("with_diffuse", True)
+                            yi.paramsSetBool("with_caustic", with_caustic)  # this settings gets checked in textureback.cc -> so if IBL enabled when they are used...
+                            yi.paramsSetBool("with_diffuse", with_diffuse)
                             yi.paramsSetInt("ibl_samples", iblSamples)
                             yi.paramsSetFloat("power", bgPower)
                             yi.paramsSetFloat("rotation", world.bg_rotation)
 
                 elif bg_type == 'Gradient':
-                    c = world.horizon_color
+                    c = world.bg_horizon_color
                     yi.paramsSetColor("horizon_color", c[0], c[1], c[2])
 
-                    c = world.zenith_color
+                    c = world.bg_zenith_color
                     yi.paramsSetColor("zenith_color", c[0], c[1], c[2])
 
                     c = world.bg_horizon_ground_color
@@ -125,8 +127,8 @@ class yafWorld:
                     yi.paramsSetBool("add_sun", world.bg_add_sun)
                     yi.paramsSetFloat("sun_power", world.bg_sun_power)
                     yi.paramsSetBool("background_light", world.bg_background_light)
-                    yi.paramsSetBool("with_caustic", True)
-                    yi.paramsSetBool("with_diffuse", True)
+                    yi.paramsSetBool("with_caustic", world.bg_with_caustic)
+                    yi.paramsSetBool("with_diffuse", world.bg_with_diffuse)
                     yi.paramsSetInt("light_samples", world.bg_light_samples)
                     yi.paramsSetFloat("power", world.bg_power)
                     yi.paramsSetFloat("bright", world.bg_dsbright)
@@ -134,6 +136,7 @@ class yafWorld:
                     yi.paramsSetFloat("exposure", world.bg_exposure)
                     yi.paramsSetBool("clamp_rgb", world.bg_clamp_rgb)
                     yi.paramsSetBool("gamma_enc", world.bg_gamma_enc)
+                    yi.paramsSetString("color_space", world.bg_color_space)
                     yi.paramsSetString("type", "darksky")
 
                 else:

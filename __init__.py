@@ -34,8 +34,8 @@ Pedro Alcaide (povmaniaco), Paulo Gomes (tuga3d), \
 Michele Castigliego (subcomandante), Bert Buchholz, \
 Rodrigo Placencia (DarkTide), Alexander Smirnov (Exvion)",
     "version": (0, 1, 2, 'alpha'),
-    "blender": (2, 5, 6),
-    "api": 37389,
+    "blender": (2, 5, 7),
+    "api": 37636,
     "location": "Info Header (engine dropdown)",
     "description": "YafaRay integration for blender",
     "warning": "Alpha state",
@@ -83,8 +83,7 @@ def register():
 
 
 def unregister():
-    print("unregister called")
-    bpy.utils.unregister_module(__name__, True)
+    bpy.utils.unregister_module(__name__)
     prop.unregister()
 
 if __name__ == '__main__':
