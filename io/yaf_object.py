@@ -162,15 +162,19 @@ class yafObject(object):
 
                 if obj.dupli_list:
                     obj.dupli_list_clear()
+            ##################################################################################################################################
+            #  Disable export of instanced objects, problems with "orco" mapped textures, transparent shadows (crash) and Material preview!! #
+            #  has to be solved first, then enable again...                                                                                  #
+            ##################################################################################################################################
+            
+            #  elif obj.data.users > 1:  # Exporting objects with shared mesh data blocks as instances
 
-            elif obj.data.users > 1:  # Exporting objects with shared mesh data blocks as instances
+                #  self.yi.printInfo("Processing shared mesh data node object: " + obj.name)
+                #  if obj.data.name not in baseIds:
+                    #  baseIds[obj.data.name] = self.writeInstanceBase(obj)
 
-                self.yi.printInfo("Processing shared mesh data node object: " + obj.name)
-                if obj.data.name not in baseIds:
-                    baseIds[obj.data.name] = self.writeInstanceBase(obj)
-
-                if obj.name not in dupBaseIds:
-                    self.writeInstance(baseIds[obj.data.name], obj.matrix_world, obj.data.name)
+                #  if obj.name not in dupBaseIds:
+                    #  self.writeInstance(baseIds[obj.data.name], obj.matrix_world, obj.data.name)
 
             else:
                 if obj.data.name not in baseIds and obj.name not in dupBaseIds:

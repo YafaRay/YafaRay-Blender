@@ -147,8 +147,8 @@ class yafMaterial:
         texco = switchTexCoords.get(mtex.texture_coords, 'orco')  # get texture coords, default is 'orco'
         yi.paramsSetString("texco", texco)
 
-        if mtex.object is not None:
-            texmat = mtex.object.matrix_local.copy().invert()
+        if mtex.object:
+            texmat = mtex.object.matrix_local.inverted()
             rtmatrix = yafrayinterface.new_floatArray(4 * 4)
 
             for x in range(4):

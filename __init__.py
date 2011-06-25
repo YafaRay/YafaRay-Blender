@@ -34,8 +34,8 @@ Pedro Alcaide (povmaniaco), Paulo Gomes (tuga3d), \
 Michele Castigliego (subcomandante), Bert Buchholz, \
 Rodrigo Placencia (DarkTide), Alexander Smirnov (Exvion)",
     "version": (0, 1, 2, 'alpha'),
-    "blender": (2, 5, 7),
-    "api": 37636,
+    "blender": (2, 5, 8),
+    "api": 37702,
     "location": "Info Header (engine dropdown)",
     "description": "YafaRay integration for blender",
     "warning": "Alpha state",
@@ -69,7 +69,7 @@ if "bpy" in locals():
     imp.reload(ot)
 else:
     import bpy
-    from yafaray import prop, io, ui, ot
+    from . import prop, io, ui, ot
 
 
 def register():

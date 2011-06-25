@@ -110,9 +110,9 @@ class yafTexture:
 
             # shape parameter
 
-            if tex.noise_basis == 'SAW':
+            if tex.noise_basis_2 == 'SAW':
                 ts = "saw"
-            elif tex.noise_basis == 'TRI':
+            elif tex.noise_basis_2 == 'TRI':
                 ts = "tri"
             else:
                 ts = "sin"
@@ -208,15 +208,14 @@ class yafTexture:
             yi.printInfo("Exporter: Creating Texture: \"" + name + "\" type MUSGRAVE")
             yi.paramsSetString("type", "musgrave")
 
-            ts = "fBm"
-            if tex.musgrave_type == 'MULTIFRACTAL':
-                ts = "multifractal"
-            elif tex.musgrave_type == 'RIDGED_MULTIFRACTAL':
-                ts = "ridgedmf"
-            elif tex.musgrave_type == 'HYBRID_MULTIFRACTAL':
-                ts = "hybridmf"
-            elif tex.musgrave_type == 'HETERO_TERRAIN':
-                ts = "heteroterrain"
+            switchMusgraveType = {
+                'MULTIFRACTAL': 'multifractal',
+                'RIDGED_MULTIFRACTAL': 'ridgedmf',
+                'HYBRID_MULTIFRACTAL': 'hybridmf',
+                'HETERO_TERRAIN': 'heteroterrain',
+                'FBM': 'fBm',
+                }
+            ts = switchMusgraveType.get(tex.musgrave_type, 'multifractal')  # set MusgraveType, default is 'multifractal'
 
             yi.paramsSetString("musgrave_type", ts)
             yi.paramsSetString("noise_type", noise2string(tex.noise_basis))
@@ -268,7 +267,7 @@ class yafTexture:
             yi.paramsSetBool("calc_alpha", tex.use_calculate_alpha)
             yi.paramsSetBool("normalmap", tex.yaf_is_normal_map)
             yi.paramsSetFloat("gamma", scene.gs_gamma_input)
-            yi.paramsSetFloat("exposure_adjust", tex.yaf_tex_expadj)  # experimental?
+            #  yi.paramsSetFloat("exposure_adjust", tex.yaf_tex_expadj)  # experimental?
             if not tex.yaf_tex_interpolate == 'bilinear':  # bilinear is set by default
                 yi.paramsSetString("interpolate", tex.yaf_tex_interpolate)
 
@@ -284,20 +283,18 @@ class yafTexture:
             yi.paramsSetInt("yrepeat", repeat_y)
 
             # clipping
-            ext = tex.extension
-
-            if ext == 'EXTEND':
-                yi.paramsSetString("clipping", "extend")
-            elif ext == 'CLIP':
-                yi.paramsSetString("clipping", "clip")
-            elif ext == 'CLIP_CUBE':
-                yi.paramsSetString("clipping", "clipcube")
-            elif ext == "CHECKER":
-                yi.paramsSetString("clipping", "checker")
+            extension = tex.extension
+            switchExtension = {
+                'EXTEND': 'extend',
+                'CLIP': 'clip',
+                'CLIP_CUBE': 'clipcube',
+                'CHECKER': 'checker',
+                }
+            clipping = switchExtension.get(extension, 'repeat')  # set default clipping to 'repeat'
+            yi.paramsSetString("clipping", clipping)
+            if clipping == 'checker':
                 yi.paramsSetBool("even_tiles", tex.use_checker_even)
                 yi.paramsSetBool("odd_tiles", tex.use_checker_odd)
-            else:
-                yi.paramsSetString("clipping", "repeat")
 
             # crop min/max
             yi.paramsSetFloat("cropmin_x", tex.crop_min_x)
