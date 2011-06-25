@@ -115,11 +115,7 @@ class RENDER_OT_render_view(bpy.types.Operator):
     def poll(self, context):
 
         check_kitems = context.window_manager.keyconfigs.active.keymaps["Screen"]
-
-        if hasattr(check_kitems, "keymap_items"):  # check for api changes in Blender 2.56 rev. 35764
-            kitems = check_kitems.keymap_items
-        else:
-            kitems = check_kitems.items
+        kitems = check_kitems.keymap_items
 
         if not kitems.from_id(bpy.types.YAFA_RENDER.viewRenderKey):
             bpy.types.YAFA_RENDER.viewRenderKey = kitems.new("RENDER_OT_render_view", 'F12', 'RELEASE', False, False, False, True).id
@@ -150,10 +146,7 @@ class RENDER_OT_render_view(bpy.types.Operator):
 
         if not view3d:
             for area in [a for a in bpy.context.window.screen.areas if a.type == "VIEW_3D"]:
-                if hasattr(area, "spaces"):  # API changed in revision 36782: area.active_space --> area.spaces.active
-                    view3d = area.spaces.active.region_3d
-                else:
-                    view3d = area.active_space.region_3d
+                view3d = area.spaces.active.region_3d
                 break
 
         if not view3d or view3d.view_perspective == "ORTHO":
@@ -161,7 +154,6 @@ class RENDER_OT_render_view(bpy.types.Operator):
             return {'CANCELLED'}
 
         bpy.types.YAFA_RENDER.viewMatrix = view3d.view_matrix.copy()
-
         bpy.ops.render.render('INVOKE_DEFAULT')
 
         return {'FINISHED'}
@@ -177,11 +169,7 @@ class RENDER_OT_render_animation(bpy.types.Operator):  # own operator for render
     def poll(self, context):
 
         check_kitems = context.window_manager.keyconfigs.active.keymaps["Screen"]
-
-        if hasattr(check_kitems, "keymap_items"):  # check for api changes in Blender 2.56 rev. 35764
-            kitems = check_kitems.keymap_items
-        else:
-            kitems = check_kitems.items
+        kitems = check_kitems.keymap_items
 
         if not kitems.from_id(bpy.types.YAFA_RENDER.renderAnimationKey):
             if self.animation:
@@ -199,46 +187,6 @@ class RENDER_OT_render_animation(bpy.types.Operator):  # own operator for render
         else:
             bpy.types.YAFA_RENDER.render_Animation = False  # set propertie, so exporter could recognize that render animation was invoked
             bpy.ops.render.render('INVOKE_DEFAULT')
-
-        return {'FINISHED'}
-
-
-class RENDER_OT_refresh_preview(bpy.types.Operator):
-    bl_label = "Render View"
-    bl_idname = "render.refresh_preview"
-    bl_description = "Refreshes the material preview"
-
-    def invoke(self, context, event):
-        mat = context.scene.objects.active.active_material
-        if mat != None:  # check if a material is assigned to an object
-            mat.preview_render_type = mat.preview_render_type
-            return {'FINISHED'}
-        else:
-            return {'CANCELLED'}
-
-
-class WORLD_OT_refresh_preview(bpy.types.Operator):
-    bl_label = "Refresh World Preview"
-    bl_idname = "world.refresh_preview"
-    bl_description = "Refreshes the world preview"
-
-    def invoke(self, context, event):
-        wrld = context.scene.world
-        wrld.ambient_color = wrld.ambient_color
-        return {'FINISHED'}
-
-
-class LAMP_OT_sync_3dview(bpy.types.Operator):
-    bl_label = "Sync type with 3D view"
-    bl_idname = "lamp.sync_3dview"
-    bl_description = "Sets the lamp type on the 3d view"
-
-    def invoke(self, context, event):
-        lamp = context.scene.objects.active
-
-        if lamp.type == 'LAMP':
-            lampTypeMap = {'area': 'AREA', 'spot': 'SPOT', 'sun': 'SUN', 'point': 'POINT', 'ies': 'SPOT'}
-            lamp.data.type = lampTypeMap[lamp.data.lamp_type]
 
         return {'FINISHED'}
 

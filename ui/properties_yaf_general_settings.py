@@ -147,7 +147,7 @@ class YAF_PT_general_settings(bpy.types.Panel):
 
         row = layout.row()
         col = row.column()
-        col.prop(rd, "use_color_management", text = "Use Linear Workflow")
+        col.prop(rd, "use_color_management", text = "Color Management BI")
         col.prop(sc, "gs_clay_render", text = "Clay Render")
         col.prop(sc, "gs_transp_shad", text = "Transparent Shadow")
         col.prop(sc, "gs_auto_save", text = "Auto Save")

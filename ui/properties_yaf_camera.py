@@ -53,22 +53,7 @@ class YAF_PT_camera(bpy.types.Panel):
     def poll(self, context):
 
         engine = context.scene.render.engine
-
-        try:
-            import properties_data_camera
-        except ImportError:
-            from bl_ui import properties_data_camera  # API changes since rev. 35667
-
-        if (context.camera and (engine in self.COMPAT_ENGINES)):
-            try:
-                properties_data_camera.unregister()
-            except:
-                pass
-        else:
-            try:
-                properties_data_camera.register()
-            except:
-                pass
+        from bl_ui import properties_data_camera
         return (context.camera and (engine in self.COMPAT_ENGINES))
 
     def draw(self, context):
@@ -81,24 +66,15 @@ class YAF_PT_camera(bpy.types.Panel):
         col.separator()
 
         if context.camera.camera_type == 'angular':
-            # if not camera.type == "PERSP":
-            #     bpy.ops.wm.context_set_enum("EXEC_DEFAULT", data_path="camera.type", value="PERSP")
-
             col.prop(context.camera, "angular_angle", text = "Angle")
             col.prop(context.camera, "max_angle", text = "Max Angle")
             col.prop(context.camera, "mirrored", text = "Mirrored")
             col.prop(context.camera, "circular", text = "Circular")
 
         elif camera.camera_type == 'orthographic':
-            # if not camera.type == "ORTHO":
-            #    bpy.ops.wm.context_set_enum("EXEC_DEFAULT", data_path="camera.type", value="ORTHO")
-
             col.prop(context.camera, "ortho_scale", text = "Scale")
 
         elif camera.camera_type in ['perspective', 'architect']:
-            # if not camera.type == "PERSP":
-            #     bpy.ops.wm.context_set_enum("EXEC_DEFAULT", data_path="camera.type", value="PERSP")
-
             col.prop(context.camera, "lens", text = "Focal Length")
 
             col.separator()
@@ -126,22 +102,7 @@ class YAF_PT_camera_display(bpy.types.Panel):
     def poll(self, context):
 
         engine = context.scene.render.engine
-
-        try:
-            import properties_data_camera
-        except ImportError:
-            from bl_ui import properties_data_camera  # API changes since rev. 35667
-
-        if (context.camera and (engine in self.COMPAT_ENGINES)):
-            try:
-                properties_data_camera.unregister()
-            except:
-                pass
-        else:
-            try:
-                properties_data_camera.register()
-            except:
-                pass
+        from bl_ui import properties_data_camera
         return (context.camera and (engine in self.COMPAT_ENGINES))
 
     def draw(self, context):
@@ -173,7 +134,5 @@ class YAF_PT_camera_display(bpy.types.Panel):
         clip.active = camera.use_clipping
         clip.prop(context.camera, "clip_start", text = "Start")
         clip.prop(context.camera, "clip_end", text = "End")
-
-        if hasattr(camera, "show_guide"):  # enable compositon guide presets in camera display panel Blender 2.57 rev. >= 36590
-            layout.separator()
-            layout.prop_menu_enum(camera, "show_guide")
+        layout.separator()
+        layout.prop_menu_enum(camera, "show_guide")

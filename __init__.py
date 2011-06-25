@@ -34,8 +34,8 @@ Pedro Alcaide (povmaniaco), Paulo Gomes (tuga3d), \
 Michele Castigliego (subcomandante), Bert Buchholz, \
 Rodrigo Placencia (DarkTide), Alexander Smirnov (Exvion)",
     "version": (0, 1, 2, 'alpha'),
-    "blender": (2, 5, 6),
-    "api": 35566,
+    "blender": (2, 5, 8),
+    "api": 37702,
     "location": "Info Header (engine dropdown)",
     "description": "YafaRay integration for blender",
     "warning": "Alpha state",
@@ -69,7 +69,7 @@ if "bpy" in locals():
     imp.reload(ot)
 else:
     import bpy
-    from yafaray import prop, io, ui, ot
+    from . import prop, io, ui, ot
 
 
 def register():
@@ -77,13 +77,9 @@ def register():
     bpy.utils.register_module(__name__)
 
     kitems = bpy.context.window_manager.keyconfigs.active.keymaps["Screen"]
+    kitems.keymap_items.new("RENDER_OT_render_view", 'F12', 'RELEASE', False, False, False, True)
+    kitems.keymap_items.new("RENDER_OT_render_animation", 'F12', 'RELEASE', False, False, True, False)
 
-    if hasattr(kitems, "keymap_items"):  # check for api changes in Blender 2.56 rev. 35764
-        kitems.keymap_items.new("RENDER_OT_render_view", 'F12', 'RELEASE', False, False, False, True)
-        kitems.keymap_items.new("RENDER_OT_render_animation", 'F12', 'RELEASE', False, False, True, False)
-    else:
-        kitems.items.new("RENDER_OT_render_view", 'F12', 'RELEASE', False, False, False, True)
-        kitems.items.new("RENDER_OT_render_animation", 'F12', 'RELEASE', False, False, True, False)
 
 
 def unregister():

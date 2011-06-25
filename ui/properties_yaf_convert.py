@@ -1,6 +1,5 @@
 import bpy
 
-
 class YAF_PT_convert(bpy.types.Panel):
     bl_label = 'Convert old YafaRay Settings'
     bl_space_type = 'PROPERTIES'

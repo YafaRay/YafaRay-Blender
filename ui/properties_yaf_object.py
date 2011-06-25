@@ -1,6 +1,5 @@
 import bpy
 
-
 class YAF_PT_object_light(bpy.types.Panel):
 
     bl_label = 'YafaRay Object Properties'

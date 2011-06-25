@@ -53,14 +53,12 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.yaf_material   = yafMaterial(self.yi, self.materialMap, self.yaf_texture.loadedTextures)
 
     def exportScene(self):
-        #self.yaf_world.exportWorld(self.scene)
         self.exportTextures()
         self.exportMaterials()
         self.yaf_object.setScene(self.scene)
-        self.exportObjects()  # povmaniaco: my test for correct order exporter into xml file (like 2.49)
+        self.exportObjects()
         self.yaf_object.createCamera()
-        self.yaf_world.exportWorld(self.scene)  # povmaniaco: my test for correct order exporter into xml file (like 2.49)
-        #self.exportObjects()
+        self.yaf_world.exportWorld(self.scene)
 
     def exportTextures(self):
         # export textures from visible objects only. Won't work with

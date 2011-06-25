@@ -1,5 +1,4 @@
 import bpy
-#from rna_prop_ui import PropertyPanel
 #import types and props ---->
 from bpy.props import *
 Lamp = bpy.types.Lamp
@@ -10,26 +9,16 @@ def call_lighttype_update(self, context):
             switchLampType = {'area': 'AREA', 'spot': 'SPOT', 'sun': 'SUN', 'point': 'POINT', 'ies': 'SPOT'}
             lamp.data.type = switchLampType.get(lamp.data.lamp_type)
 
-if int(bpy.app.build_revision) > 37297:  # callback support for custom props since Blender revision 37298, check it...
-    Lamp.lamp_type = EnumProperty(
-        items = (
-            ("point", "Point", ""),
-            ("sun", "Sun", ""),
-            ("spot", "Spot", ""),
-            ("ies", "IES", ""),
-            ("area", "Area", "")),
-        default="point",
-        name = "Light Type", update = call_lighttype_update)
-else:
-    Lamp.lamp_type = EnumProperty(
-        items = (
-            ("point", "Point", ""),
-            ("sun", "Sun", ""),
-            ("spot", "Spot", ""),
-            ("ies", "IES", ""),
-            ("area", "Area", "")),
-        default="point",
-        name = "Light Type")
+Lamp.lamp_type = EnumProperty(
+    items = (
+        ("point", "Point", ""),
+        ("sun", "Sun", ""),
+        ("spot", "Spot", ""),
+        ("ies", "IES", ""),
+        ("area", "Area", "")),
+    default="point",
+    name = "Light Type", update = call_lighttype_update)
+
 Lamp.directional =      BoolProperty(attr = "directional",
                                     description = "",
                                     default = False)
@@ -53,10 +42,6 @@ Lamp.create_geometry =  BoolProperty(attr = "create_geometry",
 Lamp.infinite =         BoolProperty(attr = "infinite",
                                     description = "Determines if light is infinite or filling a semi-infinite cylinder",
                                     default = True)
-#Lamp.shadow_soft_size = FloatProperty(attr = "shadow_soft_size",
-#                                    description = "",
-#                                    min = 1.0, max = 100,
-#                                    default = 1.0)
 Lamp.spot_soft_shadows = BoolProperty(attr = "spot_soft_shadows",
                                     description = "Use soft shadows",
                                     default = False)
@@ -103,8 +88,6 @@ class YAF_PT_lamp(bpy.types.Panel):
         space = context.space_data
 
         layout.template_preview(context.lamp)
-        layout.operator("LAMP_OT_sync_3dview", text = "Sync with 3D view", icon = "LAMP")
-
         layout.prop(lamp, "lamp_type", expand = True, text = "Light Type")
 
         row = layout.row()

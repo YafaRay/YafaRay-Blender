@@ -4,4 +4,5 @@ def register():
 	yaf_object.register()
 
 def unregister():
-	yaf_object.unregister()
+	pass
+	#yaf_object.unregister()
