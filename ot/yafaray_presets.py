@@ -64,13 +64,17 @@ class YAF_AddPresetBase():
 
                 for rna_path in self.preset_values:
                     value = eval(rna_path)
-                    # convert thin wrapped sequences to simple lists to repr()
-                    try:
-                        value = value[:]
-                    except:
-                        pass
-
-                    file_preset.write("%s = %r\n" % (rna_path, value))
+                    if type(value) == float:  # formatting of the floating point values
+                        value = round(value, 4)
+                    if str(value).startswith('Color'):  # formatting of the Color Vectors (r,g,b)
+                        r, g, b = round(value.r, 3), round(value.g, 3), round(value.b, 3)
+                        file_preset.write("%s = %r, %r, %r\n" % (rna_path, r, g, b))
+                    else:
+                        try:  # convert thin wrapped sequences to simple lists to repr()
+                            value = value[:]
+                        except:
+                            pass
+                        file_preset.write("%s = %r\n" % (rna_path, value))
 
                 file_preset.close()
 
