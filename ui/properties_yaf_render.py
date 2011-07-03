@@ -3,7 +3,8 @@ import bpy
 from bpy.props import *
 Scene = bpy.types.Scene
 
-def call_update_fileformat(self, context): # set fileformat for image saving on same format as in yafaray, both have default PNG
+
+def call_update_fileformat(self, context):  # set fileformat for image saving on same format as in yafaray, both have default PNG
     sc = context.scene
     rd = sc.render
     if sc.img_output != rd.file_format:
@@ -13,7 +14,7 @@ def call_update_fileformat(self, context): # set fileformat for image saving on 
 
 
 Scene.img_output = EnumProperty(
-                        description = "Image will be saved in this file format", # yafarays own image output selection, default is PNG
+                        description = "Image will be saved in this file format",  # yafarays own image output selection, default is PNG
                         items = (
                             ("PNG", " PNG (Portable Network Graphics)", ""),
                             ("TARGA", " TGA (Truevision TARGA)", ""),
@@ -22,7 +23,7 @@ Scene.img_output = EnumProperty(
                             ("OPEN_EXR", " EXR (IL&M OpenEXR)", ""),
                             ("HDR", " HDR (Radiance RGBE)", "")),
                         default = "PNG",
-                        name = "Image File Type", update = call_update_fileformat) # if fileformat has changed, set it in blender too..
+                        name = "Image File Type", update = call_update_fileformat)  # if fileformat has changed, set it in blender too..
 
 
 class YafarayRenderButtonsPanel():
@@ -32,9 +33,9 @@ class YafarayRenderButtonsPanel():
     COMPAT_ENGINES = ['YAFA_RENDER']
 
     @classmethod
-    def poll(self, context):
+    def poll(cls, context):
         render = context.scene.render
-        return (render.engine in self.COMPAT_ENGINES)
+        return (render.engine in cls.COMPAT_ENGINES)
 
 
 class YAFRENDER_PT_render(YafarayRenderButtonsPanel, bpy.types.Panel):
@@ -43,15 +44,18 @@ class YAFRENDER_PT_render(YafarayRenderButtonsPanel, bpy.types.Panel):
 
     def draw(self, context):
 
-        split = self.layout.split()
+        layout = self.layout
 
-        split.column().operator("RENDER_OT_render_animation", "Render Image", "RENDER_STILL").animation = False
-        split.column().operator("RENDER_OT_render_animation", "Render Animation", "RENDER_ANIMATION").animation = True
+        rd = context.scene.render
+
+        row = layout.row()
+        row.operator("render.render", text="Image", icon='RENDER_STILL')
+        row.operator("render.render", text="Animation", icon='RENDER_ANIMATION').animation = True
 
         if context.scene.render.engine == "YAFA_RENDER":
-            self.layout.row().operator("RENDER_OT_render_view", "Render 3D View", "VIEW3D")
+            layout.row().operator("RENDER_OT_render_view", "Render 3D View", "VIEW3D")
 
-        self.layout.row().prop(context.scene.render, "display_mode")
+        layout.prop(rd, "display_mode", text="Display")
 
 
 class YAFRENDER_PT_dimensions(YafarayRenderButtonsPanel, bpy.types.Panel):

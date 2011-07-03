@@ -59,23 +59,24 @@ class yafMaterial:
             'DARKEN': 7,
             'LIGHTEN': 8,
         }
-        
+
         mode = switchBlendMode.get(mtex.blend_type, 0)  # set texture blend mode, if not a supported mode then set it to 'MIX'
         yi.paramsSetInt("mode", mode)
-        yi.paramsSetBool("stencil", mtex.use_stencil)  
+        yi.paramsSetBool("stencil", mtex.use_stencil)
 
         negative = mtex.invert
         yi.paramsSetBool("negative", negative)
 
-        if factor < 0:  # check for negative values
+        if factor < 0:  # added a check for negative values
             factor = factor * -1
             yi.paramsSetBool("negative", True)
 
         # "hack", scalar maps should always convert the RGB intensity to scalar
-        # not clear why without this and noRGB == False, maps on scalar values seem to be "white" everywhere
-        noRGB = mtex.use_rgb_to_intensity
-        if len(dcol) == 1 and not name[:12] == 'transp_layer':  # hack for transparency intensity maps with 'use alpha'
-            noRGB = True
+        # not clear why without this and noRGB == False, maps on scalar values seem to be "white" everywhere   <-- ???
+        noRGB = mtex.use_rgb_to_intensity 
+
+        # if len(dcol) == 1:    # disabled this 'hack' again, does not work with procedurals and alpha mapping (e.g. PNG image with 'use alpha')
+        #     noRGB = True      # user should decide if rgb_to_intensity will be used or not...
 
         yi.paramsSetBool("noRGB", noRGB)
 
@@ -173,7 +174,12 @@ class yafMaterial:
             yi.paramsSetString("mapping", "sphere")
 
         yi.paramsSetPoint("offset", mtex.offset[0], mtex.offset[1], mtex.offset[2])
-        yi.paramsSetPoint("scale", mtex.scale[0], mtex.scale[1], mtex.scale[2])
+        if bpy.types.YAFA_RENDER.is_texPrev:
+            mtex_X = mtex.scale[0] * 8.7258
+            yi.paramsSetPoint("scale", mtex_X, mtex.scale[1], mtex.scale[2])
+            print("Texture Preview = True")
+        else:
+            yi.paramsSetPoint("scale", mtex.scale[0], mtex.scale[1], mtex.scale[2])
 
         if mtex.use_map_normal:  # || mtex->maptoneg & MAP_NORM )
             # scale up the normal factor, it resembles

@@ -3,6 +3,7 @@ import bpy
 from bpy.props import *
 Material = bpy.types.Material
 
+
 def call_mat_update(self, context):
     mat = context.scene.objects.active.active_material
     if mat != None:  # check if a material is assigned to an object
@@ -177,6 +178,7 @@ Material.material2 =            StringProperty(
                                 description = "Second Blend Material. Same material if nothing is set.",
                                 default = "")
 
+
 class YAF_MaterialButtonsPanel():
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
@@ -184,9 +186,9 @@ class YAF_MaterialButtonsPanel():
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
     @classmethod
-    def poll(self, context):
+    def poll(cls, context):
         engine = context.scene.render.engine
-        return ((context.material or context.object) and  (engine in self.COMPAT_ENGINES))
+        return ((context.material or context.object) and  (engine in cls.COMPAT_ENGINES))
 
 
 class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):

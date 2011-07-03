@@ -2,6 +2,8 @@ import bpy
 #import types and props ---->
 from bpy.props import *
 Lamp = bpy.types.Lamp
+# TODO: check params in yafaray source and ../yaf_light.py, improve UI Layout
+
 
 def call_lighttype_update(self, context):
         lamp = context.scene.objects.active
@@ -9,60 +11,75 @@ def call_lighttype_update(self, context):
             switchLampType = {'area': 'AREA', 'spot': 'SPOT', 'sun': 'SUN', 'point': 'POINT', 'ies': 'SPOT'}
             lamp.data.type = switchLampType.get(lamp.data.lamp_type)
 
-Lamp.lamp_type = EnumProperty(
-    items = (
-        ("point", "Point", ""),
-        ("sun", "Sun", ""),
-        ("spot", "Spot", ""),
-        ("ies", "IES", ""),
-        ("area", "Area", "")),
-    default="point",
-    name = "Light Type", update = call_lighttype_update)
+Lamp.lamp_type =            EnumProperty(
+                                items = (
+                                    ("point", "Point", ""),
+                                    ("sun", "Sun", ""),
+                                    ("spot", "Spot", ""),
+                                    ("ies", "IES", ""),
+                                    ("area", "Area", "")),
+                                default="point",
+                                name = "Light Type", update = call_lighttype_update)
 
-Lamp.directional =      BoolProperty(attr = "directional",
-                                    description = "",
-                                    default = False)
-Lamp.size =             FloatProperty(attr = "size",  # size = size value in Blender
-                                    description = "",
-                                    default = 2)
-Lamp.size_y =           FloatProperty(attr = "size_y",
-                                    description = "",
-                                    default = 2)
-Lamp.spot_blend =       FloatProperty(attr = "spot_blend",
-                                    description = "")
-Lamp.spot_size =        FloatProperty(attr = "spot_size",
-                                    description = "",
-                                    default = 45)
-Lamp.use_sphere =       BoolProperty(attr = "use_sphere",
-                                    description = "",
-                                    default = False)
-Lamp.create_geometry =  BoolProperty(attr = "create_geometry",
-                                    description = "Creates a visible geometry in the dimensions of the light during the render",
-                                    default = False)
-Lamp.infinite =         BoolProperty(attr = "infinite",
-                                    description = "Determines if light is infinite or filling a semi-infinite cylinder",
-                                    default = True)
-Lamp.spot_soft_shadows = BoolProperty(attr = "spot_soft_shadows",
-                                    description = "Use soft shadows",
-                                    default = False)
-Lamp.shadow_fuzzyness = FloatProperty(attr = "shadow_fuzzyness",
-                                    description = "Fuzzyness of the soft shadows (0 - hard shadow, 1 - fuzzy shadow)",
-                                    min = 0.0, max = 1.0,
-                                    default = 1.0)
-Lamp.photon_only =      BoolProperty(attr = "photon_only",
-                                    description = "This spot will only throw photons not direct light",
-                                    default = False)
-Lamp.angle =            FloatProperty(attr = "angle",
-                                    description = "Angle of the cone in degrees (shadow softness)",
-                                    min = 0.0, max = 80.0,
-                                    default = 0.5)
-Lamp.ies_file =         StringProperty(attr = "ies_file", subtype = 'FILE_PATH')
-Lamp.yaf_samples =      IntProperty(attr = "yaf_samples",
-                                    description = "Number of samples to be taken for direct lighting",
-                                    min = 0, max = 512,
-                                    default = 16)
-Lamp.ies_cone_angle =   FloatProperty(attr = "spot_size", default = 45)
-Lamp.ies_soft_shadows = BoolProperty(attr = "ies_soft_shadows")
+Lamp.directional =          BoolProperty(
+                                description = "",
+                                default = False)
+
+
+Lamp.create_geometry =      BoolProperty(
+                                description = "Creates a visible geometry in the dimensions of the light during the render",
+                                default = False)
+
+Lamp.infinite =             BoolProperty(
+                                description = "Determines if light is infinite or filling a semi-infinite cylinder",
+                                default = True)
+
+Lamp.size =                 FloatProperty(attr = "size",  # size = size value in Blender -> do we need this prop? TODO: check
+                                description = "",
+                                default = 2)
+
+Lamp.size_y =               FloatProperty(attr = "size_y",  # do we need this prop, TODO: check
+                                description = "",
+                                default = 2)
+
+Lamp.spot_blend =           FloatProperty(attr = "spot_blend",  # do we need this prop? TODO: check
+                                description = "")
+
+Lamp.spot_size =            FloatProperty(attr = "spot_size",  # do we need this prop? TODO: check
+                                description = "",
+                                default = 45)
+
+Lamp.use_sphere =           BoolProperty(  # do we need this prop? TODO: check
+                                description = "",
+                                default = False)
+
+Lamp.spot_soft_shadows =    BoolProperty(
+                                description = "Use soft shadows",
+                                default = False)
+
+Lamp.shadow_fuzzyness =     FloatProperty(
+                                description = "Fuzzyness of the soft shadows (0 - hard shadow, 1 - fuzzy shadow)",
+                                min = 0.0, max = 1.0,
+                                default = 1.0)
+
+Lamp.photon_only =          BoolProperty(
+                                description = "This spot will only throw photons not direct light",
+                                default = False)
+
+Lamp.angle =                FloatProperty(
+                                description = "Angle of the cone in degrees (shadow softness)",
+                                min = 0.0, max = 80.0,
+                                default = 0.5)
+
+Lamp.ies_file =             StringProperty(attr = "ies_file", subtype = 'FILE_PATH')
+
+Lamp.yaf_samples =          IntProperty(
+                                description = "Number of samples to be taken for direct lighting",
+                                min = 0, max = 512,
+                                default = 16)
+
+Lamp.ies_cone_angle =       FloatProperty(attr = "spot_size", default = 45)
+Lamp.ies_soft_shadows =     BoolProperty(attr = "ies_soft_shadows")
 
 
 class YAF_PT_lamp(bpy.types.Panel):
@@ -75,10 +92,10 @@ class YAF_PT_lamp(bpy.types.Panel):
     COMPAT_ENGINES = ['YAFA_RENDER']
 
     @classmethod
-    def poll(self, context):
+    def poll(cls, context):
 
         engine = context.scene.render.engine
-        return (context.lamp and  (engine in self.COMPAT_ENGINES))
+        return (context.lamp and  (engine in cls.COMPAT_ENGINES))
 
     def draw(self, context):
         layout = self.layout

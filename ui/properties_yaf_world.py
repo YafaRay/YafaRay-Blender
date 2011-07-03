@@ -2,6 +2,8 @@ import bpy
 # import types and props ---->
 from bpy.props import *
 World = bpy.types.World
+# TODO: check in converter for prop conversion of darktides sunsky values, improve UI Layout of sunsky
+
 
 def call_world_update(self, context):
     world = context.scene.world
@@ -115,7 +117,7 @@ World.bg_e_var =                FloatProperty(
                                     min = 0, max = 10, update = call_world_update)
 
 World.bg_from =                 FloatVectorProperty(
-                                    description = 'Set position of the sun', 
+                                    description = 'Set position of the sun',
                                     default = (0.5, 0.5, 0.5), subtype = 'DIRECTION',
                                     step = 10, precision = 3,
                                     min = -1, max = 1, update = call_world_update)
@@ -181,7 +183,7 @@ class YAFWORLD_PT_preview(bpy.types.Panel):
     @classmethod
     def poll(cls, context):
         rd = context.scene.render
-        return context.world and (not rd.use_game_engine) and (rd.engine in cls.COMPAT_ENGINES)
+        return (context.world) and (not rd.use_game_engine) and (rd.engine in cls.COMPAT_ENGINES)
 
     def draw(self, context):
         self.layout.template_preview(context.world)
@@ -256,13 +258,12 @@ class YAFWORLD_PT_world(bpy.types.Panel):
             col.prop(world, 'bg_use_ibl', text = 'Use IBL')
             if world.bg_use_ibl:
                 row = layout.row()
-                row.prop(world, 'bg_with_caustic', text = 'With Caustic')
-                row.prop(world, 'bg_with_diffuse', text = 'With Diffuse')
+                row.prop(world, 'bg_with_diffuse', text = 'Diffuse photons')
+                row.prop(world, 'bg_with_caustic', text = 'Caustic photons')
             else:
                 col = layout.column()
                 col.label(text = ' ')
                 col.label(text = ' ')
-
 
         elif world.bg_type == 'Sunsky':
             self.ibl = False
@@ -318,7 +319,7 @@ class YAFWORLD_PT_world(bpy.types.Panel):
             else:
                 col.label(text = ' ')
             if world.bg_background_light:
-                col.prop(world, 'bg_with_caustic', text = 'With Caustic')
+                col.prop(world, 'bg_with_diffuse', text = 'Diffuse photons')
             else:
                 col.label(text = ' ')
 
@@ -329,7 +330,7 @@ class YAFWORLD_PT_world(bpy.types.Panel):
             else:
                 col.label(text = ' ')
             if world.bg_background_light:
-                col.prop(world, 'bg_with_diffuse', text = 'With Diffuse')
+                col.prop(world, 'bg_with_caustic', text = 'Caustic photons')
             else:
                 col.label(text = ' ')
 
@@ -369,4 +370,4 @@ class YAFWORLD_PT_world(bpy.types.Panel):
             col.prop(world, 'bg_ibl_samples', text = 'IBL Samples')
             col.prop(world, 'bg_power', text = 'Power')
 
-from yafaray.ui import properties_yaf_volume_integrator
+from . import properties_yaf_volume_integrator

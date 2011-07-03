@@ -42,7 +42,6 @@ def convertObject(obj):
     for p in props:
         value = props[p]
 
-
         if p in variableDict:
             p = variableDict[p]
 

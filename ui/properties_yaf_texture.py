@@ -3,6 +3,7 @@ from bl_ui.properties_material import active_node_mat
 #import types and props ---->
 from bpy.props import *
 Texture = bpy.types.Texture
+# TODO: check if prop 'tex_file_name' is used
 
 Texture.yaf_tex_type =          EnumProperty(
                                     items = (
@@ -17,7 +18,7 @@ Texture.yaf_tex_type =          EnumProperty(
                                         ("IMAGE", "Image", "")),
                                     default = "NONE",
                                     name = "Texture Type")
-    
+
 Texture.yaf_tex_interpolate =   EnumProperty(
                                     items = (
                                         ("bilinear", "Bilinear", ""),
@@ -28,6 +29,7 @@ Texture.yaf_tex_interpolate =   EnumProperty(
 
 Texture.tex_file_name =         StringProperty(attr='tex_file_name', subtype = 'FILE_PATH')
 Texture.yaf_is_normal_map =     BoolProperty(default = False, name = "Normal map")
+
 
 def context_tex_datablock(context):
     idblock = context.material
@@ -296,7 +298,7 @@ class YAF_TEXTURE_PT_image_sampling(YAF_TextureTypePanel, bpy.types.Panel):
         col.label(text="Image:")
         col.prop(tex, "use_alpha", text="Use Alpha")
         col.prop(tex, "use_calculate_alpha", text="Calculate Alpha")
-        col.prop(tex, "use_flip_axis", text="Flip X/Y Axis") 
+        col.prop(tex, "use_flip_axis", text="Flip X/Y Axis")
 
         col = split.column()
         col.label(text = "Interpolation:")
@@ -517,7 +519,7 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel, bpy.types.Panel):
 
         row = layout.row()
         row.column().prop(tex, "offset")
-        row.column().prop(tex, "scale") 
+        row.column().prop(tex, "scale")
 
 
 class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, bpy.types.Panel):

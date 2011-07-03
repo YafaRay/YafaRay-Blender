@@ -166,7 +166,7 @@ class yafObject(object):
             #  Disable export of instanced objects, problems with "orco" mapped textures, transparent shadows (crash) and Material preview!! #
             #  has to be solved first, then enable again...                                                                                  #
             ##################################################################################################################################
-            
+
             #  elif obj.data.users > 1:  # Exporting objects with shared mesh data blocks as instances
 
                 #  self.yi.printInfo("Processing shared mesh data node object: " + obj.name)
@@ -348,7 +348,6 @@ class yafObject(object):
 
         elif obj.vol_region == 'Grid Volume':
             yi.paramsSetString("type", "GridVolume")
-
 
         yi.paramsSetFloat("sigma_a", obj.vol_absorp)
         yi.paramsSetFloat("sigma_s", obj.vol_scatter)

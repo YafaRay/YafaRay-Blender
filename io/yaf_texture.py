@@ -73,6 +73,7 @@ class yafTexture:
 
             yi.paramsSetBool("hard", hard)
             yi.paramsSetInt("depth", tex.noise_depth)
+            yi.paramsSetString("noise_type", noise2string(tex.noise_basis))
 
             textureConfigured = True
 

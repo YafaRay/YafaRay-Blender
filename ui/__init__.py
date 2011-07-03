@@ -21,7 +21,7 @@ for member in dir(properties_particle):  # add all particle panels from blender
         pass
 del properties_particle
 from bl_ui import properties_data_mesh
-for member in dir(properties_data_mesh):  # add all object data panels from blender 
+for member in dir(properties_data_mesh):  # add all object data panels from blender
     subclass = getattr(properties_data_mesh, member)
     try:
         subclass.COMPAT_ENGINES.add('YAFA_RENDER')

@@ -1,4 +1,4 @@
-# import al files for register all classes
+# import all files for register all classes
 
 from yafaray.io import yaf_export
 from yafaray.io import yaf_world

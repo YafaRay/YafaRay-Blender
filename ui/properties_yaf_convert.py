@@ -1,5 +1,6 @@
 import bpy
 
+
 class YAF_PT_convert(bpy.types.Panel):
     bl_label = 'Convert old YafaRay Settings'
     bl_space_type = 'PROPERTIES'
@@ -8,9 +9,9 @@ class YAF_PT_convert(bpy.types.Panel):
     COMPAT_ENGINES = ['YAFA_RENDER']
 
     @classmethod
-    def poll(self, context):
+    def poll(cls, context):
         engine = context.scene.render.engine
-        return (True and (engine in self.COMPAT_ENGINES))
+        return (True and (engine in cls.COMPAT_ENGINES))
 
     def draw(self, context):
         layout = self.layout

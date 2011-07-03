@@ -57,12 +57,13 @@ Scene.gs_draw_params =  BoolProperty(attr = "gs_draw_params",
 Scene.gs_custom_string = StringProperty(attr = "gs_custom_string",
                         description = "Custom string will be added to the info bar, use it for CPU, RAM etc.",
                         default = "")
-Scene.gs_auto_save =    BoolProperty(attr = "gs_auto_save",
-                        description = "Save each rendering result automatically",
-                        default = False)
-Scene.gs_auto_alpha =   BoolProperty(attr = "gs_auto_alpha",
-                        description = "Save alpha channel when rendering to autosave or doing animation",
-                        default = False)
+# gs_auto_save and gs_auto_alpha: not used anymore? (was for saving render results from Qt Gui)
+# Scene.gs_auto_save =    BoolProperty(attr = "gs_auto_save",
+#                         description = "Save each rendering result automatically",
+#                         default = False)
+# Scene.gs_auto_alpha =   BoolProperty(attr = "gs_auto_alpha",
+#                         description = "Save alpha channel when rendering to autosave or doing animation",
+#                         default = False)
 Scene.gs_premult =      BoolProperty(attr = "gs_premult",
                         description = "Premultipy Alpha channel for renders with transparent background",
                         default = False)
@@ -103,10 +104,10 @@ class YAF_PT_general_settings(bpy.types.Panel):
     COMPAT_ENGINES = ['YAFA_RENDER']
 
     @classmethod
-    def poll(self, context):
+    def poll(cls, context):
 
         engine = context.scene.render.engine
-        return (True  and  (engine in self.COMPAT_ENGINES))
+        return (True  and  (engine in cls.COMPAT_ENGINES))
 
     def draw(self, context):
 
@@ -147,10 +148,10 @@ class YAF_PT_general_settings(bpy.types.Panel):
 
         row = layout.row()
         col = row.column()
-        col.prop(rd, "use_color_management", text = "Color Management BI")
+        # col.prop(rd, "use_color_management", text = "Color Management BI")
         col.prop(sc, "gs_clay_render", text = "Clay Render")
         col.prop(sc, "gs_transp_shad", text = "Transparent Shadow")
-        col.prop(sc, "gs_auto_save", text = "Auto Save")
+        # col.prop(sc, "gs_auto_save", text = "Auto Save")
         sub = col.column()
         sub.enabled = sc.gs_type_render == "file"
         sub.prop(sc, "gs_z_channel", text = "Render Depth Map")
@@ -158,7 +159,7 @@ class YAF_PT_general_settings(bpy.types.Panel):
 
         col = row.column()
         col.prop(sc, "gs_auto_threads", text = "Auto Threads")
-        col.prop(sc, "gs_auto_alpha", text = "Auto Alpha")
+        # col.prop(sc, "gs_auto_alpha", text = "Auto Alpha")
         col.prop(sc, "gs_premult", text = "Premultiply")
         col.prop(sc, "gs_clamp_rgb", text = "Clamp RGB")
         col.prop(sc, "gs_show_sam_pix", text = "Show Sam Pix")
