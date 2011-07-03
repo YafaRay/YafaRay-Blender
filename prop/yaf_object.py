@@ -3,10 +3,11 @@ import bpy
 from bpy.props import *
 Object = bpy.types.Object
 
+
 def register():  # TODO: update default values and edit descriptions
     Object.ml_enable =          BoolProperty(
                                     attr = 'ml_enable',
-                                    description = 'Makes the mesh emit light')                                     
+                                    description = 'Makes the mesh emit light')
     Object.ml_color =           FloatVectorProperty(
                                     attr = 'ml_color',
                                     description = 'Color Settings', subtype = 'COLOR',
@@ -55,9 +56,9 @@ def register():  # TODO: update default values and edit descriptions
     Object.vol_region =         EnumProperty(
                                     description='Set the volume region',
                                     items = (
-                                        ('ExpDensity Volume','ExpDensity Volume',''),
-                                        ('Noise Volume','Noise Volume',''),
-                                        ('Uniform Volume','Uniform Volume','')
+                                        ('ExpDensity Volume', 'ExpDensity Volume', ''),
+                                        ('Noise Volume', 'Noise Volume', ''),
+                                        ('Uniform Volume', 'Uniform Volume', '')
                                     ),
                                     default='ExpDensity Volume',
                                     name = 'Volume Type')
@@ -89,7 +90,8 @@ def register():  # TODO: update default values and edit descriptions
                                     attr = 'vol_scatter',
                                     description='Scattering coefficient',
                                     min = 0, max = 1, default = 0.1)
-    
+
+
 def unregister():
     del Object.ml_enable
     del Object.ml_color

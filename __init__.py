@@ -18,8 +18,8 @@
 
 import sys
 import os
+import ctypes
 import threading
-import time
 
 PLUGIN_PATH = os.path.join(__path__[0], 'bin', 'plugins')
 BIN_PATH = os.path.join(__path__[0], 'bin')
@@ -45,16 +45,15 @@ Rodrigo Placencia (DarkTide), Alexander Smirnov (Exvion)",
     }
 
 # Preload needed libraries
-
 if sys.platform == 'win32':
     # Loading order of the dlls is sensible please do not alter it
-    dllArray = ['zlib1', 'libxml2-2', 'libgcc_s_sjlj-1', 'Half', 'Iex', 'IlmThread', 'IlmImf', 'libjpeg-8', 'libpng14', 'libtiff-3', 'libfreetype-6', 'libyafaraycore', 'libyafarayplugin']
+    dllArray = ['zlib1', 'libxml2-2', 'libgcc_s_sjlj-1', 'Half', 'Iex', 'IlmThread', 'IlmImf', \
+    'libjpeg-8', 'libpng14', 'libtiff-3', 'libfreetype-6', 'libyafaraycore', 'libyafarayplugin']
 elif sys.platform == 'darwin':
     dllArray = ['libyafaraycore.dylib', 'libyafarayplugin.dylib']
 else:
     dllArray = ['libyafaraycore.so', 'libyafarayplugin.so']
 
-import ctypes
 for dll in dllArray:
     try:
         ctypes.cdll.LoadLibrary(os.path.join(BIN_PATH, dll))
@@ -78,8 +77,6 @@ def register():
 
     kitems = bpy.context.window_manager.keyconfigs.active.keymaps["Screen"]
     kitems.keymap_items.new("RENDER_OT_render_view", 'F12', 'RELEASE', False, False, False, True)
-    kitems.keymap_items.new("RENDER_OT_render_animation", 'F12', 'RELEASE', False, False, True, False)
-
 
 
 def unregister():

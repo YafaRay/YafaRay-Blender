@@ -19,6 +19,12 @@ from yafaray.io.yaf_texture import yafTexture
 from yafaray.io.yaf_material import yafMaterial
 
 
+def colManagementOff(scene):  # callback for pre render: turn off Blenders color management
+    if bpy.context.scene.render.engine == 'YAFA_RENDER':
+        if bpy.context.scene.render.use_color_management:
+            bpy.context.scene.render.use_color_management = False
+
+
 class YafaRayRenderEngine(bpy.types.RenderEngine):
     bl_idname = YAF_ID_NAME
     bl_use_preview = True
@@ -26,15 +32,13 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
     prog = 0.0
     tag = ""
     useViewToRender = False
-    render_Animation = False  # bool prop: check if render animation was invoked
     viewMatrix = None
     viewRenderKey = -65535
-    renderAnimationKey = -65534  # key for own operator -> render animation
-    renderStillKey = -65533  # key for own operator -> render image
+    is_texPrev = False
 
     def setInterface(self, yi):
         self.materialMap = {}
-        self.materials   = set()
+        self.materials = set()
         self.yi = yi
 
         if self.preview:
@@ -63,12 +67,15 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
     def exportTextures(self):
         # export textures from visible objects only. Won't work with
         # blend mat, there the textures need to be handled separately
-
         for obj in [o for o in self.scene.objects if (not o.hide_render and o.is_visible(self.scene))]:
             for mat_slot in [m for m in obj.material_slots if m.material]:
                 for tex in [t for t in mat_slot.material.texture_slots if (t and t.texture)]:
                     if self.preview and tex.texture.name == "fakeshadow":
                         continue
+                    if self.preview and obj.name == 'texture':  # stretched plane needs to be fixed for tex preview
+                        bpy.types.YAFA_RENDER.is_texPrev = True
+                    else:
+                        bpy.types.YAFA_RENDER.is_texPrev = False
                     self.yaf_texture.writeTexture(self.scene, tex.texture)
 
     def exportObjects(self):
@@ -159,10 +166,9 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         }
         filetype = switchFileType.get(filetype, 'png')
         extension = '.' + filetype
-        if bpy.types.YAFA_RENDER.render_Animation:  # check for animation rendering -> write image with filename from framenumber
-            output = os.path.abspath(os.path.join(output_path, ("%0" + str(len(str(self.scene.frame_end))) + "d") % self.scene.frame_current))
-        else:
-            output = tempfile.mktemp(dir = output_path)
+        #  write image or XML-File with filename from framenumber
+        output = os.path.abspath(os.path.join(output_path, ("%0" + str(len(str(self.scene.frame_end))) + "d") % self.scene.frame_current))
+
         if not os.path.exists(output_path):  # try to create dir if it not exists...
             try:
                 os.makedirs(output_path)
@@ -181,6 +187,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.preview = (scene.name == "preview")
         self.bl_use_postprocess = False
         self.update_stats("", "Setting up render")
+        if len(bpy.app.handlers.render_pre) == 0:  # put only one callback for pre render into the list (check)
+            bpy.app.handlers.render_pre.append(colManagementOff)  # switch off Blenders color management before render
 
         if not self.preview:
             scene.frame_set(scene.frame_current)
@@ -205,13 +213,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         rfilepath = os.path.realpath(rfilepath)
         rfilepath = os.path.normpath(rfilepath)
 
-        if bpy.types.YAFA_RENDER.render_Animation:
-            absolute_outpath = os.path.abspath(os.path.join(rfilepath, 'yaf_ani'))  # output folder for animation imagefiles saving from yafaray
-        else:
-            absolute_outpath = os.path.abspath(os.path.join(rfilepath, 'yaf_tmp'))  # output folder for tmp imagefile saving from yafaray
-
         if scene.gs_type_render == "file":
-            outputFile, output, file_type = self.decideOutputFileName(absolute_outpath, scene.img_output)
+            outputFile, output, file_type = self.decideOutputFileName(rfilepath, scene.img_output)
             self.yi.paramsClearAll()
             self.yi.paramsSetString("type", file_type)
             self.yi.paramsSetBool("alpha_channel", r.color_mode == "RGBA")
@@ -222,8 +225,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             co = yafrayinterface.imageOutput_t(ih, str(outputFile), 0, 0)
 
         if scene.gs_type_render == "xml":  # Export the Scene to XML File
-            absolute_outpath = os.path.abspath(os.path.join(rfilepath, 'yaf_xml'))  # output folder for xml file saving from yafaray
-            outputFile, output, file_type = self.decideOutputFileName(absolute_outpath, 'XML')
+            outputFile, output, file_type = self.decideOutputFileName(rfilepath, 'XML')
             self.setInterface(yafrayinterface.xmlInterface_t())
             co = yafrayinterface.imageOutput_t()
             self.yi.setOutfile(outputFile)
@@ -269,7 +271,6 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 res = self.begin_result(x, y, w, h)
                 try:
                     res.layers[0].rect = tile
-                    #res.layers[0].passes[0].rect = tile
                 except:
                     pass
                 self.end_result(res)
@@ -279,18 +280,18 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 res = self.begin_result(0, 0, w, h)
                 try:
                     res.layers[0].rect = tile
-                    #res.layers[0].passes[0].rect = tile
                 except BaseException as e:
                     pass
                 self.end_result(res)
 
-            t = threading.Thread(target = self.yi.render,
-                                 args = (sizeX, sizeY, 0, 0,
-                                 self.preview,
-                                 drawAreaCallback,
-                                 flushCallback,
-                                 progressCallback)
-                                 )
+            t = threading.Thread(
+                                    target = self.yi.render,
+                                    args = (sizeX, sizeY, 0, 0,
+                                    self.preview,
+                                    drawAreaCallback,
+                                    flushCallback,
+                                    progressCallback)
+                                )
             t.start()
 
             while t.isAlive() and not self.test_break():

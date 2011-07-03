@@ -27,10 +27,10 @@ class YAF_PT_vol_integrator(bpy.types.Panel):
     COMPAT_ENGINES = ['YAFA_RENDER']
 
     @classmethod
-    def poll(self, context):
+    def poll(cls, context):
 
         engine = context.scene.render.engine
-        return (context.world and (engine in self.COMPAT_ENGINES))
+        return (context.world and (engine in cls.COMPAT_ENGINES))
 
     def draw(self, context):
 

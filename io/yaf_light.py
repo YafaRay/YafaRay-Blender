@@ -1,6 +1,5 @@
 import bpy
 import os
-import math
 from math import *
 from bpy.path import *
 import mathutils
@@ -81,7 +80,7 @@ class yafLight:
 
         yi.paramsClearAll()
 
-        yi.printInfo("Exporting Lamp: " + str(name) +  " [" + str(lampType) + "]")
+        yi.printInfo("Exporting Lamp: " + str(name) + " [" + str(lampType) + "]")
 
         if lamp.create_geometry and not self.lightMat:
             self.yi.paramsClearAll()
@@ -112,8 +111,7 @@ class yafLight:
                 # Blender reports the angle of the full cone in radians
                 # and we need half of the apperture angle in degrees
                 # (spot_size * 180 / pi) / 2
-                angle = (lamp.spot_size * 180 / math.pi) * 0.5
-                # angle = (lamp.spot_size * 57.29577951308232087684636) * 0.5
+                angle = (lamp.spot_size * 180 / pi) * 0.5
 
             yi.paramsSetString("type", "spotlight")
 

@@ -50,11 +50,11 @@ class YAF_PT_camera(bpy.types.Panel):
     COMPAT_ENGINES = ['YAFA_RENDER']
 
     @classmethod
-    def poll(self, context):
+    def poll(cls, context):
 
         engine = context.scene.render.engine
         from bl_ui import properties_data_camera
-        return (context.camera and (engine in self.COMPAT_ENGINES))
+        return (context.camera and (engine in cls.COMPAT_ENGINES))
 
     def draw(self, context):
         layout = self.layout
@@ -99,11 +99,11 @@ class YAF_PT_camera_display(bpy.types.Panel):
     COMPAT_ENGINES = ['YAFA_RENDER']
 
     @classmethod
-    def poll(self, context):
+    def poll(cls, context):
 
         engine = context.scene.render.engine
         from bl_ui import properties_data_camera
-        return (context.camera and (engine in self.COMPAT_ENGINES))
+        return (context.camera and (engine in cls.COMPAT_ENGINES))
 
     def draw(self, context):
         layout = self.layout

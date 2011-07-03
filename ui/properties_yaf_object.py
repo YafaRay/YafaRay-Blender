@@ -1,5 +1,6 @@
 import bpy
 
+
 class YAF_PT_object_light(bpy.types.Panel):
 
     bl_label = 'YafaRay Object Properties'
@@ -9,10 +10,10 @@ class YAF_PT_object_light(bpy.types.Panel):
     COMPAT_ENGINES = ['YAFA_RENDER']
 
     @classmethod
-    def poll(self, context):
+    def poll(cls, context):
 
         engine = context.scene.render.engine
-        return (context.object.type == 'MESH' and (engine in self.COMPAT_ENGINES))
+        return (context.object.type == 'MESH' and (engine in cls.COMPAT_ENGINES))
 
     def draw(self, context):
         layout = self.layout
@@ -34,8 +35,8 @@ class YAF_PT_object_light(bpy.types.Panel):
         if ob.bgp_enable:
             col.prop(ob, "bgp_power", text = "Power")
             col.prop(ob, "bgp_samples", text = "Samples")
-            col.prop(ob, "bgp_with_caustic", text = "With Caustic")
-            col.prop(ob, "bgp_with_diffuse", text = "With Diffuse")
+            col.prop(ob, "bgp_with_diffuse", text = "Diffuse photons")
+            col.prop(ob, "bgp_with_caustic", text = "Caustic photons")
             col.prop(ob, "bgp_photon_only", text = "Photons Only")
 
         col.prop(ob, "vol_enable", text = "Enable Volume", toggle = True)
