@@ -76,7 +76,8 @@ class yafLight:
                 to = (-0.0062182024121284485, 0.6771485209465027, 1.8015732765197754, 1.0)
                 power = 5
             elif name == "Lamp.008":
-                power = 15
+                lampType = "sun"
+                power = 0.8
 
         yi.paramsClearAll()
 

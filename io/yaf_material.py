@@ -174,10 +174,10 @@ class yafMaterial:
             yi.paramsSetString("mapping", "sphere")
 
         yi.paramsSetPoint("offset", mtex.offset[0], mtex.offset[1], mtex.offset[2])
-        if bpy.types.YAFA_RENDER.is_texPrev:
-            mtex_X = mtex.scale[0] * 8.7258
-            yi.paramsSetPoint("scale", mtex_X, mtex.scale[1], mtex.scale[2])
-            print("Texture Preview = True")
+        if bpy.types.YAFA_RENDER.is_texPrev:  # check if it is a texture preview render
+            mtex_X = mtex.scale[0] * 8.998  # tex preview fix: scale X value of tex size for the stretched Plane Mesh in preview scene
+            mtex_Z = mtex.scale[2] * 0.00001  # and for Z value of texture size also...
+            yi.paramsSetPoint("scale", mtex_X, mtex.scale[1], mtex_Z)
         else:
             yi.paramsSetPoint("scale", mtex.scale[0], mtex.scale[1], mtex.scale[2])
 

@@ -20,9 +20,16 @@ from yafaray.io.yaf_material import yafMaterial
 
 
 def colManagementOff(scene):  # callback for pre render: turn off Blenders color management
-    if bpy.context.scene.render.engine == 'YAFA_RENDER':
-        if bpy.context.scene.render.use_color_management:
+    rd = bpy.context.scene.render
+    if rd.engine == 'YAFA_RENDER' and rd.use_color_management:
             bpy.context.scene.render.use_color_management = False
+
+
+def append_unique(array, item):  # Append to list only if item not already in list
+	if item in array:
+		return False
+	array.append(item)
+	return True
 
 
 class YafaRayRenderEngine(bpy.types.RenderEngine):
@@ -187,8 +194,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.preview = (scene.name == "preview")
         self.bl_use_postprocess = False
         self.update_stats("", "Setting up render")
-        if len(bpy.app.handlers.render_pre) == 0:  # put only one callback for pre render into the list (check)
-            bpy.app.handlers.render_pre.append(colManagementOff)  # switch off Blenders color management before render
+        append_unique(bpy.app.handlers.render_pre, colManagementOff)  # put in colManagementOff function only, if it is not in list
 
         if not self.preview:
             scene.frame_set(scene.frame_current)
