@@ -52,7 +52,7 @@ Scene.intg_AO_color =       FloatVectorProperty(attr="intg_AO_color",
                                         soft_min = 0.0, soft_max = 1.0)
 Scene.intg_bounces =        IntProperty(attr="intg_bounces",
                                         description = "",
-                                        min = 4, default = 4, soft_min = 4)
+                                        min = 1, default = 4, soft_min = 1)
 Scene.intg_diffuse_radius = FloatProperty(attr="intg_diffuse_radius",
                                         description = "Radius to search for diffuse photons",
                                         min = 0.001,

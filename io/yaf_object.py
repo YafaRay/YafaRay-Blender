@@ -162,6 +162,14 @@ class yafObject(object):
 
                 if obj.dupli_list:
                     obj.dupli_list_clear()
+
+                if hasattr(obj, 'particle_systems'):
+                    for pSys in obj.particle_systems:
+                        check_rendertype = pSys.settings.render_type == 'OBJECT' or pSys.settings.render_type == 'GROUP'
+                        if check_rendertype and pSys.settings.use_render_emitter:  # check if object has particle system and uses 'render emitter'
+                            matrix = obj.matrix_world
+                            self.writeMesh(obj, matrix)
+
             ##################################################################################################################################
             #  Disable export of instanced objects, problems with "orco" mapped textures, transparent shadows (crash) and Material preview!! #
             #  has to be solved first, then enable again...                                                                                  #

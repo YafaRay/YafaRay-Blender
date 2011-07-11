@@ -281,6 +281,8 @@ class YAFWORLD_PT_world(bpy.types.Panel):
             if world.bg_add_sun:
                 col.prop(world, 'bg_sun_power', text = 'Sun Power')
             col.prop(world, 'bg_background_light', text = 'Skylight')
+            if world.bg_background_light:
+                col.prop(world, 'bg_power', text = 'Skylight Power')
             col.prop(world, 'bg_light_samples', text = 'Samples')
         ## DarkTide Sunsky NOT  more updated? ----->
         elif world.bg_type == 'Darktide\'s Sunsky':
