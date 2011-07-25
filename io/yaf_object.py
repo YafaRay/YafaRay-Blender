@@ -7,7 +7,7 @@ import yafrayinterface
 def multiplyMatrix4x4Vector4(matrix, vector):
     result = mathutils.Vector((0.0, 0.0, 0.0, 0.0))
     for i in range(4):
-        result[i] = matrix[i] * vector
+        result[i] =  vector * matrix[i]  # use reverse vector multiply order, API changed with rev. 38674
 
     return result
 
@@ -546,7 +546,7 @@ class yafObject(object):
                     yi.startGeometry()
                     yi.startCurveMesh(CID, p)
                     for location in particle.hair_keys:
-                        vertex = location.co * matrix
+                        vertex = matrix * location.co  # use reverse vector multiply order, API changed with rev. 38674
                         yi.addVertex(vertex[0], vertex[1], vertex[2])
                     #this section will be changed after the material settings been exported
                     if self.materialMap[pmaterial]:

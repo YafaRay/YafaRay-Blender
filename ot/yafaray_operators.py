@@ -134,11 +134,12 @@ class RENDER_OT_render_view(bpy.types.Operator):
         split.label("Rendering 3d views in orthographic mode", icon='INFO')
         split.label("is not supported yet.")
 
+
     def invoke(self, context, event):
 
         bpy.types.YAFA_RENDER.useViewToRender = True
 
-        # Get the 3d view unde the mouse cursor
+        # Get the 3d view under the mouse cursor
         # if the region is not a 3d view
         # then search for the first active one
 
@@ -150,13 +151,13 @@ class RENDER_OT_render_view(bpy.types.Operator):
                 break
 
         if not view3d or view3d.view_perspective == "ORTHO":
-            context.window_manager.invoke_popup(self)
-            return {'CANCELLED'}
+            return context.window_manager.invoke_popup(self)  # now returns the popup message defined in draw method
 
-        bpy.types.YAFA_RENDER.viewMatrix = view3d.view_matrix.copy()
-        bpy.ops.render.render('INVOKE_DEFAULT')
+        else:
+            bpy.types.YAFA_RENDER.viewMatrix = view3d.view_matrix.copy()
+            bpy.ops.render.render('INVOKE_DEFAULT')
 
-        return {'FINISHED'}
+            return {'FINISHED'}
 
 
 class YAF_OT_presets_ior_list(bpy.types.Operator):

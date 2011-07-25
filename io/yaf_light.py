@@ -162,10 +162,10 @@ class yafLight:
             corner1 = mathutils.Vector((-sizeX / 2, sizeY / 2, 0))
             corner2 = mathutils.Vector((sizeX / 2, sizeY / 2, 0))
             corner3 = mathutils.Vector((sizeX / 2, -sizeY / 2, 0))
-            point = point * matrix
-            corner1 = corner1 * matrix
-            corner2 = corner2 * matrix
-            corner3 = corner3 * matrix
+            point = matrix * point  # use reverse vector multiply order, API changed with rev. 38674
+            corner1 = matrix * corner1  # use reverse vector multiply order, API changed with rev. 38674
+            corner2 = matrix * corner2  # use reverse vector multiply order, API changed with rev. 38674
+            corner3 = matrix * corner3  # use reverse vector multiply order, API changed with rev. 38674
 
             yi.paramsClearAll()
             if lamp.create_geometry:
