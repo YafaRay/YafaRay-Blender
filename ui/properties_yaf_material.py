@@ -1,12 +1,13 @@
 import bpy
 #import types and props ---->
 from bpy.props import *
+from bl_ui.properties_material import MATERIAL_MT_specials
 Material = bpy.types.Material
 
 
 def call_mat_update(self, context):
     mat = context.scene.objects.active.active_material
-    if mat != None:  # check if a material is assigned to an object
+    if mat:  # check if a material is assigned to an object
         mat.preview_render_type = mat.preview_render_type
 
 Material.mat_type = EnumProperty(
@@ -187,59 +188,68 @@ class YAF_MaterialButtonsPanel():
 
     @classmethod
     def poll(cls, context):
-        engine = context.scene.render.engine
-        return ((context.material or context.object) and  (engine in cls.COMPAT_ENGINES))
+        return context.material and (context.scene.render.engine in cls.COMPAT_ENGINES)
 
 
 class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
-        bl_label = 'YafaRay Material'
-        bl_space_type = 'PROPERTIES'
-        bl_region_type = 'WINDOW'
-        bl_context = 'material'
-        COMPAT_ENGINES = ['YAFA_RENDER']
+    bl_label = 'YafaRay Material'
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = 'material'
+    COMPAT_ENGINES = ['YAFA_RENDER']
 
-        def draw(self, context):
-                layout = self.layout
+    @classmethod
+    def poll(cls, context):
+        engine = context.scene.render.engine
+        return (context.material or context.object) and (engine in cls.COMPAT_ENGINES)
 
-                mat = context.material
-                yaf_mat = context.material
-                ob = context.object
-                slot = context.material_slot
-                space = context.space_data
+    def draw(self, context):
+        layout = self.layout
 
-                layout.template_preview(context.material, True, context.material)
+        yaf_mat = context.material
+        ob = context.object
+        slot = context.material_slot
+        space = context.space_data
 
-                if ob:
-                    row = layout.row()
+        if ob:
+            row = layout.row()
 
-                    row.template_list(ob, "material_slots", ob, "active_material_index", rows=2)
-                    col = row.column(align=True)
-                    col.operator("object.material_slot_add", icon='ZOOMIN', text="")
-                    col.operator("object.material_slot_remove", icon='ZOOMOUT', text="")
+            row.template_list(ob, "material_slots", ob, "active_material_index", rows=2)
 
-                    if ob.mode == 'EDIT':
-                        row = layout.row(align=True)
-                        row.operator("object.material_slot_assign", text="Assign")
-                        row.operator("object.material_slot_select", text="Select")
-                        row.operator("object.material_slot_deselect", text="Deselect")
+            col = row.column(align=True)
+            col.operator("object.material_slot_add", icon='ZOOMIN', text="")
+            col.operator("object.material_slot_remove", icon='ZOOMOUT', text="")
 
-                split = layout.split()
-                col = split.column()
+            col.menu("MATERIAL_MT_specials", icon='DOWNARROW_HLT', text="")  # TODO: code own operators to copy yaf material settings...
 
-                split = col.split(percentage=0.65)
-                if ob:
-                    split.template_ID(ob, "active_material", new="material.new")
-                    row = split.row()
-                    if slot:
-                        row.prop(slot, "link", text="")
-                    else:
-                        row.label()
-                elif mat:
-                    split.template_ID(space, "pin_id")
-                    split.separator()
+            if ob.mode == 'EDIT':
+                row = layout.row(align=True)
+                row.operator("object.material_slot_assign", text="Assign")
+                row.operator("object.material_slot_select", text="Select")
+                row.operator("object.material_slot_deselect", text="Deselect")
 
-                if context.material == None:
-                    return
+        split = layout.split(percentage=0.75)
 
-                layout.separator()
-                layout.prop(context.material, "mat_type", text = 'Material type')
+        if ob:
+            split.template_ID(ob, "active_material", new="material.new")
+            row = split.row()
+            if slot:
+                row.prop(slot, "link", text="")
+            else:
+                row.label()
+
+        elif yaf_mat:
+            split.template_ID(space, "pin_id")
+            split.separator()
+
+        if yaf_mat:
+            layout.separator()
+            layout.prop(yaf_mat, "mat_type", text = 'Material type')
+
+
+class YAF_MATERIAL_PT_preview(YAF_MaterialButtonsPanel, bpy.types.Panel):
+    bl_label = "YafaRay Preview"
+    COMPAT_ENGINES = ['YAFA_RENDER']
+
+    def draw(self, context):
+        self.layout.template_preview(context.material)
