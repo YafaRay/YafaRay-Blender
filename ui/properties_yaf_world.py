@@ -247,7 +247,7 @@ class YAFWORLD_PT_world(bpy.types.Panel):
                         pass
             else:
                 try:
-                    layout.template_ID(context.world, 'active_texture', new='texture.new')
+                    layout.template_ID(context.world, 'active_texture', new = 'texture.new')
                 except:  # TODO: create only image texture? procedural not supported.. ?
                     pass
             layout.prop(world, 'bg_rotation', text = 'Rotation')

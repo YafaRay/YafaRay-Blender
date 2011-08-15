@@ -49,7 +49,7 @@ class yafObject(object):
             up = aboveCam
 
         else:
-            matrix = camera.matrix_world  # get cam worldspace transformation matrix, e.g. if cam is parented local does not work
+            matrix = camera.matrix_world.copy()  # get cam worldspace transformation matrix, e.g. if cam is parented local does not work
             pos = matrix[3]
             dir = matrix[2]
             up = pos + matrix[1]
@@ -147,69 +147,71 @@ class yafObject(object):
         baseIds = {}
         dupBaseIds = {}
         # export only visible objects
-        for obj in [o for o in self.scene.objects if not o.hide_render and o.is_visible(self.scene) and (o.type == 'MESH' or o.type == 'SURFACE' or o.type == 'CURVE' or o.type == 'FONT')]:
-            if obj.is_duplicator:  # Exporting dupliObjects as instances
-
+        for obj in [o for o in self.scene.objects if not o.hide_render and o.is_visible(self.scene) \
+        and (o.type == 'MESH' or o.type == 'SURFACE' or o.type == 'CURVE' or o.type == 'FONT' or o.type == 'EMPTY')]:
+            # Exporting dupliObjects as instances: disabled exporting instances when global 
+            # option "transp. shadows" is on -> crashes yafaray render engine
+            if obj.is_duplicator:
                 self.yi.printInfo("Processing duplis for: " + obj.name)
                 obj.dupli_list_create(self.scene)
 
                 for obj_dupli in obj.dupli_list:
-
-                    if obj_dupli.object.name not in dupBaseIds:
-                        dupBaseIds[obj_dupli.object.name] = self.writeInstanceBase(obj_dupli.object)
-
-                    self.writeInstance(dupBaseIds[obj_dupli.object.name], obj_dupli.matrix, obj_dupli.object.name)
+                    if self.scene.gs_transp_shad:
+                        matrix = obj_dupli.matrix.copy()
+                        self.writeMesh(obj_dupli.object, matrix)
+                    else:
+                        if obj_dupli.object.name not in dupBaseIds:
+                            dupBaseIds[obj_dupli.object.name] = self.writeInstanceBase(obj_dupli.object)
+                        matrix = obj_dupli.matrix.copy()
+                        self.writeInstance(dupBaseIds[obj_dupli.object.name], matrix, obj_dupli.object.name)
 
                 if obj.dupli_list:
                     obj.dupli_list_clear()
 
+                # check if object has particle system and uses the option for 'render emitter'
                 if hasattr(obj, 'particle_systems'):
                     for pSys in obj.particle_systems:
                         check_rendertype = pSys.settings.render_type == 'OBJECT' or pSys.settings.render_type == 'GROUP'
-                        if check_rendertype and pSys.settings.use_render_emitter:  # check if object has particle system and uses 'render emitter'
-                            matrix = obj.matrix_world
+                        if check_rendertype and pSys.settings.use_render_emitter:
+                            matrix = obj.matrix_world.copy()
                             self.writeMesh(obj, matrix)
 
-            ##################################################################################################################################
-            #  Disable export of instanced objects, problems with "orco" mapped textures, transparent shadows (crash) and Material preview!! #
-            #  has to be solved first, then enable again...                                                                                  #
-            ##################################################################################################################################
+            # no need to write empty object from here on, so continue with next object in loop
+            elif obj.type == 'EMPTY':
+                continue
 
-            #  elif obj.data.users > 1:  # Exporting objects with shared mesh data blocks as instances
+            # Exporting objects with shared mesh data blocks as instances: disabled exporting instances when global 
+            # option "transparent shadows" is on -> crashes yafaray render engine
+            elif obj.data.users > 1 and not self.scene.gs_transp_shad:
+                has_orco = False
+                # check materials and textures of object for 'ORCO' texture coordinates
+                # if so: don not export them as instances -> gives weird rendering results!
+                for mat_slot in [m for m in obj.material_slots if m.material]:
+                    for tex in [t for t in mat_slot.material.texture_slots if (t and t.texture and t.use)]:
+                        if tex.texture_coords == 'ORCO':
+                            has_orco = True
+                            break  # break tex loop 
+                    if has_orco:
+                        break  # break mat_slot loop
+                if has_orco:
+                    self.writeObject(obj)
+                else:
+                    self.yi.printInfo("Processing shared mesh data node object: " + obj.name)
+                    if obj.data.name not in baseIds:
+                        baseIds[obj.data.name] = self.writeInstanceBase(obj)
 
-                #  self.yi.printInfo("Processing shared mesh data node object: " + obj.name)
-                #  if obj.data.name not in baseIds:
-                    #  baseIds[obj.data.name] = self.writeInstanceBase(obj)
-
-                #  if obj.name not in dupBaseIds:
-                    #  self.writeInstance(baseIds[obj.data.name], obj.matrix_world, obj.data.name)
+                    if obj.name not in dupBaseIds:
+                        matrix = obj.matrix_world.copy()
+                        self.writeInstance(baseIds[obj.data.name], matrix, obj.data.name)
 
             else:
                 if obj.data.name not in baseIds and obj.name not in dupBaseIds:
                     self.writeObject(obj)
 
-        # checking for empty objects with duplis on them also...
-        for empt in [e for e in self.scene.objects if not e.hide_render and e.is_visible(self.scene) and e.type == 'EMPTY']:
-
-            if empt.is_duplicator:
-                self.yi.printInfo("Processing duplis for: " + empt.name)
-
-                empt.dupli_list_create(self.scene)
-
-                for empt_dupli in empt.dupli_list:
-
-                    if empt_dupli.object.name not in dupBaseIds:
-                        dupBaseIds[empt_dupli.object.name] = self.writeInstanceBase(empt_dupli.object)
-
-                    self.writeInstance(dupBaseIds[empt_dupli.object.name], empt_dupli.matrix, empt_dupli.object.name)
-
-                if empt.dupli_list:
-                    empt.dupli_list_clear()
-
     def writeObject(self, obj, matrix = None):
 
         if not matrix:
-            matrix = obj.matrix_world
+            matrix = obj.matrix_world.copy()
 
         if obj.vol_enable:  # Volume region
             self.writeVolumeObject(obj, matrix)

@@ -79,9 +79,6 @@ Scene.intg_fg_samples =     IntProperty(attr="intg_fg_samples",
 Scene.intg_show_map =       BoolProperty(attr="intg_show_map",
                                         description = "Directly show radiance map, useful to calibrate the photon map (disables final gathering step)",
                                         default = False)
-Scene.intg_use_bg =         BoolProperty(attr="intg_use_bg",
-                                        description = "",
-                                        default = False)
 Scene.intg_caustic_method = EnumProperty(attr="intg_caustic_method",
                                         description = "Choose caustic rendering method",
     items = (
@@ -215,7 +212,6 @@ class YAF_PT_render(bpy.types.Panel):
             col.prop(context.scene, "intg_bounces", text = "Depth")
             col = layout.row()
             col.prop(context.scene, "intg_no_recursion", text = "No Recursion")
-            col.prop(context.scene, "intg_use_bg", text = "Use Background")
 
         elif context.scene.intg_light_method == 'Debug':
             col = layout.row()

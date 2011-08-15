@@ -53,6 +53,7 @@ def register():  # TODO: update default values and edit descriptions
     Object.vol_enable =         BoolProperty(
                                     attr = 'vol_enable',
                                     description = 'Makes the mesh a volume at its bounding box')
+
     Object.vol_region =         EnumProperty(
                                     description='Set the volume region',
                                     items = (

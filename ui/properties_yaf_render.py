@@ -4,7 +4,8 @@ from bpy.props import *
 Scene = bpy.types.Scene
 
 
-def call_update_fileformat(self, context):  # set fileformat for image saving on same format as in yafaray, both have default PNG
+def call_update_fileformat(self, context):
+    # set fileformat for image saving on same format as in yafaray, both have default PNG
     sc = context.scene
     rd = sc.render
     if sc.img_output != rd.file_format:
@@ -13,23 +14,26 @@ def call_update_fileformat(self, context):  # set fileformat for image saving on
             rd.exr_zbuf = True
 
 
+# yafarays own image output selection, default is PNG
 Scene.img_output = EnumProperty(
-                        description = "Image will be saved in this file format",  # yafarays own image output selection, default is PNG
+                        name = 'Image File Type', 
+                        description = 'Image will be saved in this file format',
                         items = (
-                            ("PNG", " PNG (Portable Network Graphics)", ""),
-                            ("TARGA", " TGA (Truevision TARGA)", ""),
-                            ("JPEG", " JPEG (Joint Photographic Experts Group)", ""),
-                            ("TIFF", " TIFF (Tag Image File Format)", ""),
-                            ("OPEN_EXR", " EXR (IL&M OpenEXR)", ""),
-                            ("HDR", " HDR (Radiance RGBE)", "")),
-                        default = "PNG",
-                        name = "Image File Type", update = call_update_fileformat)  # if fileformat has changed, set it in blender too..
+                            ('PNG', ' PNG (Portable Network Graphics)', ''),
+                            ('TARGA', ' TGA (Truevision TARGA)', ''),
+                            ('JPEG', ' JPEG (Joint Photographic Experts Group)', ''),
+                            ('TIFF', ' TIFF (Tag Image File Format)', ''),
+                            ('OPEN_EXR', ' EXR (IL&M OpenEXR)', ''),
+                            ('HDR', ' HDR (Radiance RGBE)', '')),
+                        default = 'PNG',
+                        # if fileformat has changed, set it also in Blender
+                        update = call_update_fileformat)
 
 
 class YafarayRenderButtonsPanel():
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
-    bl_context = "render"
+    bl_context = 'render'
     COMPAT_ENGINES = ['YAFA_RENDER']
 
     @classmethod
@@ -39,28 +43,22 @@ class YafarayRenderButtonsPanel():
 
 
 class YAFRENDER_PT_render(YafarayRenderButtonsPanel, bpy.types.Panel):
-
     bl_label = 'Render'
 
     def draw(self, context):
 
         layout = self.layout
-
         rd = context.scene.render
 
         row = layout.row()
-        row.operator("render.render", text="Image", icon='RENDER_STILL')
-        row.operator("render.render", text="Animation", icon='RENDER_ANIMATION').animation = True
-
-        if context.scene.render.engine == "YAFA_RENDER":
-            layout.row().operator("RENDER_OT_render_view", "Render 3D View", "VIEW3D")
-
-        layout.prop(rd, "display_mode", text="Display")
+        row.operator('render.render_still', text='Image', icon='RENDER_STILL')
+        row.operator('render.render_animation', text='Animation', icon='RENDER_ANIMATION')
+        layout.row().operator('render.render_view', 'Render 3D View', icon='VIEW3D')
+        layout.prop(rd, 'display_mode', text='Display')
 
 
 class YAFRENDER_PT_dimensions(YafarayRenderButtonsPanel, bpy.types.Panel):
-
-    bl_label = "Dimensions"
+    bl_label = 'Dimensions'
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
@@ -70,37 +68,36 @@ class YAFRENDER_PT_dimensions(YafarayRenderButtonsPanel, bpy.types.Panel):
         rd = scene.render
 
         row = layout.row(align=True)
-        row.menu("RENDER_MT_presets", text = bpy.types.RENDER_MT_presets.bl_label)
-        row.operator("render.preset_add", text = "", icon = "ZOOMIN")
-        row.operator("render.preset_add", text = "", icon = "ZOOMOUT").remove_active = True
+        row.menu('RENDER_MT_presets', text = bpy.types.RENDER_MT_presets.bl_label)
+        row.operator('render.preset_add', text = '', icon = 'ZOOMIN')
+        row.operator('render.preset_add', text = '', icon = 'ZOOMOUT').remove_active = True
 
         split = layout.split()
 
         col = split.column()
         sub = col.column(align=True)
-        sub.label(text="Resolution:")
-        sub.prop(rd, "resolution_x", text = "X")
-        sub.prop(rd, "resolution_y", text = "Y")
-        sub.prop(rd, "resolution_percentage", text = "")
+        sub.label(text='Resolution:')
+        sub.prop(rd, 'resolution_x', text = 'X')
+        sub.prop(rd, 'resolution_y', text = 'Y')
+        sub.prop(rd, 'resolution_percentage', text = '')
 
-        row = layout.row(align = True)
-        row.prop(rd, "use_border", text = "Border", toggle = True)
+        # row = layout.row(align = True)
+        # row.prop(rd, 'use_border', text = 'Border', toggle = True)
 
         col = split.column()
         sub = col.column(align = True)
-        sub.label(text="Frame Range:")
-        sub.prop(scene, "frame_start", text = "Start")
-        sub.prop(scene, "frame_end", text = "End")
-        sub.prop(scene, "frame_step", text = "Step")
+        sub.label(text='Frame Range:')
+        sub.prop(scene, 'frame_start', text = 'Start')
+        sub.prop(scene, 'frame_end', text = 'End')
+        sub.prop(scene, 'frame_step', text = 'Step')
 
-from yafaray.ui import properties_yaf_general_settings
-from yafaray.ui import properties_yaf_integrator
-from yafaray.ui import properties_yaf_AA_settings
+from . import properties_yaf_general_settings
+from . import properties_yaf_integrator
+from . import properties_yaf_AA_settings
 
 
 class YAFRENDER_PT_output(YafarayRenderButtonsPanel, bpy.types.Panel):
-
-    bl_label = "Output Settings"
+    bl_label = 'Output Settings'
 
     def draw(self, context):
         layout = self.layout
@@ -108,18 +105,17 @@ class YAFRENDER_PT_output(YafarayRenderButtonsPanel, bpy.types.Panel):
         rd = context.scene.render
         sc = context.scene
 
-        layout.prop(rd, "filepath", text = "")
+        layout.prop(rd, 'filepath', text = '')
 
         split = layout.split(percentage = 0.6)
         col = split.column()
-        col.prop(sc, "img_output", text = "", icon = "IMAGE_DATA")
+        col.prop(sc, 'img_output', text = '', icon = 'IMAGE_DATA')
         col = split.column()
-        col.row().prop(rd, "color_mode", text="Color", expand=True)
+        col.row().prop(rd, 'color_mode', text='Color', expand=True)
 
 
 class YAFRENDER_PT_post_processing(YafarayRenderButtonsPanel, bpy.types.Panel):
-
-    bl_label = "Post Processing"
+    bl_label = 'Post Processing'
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
@@ -130,8 +126,8 @@ class YAFRENDER_PT_post_processing(YafarayRenderButtonsPanel, bpy.types.Panel):
         split = layout.split()
 
         col = split.column()
-        col.prop(rd, "use_compositing")
-        col.prop(rd, "use_sequencer")
+        col.prop(rd, 'use_compositing')
+        col.prop(rd, 'use_sequencer')
 
         col = split.column()
-        col.prop(rd, "dither_intensity", text = "Dither", slider = True)
+        col.prop(rd, 'dither_intensity', text = 'Dither', slider = True)

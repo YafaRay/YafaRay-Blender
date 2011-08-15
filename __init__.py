@@ -29,16 +29,16 @@ sys.path.append(BIN_PATH)
 
 bl_info = {
     "name": "YafaRay Exporter",
+    "description": "YafaRay integration for blender",
     "author": "Shuvro Sarker, Kim Skoglund (Kerbox), \
 Pedro Alcaide (povmaniaco), Paulo Gomes (tuga3d), \
 Michele Castigliego (subcomandante), Bert Buchholz, \
 Rodrigo Placencia (DarkTide), Alexander Smirnov (Exvion)",
-    "version": (0, 1, 2, 'alpha'),
-    "blender": (2, 5, 8),
-    "api": 37702,
-    "location": "Info Header (engine dropdown)",
-    "description": "YafaRay integration for blender",
-    "warning": "Alpha state",
+    "version": (0, 1, 2, 'beta'),
+    "blender": (2, 5, 9),
+    "api": 39324,
+    "location": "Info Header > Engine dropdown menu",
+    "warning": "both YafaRay 0.1.2 and this script are in alpha state",
     "wiki_url": "http://www.yafaray.org/community/forum",
     "tracker_url": "http://www.yafaray.org/development/bugtracker/yafaray",
     "category": "Render"
@@ -74,14 +74,27 @@ else:
 def register():
     prop.register()
     bpy.utils.register_module(__name__)
-
-    kitems = bpy.context.window_manager.keyconfigs.active.keymaps["Screen"]
-    kitems.keymap_items.new("RENDER_OT_render_view", 'F12', 'RELEASE', False, False, False, True)
+    # register keys for 'render 3d view', 'render still' and 'render animation' 
+    # for the yafaray addon, registering for addons changed since rev.39084
+    km = bpy.context.window_manager.keyconfigs.addon.keymaps.new(name='Screen')
+    kmi = km.keymap_items.new('render.render_view', 'F12', 'PRESS', False, False, False, True)
+    kmi = km.keymap_items.new('render.render_animation', 'F12', 'PRESS', False, False, True, False)
+    kmi = km.keymap_items.new('render.render_still', 'F12', 'PRESS', False, False, False, False)
 
 
 def unregister():
-    bpy.utils.unregister_module(__name__)
     prop.unregister()
+    # restore 'F12' render key for Blender
+    km = bpy.context.window_manager.keyconfigs.active.keymaps['Screen']
+    km.keymap_items.new('render.render', 'F12', 'PRESS', False, False, False, False)
+    # unregister keys for the yafaray addon
+    kma = bpy.context.window_manager.keyconfigs.addon.keymaps['Screen']
+    for kmi in kma.keymap_items:
+        if kmi.idname == 'render.render_view' or kmi.idname == 'render.render_animation' \
+        or kmi.idname == 'render.render_still':
+            kma.keymap_items.remove(kmi)
+    bpy.utils.unregister_module(__name__)
+
 
 if __name__ == '__main__':
     register()

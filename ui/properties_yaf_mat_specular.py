@@ -14,7 +14,7 @@ class YAF_PT_material_panel_specular(YAF_MaterialButtonsPanel, bpy.types.Panel):
     def poll(cls, context):
         yaf_mat = context.material
         engine = context.scene.render.engine
-        return check_material(yaf_mat) and (engine in cls.COMPAT_ENGINES)
+        return check_material(yaf_mat) and (engine in cls.COMPAT_ENGINES) and yaf_mat.mat_type != 'blend'
 
     def draw(self, context):
         layout = self.layout
@@ -74,6 +74,3 @@ class YAF_PT_material_panel_specular(YAF_MaterialButtonsPanel, bpy.types.Panel):
             col.prop(yaf_mat, "glass_mir_col", text = "Reflection color")
             layout.row().prop(yaf_mat, "glass_transmit", text = "Transmit Filter", slider = True)
             layout.row().prop(yaf_mat, "fake_shadows", text = "Fake Shadows")
-
-        if yaf_mat.mat_type == 'blend':  # Blend material settings, none in panel specular
-            self.bl_label = ' '

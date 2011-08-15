@@ -1,4 +1,4 @@
-from yafaray.prop import yaf_object
+from . import yaf_object
 
 
 def register():

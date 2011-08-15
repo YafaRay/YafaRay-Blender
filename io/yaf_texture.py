@@ -1,7 +1,6 @@
-import os
 import bpy
-import re
-from  math import *
+import os
+from math import *
 
 
 def noise2string(ntype):

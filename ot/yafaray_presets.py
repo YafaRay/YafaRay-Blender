@@ -1,4 +1,5 @@
 import bpy
+from bpy.types import Operator
 import os
 import sys
 from bpy.path import clean_name, display_name
@@ -118,7 +119,7 @@ class YAF_AddPresetBase():
             return self.execute(context)
 
 
-class YAFARAY_OT_presets_renderset(YAF_AddPresetBase, bpy.types.Operator):
+class YAFARAY_OT_presets_renderset(YAF_AddPresetBase, Operator):
     '''Add a Yafaray Render Preset'''
     bl_idname = "yafaray.preset_add"
     bl_label = "Yafaray Render Presets"
