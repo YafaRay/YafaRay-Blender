@@ -2,55 +2,58 @@ import bpy
 
 
 class YAF_PT_object_light(bpy.types.Panel):
-    bl_label = 'YafaRay Object Properties'
+    bl_label = "YafaRay Object Properties"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
-    bl_context = 'object'
-    COMPAT_ENGINES = ['YAFA_RENDER']
+    bl_context = "object"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
 
     @classmethod
     def poll(cls, context):
 
         engine = context.scene.render.engine
-        return (context.object.type == 'MESH' and (engine in cls.COMPAT_ENGINES))
+        return (context.object.type == "MESH" and (engine in cls.COMPAT_ENGINES))
 
     def draw(self, context):
         layout = self.layout
         ob = context.object
 
-        split = layout.split()
-
-        col = split.column()
-        col.prop(ob, 'ml_enable', text = 'Enable Meshlight', toggle = True)
+        layout.prop(ob, "ml_enable", toggle=True)
 
         if ob.ml_enable:
-            col.prop(ob, 'ml_color', text = 'Meshlight Color')
-            col.prop(ob, 'ml_power', text = 'Power')
-            col.prop(ob, 'ml_samples', text = 'Samples')
-            col.prop(ob, 'ml_double_sided', text = 'Double Sided')
+            col = layout.column(align=True)
+            col.prop(ob, "ml_color")
+            col.prop(ob, "ml_power")
+            layout.prop(ob, "ml_samples")
+            layout.prop(ob, "ml_double_sided")
 
-        col.prop(ob, 'bgp_enable', text = 'Enable Bgportallight', toggle = True)
+        layout.prop(ob, "bgp_enable", toggle=True)
 
         if ob.bgp_enable:
-            col.prop(ob, 'bgp_power', text = 'Power')
-            col.prop(ob, 'bgp_samples', text = 'Samples')
-            col.prop(ob, 'bgp_with_diffuse', text = 'Diffuse photons')
-            col.prop(ob, 'bgp_with_caustic', text = 'Caustic photons')
-            col.prop(ob, 'bgp_photon_only', text = 'Photons Only')
+            layout.prop(ob, "bgp_power")
+            layout.prop(ob, "bgp_samples")
+            split = layout.split()
+            split.prop(ob, "bgp_with_diffuse")
+            split.prop(ob, "bgp_with_caustic")
+            layout.prop(ob, "bgp_photon_only")
 
-        col.prop(ob, 'vol_enable', text = 'Enable Volume', toggle = True)
+        layout.prop(ob, "vol_enable", toggle=True)
 
         if ob.vol_enable:
-            col.prop(ob, 'vol_region', text = 'Volume Region')
+            layout.separator()
+            layout.prop(ob, "vol_region")
+            layout.separator()
+            col = layout.column(align=True)
+            col.prop(ob, "vol_absorp", text="Absroption")
+            col.prop(ob, "vol_scatter", text="Scatter")
 
-            if ob.vol_region == 'ExpDensity Volume':
-                col.prop(ob, 'vol_height', text = 'Height')
-                col.prop(ob, 'vol_steepness', text = 'Steepness')
+            if ob.vol_region == "ExpDensity Volume":
+                col = layout.column(align=True)
+                col.prop(ob, "vol_height")
+                col.prop(ob, "vol_steepness")
 
-            if ob.vol_region == 'Noise Volume':
-                col.prop(ob, 'vol_sharpness', text = 'Sharpness')
-                col.prop(ob, 'vol_cover', text = 'Cover')
-                col.prop(ob, 'vol_density', text = 'Density')
-
-            col.prop(ob, 'vol_absorp', text = 'Absroption')
-            col.prop(ob, 'vol_scatter', text = 'Scatter')
+            if ob.vol_region == "Noise Volume":
+                col = layout.column(align=True)
+                col.prop(ob, "vol_sharpness")
+                col.prop(ob, "vol_cover")
+                col.prop(ob, "vol_density")

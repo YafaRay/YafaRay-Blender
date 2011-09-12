@@ -1,8 +1,8 @@
 import bpy
 import os
-from math import *
-from bpy.path import *
 import mathutils
+from math import degrees, pi, sin, cos
+from bpy.path import abspath
 
 
 class yafLight:
@@ -48,20 +48,20 @@ class yafLight:
 
         return ID
 
-    def createLight(self, yi, lamp_object, matrix = None):
+    def createLight(self, yi, lamp_object, matrix=None):
 
         lamp = lamp_object.data
         name = lamp_object.name
 
-        if matrix == None:
-            matrix = lamp_object.matrix_world
+        if matrix is None:
+            matrix = lamp_object.matrix_world.copy()
         pos = matrix[3]
         dir = matrix[2]
         up = matrix[1]
         to = pos - dir
 
         lampType = lamp.lamp_type
-        power = lamp.energy
+        power = lamp.yaf_energy
         color = lamp.color
 
         if self.preview:
@@ -81,7 +81,7 @@ class yafLight:
 
         yi.paramsClearAll()
 
-        yi.printInfo("Exporting Lamp: " + str(name) + " [" + str(lampType) + "]")
+        yi.printInfo("Exporting Lamp: {0} [{1}]".format(name, lampType))
 
         if lamp.create_geometry and not self.lightMat:
             self.yi.paramsClearAll()
@@ -93,7 +93,7 @@ class yafLight:
             yi.paramsSetString("type", "pointlight")
             power = 0.5 * power * power  # original value
 
-            if lamp.use_sphere:
+            if getattr(lamp, "use_sphere", False):
                 radius = lamp.shadow_soft_size
                 power /= (radius * radius)  # radius < 1 crash geometry ?
 
@@ -111,8 +111,7 @@ class yafLight:
             else:
                 # Blender reports the angle of the full cone in radians
                 # and we need half of the apperture angle in degrees
-                # (spot_size * 180 / pi) / 2
-                angle = (lamp.spot_size * 180 / pi) * 0.5
+                angle = degrees(lamp.spot_size) * 0.5
 
             yi.paramsSetString("type", "spotlight")
 
@@ -145,14 +144,14 @@ class yafLight:
             yi.paramsSetString("file", ies_file)
             yi.paramsSetInt("samples", lamp.yaf_samples)
             yi.paramsSetBool("soft_shadows", lamp.ies_soft_shadows)
-            yi.paramsSetFloat("cone_angle", lamp.ies_cone_angle)
+            # yi.paramsSetFloat("cone_angle", degrees(lamp.spot_size))  # not used for IES, cone angle is defined in IES File?
 
         elif lampType == "area":
 
             sizeX = 1.0
             sizeY = 1.0
 
-            matrix = lamp_object.matrix_world
+            matrix = lamp_object.matrix_world.copy()
 
             # generate an untransformed rectangle in the XY plane with
             # the light's position as the centerpoint and transform it

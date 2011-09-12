@@ -1,202 +1,16 @@
 import bpy
-#import types and props ---->
-from bpy.props import *
-from bl_ui.properties_material import MATERIAL_MT_specials
-Material = bpy.types.Material
+from .ior_values import ior_list
+from bpy.types import Panel, Menu
+from bl_ui.properties_material import (MATERIAL_MT_specials,
+                                       MaterialButtonsPanel,
+                                       active_node_mat,
+                                       check_material)
+
+MaterialButtonsPanel.COMPAT_ENGINES = {'YAFA_RENDER'}
 
 
-def call_mat_update(self, context):
-    mat = context.scene.objects.active.active_material
-    if mat:  # check if a material is assigned to an object
-        mat.preview_render_type = mat.preview_render_type
-
-Material.mat_type = EnumProperty(
-    items = [
-        ("shinydiffusemat", "Shiny Diffuse", "Assign a Material Type"),
-        ("glossy", "Glossy", "Assign a Material Type"),
-        ("coated_glossy", "Coated Glossy", "Assign a Material Type"),
-        ("glass", "Glass", "Assign a Material Type"),
-        ("rough_glass", "Rough Glass", "Assign a Material Type"),
-        ("blend", "Blend", "")],
-    default = "shinydiffusemat",
-    name = "Material Types", update = call_mat_update)
-
-Material.diffuse_reflect =      FloatProperty(
-                                        description = "Amount of diffuse reflection",
-                                        min = 0.0, max = 1.0,
-                                        default = 1.0, step = 1,
-                                        precision = 3,
-                                        soft_min = 0.0, soft_max = 1.0, update = call_mat_update)
-Material.specular_reflect =     FloatProperty(
-                                        description = "Amount of perfect specular reflection (mirror)",
-                                        min = 0.0, max = 1.0,
-                                        default = 0.0, step = 1,
-                                        precision = 3,
-                                        soft_min = 0.0, soft_max = 1.0, update = call_mat_update)
-Material.transparency =         FloatProperty(
-                                        description = "Material transparency",
-                                        min = 0.0, max = 1.0,
-                                        default = 0.0, step = 1,
-                                        precision = 3,
-                                        soft_min = 0.0, soft_max = 1.0, update = call_mat_update)
-Material.transmit_filter =      FloatProperty(
-                                        description = "Amount of tinting of light passing through the Material",
-                                        min = 0.0, max = 1.0,
-                                        default = 1.0, step = 1,
-                                        precision = 3,
-                                        soft_min = 0.0, soft_max = 1.0, update = call_mat_update)
-Material.fresnel_effect =   BoolProperty(
-                                        name = "Fresnel Effect",
-                                        description = "Apply a fresnel effect to specular reflection",
-                                        default = False, update = call_mat_update)
-Material.brdf_type = EnumProperty(
-    items = (
-        ("oren-nayar", "Oren-Nayar", "Reflectance Model"),
-        ("lambert", "Lambert", "Reflectance Model")),
-    default = "lambert",
-    name = "Reflectance Model", update = call_mat_update)
-
-Material.glossy_color =         FloatVectorProperty(
-                                        description = "Glossy Color",
-                                        subtype = "COLOR",
-                                        min = 0.0, max = 1.0,
-                                        default = (1.0, 1.0, 1.0), update = call_mat_update
-                                        )
-Material.coat_mir_col =         FloatVectorProperty(  # added mirror col property for coated glossy material
-                                        description = "Reflection color of coated layer",
-                                        subtype = "COLOR",
-                                        min = 0.0, max = 1.0,
-                                        default = (1.0, 1.0, 1.0), update = call_mat_update
-                                        )
-Material.glass_mir_col =        FloatVectorProperty(  # added mirror color property for glass material
-                                        description = "Reflection color of glass material",
-                                        subtype = "COLOR",
-                                        min = 0.0, max = 1.0,
-                                        default = (1.0, 1.0, 1.0), update = call_mat_update
-                                        )
-Material.glossy_reflect =       FloatProperty(
-                                        description = "Amount of glossy reflection",
-                                        min = 0.0, max = 1.0,
-                                        default = 0.0, step = 1,
-                                        precision = 3,
-                                        soft_min = 0.0, soft_max = 1.0, update = call_mat_update)
-Material.exp_u =                FloatProperty(
-                                        description = "Horizontal anisotropic exponent value",
-                                        min = 1.0, max = 10000.0,
-                                        default = 50.0, step = 10,
-                                        precision = 2,
-                                        soft_min = 1.0, soft_max = 10000.0, update = call_mat_update)
-Material.exp_v =                FloatProperty(
-                                        description = "Vertical anisotropic exponent value",
-                                        min = 1.0, max = 10000.0,
-                                        default = 50.0, step = 10,
-                                        precision = 2,
-                                        soft_min = 1.0, soft_max = 10000.0, update = call_mat_update)
-Material.exponent =             FloatProperty(
-                                        description = "Blur of the glossy reflection, higher exponent = sharper reflections",
-                                        min = 1.0, max = 10000.0,
-                                        default = 500.0, step = 10,
-                                        precision = 2,
-                                        soft_min = 1.0, soft_max = 10000.0, update = call_mat_update)
-Material.as_diffuse =           BoolProperty(
-                                        description = "Treat glossy component as diffuse",
-                                        default = False)
-Material.anisotropic =          BoolProperty(
-                                        description = "Use anisotropic reflections",
-                                        default = False, update = call_mat_update)
-Material.IOR_refraction =       FloatProperty(  # added IOR property for refraction
-                                        description = "Index of refraction",
-                                        min = 0.0, max = 30.0,
-                                        default = 1.52, step = 1,
-                                        precision = 3,
-                                        soft_min = 0.0, soft_max = 30.0, update = call_mat_update)
-Material.IOR_reflection =       FloatProperty(  # added IOR property for reflection
-                                        description = "Fresnel reflection strength",
-                                        min = 1.0, max = 30.0,
-                                        default = 1.8, step = 1,
-                                        precision = 2,
-                                        soft_min = 1.0, soft_max = 30.0, update = call_mat_update)
-Material.absorption =           FloatVectorProperty(
-                                        description = "Glass volumetric absorption color. White disables absorption",
-                                        min = 0.0, max = 1.0, subtype = "COLOR",
-                                        default = (1.0, 1.0, 1.0), update = call_mat_update
-                                        )
-Material.absorption_dist =      FloatProperty(
-                                        description = "Absorption distance scale",
-                                        min = 0.0, max = 100.0,
-                                        default = 1.0, step = 1,
-                                        precision = 4,
-                                        soft_min = 0.0, soft_max = 100.0, update = call_mat_update)
-Material.glass_transmit =       FloatProperty(  # added transmit filter for glass material
-                                        description = "Filter strength applied to refracted light",
-                                        min = 0.0, max = 1.0,
-                                        default = 1.0, step = 1,
-                                        precision = 3, soft_min = 0.0, soft_max = 1.0, update = call_mat_update)
-Material.filter_color =         FloatVectorProperty(
-                                        description = "Filter color for refracted light of glass, also tint transparent shadows if enabled",
-                                        min = 0.0, max = 1.0, subtype = "COLOR",
-                                        default = (1.0, 1.0, 1.0), update = call_mat_update
-                                        )
-Material.dispersion_power =     FloatProperty(
-                                        description = "Strength of dispersion effect, disabled when 0",
-                                        min = 0.0, max = 5.0,
-                                        default = 0.0, step = 1,
-                                        precision = 4,
-                                        soft_min = 0.0, soft_max = 5.0, update = call_mat_update)
-Material.refr_roughness =       FloatProperty(  # added refraction roughness propertie for roughglass material
-                                        description = "Roughness factor for glass material",
-                                        min = 0.0, max = 1.0,
-                                        default = 0.2, step = 1,
-                                        precision = 3,
-                                        soft_min = 0.0, soft_max = 1.0, update = call_mat_update)
-Material.fake_shadows =         BoolProperty(
-                                        description = "Let light straight through for shadow calculation. Not to be used with dispersion",
-                                        default = False, update = call_mat_update)
-Material.blend_value =          FloatProperty(
-                                        description = "",
-                                        min = 0.0, max = 1.0,
-                                        default = 0.5, step = 3,
-                                        precision = 3,
-                                        soft_min = 0.0, soft_max = 1.0, update = call_mat_update)
-Material.sigma =                FloatProperty(
-                                        description = "Roughness of the surface",
-                                        min = 0.0, max = 1.0,
-                                        default = 0.1, step = 1,
-                                        precision = 5,
-                                        soft_min = 0.0, soft_max = 1.0, update = call_mat_update)
-Material.rough =                BoolProperty(
-                                        description = "",
-                                        default = False)
-Material.coated =               BoolProperty(
-                                        description = "",
-                                        default = False)
-Material.material1 =            StringProperty(
-                                name = "Material One",
-                                description = "First Blend Material. Same material if nothing is set.",
-                                default = "")
-Material.material2 =            StringProperty(
-                                name = "Material Two",
-                                description = "Second Blend Material. Same material if nothing is set.",
-                                default = "")
-
-
-class YAF_MaterialButtonsPanel():
-    bl_space_type = 'PROPERTIES'
-    bl_region_type = 'WINDOW'
-    bl_context = "material"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
-
-    @classmethod
-    def poll(cls, context):
-        return context.material and (context.scene.render.engine in cls.COMPAT_ENGINES)
-
-
-class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
-    bl_label = 'YafaRay Material'
-    bl_space_type = 'PROPERTIES'
-    bl_region_type = 'WINDOW'
-    bl_context = 'material'
-    COMPAT_ENGINES = ['YAFA_RENDER']
+class YAF_PT_material(MaterialButtonsPanel, Panel):
+    bl_label = "YafaRay Material"
 
     @classmethod
     def poll(cls, context):
@@ -220,7 +34,8 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
             col.operator("object.material_slot_add", icon='ZOOMIN', text="")
             col.operator("object.material_slot_remove", icon='ZOOMOUT', text="")
 
-            col.menu("MATERIAL_MT_specials", icon='DOWNARROW_HLT', text="")  # TODO: code own operators to copy yaf material settings...
+            # TODO: code own operators to copy yaf material settings...
+            col.menu("MATERIAL_MT_specials", icon='DOWNARROW_HLT', text="")
 
             if ob.mode == 'EDIT':
                 row = layout.row(align=True)
@@ -244,12 +59,219 @@ class YAF_PT_material(YAF_MaterialButtonsPanel, bpy.types.Panel):
 
         if yaf_mat:
             layout.separator()
-            layout.prop(yaf_mat, "mat_type", text = 'Material type')
+            layout.prop(yaf_mat, "mat_type")
 
 
-class YAF_MATERIAL_PT_preview(YAF_MaterialButtonsPanel, bpy.types.Panel):
+class YAF_MATERIAL_PT_preview(MaterialButtonsPanel, Panel):
     bl_label = "YafaRay Preview"
-    COMPAT_ENGINES = ['YAFA_RENDER']
 
     def draw(self, context):
         self.layout.template_preview(context.material)
+
+
+def draw_generator(ior_n):
+    def draw(self, context):
+        sl = self.layout
+        for values in ior_n:
+            ior_name, ior_index = values
+            props = sl.operator('material.set_ior_preset', text=ior_name)
+            # two values given to ior preset operator
+            props.index = ior_index
+            props.name = ior_name
+    return draw
+
+submenus = []
+
+for ior_group, ior_n in ior_list:
+    submenu_idname = 'YAF_MT_presets_ior_list_cat%d' % len(submenus)
+    submenu = type(
+        submenu_idname,
+        (Menu,),
+        {
+            'bl_idname': submenu_idname,
+            'bl_label': ior_group,
+            'draw': draw_generator(ior_n)
+        }
+    )
+    bpy.utils.register_class(submenu)
+    submenus.append(submenu)
+
+
+class YAF_MT_presets_ior_list(Menu):
+    bl_label = "Glass"
+
+    def draw(self, context):
+        sl = self.layout
+        for sm in submenus:
+            sl.menu(sm.bl_idname)
+
+
+class YAF_PT_material_panel_diffuse(MaterialButtonsPanel, Panel):
+    bl_label = " "
+
+    @classmethod
+    def poll(cls, context):
+        yaf_mat = context.material
+        engine = context.scene.render.engine
+        return check_material(yaf_mat) and (engine in cls.COMPAT_ENGINES)
+
+    def draw(self, context):
+        layout = self.layout
+        yaf_mat = active_node_mat(context.material)
+
+        if yaf_mat.mat_type == "shinydiffusemat":
+            self.bl_label = "Diffuse reflection"
+            split = layout.split()
+            col = split.column()
+            col.prop(yaf_mat, "diffuse_color")
+            col.prop(yaf_mat, "emit")
+            layout.row().prop(yaf_mat, "diffuse_reflect", slider=True)
+
+            col = split.column()
+            sub = col.column()
+            sub.label(text="Reflectance model:")
+            sub.prop(yaf_mat, "brdf_type", text="")
+            brdf = sub.column()
+            brdf.enabled = yaf_mat.brdf_type == "oren-nayar"
+            brdf.prop(yaf_mat, "sigma")
+
+            layout.separator()
+
+            box = layout.box()
+            box.label(text="Transparency and translucency:")
+            split = box.split()
+            col = split.column()
+            col.prop(yaf_mat, "transparency", slider=True)
+            col = split.column()
+            col.prop(yaf_mat, "translucency", slider=True)
+            box.row().prop(yaf_mat, "transmit_filter", slider=True)
+
+        if yaf_mat.mat_type in {"glossy", "coated_glossy"}:
+            self.bl_label = "Diffuse reflection"
+            split = layout.split()
+            col = split.column()
+            col.prop(yaf_mat, "diffuse_color")
+
+            col = split.column()
+            ref = col.column(align=True)
+            ref.label(text="Reflectance model:")
+            ref.prop(yaf_mat, "brdf_type", text="")
+            sig = col.column()
+            sig.enabled = yaf_mat.brdf_type == "oren-nayar"
+            sig.prop(yaf_mat, "sigma")
+            layout.row().prop(yaf_mat, "diffuse_reflect", slider=True)
+
+        if yaf_mat.mat_type in {"glass", "rough_glass"}:
+            self.bl_label = "Real glass settings"
+            layout.label(text="Refraction and Reflections:")
+            split = layout.split()
+            col = split.column()
+            col.prop(yaf_mat, "IOR_refraction")
+
+            col = split.column()
+            col.menu("YAF_MT_presets_ior_list", text=bpy.types.YAF_MT_presets_ior_list.bl_label)
+
+            split = layout.split()
+            col = split.column(align=True)
+            col.prop(yaf_mat, "absorption")
+            col.prop(yaf_mat, "absorption_dist")
+
+            col = split.column(align=True)
+            col.label(text="Dispersion:")
+            col.prop(yaf_mat, "dispersion_power")
+
+            if yaf_mat.mat_type == "rough_glass":
+                box = layout.box()
+                box.label(text="Glass roughness:")
+                box.row().prop(yaf_mat, "refr_roughness", slider=True)
+
+        if yaf_mat.mat_type == "blend":
+            self.bl_label = "Blend Material Settings"
+            split = layout.split()
+            col = split.column()
+            col.label(text="")
+            col.prop(yaf_mat, "blend_value", slider=True)
+
+            layout.separator()
+
+            box = layout.box()
+            box.label(text="Choose the two materials you wish to blend.")
+            split = box.split()
+            col = split.column()
+            col.label(text="Material One:")
+            col.prop_search(yaf_mat, "material1", bpy.data, 'materials', text="")
+
+            col = split.column()
+            col.label(text="Material Two:")
+            col.prop_search(yaf_mat, "material2", bpy.data, 'materials', text="")
+
+
+class YAF_PT_material_panel_specular(MaterialButtonsPanel, Panel):
+    bl_label = " "
+
+    @classmethod
+    def poll(cls, context):
+        yaf_mat = context.material
+        engine = context.scene.render.engine
+        return check_material(yaf_mat) and (engine in cls.COMPAT_ENGINES) and not(yaf_mat.mat_type == "blend")
+
+    def draw(self, context):
+        layout = self.layout
+        yaf_mat = active_node_mat(context.material)
+
+        if yaf_mat.mat_type == "shinydiffusemat":
+            self.bl_label = "Specular reflection"
+            split = layout.split()
+            col = split.column()
+            col.label(text="Mirror color:")
+            col.prop(yaf_mat, "mirror_color", text="")
+
+            col = split.column()
+            col.prop(yaf_mat, "fresnel_effect")
+            sub = col.column()
+            sub.enabled = yaf_mat.fresnel_effect
+            sub.prop(yaf_mat, "IOR_reflection", slider=True)
+            layout.row().prop(yaf_mat, "specular_reflect", slider=True)
+
+        if yaf_mat.mat_type in {"glossy", "coated_glossy"}:
+            self.bl_label = "Specular reflection"
+            split = layout.split()
+            col = split.column()
+            col.prop(yaf_mat, "glossy_color")
+            exp = col.column()
+            exp.enabled = yaf_mat.anisotropic == False
+            exp.prop(yaf_mat, "exponent")
+
+            col = split.column()
+            sub = col.column(align=True)
+            sub.prop(yaf_mat, "anisotropic")
+            ani = sub.column()
+            ani.enabled = yaf_mat.anisotropic == True
+            ani.prop(yaf_mat, "exp_u")
+            ani.prop(yaf_mat, "exp_v")
+            layout.row().prop(yaf_mat, "glossy_reflect", slider=True)
+            layout.row().prop(yaf_mat, "as_diffuse")
+
+            layout.separator()
+
+            if yaf_mat.mat_type == "coated_glossy":
+                box = layout.box()
+                box.label(text="Coated layer for glossy:")
+                split = box.split()
+                col = split.column()
+                col.prop(yaf_mat, "coat_mir_col")
+                col = split.column(align=True)
+                col.label(text="Fresnel reflection:")
+                col.prop(yaf_mat, "IOR_reflection")
+
+        if yaf_mat.mat_type in {"glass", "rough_glass"}:
+            self.bl_label = "Fake glass settings"
+            split = layout.split()
+            col = split.column()
+            col.prop(yaf_mat, "filter_color")
+            col = split.column()
+            col.prop(yaf_mat, "glass_mir_col")
+            layout.row().prop(yaf_mat, "glass_transmit", slider=True)
+            layout.row().prop(yaf_mat, "fake_shadows")
+
+del MaterialButtonsPanel

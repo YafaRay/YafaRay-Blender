@@ -1,7 +1,6 @@
 import bpy
-from math import *
-import re
-import os
+from bpy.path import abspath
+from os.path import realpath, normpath
 
 
 class yafWorld:
@@ -28,25 +27,25 @@ class yafWorld:
                     iblSamples = 16
                     bgPower = 1
 
-                self.yi.printInfo("Exporting World, type: " + bg_type)
+                self.yi.printInfo("Exporting World, type: {0}".format(bg_type))
                 yi.paramsClearAll()
 
                 if bg_type == 'Texture':
                     if world.active_texture is not None:
                         worldTex = world.active_texture
-                        self.yi.printInfo("World Texture, name: " + worldTex.name)
+                        self.yi.printInfo("World Texture, name: {0}".format(worldTex.name))
                     else:
                         worldTex = None
 
                     if worldTex is not None:
 
-                        if worldTex.type == 'IMAGE' and (worldTex.image is not None):
+                        if worldTex.type == "IMAGE" and (worldTex.image is not None):
 
                             yi.paramsSetString("type", "image")
 
-                            image_file = bpy.path.abspath(worldTex.image.filepath)
-                            image_file = os.path.realpath(image_file)
-                            image_file = os.path.normpath(image_file)
+                            image_file = abspath(worldTex.image.filepath)
+                            image_file = realpath(image_file)
+                            image_file = normpath(image_file)
 
                             yi.paramsSetString("filename", image_file)
 
@@ -69,12 +68,15 @@ class yafWorld:
                             elif texco == 'SPHERE':
                                 yi.paramsSetString("mapping", "sphere")
                             else:
-                                yi.printWarning("World texture mapping neither Sphere nor AngMap!")
+                                yi.printWarning("World texture mapping neither Sphere nor AngMap, set it to Sphere now by default!")
+                                yi.paramsSetString("mapping", "sphere")
 
                             yi.paramsSetString("type", "textureback")
                             yi.paramsSetString("texture", "world_texture")
                             yi.paramsSetBool("ibl", useIBL)
-                            yi.paramsSetBool("with_caustic", with_caustic)  # this settings gets checked in textureback.cc -> so if IBL enabled when they are used...
+                            # 'with_caustic' and 'with_diffuse' settings gets checked in textureback.cc,
+                            # so if IBL enabled when they are used...
+                            yi.paramsSetBool("with_caustic", with_caustic)
                             yi.paramsSetBool("with_diffuse", with_diffuse)
                             yi.paramsSetInt("ibl_samples", iblSamples)
                             yi.paramsSetFloat("power", bgPower)
@@ -98,7 +100,7 @@ class yafWorld:
                     yi.paramsSetInt("ibl_samples", iblSamples)
                     yi.paramsSetString("type", "gradientback")
 
-                elif bg_type == 'Sunsky':
+                elif bg_type == 'Sunsky1':
                     f = world.bg_from
                     yi.paramsSetPoint("from", f[0], f[1], f[2])
                     yi.paramsSetFloat("turbidity", world.bg_turbidity)
@@ -114,10 +116,10 @@ class yafWorld:
                     yi.paramsSetFloat("power", world.bg_power)
                     yi.paramsSetString("type", "sunsky")
 
-                elif bg_type == "Darktide's Sunsky":
+                elif bg_type == "Sunsky2":
                     f = world.bg_from
                     yi.paramsSetPoint("from", f[0], f[1], f[2])
-                    yi.paramsSetFloat("turbidity", world.bg_turbidity)
+                    yi.paramsSetFloat("turbidity", world.bg_ds_turbidity)
                     yi.paramsSetFloat("altitude", world.bg_dsaltitude)
                     yi.paramsSetFloat("a_var", world.bg_a_var)
                     yi.paramsSetFloat("b_var", world.bg_b_var)

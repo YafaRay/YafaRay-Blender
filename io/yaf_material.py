@@ -73,7 +73,7 @@ class yafMaterial:
 
         # "hack", scalar maps should always convert the RGB intensity to scalar
         # not clear why without this and noRGB == False, maps on scalar values seem to be "white" everywhere   <-- ???
-        noRGB = mtex.use_rgb_to_intensity 
+        noRGB = mtex.use_rgb_to_intensity
 
         # if len(dcol) == 1:    # disabled this 'hack' again, does not work with procedurals and alpha mapping (e.g. PNG image with 'use alpha')
         #     noRGB = True      # user should decide if rgb_to_intensity will be used or not...
@@ -441,7 +441,7 @@ class yafMaterial:
             mappername = "map%x" % i
 
             lname = "diff_layer%x" % i
-            if self.writeTexLayer(lname, mappername, diffRoot, mtex, mtex.diffuse_factor, [0], mtex.use_map_diffuse):
+            if self.writeTexLayer(lname, mappername, diffRoot, mtex, mtex.use_map_diffuse, [0], mtex.diffuse_factor):
                 used = True
                 diffRoot = lname
             if used:
@@ -471,7 +471,7 @@ class yafMaterial:
         yi.paramsSetString("type", "null")
         return yi.createMaterial(self.namehash(mat))
 
-    def writeMaterial(self, mat, preview = False):
+    def writeMaterial(self, mat, preview=False):
         self.preview = preview
         self.yi.printInfo("Exporter: Creating Material: \"" + self.namehash(mat) + "\"")
         ymat = None

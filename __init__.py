@@ -19,7 +19,6 @@
 import sys
 import os
 import ctypes
-import threading
 
 PLUGIN_PATH = os.path.join(__path__[0], 'bin', 'plugins')
 BIN_PATH = os.path.join(__path__[0], 'bin')
@@ -34,7 +33,7 @@ bl_info = {
 Pedro Alcaide (povmaniaco), Paulo Gomes (tuga3d), \
 Michele Castigliego (subcomandante), Bert Buchholz, \
 Rodrigo Placencia (DarkTide), Alexander Smirnov (Exvion)",
-    "version": (0, 1, 2, 'beta'),
+    "version": (0, 1, 2, 'alpha'),
     "blender": (2, 5, 9),
     "api": 39324,
     "location": "Info Header > Engine dropdown menu",
@@ -74,8 +73,7 @@ else:
 def register():
     prop.register()
     bpy.utils.register_module(__name__)
-    # register keys for 'render 3d view', 'render still' and 'render animation' 
-    # for the yafaray addon, registering for addons changed since rev.39084
+    # register keys for 'render 3d view', 'render still' and 'render animation'
     km = bpy.context.window_manager.keyconfigs.addon.keymaps.new(name='Screen')
     kmi = km.keymap_items.new('render.render_view', 'F12', 'PRESS', False, False, False, True)
     kmi = km.keymap_items.new('render.render_animation', 'F12', 'PRESS', False, False, True, False)
@@ -84,10 +82,7 @@ def register():
 
 def unregister():
     prop.unregister()
-    # restore 'F12' render key for Blender
-    km = bpy.context.window_manager.keyconfigs.active.keymaps['Screen']
-    km.keymap_items.new('render.render', 'F12', 'PRESS', False, False, False, False)
-    # unregister keys for the yafaray addon
+    # unregister keys for 'render 3d view', 'render still' and 'render animation'
     kma = bpy.context.window_manager.keyconfigs.addon.keymaps['Screen']
     for kmi in kma.keymap_items:
         if kmi.idname == 'render.render_view' or kmi.idname == 'render.render_animation' \

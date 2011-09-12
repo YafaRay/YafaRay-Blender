@@ -210,12 +210,7 @@ class RENDER_OT_render_still(Operator):
 
     @classmethod
     def poll(self, context):
-        # remove shortcut F12 for blenders render operator, we use our own ;)
-        krm = context.window_manager.keyconfigs.active.keymaps['Screen']
-        for kren in krm.keymap_items:
-            if kren.idname == 'render.render':
-                krm.keymap_items.remove(kren)
-                break
+
         # turn off Blenders color management for correct YafaRay render results
         if context.scene.render.use_color_management:
             context.scene.render.use_color_management = False

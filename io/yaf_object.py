@@ -1,5 +1,6 @@
 import bpy
 import time
+import math
 import mathutils
 import yafrayinterface
 
@@ -7,7 +8,7 @@ import yafrayinterface
 def multiplyMatrix4x4Vector4(matrix, vector):
     result = mathutils.Vector((0.0, 0.0, 0.0, 0.0))
     for i in range(4):
-        result[i] =  vector * matrix[i]  # use reverse vector multiply order, API changed with rev. 38674
+        result[i] = vector * matrix[i]  # use reverse vector multiply order, API changed with rev. 38674
 
     return result
 
@@ -72,14 +73,14 @@ class yafObject(object):
 
             yi.paramsSetString("type", camType)
 
-            if (camera.use_clipping):
+            if camera.use_clipping:
                 yi.paramsSetFloat("nearClip", camera.clip_start)
                 yi.paramsSetFloat("farClip", camera.clip_end)
 
             if camType == "orthographic":
                 yi.paramsSetFloat("scale", camera.ortho_scale)
 
-            elif camType in ["perspective", "architect"]:
+            elif camType in {"perspective", "architect"}:
                 f_aspect = 1.0
                 if x < y:
                     f_aspect = x / y
@@ -89,7 +90,7 @@ class yafObject(object):
                 # DOF params, only valid for real camera
                 # use DOF object distance if present or fixed DOF
 
-                if camera.dof_object:
+                if camera.dof_object is not None:
                     # use DOF object distance
                     dist = (pos.xyz - camera.dof_object.location.xyz).length
                     dof_distance = dist
@@ -148,11 +149,11 @@ class yafObject(object):
         dupBaseIds = {}
         # export only visible objects
         for obj in [o for o in self.scene.objects if not o.hide_render and o.is_visible(self.scene) \
-        and (o.type == 'MESH' or o.type == 'SURFACE' or o.type == 'CURVE' or o.type == 'FONT' or o.type == 'EMPTY')]:
-            # Exporting dupliObjects as instances: disabled exporting instances when global 
+        and (o.type in {'MESH', 'SURFACE', 'CURVE', 'FONT', 'EMPTY'})]:
+            # Exporting dupliObjects as instances: disabled exporting instances when global
             # option "transp. shadows" is on -> crashes yafaray render engine
             if obj.is_duplicator:
-                self.yi.printInfo("Processing duplis for: " + obj.name)
+                self.yi.printInfo("Processing duplis for: {0}".format(obj.name))
                 obj.dupli_list_create(self.scene)
 
                 for obj_dupli in obj.dupli_list:
@@ -165,13 +166,13 @@ class yafObject(object):
                         matrix = obj_dupli.matrix.copy()
                         self.writeInstance(dupBaseIds[obj_dupli.object.name], matrix, obj_dupli.object.name)
 
-                if obj.dupli_list:
+                if obj.dupli_list is not None:
                     obj.dupli_list_clear()
 
                 # check if object has particle system and uses the option for 'render emitter'
                 if hasattr(obj, 'particle_systems'):
                     for pSys in obj.particle_systems:
-                        check_rendertype = pSys.settings.render_type == 'OBJECT' or pSys.settings.render_type == 'GROUP'
+                        check_rendertype = pSys.settings.render_type in {'OBJECT', 'GROUP'}
                         if check_rendertype and pSys.settings.use_render_emitter:
                             matrix = obj.matrix_world.copy()
                             self.writeMesh(obj, matrix)
@@ -180,23 +181,23 @@ class yafObject(object):
             elif obj.type == 'EMPTY':
                 continue
 
-            # Exporting objects with shared mesh data blocks as instances: disabled exporting instances when global 
+            # Exporting objects with shared mesh data blocks as instances: disabled exporting instances when global
             # option "transparent shadows" is on -> crashes yafaray render engine
             elif obj.data.users > 1 and not self.scene.gs_transp_shad:
                 has_orco = False
                 # check materials and textures of object for 'ORCO' texture coordinates
-                # if so: don not export them as instances -> gives weird rendering results!
-                for mat_slot in [m for m in obj.material_slots if m.material]:
+                # if so: do not export them as instances -> gives weird rendering results!
+                for mat_slot in [m for m in obj.material_slots if m.material is not None]:
                     for tex in [t for t in mat_slot.material.texture_slots if (t and t.texture and t.use)]:
                         if tex.texture_coords == 'ORCO':
                             has_orco = True
-                            break  # break tex loop 
+                            break  # break tex loop
                     if has_orco:
                         break  # break mat_slot loop
                 if has_orco:
                     self.writeObject(obj)
                 else:
-                    self.yi.printInfo("Processing shared mesh data node object: " + obj.name)
+                    self.yi.printInfo("Processing shared mesh data node object: {0}".format(obj.name))
                     if obj.data.name not in baseIds:
                         baseIds[obj.data.name] = self.writeInstanceBase(obj)
 
@@ -208,7 +209,7 @@ class yafObject(object):
                 if obj.data.name not in baseIds and obj.name not in dupBaseIds:
                     self.writeObject(obj)
 
-    def writeObject(self, obj, matrix = None):
+    def writeObject(self, obj, matrix=None):
 
         if not matrix:
             matrix = obj.matrix_world.copy()
@@ -233,7 +234,7 @@ class yafObject(object):
         # Generate unique object ID
         ID = self.yi.getNextFreeID()
 
-        self.yi.printInfo("Exporting Base Mesh: " + obj.name + " with ID " + str(ID))
+        self.yi.printInfo("Exporting Base Mesh: {0} with ID: {1:d}".format(obj.name, ID))
 
         obType = 512  # Create this geometry object as a base object for instances
 
@@ -243,7 +244,7 @@ class yafObject(object):
 
     def writeInstance(self, oID, obj2WorldMatrix, name):
 
-        self.yi.printInfo("Exporting Instance of " + name + " [ID = " + str(oID) + "]")
+        self.yi.printInfo("Exporting Instance of {0} [ID = {1:d}]".format(name, oID))
 
         mat4 = obj2WorldMatrix.to_4x4()
         mat4.transpose()
@@ -256,7 +257,7 @@ class yafObject(object):
 
     def writeMesh(self, obj, matrix):
 
-        self.yi.printInfo("Exporting Mesh: " + obj.name)
+        self.yi.printInfo("Exporting Mesh: {0}".format(obj.name))
 
         # Generate unique object ID
         ID = self.yi.getNextFreeID()
@@ -265,7 +266,7 @@ class yafObject(object):
 
     def writeBGPortal(self, obj, matrix):
 
-        self.yi.printInfo("Exporting Background Portal Light: " + obj.name)
+        self.yi.printInfo("Exporting Background Portal Light: {0}".format(obj.name))
 
         # Generate unique object ID
         ID = self.yi.getNextFreeID()
@@ -286,7 +287,7 @@ class yafObject(object):
 
     def writeMeshLight(self, obj, matrix):
 
-        self.yi.printInfo("Exporting Meshlight: " + obj.name)
+        self.yi.printInfo("Exporting Meshlight: {0}".format(obj.name))
 
         # Generate unique object ID
         ID = self.yi.getNextFreeID()
@@ -319,7 +320,7 @@ class yafObject(object):
 
     def writeVolumeObject(self, obj, matrix):
 
-        self.yi.printInfo("Exporting Volume Region: " + obj.name)
+        self.yi.printInfo("Exporting Volume Region: {0}".format(obj.name))
 
         yi = self.yi
         me = obj.data
@@ -327,7 +328,7 @@ class yafObject(object):
 
         mesh = obj.to_mesh(self.scene, True, 'RENDER')
 
-        if matrix:
+        if matrix is not None:
             mesh.transform(matrix)
         else:
             return
@@ -344,9 +345,9 @@ class yafObject(object):
 
         elif obj.vol_region == 'Noise Volume':
             if not obj.data.materials[0]:
-                yi.printError("Volume object (" + obj.name + ") is missing the material")
+                yi.printError("Volume object ({0}) is missing the materials".format(obj.name))
             elif not obj.data.materials[0].texture_slots[0].texture:
-                yi.printError("Volume object's material (" + obj.name + ") is missing the noise texture")
+                yi.printError("Volume object's material ({0}) is missing the noise texture".format(obj.name))
             else:
                 texture = obj.data.materials[0].texture_slots[0].texture
 
@@ -395,7 +396,7 @@ class yafObject(object):
 
         yi.createVolumeRegion("VR_" + obj.name + "." + str(obj.__hash__()))
 
-    def writeGeometry(self, ID, obj, matrix, obType = 0, oMat = None):
+    def writeGeometry(self, ID, obj, matrix, obType=0, oMat=None):
 
         mesh = obj.to_mesh(self.scene, True, 'RENDER')
         isSmooth = False
@@ -404,8 +405,8 @@ class yafObject(object):
         hasUV = (len(mesh.uv_textures) > 0)
 
         # Check if the object has an orco mapped texture
-        for mat in [mmat for mmat in mesh.materials if mmat]:
-            for m in [mtex for mtex in mat.texture_slots if mtex]:
+        for mat in [mmat for mmat in mesh.materials if mmat is not None]:
+            for m in [mtex for mtex in mat.texture_slots if mtex is not None]:
                 if m.texture_coords == 'ORCO':
                     hasOrco = True
                     break
@@ -436,7 +437,7 @@ class yafObject(object):
                 ov.append([normCo[0], normCo[1], normCo[2]])
 
         # Transform the mesh after orcos have been stored and only if matrix exists
-        if matrix:
+        if matrix is not None:
             mesh.transform(matrix)
 
         self.yi.paramsClearAll()
@@ -454,7 +455,7 @@ class yafObject(object):
             if f.use_smooth:
                 isSmooth = True
 
-            if oMat:
+            if oMat is not None:
                 ymaterial = oMat
             else:
                 ymaterial = self.getFaceMaterial(mesh.materials, f.material_index, obj.material_slots)
@@ -480,7 +481,7 @@ class yafObject(object):
 
         if isSmooth == True:
             if mesh.use_auto_smooth:
-                self.yi.smoothMesh(0, mesh.auto_smooth_angle)
+                self.yi.smoothMesh(0, math.degrees(mesh.auto_smooth_angle))
             else:
                 if obj.type == 'FONT':  # getting nicer result with smooth angle 60 degr. for text objects
                     self.yi.smoothMesh(0, 60)
@@ -518,7 +519,7 @@ class yafObject(object):
         for pSys in object.particle_systems:
 
             if pSys.settings.render_type == 'PATH':  # Export Hair particles
-                yi.printInfo("Exporter: Creating Particle System \"" + pSys.name + "\"")
+                yi.printInfo("Exporter: Creating Particle System {!r}".format(pSys.name))
                 tstart = time.time()
                 # TODO: clay particles uses at least materials thikness?
                 if object.active_material is not None:
@@ -526,11 +527,11 @@ class yafObject(object):
 
                     if pmaterial.strand.use_blender_units:
                         strandStart = pmaterial.strand.root_size
-                        strandEnd   = pmaterial.strand.tip_size
+                        strandEnd = pmaterial.strand.tip_size
                         strandShape = pmaterial.strand.shape
                     else:  # Blender unit conversion
                         strandStart = pmaterial.strand.root_size / 100
-                        strandEnd   = pmaterial.strand.tip_size / 100
+                        strandEnd = pmaterial.strand.tip_size / 100
                         strandShape = pmaterial.strand.shape
                 else:
                     pmaterial = "default"  # No material assigned in blender, use default one
@@ -558,7 +559,7 @@ class yafObject(object):
                 # TODO: keep object smooth
                 #yi.smoothMesh(0, 60.0)
                     yi.endGeometry()
-                yi.printInfo("Exporter: Particle creation time: " + str(time.time() - tstart))
+                yi.printInfo("Exporter: Particle creation time: {0:.3f}".format(time.time() - tstart))
 
                 if (pSys.settings.use_render_emitter):
                     renderEmitter = True

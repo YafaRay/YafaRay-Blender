@@ -1,46 +1,67 @@
 import bpy
-#import types and props ---->
-from bpy.props import *
+from bpy.types import Panel
+from bl_ui.properties_world import WorldButtonsPanel
+WorldButtonsPanel.COMPAT_ENGINES = {'YAFA_RENDER'}
+from bpy.props import (FloatProperty,
+                       BoolProperty,
+                       EnumProperty,
+                       IntProperty)
+
 World = bpy.types.World
 
 World.v_int_type = EnumProperty(
-    items = (
-            ("None", "None", ""),
-            ("Single Scatter", "Single Scatter", "")),
-    default = "None",
-    name = "Volume Integrator")
-World.v_int_step_size =   FloatProperty(attr = "v_int_step_size", precision = 3)
-World.v_int_adaptive =    BoolProperty(attr = "v_int_adaptive")
-World.v_int_optimize =    BoolProperty(attr = "v_int_optimize")
-World.v_int_attgridres =  IntProperty(attr = "v_int_attgridres")
-World.v_int_scale =       FloatProperty(attr = "v_int_scale")
-World.v_int_alpha =       FloatProperty(attr = "v_int_alpha")
-World.v_int_dsturbidity = FloatProperty(attr = "v_int_dsturbidity")
+    name="Volume integrator",
+    description="Set the volume integrator",
+    items=(
+        ('None', "None", ""),
+        ('Single Scatter', "Single Scatter", "")
+    ),
+    default='None')
+
+World.v_int_step_size = FloatProperty(
+    name="Step size",
+    description="Precision of volumetric rendering (in Blender units)",
+    min=0.0, max=100.0,
+    precision=3,
+    default=1.000)
+
+World.v_int_adaptive = BoolProperty(
+    name="Adaptive",
+    description="Optimizes stepping calculations for NoiseVolumes",
+    default=False)
+
+World.v_int_optimize = BoolProperty(
+    name="Optimize",
+    description="Precomputing attenuation in the entire volume at a 3d grid of points",
+    default=False)
+
+World.v_int_attgridres = IntProperty(
+    name="Att. grid resolution",
+    description="Optimization attenuation grid resolution",
+    min=1, max=50,
+    default=1)
+
+# ??? not sure about the following properties ???
+# World.v_int_scale = FloatProperty(attr = "v_int_scale")
+# World.v_int_alpha =       FloatProperty(attr = "v_int_alpha")
+# World.v_int_dsturbidity = FloatProperty(attr = "v_int_dsturbidity")
 
 
-class YAF_PT_vol_integrator(bpy.types.Panel):
-
-    bl_label = 'YafaRay Volume Integrator'
-    bl_space_type = 'PROPERTIES'
-    bl_region_type = 'WINDOW'
-    bl_context = 'world'
-    COMPAT_ENGINES = ['YAFA_RENDER']
-
-    @classmethod
-    def poll(cls, context):
-
-        engine = context.scene.render.engine
-        return (context.world and (engine in cls.COMPAT_ENGINES))
+class YAF_PT_vol_integrator(WorldButtonsPanel, Panel):
+    bl_label = "YafaRay Volume Integrator"
 
     def draw(self, context):
 
         layout = self.layout
-        split = layout.split()
-        col = split.column()
-        col.prop(context.world, "v_int_type", text = "Volume Integrator")
+
+        layout.prop(context.world, "v_int_type")
+        layout.separator()
+
         if context.world.v_int_type == 'Single Scatter':
-            col.prop(context.world, "v_int_step_size", text = "Step Size")
-            col.prop(context.world, "v_int_attgridres", text = "Att. grid resolution")
-            row = layout.row()
-            row.prop(context.world, "v_int_adaptive", text = "Adaptive")
-            row.prop(context.world, "v_int_optimize", text = "Optimize")
+            layout.prop(context.world, "v_int_step_size")
+            layout.prop(context.world, "v_int_adaptive")
+            layout.prop(context.world, "v_int_optimize")
+            if context.world.v_int_optimize:
+                layout.prop(context.world, "v_int_attgridres")
+
+del WorldButtonsPanel

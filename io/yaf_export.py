@@ -44,12 +44,12 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.yi.setVerbosityMute()
 
         self.yi.loadPlugins(PLUGIN_PATH)
-        self.yaf_object     = yafObject(self.yi, self.materialMap)
-        self.yaf_lamp       = yafLight(self.yi, self.preview)
-        self.yaf_world      = yafWorld(self.yi)
+        self.yaf_object = yafObject(self.yi, self.materialMap)
+        self.yaf_lamp = yafLight(self.yi, self.preview)
+        self.yaf_world = yafWorld(self.yi)
         self.yaf_integrator = yafIntegrator(self.yi)
-        self.yaf_texture    = yafTexture(self.yi)
-        self.yaf_material   = yafMaterial(self.yi, self.materialMap, self.yaf_texture.loadedTextures)
+        self.yaf_texture = yafTexture(self.yi)
+        self.yaf_material = yafMaterial(self.yi, self.materialMap, self.yaf_texture.loadedTextures)
 
     def exportScene(self):
         self.exportTextures()
@@ -64,7 +64,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         # for the 'blend' material type, check ALL objects in the scene whether
         # they are visible or hidden for rendering.
         for obj in self.scene.objects:
-            for mat_slot in [m for m in obj.material_slots if m.material]:
+            for mat_slot in [m for m in obj.material_slots if m.material is not None]:
                 if mat_slot.material.mat_type != 'blend':
                     continue
                 else:
@@ -72,7 +72,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         # export textures from visible objects only. Won't work with
         # blend mat, there the textures need to be handled separately (see above).
         for obj in [o for o in self.scene.objects if (not o.hide_render and o.is_visible(self.scene))]:
-            for mat_slot in [m for m in obj.material_slots if m.material]:
+            for mat_slot in [m for m in obj.material_slots if m.material is not None]:
                 for tex in [t for t in mat_slot.material.texture_slots if (t and t.texture and t.use)]:
                     if self.preview and tex.texture.name == "fakeshadow":
                         continue
@@ -105,28 +105,44 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.yaf_object.writeObjects()
 
     def handleBlendTex(self, mat):
+        if mat.name == mat.material1:
+            self.yi.printError("Exporter: Blend material " + mat.name + " contains itself!")
+            return
+        if mat.name == mat.material2:
+            self.yi.printError("Exporter: Blend material " + mat.name + " contains itself!")
+            return
+        if mat.material1 == mat.material2:
+            self.yi.printError("Exporter: Blend material " + mat.material1 + " and " + mat.material2 + " are the same!")
+            return
+        if not (mat.material1 and mat.material2 in bpy.data.materials):
+            self.yi.printWarning("Exporter: Problem with blend material " + mat.name + ". Could not find one of the two blended materials.")
+            return
+
         mat1 = bpy.data.materials[mat.material1]
         mat2 = bpy.data.materials[mat.material2]
+
         for m in [mat1, mat2]:
-            for tex in [t for t in m.texture_slots if (t and t.texture)]:
-                if self.preview or tex.texture.name == 'fakeshadow':
+            for tex in [t for t in m.texture_slots if (t and t.texture and t.use)]:
+                if self.preview and tex.texture.name == 'fakeshadow':
                     continue
                 self.yaf_texture.writeTexture(self.scene, tex.texture)
 
     def handleBlendMat(self, mat):
-        mat1_name = mat.material1
-        mat2_name = mat.material2
-
-        if mat.name == mat1_name or mat.name == mat2_name or mat1_name == mat2_name:
+        if mat.name == mat.material1:
             self.yi.printError("Exporter: Blend material " + mat.name + " contains itself!")
             return
-
-        if not mat1_name in bpy.data.materials or not mat2_name in bpy.data.materials:
+        if mat.name == mat.material2:
+            self.yi.printError("Exporter: Blend material " + mat.name + " contains itself!")
+            return
+        if mat.material1 == mat.material2:
+            self.yi.printError("Exporter: Blend material " + mat.material1 + " and " + mat.material2 + " are the same!")
+            return
+        if not (mat.material1 and mat.material2 in bpy.data.materials):
             self.yi.printWarning("Exporter: Problem with blend material " + mat.name + ". Could not find one of the two blended materials.")
             return
 
-        mat1 = bpy.data.materials[mat1_name]
-        mat2 = bpy.data.materials[mat2_name]
+        mat1 = bpy.data.materials[mat.material1]
+        mat2 = bpy.data.materials[mat.material2]
 
         if mat1.mat_type == 'blend':
             self.handleBlendMat(mat1)
@@ -180,11 +196,9 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             'XML': 'xml',
         }
         filetype = switchFileType.get(filetype, 'png')
-        extension = '.' + filetype
         # write image or XML-File with filename from framenumber
-        output = os.path.abspath(os.path.join(output_path, \
-        ("%0" + str(len(str(self.scene.frame_end))) + "d") % self.scene.frame_current))
-
+        frame_numb_str = "{:0"+str(len(str(self.scene.frame_end)))+"d}"
+        output = os.path.join(output_path, frame_numb_str.format(self.scene.frame_current))
         # try to create dir if it not exists...
         if not os.path.exists(output_path):
             try:
@@ -194,7 +208,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 import traceback
                 traceback.print_exc()
                 output = ""
-        outputFile = output + extension
+        outputFile = output + "." + filetype
 
         return outputFile, output, filetype
 
@@ -255,8 +269,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         yaf_scene.exportRenderSettings(self.yi, self.scene)
 
         if scene.gs_type_render == "file":
-            self.yi.printInfo("Exporter: Rendering to file " + outputFile)
-            self.update_stats("", "Rendering to %s" % outputFile)
+            self.yi.printInfo("Exporter: Rendering to file {0}".format(outputFile))
+            self.update_stats("YafaRay Rendering:", "Rendering to {0}".format(outputFile))
             self.yi.render(co)
             result = self.begin_result(bStartX, bStartY, x + bStartX, y + bStartY)
             lay = result.layers[0]
@@ -271,7 +285,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         # Export the Scene to XML File
         if scene.gs_type_render == "xml":
-            self.yi.printInfo("Exporter: Writing XML to file " + outputFile)
+            self.yi.printInfo("Exporter: Writing XML to file {0}".format(outputFile))
             self.yi.render(co)
 
         elif scene.gs_type_render == "into_blender":
@@ -283,7 +297,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                         self.tag = args[0]
                     elif command == "progress":
                         self.prog = args[0]
-                    self.update_stats("YafaRay Rendering... ", "%s - %.2f %%" % (self.tag, self.prog))
+                    self.update_stats("YafaRay Rendering... ", "{0} - {1:.2f}%".format(self.tag, self.prog))
 
             def drawAreaCallback(*args):
                 x, y, w, h, tile = args
@@ -304,8 +318,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.end_result(res)
 
             t = threading.Thread(
-                                    target = self.yi.render,
-                                    args = (sizeX, sizeY, 0, 0,
+                                    target=self.yi.render,
+                                    args=(sizeX, sizeY, 0, 0,
                                     self.preview,
                                     drawAreaCallback,
                                     flushCallback,
@@ -327,7 +341,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 return
 
         self.update_stats("", "Done!")
+        if scene.gs_type_render == "into_blender":
+            t.join()
         self.yi.clearAll()
         del self.yi
-
         self.bl_use_postprocess = True
