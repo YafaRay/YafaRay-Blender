@@ -197,7 +197,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         }
         filetype = switchFileType.get(filetype, 'png')
         # write image or XML-File with filename from framenumber
-        frame_numb_str = "{:0"+str(len(str(self.scene.frame_end)))+"d}"
+        frame_numb_str = "{:0" + str(len(str(self.scene.frame_end))) + "d}"
         output = os.path.join(output_path, frame_numb_str.format(self.scene.frame_current))
         # try to create dir if it not exists...
         if not os.path.exists(output_path):

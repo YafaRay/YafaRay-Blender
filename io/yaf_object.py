@@ -85,7 +85,10 @@ class yafObject(object):
                 if x < y:
                     f_aspect = x / y
 
-                yi.paramsSetFloat("focal", camera.lens / (f_aspect * 32.0))
+                sensor_width = 32.0
+                if hasattr(camera, "sensor_width"):
+                    sensor_width = camera.sensor_width
+                yi.paramsSetFloat("focal", camera.lens / (f_aspect * sensor_width))
 
                 # DOF params, only valid for real camera
                 # use DOF object distance if present or fixed DOF

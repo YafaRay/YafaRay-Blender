@@ -13,7 +13,8 @@ Texture = bpy.types.Texture
 # update blender propertie texture.type to YafaRay's texture.yaf_tex_type
 def call_tex_type_update(self, context):
     tex = context.texture
-    tex.type = tex.yaf_tex_type
+    if tex is not None:
+        tex.type = tex.yaf_tex_type
 
 Texture.yaf_tex_type = EnumProperty(
     name="Type",

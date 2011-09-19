@@ -169,6 +169,35 @@ def convertLight(lightObj):
     return problemList
 
 
+def convertTextures(textures):
+    problemList = []
+
+    for tex in textures:
+        try:
+            tex.name = tex.name
+        except:
+            tex.name = "Problem"
+            problemList.append("Renaming texture name to {0}".format(tex.name))
+
+    for tex in textures:
+        problemList += convertTexture(tex)
+
+    return problemList
+
+
+def convertTexture(tex):
+    problemList = []
+
+    texType = tex.type
+
+    if texType is not None:
+        tex.yaf_tex_type = texType
+    else:
+        problemList.append("No texture type on texture {0}".format(tex.name))
+
+    return problemList
+
+
 def convertMaterials(materials):
     problemList = []
 
@@ -196,6 +225,7 @@ def convertMaterial(mat):
     materialNames = []
     for item in bpy.data.materials:
         materialNames.append(item.name)
+
     if props["type"] == "Rough Glass":
         mat.mat_type = "rough_glass"
     else:
@@ -218,6 +248,7 @@ def convertMaterial(mat):
         variableDict["IOR"] = "IOR_reflection"
 
     elif mat.mat_type in {"glass", "rough_glass"}:
+        variableDict["color"] = "diffuse_color"
         variableDict["IOR"] = "IOR_refraction"
         variableDict["alpha"] = "refr_roughness"
         variableDict["mirror_color"] = "glass_mir_col"
@@ -229,7 +260,7 @@ def convertMaterial(mat):
         if p in variableDict:
             p = variableDict[p]
 
-        if p in {"type", "mask"}:
+        if p in {"type", "mask", ""}:
             continue
 
         if p in {"brdf_type", "brdfType"}:
@@ -287,9 +318,10 @@ def convertWorld(world):
         attgridScale="v_int_attgridres")
 
     for p in props:
+        value = props[p]
+
         if p in {"bg_type", "from"}:
             continue
-        value = props[p]
 
         if p in variableDict:
             p = variableDict[p]
@@ -367,7 +399,7 @@ def convertGeneralSettings(scene):
             switch_file_type = {"TIFF [Tag Image File Format]": "TIFF", "TGA [Truevision TARGA]": "TARGA", \
                                 "PNG [Portable Network Graphics]": "PNG", "JPEG [Joint Photographic Experts Group]": "JPEG", \
                                 "HDR [Radiance RGBE]": "HDR", "EXR [IL&M OpenEXR]": "OPEN_EXR"}
-        scene.img_output = switch_file_type.get(props["file_type"], "PNG")
+            scene.img_output = switch_file_type.get(props["file_type"], "PNG")
 
     variableDict = dict(
         raydepth="ray_depth",
@@ -465,10 +497,11 @@ class ConvertYafarayProperties(bpy.types.Operator):
 
         problemList = []
 
+        problemList += convertTextures(data.textures)
         problemList += convertMaterials(data.materials)
         problemList += convertLights([l for l in data.objects if l.type == "LAMP"])
         problemList += convertCameras([c for c in data.objects if c.type == "CAMERA"])
-        problemList += convertWorld(data.worlds[0])
+        problemList += convertWorld(scene.world)
         problemList += convertSceneSettings(scene)
         problemList += convertObjects([o for o in data.objects if o.type == "MESH"])
 
@@ -476,4 +509,4 @@ class ConvertYafarayProperties(bpy.types.Operator):
         for p in problemList:
             print(p)
 
-        return {"FINISHED"}
+        return {'FINISHED'}

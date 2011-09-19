@@ -6,12 +6,12 @@ from bpy.props import FloatProperty, StringProperty
 
 
 class OBJECT_OT_get_position(Operator):
-    bl_label = 'From( get position )'
-    bl_idname = 'world.get_position'
-    bl_description = 'Get position from selected sun lamp'
+    bl_label = "From( get position )"
+    bl_idname = "world.get_position"
+    bl_description = "Get position from selected sun lamp"
 
     def execute(self, context):
-        warning_message = sunPosAngle(mode = 'get', val = 'position')
+        warning_message = sunPosAngle(mode="get", val="position")
         if warning_message:
             self.report({'WARNING'}, (warning_message))
             return {'CANCELLED'}
@@ -20,12 +20,12 @@ class OBJECT_OT_get_position(Operator):
 
 
 class OBJECT_OT_get_angle(Operator):
-    bl_label = 'From( get angle )'
-    bl_idname = 'world.get_angle'
-    bl_description = 'Get angle from selected sun lamp'
+    bl_label = "From( get angle )"
+    bl_idname = "world.get_angle"
+    bl_description = "Get angle from selected sun lamp"
 
     def execute(self, context):
-        warning_message = sunPosAngle(mode = 'get', val = 'angle')
+        warning_message = sunPosAngle(mode="get", val="angle")
         if warning_message:
             self.report({'WARNING'}, (warning_message))
             return {'CANCELLED'}
@@ -34,12 +34,12 @@ class OBJECT_OT_get_angle(Operator):
 
 
 class OBJECT_OT_update_sun(Operator):
-    bl_label = 'From( update sun )'
-    bl_idname = 'world.update_sun'
-    bl_description = 'Update position and angle of selected sun lamp according to GUI values'
+    bl_label = "From( update sun )"
+    bl_idname = "world.update_sun"
+    bl_description = "Update position and angle of selected sun lamp according to GUI values"
 
     def execute(self, context):
-        warning_message = sunPosAngle(mode = 'update')
+        warning_message = sunPosAngle(mode="update")
         if warning_message:
             self.report({'WARNING'}, (warning_message))
             return {'CANCELLED'}
@@ -47,16 +47,16 @@ class OBJECT_OT_update_sun(Operator):
             return{'FINISHED'}
 
 
-def sunPosAngle(mode = 'get', val = 'position'):
+def sunPosAngle(mode="get", val="position"):
     active_object = bpy.context.active_object
     scene = bpy.context.scene
     world = scene.world
-    warning_message = ''
+    warning_message = ""
 
-    if active_object and active_object.type == 'LAMP' and active_object.data.type == 'SUN':
+    if active_object and active_object.type == "LAMP" and active_object.data.type == "SUN":
 
-        if mode == 'get':
-            if val == 'position':
+        if mode == "get":
+            if val == "position":
                 location = mathutils.Vector(active_object.location)
 
                 if location.length:
@@ -67,12 +67,12 @@ def sunPosAngle(mode = 'get', val = 'position'):
                 world.bg_from = point
                 return
 
-            elif val == 'angle':
+            elif val == "angle":
                 inv_matrix = mathutils.Matrix(active_object.matrix_local).copy().inverted()
                 world.bg_from = (inv_matrix[0][2], inv_matrix[1][2], inv_matrix[2][2])
                 return
 
-        elif mode == 'update':
+        elif mode == "update":
 
             # get gui from vector and normalize it
             bg_from = mathutils.Vector(world.bg_from)
@@ -121,7 +121,7 @@ def checkSceneLights():
     scene = bpy.context.scene
 
     for l in scene.objects:
-        if not l.hide_render and l.is_visible(scene) and l.type == 'LAMP':
+        if not l.hide_render and l.is_visible(scene) and l.type == "LAMP":
             sceneLights = True
             break
         else:
@@ -130,9 +130,9 @@ def checkSceneLights():
 
 
 class RENDER_OT_render_view(Operator):
-    bl_label = 'YafaRay render view'
-    bl_idname = 'render.render_view'
-    bl_description = 'Renders using the view in the active 3d viewport'
+    bl_label = "YafaRay render view"
+    bl_idname = "render.render_view"
+    bl_description = "Renders using the view in the active 3d viewport"
 
     @classmethod
     def poll(self, context):
@@ -148,16 +148,16 @@ class RENDER_OT_render_view(Operator):
         # if the region is not a 3d view
         # then search for the first active one
         if not view3d:
-            for area in [a for a in bpy.context.window.screen.areas if a.type == 'VIEW_3D']:
+            for area in [a for a in bpy.context.window.screen.areas if a.type == "VIEW_3D"]:
                 view3d = area.spaces.active.region_3d
                 break
 
-        if not view3d or view3d.view_perspective == 'ORTHO':
+        if not view3d or view3d.view_perspective == "ORTHO":
             self.report({'WARNING'}, ("The selected view is not in perspective mode or there was no 3d view available to render."))
             bpy.types.YAFA_RENDER.useViewToRender = False
             return {'CANCELLED'}
 
-        elif not sceneLights and scene.intg_light_method == 'Bidirectional':
+        elif not sceneLights and scene.intg_light_method == "Bidirectional":
             self.report({'WARNING'}, ("No lights in the scene and lighting method is bidirectional!"))
             bpy.types.YAFA_RENDER.useViewToRender = False
             return {'CANCELLED'}
@@ -175,9 +175,9 @@ class RENDER_OT_render_view(Operator):
 
 
 class RENDER_OT_render_animation(Operator):
-    bl_label = 'YafaRay render animation'
-    bl_idname = 'render.render_animation'
-    bl_description = 'Render active scene'
+    bl_label = "YafaRay render animation"
+    bl_idname = "render.render_animation"
+    bl_description = "Render active scene"
 
     @classmethod
     def poll(self, context):
@@ -188,7 +188,7 @@ class RENDER_OT_render_animation(Operator):
         sceneLights = checkSceneLights()
         scene = context.scene
 
-        if not sceneLights and scene.intg_light_method == 'Bidirectional':
+        if not sceneLights and scene.intg_light_method == "Bidirectional":
             self.report({'WARNING'}, ("No lights in the scene and lighting method is bidirectional!"))
             return {'CANCELLED'}
 
@@ -199,14 +199,14 @@ class RENDER_OT_render_animation(Operator):
             return {'CANCELLED'}
 
         else:
-            bpy.ops.render.render('INVOKE_DEFAULT', animation = True)
+            bpy.ops.render.render('INVOKE_DEFAULT', animation=True)
             return {'FINISHED'}
 
 
 class RENDER_OT_render_still(Operator):
-    bl_label = 'YafaRay render still'
-    bl_idname = 'render.render_still'
-    bl_description = 'Render active scene'
+    bl_label = "YafaRay render still"
+    bl_idname = "render.render_still"
+    bl_description = "Render active scene"
 
     @classmethod
     def poll(self, context):
@@ -220,7 +220,7 @@ class RENDER_OT_render_still(Operator):
         sceneLights = checkSceneLights()
         scene = context.scene
 
-        if not sceneLights and scene.intg_light_method == 'Bidirectional':
+        if not sceneLights and scene.intg_light_method == "Bidirectional":
             self.report({'WARNING'}, ("No lights in the scene and lighting method is bidirectional!"))
             return {'CANCELLED'}
 
@@ -229,22 +229,22 @@ class RENDER_OT_render_still(Operator):
             # turn off border render
             scene.render.use_border = False
             return {'CANCELLED'}
-           
+
         else:
             bpy.ops.render.render('INVOKE_DEFAULT')
             return {'FINISHED'}
 
 
 class YAF_OT_presets_ior_list(Operator):
-    bl_idname = 'material.set_ior_preset'
-    bl_label = 'IOR presets'
+    bl_idname = "material.set_ior_preset"
+    bl_label = "IOR presets"
     index = bpy.props.FloatProperty()
     name = bpy.props.StringProperty()
 
     @classmethod
     def poll(self, context):
         yaf_mat = context.material
-        return yaf_mat.mat_type == 'glass' or yaf_mat.mat_type == 'rough_glass'
+        return yaf_mat.mat_type in {"glass", "rough_glass"}
 
     def execute(self, context):
         yaf_mat = context.material
