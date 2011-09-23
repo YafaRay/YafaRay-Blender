@@ -1,54 +1,26 @@
+# ##### BEGIN GPL LICENSE BLOCK #####
+#
+#  This program is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation; either version 2
+#  of the License, or (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software Foundation,
+#  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+#
+# ##### END GPL LICENSE BLOCK #####
+
 import bpy
-# import types and props ---->
-from bpy.props import (IntProperty,
-                       FloatProperty,
-                       EnumProperty)
 from bpy.types import Panel
 from bl_ui.properties_render import RenderButtonsPanel
+
 RenderButtonsPanel.COMPAT_ENGINES = {'YAFA_RENDER'}
-
-Scene = bpy.types.Scene
-
-Scene.AA_min_samples = IntProperty(
-    name="Samples",
-    description="Number of samples for first AA pass",
-    min=1,
-    default=1)
-
-Scene.AA_inc_samples = IntProperty(
-    name="Additional Samples",
-    description="Number of samples for additional AA passes",
-    min=1,
-    default=1)
-
-Scene.AA_passes = IntProperty(
-    name="Passes",
-    description=("Number of anti-aliasing passes."
-                 " Adaptive sampling (passes > 1) uses different pattern"),
-    min=1,
-    default=1)
-
-Scene.AA_threshold = FloatProperty(
-    name="Threshold",
-    description="Color threshold for additional AA samples in next pass",
-    min=0.0, max=1.0, precision=4,
-    default=0.05)
-
-Scene.AA_pixelwidth = FloatProperty(
-    name="Pixelwidth",
-    description="AA filter size",
-    min=1.0, max=20.0, precision=3,
-    default=1.5)
-
-Scene.AA_filter_type = EnumProperty(
-    name="Filter",
-    items=(
-        ('box', "Box", "AA filter type"),
-        ('mitchell', "Mitchell", "AA filter type"),
-        ('gauss', "Gauss", "AA filter type"),
-        ('lanczos', "Lanczos", "AA filter type")
-    ),
-    default="gauss")
 
 
 class YAF_PT_AA_settings(RenderButtonsPanel, Panel):
@@ -61,13 +33,13 @@ class YAF_PT_AA_settings(RenderButtonsPanel, Panel):
 
         split = layout.split()
         col = split.column()
-        col.prop(scene, 'AA_filter_type')
-        col.prop(scene, 'AA_min_samples')
-        col.prop(scene, 'AA_pixelwidth')
+        col.prop(scene, "AA_filter_type")
+        col.prop(scene, "AA_min_samples")
+        col.prop(scene, "AA_pixelwidth")
 
         col = split.column()
-        col.prop(scene, 'AA_passes')
+        col.prop(scene, "AA_passes")
         sub = col.column()
         sub.enabled = scene.AA_passes > 1
-        sub.prop(scene, 'AA_inc_samples')
-        sub.prop(scene, 'AA_threshold')
+        sub.prop(scene, "AA_inc_samples")
+        sub.prop(scene, "AA_threshold")

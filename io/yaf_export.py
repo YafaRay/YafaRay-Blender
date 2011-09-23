@@ -1,3 +1,21 @@
+# ##### BEGIN GPL LICENSE BLOCK #####
+#
+#  This program is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation; either version 2
+#  of the License, or (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software Foundation,
+#  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+#
+# ##### END GPL LICENSE BLOCK #####
+
 #TODO: Use Blender enumerators if any
 import bpy
 import os
@@ -163,11 +181,23 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
     def exportMaterials(self):
         self.yi.printInfo("Exporter: Processing Materials...")
         self.materials = set()
+
+        # create a default shiny diffuse material -> it will be assigned, if object has no material(s)
         self.yi.paramsClearAll()
         self.yi.paramsSetString("type", "shinydiffusemat")
+        self.yi.paramsSetColor("color", 0.8, 0.8, 0.8)
         self.yi.printInfo("Exporter: Creating Material \"defaultMat\"")
         ymat = self.yi.createMaterial("defaultMat")
         self.materialMap["default"] = ymat
+
+        # create a shiny diffuse material for "Clay Render" option in general settings
+        self.yi.paramsClearAll()
+        self.yi.paramsSetString("type", "shinydiffusemat")
+        cCol = self.scene.gs_clay_col
+        self.yi.paramsSetColor("color", cCol[0], cCol[1], cCol[2])
+        self.yi.printInfo("Exporter: Creating Material \"clayMat\"")
+        cmat = self.yi.createMaterial("clayMat")
+        self.materialMap["clay"] = cmat
 
         for obj in self.scene.objects:
             for mat_slot in obj.material_slots:

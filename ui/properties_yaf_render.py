@@ -1,35 +1,26 @@
+# ##### BEGIN GPL LICENSE BLOCK #####
+#
+#  This program is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation; either version 2
+#  of the License, or (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software Foundation,
+#  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+#
+# ##### END GPL LICENSE BLOCK #####
+
 import bpy
-#import types and props ---->
-from bpy.props import EnumProperty
 from bpy.types import Panel
 from bl_ui.properties_render import RenderButtonsPanel
+
 RenderButtonsPanel.COMPAT_ENGINES = {'YAFA_RENDER'}
-Scene = bpy.types.Scene
-
-
-# set fileformat for image saving on same format as in YafaRay, both have default PNG
-def call_update_fileformat(self, context):
-    sc = context.scene
-    rd = sc.render
-    if sc.img_output != rd.file_format:
-        rd.file_format = sc.img_output
-        if rd.file_format == "OPEN_EXR" and sc.gs_z_channel:
-            rd.exr_zbuf = True
-
-
-# YafaRays own image output selection, default is PNG
-Scene.img_output = EnumProperty(
-    name="Image File Type",
-    description="Image will be saved in this file format",
-    items=(
-        ('PNG', " PNG (Portable Network Graphics)", ""),
-        ('TARGA', " TGA (Truevision TARGA)", ""),
-        ('JPEG', " JPEG (Joint Photographic Experts Group)", ""),
-        ('TIFF', " TIFF (Tag Image File Format)", ""),
-        ('OPEN_EXR', " EXR (IL&M OpenEXR)", ""),
-        ('HDR', " HDR (Radiance RGBE)", "")
-    ),
-    default='PNG', update=call_update_fileformat)
 
 
 class YAFRENDER_PT_render(RenderButtonsPanel, Panel):

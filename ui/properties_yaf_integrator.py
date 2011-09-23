@@ -1,181 +1,26 @@
+# ##### BEGIN GPL LICENSE BLOCK #####
+#
+#  This program is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation; either version 2
+#  of the License, or (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software Foundation,
+#  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+#
+# ##### END GPL LICENSE BLOCK #####
+
 import bpy
-#import types and props ---->
 from bpy.types import Panel
 from bl_ui.properties_render import RenderButtonsPanel
+
 RenderButtonsPanel.COMPAT_ENGINES = {'YAFA_RENDER'}
-from bpy.props import (IntProperty,
-                       FloatProperty,
-                       FloatVectorProperty,
-                       BoolProperty,
-                       EnumProperty)
-Scene = bpy.types.Scene
-
-Scene.intg_light_method = EnumProperty(
-    name="Lighting Method",
-    items=(
-        ('Direct Lighting', "Direct Lighting", ""),
-        ('Photon Mapping', "Photon Mapping", ""),
-        ('Pathtracing', "Pathtracing", ""),
-        ('Debug', "Debug", ""),
-        ('Bidirectional', "Bidirectional", ""),
-        ('SPPM', "SPPM", "")
-    ),
-    default='Direct Lighting')
-
-Scene.intg_use_caustics = BoolProperty(
-    name="Caustic Photons",
-    description="Enable photon map for caustics only",
-    default=False)
-
-Scene.intg_photons = IntProperty(
-    name="Photons",
-    description="Number of photons to be shot",
-    min=1, max=100000000,
-    default=500000)
-
-Scene.intg_caustic_mix = IntProperty(
-    name="Caustic Mix",
-    description="Max. number of photons to mix (blur)",
-    min=1, max=10000,
-    default=100)
-
-Scene.intg_caustic_depth = IntProperty(
-    name="Caustic Depth",
-    description="Max. number of scatter events for photons",
-    min=0, max=50,
-    default=10)
-
-Scene.intg_caustic_radius = FloatProperty(
-    name="Caustic Radius",
-    description="Max. radius to search for photons",
-    min=0.0001, max=100.0,
-    default=1.0)
-
-Scene.intg_use_AO = BoolProperty(
-    name="Ambient Occlusion",
-    description="Enable ambient occlusion",
-    default=False)
-
-Scene.intg_AO_samples = IntProperty(
-    name="Samples",
-    description="Number of samples for ambient occlusion",
-    min=1, max=1000,
-    default=32)
-
-Scene.intg_AO_distance = FloatProperty(
-    name="Distance",
-    description=("Max. occlusion distance."
-                 " Surfaces further away do not occlude ambient light"),
-    min=0.0, max=10000.0,
-    default=1.0)
-
-Scene.intg_AO_color = FloatVectorProperty(
-    name="AO Color",
-    description="Color Settings", subtype='COLOR',
-    min=0.0, max=1.0,
-    default=(0.9, 0.9, 0.9))
-
-Scene.intg_bounces = IntProperty(
-    name="Depth",
-    description="",
-    min=1,
-    default=4)
-
-Scene.intg_diffuse_radius = FloatProperty(
-    name="Search radius",
-    description="Radius to search for diffuse photons",
-    min=0.001,
-    default=1.0)
-
-Scene.intg_cPhotons = IntProperty(
-    name="Count",
-    description="Number of caustic photons to be shot",
-    min=1, default=500000)
-
-Scene.intg_search = IntProperty(
-    name="Search count",
-    description="Maximum number of diffuse photons to be filtered",
-    min=1, max=10000,
-    default=100)
-
-Scene.intg_final_gather = BoolProperty(
-    name="Final Gather",
-    description="Use final gathering (recommended)",
-    default=True)
-
-Scene.intg_fg_bounces = IntProperty(
-    name="Bounces",
-    description="Allow gather rays to extend to paths of this length",
-    min=1, max=20,
-    default=3)
-
-Scene.intg_fg_samples = IntProperty(
-    name="Samples",
-    description="Number of samples for final gathering",
-    min=1,
-    default=16)
-
-Scene.intg_show_map = BoolProperty(
-    name="Show radiance map",
-    description="Directly show radiance map, useful to calibrate the photon map (disables final gathering step)",
-    default=False)
-
-Scene.intg_caustic_method = EnumProperty(
-    name="Caustic Method",
-    items=(
-        ('None', "None", ""),
-        ('Path', "Path", ""),
-        ('Path+Photon', "Path+Photon", ""),
-        ('Photon', "Photon", "")),
-    description="Choose caustic rendering method",
-    default='None')
-
-Scene.intg_path_samples = IntProperty(
-    name="Path Samples",
-    description="Number of path samples per pixel sample",
-    min=1,
-    default=32)
-
-Scene.intg_no_recursion = BoolProperty(
-    name="No Recursion",
-    description="No recursive raytracing, only pure path tracing",
-    default=False)
-
-Scene.intg_debug_type = EnumProperty(
-    name="Debug type",
-    items=(
-        ('N', "N", ""),
-        ('dPdU', "dPdU", ""),
-        ('dPdV', "dPdV", ""),
-        ('NU', "NU", ""),
-        ('NV', "NV", ""),
-        ('dSdU', "dSdU", ""),
-        ('dSdV', "dSdV", "")),
-    default='dSdV')
-
-Scene.intg_show_perturbed_normals = BoolProperty(
-    name="Show perturbed normals",
-    description="Show the normals perturbed by bump and normal maps",
-    default=False)
-
-Scene.intg_pm_ire = BoolProperty(
-    name="PM IRE",
-    default=False)
-
-Scene.intg_pass_num = IntProperty(
-    name="Passes",
-    min=1,
-    default=1000)
-
-Scene.intg_times = FloatProperty(
-    name="Radius factor",
-    min=0.0,
-    default=1.0)
-
-Scene.intg_photon_radius = FloatProperty(
-    name="Search radius",
-    min=0.0,
-    default=1.0)
 
 
 class YAF_PT_render(RenderButtonsPanel, Panel):
