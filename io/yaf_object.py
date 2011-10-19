@@ -422,8 +422,7 @@ class yafObject(object):
         mesh = obj.to_mesh(self.scene, True, 'RENDER')
         isSmooth = False
         hasOrco = False
-        # TODO: this may not be the best way to check for uv maps
-        hasUV = (len(mesh.uv_textures) > 0)
+        hasUV = mesh.uv_textures
 
         # Check if the object has an orco mapped texture
         for mat in [mmat for mmat in mesh.materials if mmat is not None]:

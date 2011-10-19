@@ -326,7 +326,7 @@ def convertWorld(world):
         dsd="d_var",
         dse="e_var",
         dscolorspace="color_space",
-        dspower="dsbright",
+        dspower="power",
         dsexposure="exposure",
         dsgammaenc="gamma_enc",
         volType="v_int_type",

@@ -248,12 +248,12 @@ def register():
 
     Material.material1 = StringProperty(
         name="Material One",
-        description="First Blend Material. Same material if nothing is set.",
+        description="First Blend Material. Same material if nothing is set",
         default="")
 
     Material.material2 = StringProperty(
         name="Material Two",
-        description="Second Blend Material. Same material if nothing is set.",
+        description="Second Blend Material. Same material if nothing is set",
         default="")
 
 

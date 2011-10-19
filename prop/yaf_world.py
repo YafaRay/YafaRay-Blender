@@ -231,7 +231,7 @@ def register():
     World.bg_power = FloatProperty(
         name="Skylight power",
         description="Multiplier for background color",
-        min=0.0, max=10.0,
+        min=0.0,
         default=1.0,
         update=call_world_update)
 

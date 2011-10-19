@@ -117,7 +117,7 @@ def register():
     Scene.gs_custom_string = StringProperty(
         name="Custom string",
         description="Custom string will be added to the info bar, "
-                    "use it for CPU, RAM etc.",
+                    "use it for CPU, RAM etc",
         default="")
 
     Scene.gs_premult = BoolProperty(
@@ -229,7 +229,7 @@ def register():
 
     Scene.intg_AO_distance = FloatProperty(
         name="Distance",
-        description=("Max. occlusion distance."
+        description=("Max. occlusion distance,"
                      " Surfaces further away do not occlude ambient light"),
         min=0.0, max=10000.0,
         default=1.0)
@@ -357,7 +357,7 @@ def register():
 
     Scene.AA_passes = IntProperty(
         name="Passes",
-        description=("Number of anti-aliasing passes."
+        description=("Number of anti-aliasing passes,"
                      " Adaptive sampling (passes > 1) uses different pattern"),
         min=1,
         default=1)
