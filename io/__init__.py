@@ -16,6 +16,8 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+# <pep8 compliant>
+
 import yafrayinterface
 from . import yaf_export
 from . import yaf_world

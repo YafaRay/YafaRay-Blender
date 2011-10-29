@@ -16,8 +16,9 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+# <pep8 compliant>
+
 import bpy
-from bl_ui.properties_material import active_node_mat
 from bl_ui.properties_texture import context_tex_datablock
 from bpy.types import Panel
 

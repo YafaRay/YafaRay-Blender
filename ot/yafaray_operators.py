@@ -16,11 +16,11 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+# <pep8 compliant>
+
 import bpy
-import math
 import mathutils
 from bpy.types import Operator
-from bpy.props import FloatProperty, StringProperty
 
 
 class OBJECT_OT_get_position(Operator):
@@ -69,7 +69,6 @@ def sunPosAngle(mode="get", val="position"):
     active_object = bpy.context.active_object
     scene = bpy.context.scene
     world = scene.world
-    warning_message = ""
 
     if active_object and active_object.type == "LAMP" and active_object.data.type == "SUN":
 
@@ -153,7 +152,7 @@ class RENDER_OT_render_view(Operator):
     bl_description = "Renders using the view in the active 3d viewport"
 
     @classmethod
-    def poll(self, context):
+    def poll(cls, context):
 
         return context.scene.render.engine == 'YAFA_RENDER'
 
@@ -198,7 +197,7 @@ class RENDER_OT_render_animation(Operator):
     bl_description = "Render active scene"
 
     @classmethod
-    def poll(self, context):
+    def poll(cls, context):
 
         return context.scene.render.engine == 'YAFA_RENDER'
 
@@ -227,7 +226,7 @@ class RENDER_OT_render_still(Operator):
     bl_description = "Render active scene"
 
     @classmethod
-    def poll(self, context):
+    def poll(cls, context):
 
         # turn off Blenders color management for correct YafaRay render results
         if context.scene.render.use_color_management:
@@ -260,7 +259,7 @@ class YAF_OT_presets_ior_list(Operator):
     name = bpy.props.StringProperty()
 
     @classmethod
-    def poll(self, context):
+    def poll(cls, context):
         yaf_mat = context.material
         return yaf_mat.mat_type in {"glass", "rough_glass"}
 

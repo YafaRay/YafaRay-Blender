@@ -16,6 +16,8 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+# <pep8 compliant>
+
 import sys
 import os
 import ctypes
@@ -67,7 +69,10 @@ if "bpy" in locals():
     imp.reload(ot)
 else:
     import bpy
-    from . import prop, io, ui, ot
+    from . import prop
+    from . import io
+    from . import ui
+    from . import ot
 
 
 def register():

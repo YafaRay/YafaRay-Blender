@@ -16,6 +16,8 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+# <pep8 compliant>
+
 import bpy
 import time
 import math
@@ -344,8 +346,8 @@ class yafObject(object):
         self.yi.printInfo("Exporting Volume Region: {0}".format(obj.name))
 
         yi = self.yi
-        me = obj.data
-        me_materials = me.materials
+        # me = obj.data  /* UNUSED */
+        # me_materials = me.materials  /* UNUSED */
 
         mesh = obj.to_mesh(self.scene, True, 'RENDER')
 
@@ -365,12 +367,12 @@ class yafObject(object):
             yi.paramsSetString("type", "UniformVolume")
 
         elif obj.vol_region == 'Noise Volume':
-            if not obj.data.materials[0]:
+            if not obj.active_material:
                 yi.printError("Volume object ({0}) is missing the materials".format(obj.name))
-            elif not obj.data.materials[0].texture_slots[0].texture:
+            elif not obj.active_material.active_texture:
                 yi.printError("Volume object's material ({0}) is missing the noise texture".format(obj.name))
             else:
-                texture = obj.data.materials[0].texture_slots[0].texture
+                texture = obj.active_material.active_texture
 
                 yi.paramsSetString("type", "NoiseVolume")
                 yi.paramsSetFloat("sharpness", obj.vol_sharpness)
@@ -499,14 +501,12 @@ class yafObject(object):
 
         self.yi.endTriMesh()
 
-        if isSmooth == True:
-            if mesh.use_auto_smooth:
-                self.yi.smoothMesh(0, math.degrees(mesh.auto_smooth_angle))
-            else:
-                if obj.type == 'FONT':  # getting nicer result with smooth angle 60 degr. for text objects
-                    self.yi.smoothMesh(0, 60)
-                else:
-                    self.yi.smoothMesh(0, 181)
+        if isSmooth and mesh.use_auto_smooth:
+            self.yi.smoothMesh(0, math.degrees(mesh.auto_smooth_angle))
+        elif isSmooth and obj.type == 'FONT':  # getting nicer result with smooth angle 60 degr. for text objects
+            self.yi.smoothMesh(0, 60)
+        elif isSmooth:
+            self.yi.smoothMesh(0, 181)
 
         self.yi.endGeometry()
 

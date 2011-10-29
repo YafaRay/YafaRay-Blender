@@ -16,6 +16,8 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+# <pep8 compliant>
+
 import bpy
 from bpy.types import Panel
 from bl_ui.properties_render import RenderButtonsPanel
@@ -72,9 +74,9 @@ class YAFRENDER_PT_dimensions(RenderButtonsPanel, Panel):
         sub.prop(scene, "frame_end", text="End")
         sub.prop(scene, "frame_step", text="Step")
 
-from . import properties_yaf_general_settings
-from . import properties_yaf_integrator
-from . import properties_yaf_AA_settings
+from yafaray.ui import properties_yaf_general_settings
+from yafaray.ui import properties_yaf_integrator
+from yafaray.ui import properties_yaf_AA_settings
 
 
 class YAFRENDER_PT_output(RenderButtonsPanel, Panel):
@@ -120,3 +122,8 @@ class YAF_PT_convert(RenderButtonsPanel, Panel):
     def draw(self, context):
         layout = self.layout
         layout.column().operator("data.convert_yafaray_properties", text="Convert data from 2.4x")
+
+
+if __name__ == "__main__":  # only for live edit.
+    import bpy
+    bpy.utils.register_module(__name__)

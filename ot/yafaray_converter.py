@@ -16,6 +16,8 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+# <pep8 compliant>
+
 import bpy
 
 
@@ -310,6 +312,11 @@ def convertWorld(world):
     switch_bg_Type = {"Single Color": "Single Color", "Gradient": "Gradient", "Texture": "Texture", \
                       "Sunsky": "Sunsky1", "DarkTide's SunSky": "Sunsky2"}
     world.bg_type = switch_bg_Type.get(props["bg_type"], "Single Color")
+    world.v_int_type = props["volType"]
+    world.v_int_step_size = props["stepSize"]
+    world.v_int_adaptive = props["adaptive"]
+    world.v_int_optimize = props["optimize"]
+    world.v_int_attgridres = props["attgridScale"]
     world.bg_from = props["from"]
 
     variableDict = dict(
@@ -328,17 +335,17 @@ def convertWorld(world):
         dscolorspace="color_space",
         dspower="power",
         dsexposure="exposure",
-        dsgammaenc="gamma_enc",
-        volType="v_int_type",
-        stepSize="v_int_step_size",
-        adaptive="v_int_adaptive",
-        optimize="v_int_optimize",
-        attgridScale="v_int_attgridres")
+        dsgammaenc="gamma_enc")
+        # volType="v_int_type",
+        # stepSize="v_int_step_size",
+        # adaptive="v_int_adaptive",
+        # optimize="v_int_optimize",
+        # attgridScale="v_int_attgridres")
 
     for p in props:
         value = props[p]
 
-        if p in {"bg_type", "from"}:
+        if p in {"bg_type", "from", "volType", "stepSize", "adaptive", "optimize", "attgridScale"}:
             continue
 
         if p in variableDict:

@@ -16,8 +16,9 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+# <pep8 compliant>
+
 import bpy
-import mathutils
 import yafrayinterface
 
 
@@ -148,7 +149,7 @@ class yafMaterial:
         yi.paramsSetString("element", "shader_node")
         yi.paramsSetString("type", "texture_mapper")
         yi.paramsSetString("name", name)
-        yi.paramsSetString("texture", mtex.texture.name)
+        yi.paramsSetString("texture", texname)
 
         switchTexCoords = {
             'UV': 'uv',
@@ -233,7 +234,7 @@ class yafMaterial:
         yi.paramsSetBool("fake_shadows", mat.fake_shadows)
 
         mcolRoot = ''
-        fcolRoot = ''
+        # fcolRoot = '' /* UNUSED */
         bumpRoot = ''
 
         i = 0
@@ -289,7 +290,7 @@ class yafMaterial:
         yi.paramsSetFloat("exp_v", mat.exp_v)
 
         diffRoot = ''
-        mcolRoot = ''
+        # mcolRoot = ''  /* UNUSED */
         glossRoot = ''
         glRefRoot = ''
         bumpRoot = ''

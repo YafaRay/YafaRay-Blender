@@ -16,6 +16,8 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+# <pep8 compliant>
+
 import bpy
 from bpy.props import (EnumProperty,
                        BoolProperty,
@@ -27,10 +29,10 @@ Lamp = bpy.types.Lamp
 
 
 def call_lighttype_update(self, context):
-        lamp = context.lamp
-        if lamp is not None:
-            switchLampType = {'area': 'AREA', 'spot': 'SPOT', 'sun': 'SUN', 'point': 'POINT', 'ies': 'SPOT'}
-            lamp.type = switchLampType.get(lamp.lamp_type)
+    lamp = context.lamp
+    if lamp is not None:
+        switchLampType = {'area': 'AREA', 'spot': 'SPOT', 'sun': 'SUN', 'point': 'POINT', 'ies': 'SPOT'}
+        lamp.type = switchLampType.get(lamp.lamp_type)
 
 
 def register():

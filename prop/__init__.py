@@ -16,6 +16,8 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+# <pep8 compliant>
+
 from . import yaf_object
 from . import yaf_material
 from . import yaf_light

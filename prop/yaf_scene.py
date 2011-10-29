@@ -16,6 +16,8 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+# <pep8 compliant>
+
 import bpy
 from sys import platform
 from bpy.props import (IntProperty,
@@ -30,12 +32,12 @@ Scene = bpy.types.Scene
 
 # set fileformat for image saving on same format as in YafaRay, both have default PNG
 def call_update_fileformat(self, context):
-    sc = context.scene
-    rd = sc.render
-    if sc.img_output != rd.file_format:
-        rd.file_format = sc.img_output
-        if rd.file_format == "OPEN_EXR" and sc.gs_z_channel:
-            rd.exr_zbuf = True
+    scene = context.scene
+    render = scene.render
+    if scene.img_output != render.file_format:
+        render.file_format = scene.img_output
+        if render.file_format == "OPEN_EXR" and scene.gs_z_channel:
+            render.exr_zbuf = True
 
 
 def register():

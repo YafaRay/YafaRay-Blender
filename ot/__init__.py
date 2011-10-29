@@ -16,6 +16,8 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+# <pep8 compliant>
+
 from . import yafaray_operators
 from . import yafaray_converter
 from . import yafaray_presets

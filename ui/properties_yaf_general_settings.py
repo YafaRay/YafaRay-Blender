@@ -16,8 +16,10 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+# <pep8 compliant>
+
 import bpy
-from ..ot import yafaray_presets
+from yafaray.ot import yafaray_presets
 from bl_ui.properties_render import RenderButtonsPanel
 from bpy.types import Panel, Menu
 
@@ -91,3 +93,8 @@ class YAF_PT_general_settings(RenderButtonsPanel, Panel):
         col = layout.column()
         col.enabled = scene.gs_draw_params
         col.prop(scene, "gs_custom_string")
+
+
+if __name__ == "__main__":  # only for live edit.
+    import bpy
+    bpy.utils.register_module(__name__)

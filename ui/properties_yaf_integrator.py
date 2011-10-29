@@ -16,6 +16,8 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+# <pep8 compliant>
+
 import bpy
 from bpy.types import Panel
 from bl_ui.properties_render import RenderButtonsPanel
@@ -110,3 +112,8 @@ class YAF_PT_render(RenderButtonsPanel, Panel):
             col.prop(scene, "intg_diffuse_radius")
             col.prop(scene, "intg_search")
             col.prop(scene, "intg_pm_ire")
+
+
+if __name__ == "__main__":  # only for live edit.
+    import bpy
+    bpy.utils.register_module(__name__)

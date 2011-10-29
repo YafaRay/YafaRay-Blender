@@ -16,6 +16,8 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+# <pep8 compliant>
+
 from . import properties_yaf_render
 from . import properties_yaf_camera
 from . import properties_yaf_material

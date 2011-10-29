@@ -16,7 +16,8 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-import bpy
+# <pep8 compliant>
+
 import os
 import mathutils
 from math import degrees, pi, sin, cos
@@ -75,7 +76,7 @@ class yafLight:
             matrix = lamp_object.matrix_world.copy()
         pos = matrix[3]
         dir = matrix[2]
-        up = matrix[1]
+        # up = matrix[1]  /* UNUSED */
         to = pos - dir
 
         lampType = lamp.lamp_type

@@ -16,9 +16,10 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+# <pep8 compliant>
+
 import bpy
 from bpy.props import (EnumProperty,
-                       StringProperty,
                        BoolProperty)
 
 Texture = bpy.types.Texture

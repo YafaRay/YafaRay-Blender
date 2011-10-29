@@ -16,7 +16,8 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-import bpy
+# <pep8 compliant>
+
 from bpy.types import Panel
 from bl_ui.properties_data_camera import CameraButtonsPanel
 

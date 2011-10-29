@@ -16,6 +16,8 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+# <pep8 compliant>
+
 import bpy
 from bpy.types import Panel
 from bl_ui.properties_render import RenderButtonsPanel
@@ -43,3 +45,8 @@ class YAF_PT_AA_settings(RenderButtonsPanel, Panel):
         sub.enabled = scene.AA_passes > 1
         sub.prop(scene, "AA_inc_samples")
         sub.prop(scene, "AA_threshold")
+
+
+if __name__ == "__main__":  # only for live edit.
+    import bpy
+    bpy.utils.register_module(__name__)

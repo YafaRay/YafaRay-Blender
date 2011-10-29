@@ -16,14 +16,13 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+# <pep8 compliant>
+
 #TODO: Use Blender enumerators if any
 import bpy
 import os
+import threading
 import time
-import tempfile
-import sys
-import platform
-
 import yafrayinterface
 from yafaray import PLUGIN_PATH
 from yafaray import YAF_ID_NAME
@@ -53,13 +52,11 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.yi = yi
 
         if self.preview:
-            pass
             self.yi.setVerbosityMute()
+        elif self.scene.gs_verbose:
+            self.yi.setVerbosityInfo()
         else:
-            if self.scene.gs_verbose:
-                self.yi.setVerbosityInfo()
-            else:
-                self.yi.setVerbosityMute()
+            self.yi.setVerbosityMute()
 
         self.yi.loadPlugins(PLUGIN_PATH)
         self.yaf_object = yafObject(self.yi, self.materialMap)
@@ -319,7 +316,6 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.yi.render(co)
 
         elif scene.gs_type_render == "into_blender":
-            import threading
 
             def progressCallback(command, *args):
                 if not self.test_break():

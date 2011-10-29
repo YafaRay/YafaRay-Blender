@@ -16,7 +16,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-import bpy
+# <pep8 compliant>
 
 
 class yafIntegrator:
@@ -78,21 +78,21 @@ class yafIntegrator:
             photons = False
 
             if caus_type == "None":
-                    yi.paramsSetString("caustic_type", "none")
+                yi.paramsSetString("caustic_type", "none")
             elif caus_type == "Path":
-                    yi.paramsSetString("caustic_type", "path")
+                yi.paramsSetString("caustic_type", "path")
             elif caus_type == "Photon":
-                    yi.paramsSetString("caustic_type", "photon")
-                    photons = True
+                yi.paramsSetString("caustic_type", "photon")
+                photons = True
             elif caus_type == "Path+Photon":
-                    yi.paramsSetString("caustic_type", "both")
-                    photons = True
+                yi.paramsSetString("caustic_type", "both")
+                photons = True
 
             if photons:
-                    yi.paramsSetInt("photons", scene.intg_photons)
-                    yi.paramsSetInt("caustic_mix", scene.intg_caustic_mix)
-                    yi.paramsSetInt("caustic_depth", scene.intg_caustic_depth)
-                    yi.paramsSetFloat("caustic_radius", scene.intg_caustic_radius)
+                yi.paramsSetInt("photons", scene.intg_photons)
+                yi.paramsSetInt("caustic_mix", scene.intg_caustic_mix)
+                yi.paramsSetInt("caustic_depth", scene.intg_caustic_depth)
+                yi.paramsSetFloat("caustic_radius", scene.intg_caustic_radius)
 
         elif light_type == "Bidirectional":
             yi.paramsSetString("type", "bidirectional")
