@@ -77,3 +77,8 @@ class YAF_PT_object_light(Panel):
                 col.prop(ob, "vol_sharpness")
                 col.prop(ob, "vol_cover")
                 col.prop(ob, "vol_density")
+
+
+if __name__ == "__main__":  # only for live edit.
+    import bpy
+    bpy.utils.register_module(__name__)

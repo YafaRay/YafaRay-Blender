@@ -51,7 +51,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.materials = set()
         self.yi = yi
 
-        if self.preview:
+        if self.is_preview:
             self.yi.setVerbosityMute()
         elif self.scene.gs_verbose:
             self.yi.setVerbosityInfo()
@@ -75,23 +75,26 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.yaf_world.exportWorld(self.scene)
 
     def exportTextures(self):
-        # Textures needs to be exported first, so we handle here the textures
-        # for the 'blend' material type, check ALL objects in the scene whether
-        # they are visible or hidden for rendering.
+        # First export the textures of the materials type 'blend'
         for obj in self.scene.objects:
             for mat_slot in [m for m in obj.material_slots if m.material is not None]:
-                if mat_slot.material.mat_type != 'blend':
-                    continue
+                if mat_slot.material.mat_type == 'blend':
+                    mat1 = bpy.data.materials[mat_slot.material.material1]
+                    mat2 = bpy.data.materials[mat_slot.material.material2]
+                    for bm in [mat1, mat2]:
+                        for blendtex in [bt for bt in bm.texture_slots if (bt and bt.texture and bt.use)]:
+                            if self.preview and blendtex.texture.name == 'fakeshadow':
+                                continue
+                            self.yaf_texture.writeTexture(self.scene, blendtex.texture)
                 else:
-                    self.handleBlendTex(mat_slot.material)
-        # export textures from visible objects only. Won't work with
-        # blend mat, there the textures need to be handled separately (see above).
-        for obj in [o for o in self.scene.objects if (not o.hide_render and o.is_visible(self.scene))]:
+                    continue
+
+        for obj in self.scene.objects:
             for mat_slot in [m for m in obj.material_slots if m.material is not None]:
                 for tex in [t for t in mat_slot.material.texture_slots if (t and t.texture and t.use)]:
                     if self.preview and tex.texture.name == "fakeshadow":
                         continue
-                    # stretched plane needs to be fixed for tex preview
+                    # stretched plane needs to be fixed for texture preview
                     if self.preview and obj.name == 'texture':
                         bpy.types.YAFA_RENDER.is_texPrev = True
                     else:
@@ -119,61 +122,38 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.yi.printInfo("Exporter: Processing Geometry...")
         self.yaf_object.writeObjects()
 
-    def handleBlendTex(self, mat):
-        if mat.name == mat.material1:
-            self.yi.printError("Exporter: Blend material " + mat.name + " contains itself!")
-            return
-        if mat.name == mat.material2:
-            self.yi.printError("Exporter: Blend material " + mat.name + " contains itself!")
-            return
-        if mat.material1 == mat.material2:
-            self.yi.printError("Exporter: Blend material " + mat.material1 + " and " + mat.material2 + " are the same!")
-            return
-        if not (mat.material1 and mat.material2 in bpy.data.materials):
-            self.yi.printWarning("Exporter: Problem with blend material " + mat.name + ". Could not find one of the two blended materials.")
-            return
-
-        mat1 = bpy.data.materials[mat.material1]
-        mat2 = bpy.data.materials[mat.material2]
-
-        for m in [mat1, mat2]:
-            for tex in [t for t in m.texture_slots if (t and t.texture and t.use)]:
-                if self.preview and tex.texture.name == 'fakeshadow':
-                    continue
-                self.yaf_texture.writeTexture(self.scene, tex.texture)
-
     def handleBlendMat(self, mat):
         if mat.name == mat.material1:
             self.yi.printError("Exporter: Blend material " + mat.name + " contains itself!")
             return
-        if mat.name == mat.material2:
+        elif mat.name == mat.material2:
             self.yi.printError("Exporter: Blend material " + mat.name + " contains itself!")
             return
-        if mat.material1 == mat.material2:
+        elif mat.material1 == mat.material2:
             self.yi.printError("Exporter: Blend material " + mat.material1 + " and " + mat.material2 + " are the same!")
             return
-        if not (mat.material1 and mat.material2 in bpy.data.materials):
+        elif not (mat.material1 and mat.material2 in bpy.data.materials):
             self.yi.printWarning("Exporter: Problem with blend material " + mat.name + ". Could not find one of the two blended materials.")
             return
+        else:
+            mat1 = bpy.data.materials[mat.material1]
+            mat2 = bpy.data.materials[mat.material2]
 
-        mat1 = bpy.data.materials[mat.material1]
-        mat2 = bpy.data.materials[mat.material2]
+            if mat1.mat_type == 'blend':
+                self.handleBlendMat(mat1)
+            elif mat1 not in self.materials:
+                self.materials.add(mat1)
+                self.yaf_material.writeMaterial(mat1)
 
-        if mat1.mat_type == 'blend':
-            self.handleBlendMat(mat1)
-        elif mat1 not in self.materials:
-            self.materials.add(mat1)
-            self.yaf_material.writeMaterial(mat1)
+            if mat2.mat_type == 'blend':
+                self.handleBlendMat(mat2)
+            elif mat2 not in self.materials:
+                self.materials.add(mat2)
+                self.yaf_material.writeMaterial(mat2)
 
-        if mat2.mat_type == 'blend':
-            self.handleBlendMat(mat2)
-        elif mat2 not in self.materials:
-            self.materials.add(mat2)
-            self.yaf_material.writeMaterial(mat2)
-
-        if mat not in self.materials:
-            self.materials.add(mat)
-            self.yaf_material.writeMaterial(mat)
+            if mat not in self.materials:
+                self.materials.add(mat)
+                self.yaf_material.writeMaterial(mat)
 
     def exportMaterials(self):
         self.yi.printInfo("Exporter: Processing Materials...")

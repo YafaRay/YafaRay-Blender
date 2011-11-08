@@ -18,7 +18,6 @@
 
 # <pep8 compliant>
 
-import bpy
 from bpy.types import Panel
 from bl_ui.properties_world import WorldButtonsPanel
 
@@ -224,4 +223,10 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
             col.prop(world, "bg_ibl_samples")
             col.prop(world, "bg_power")
 
+
 from . import properties_yaf_volume_integrator
+
+
+if __name__ == "__main__":  # only for live edit.
+    import bpy
+    bpy.utils.register_module(__name__)

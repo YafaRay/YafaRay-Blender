@@ -101,18 +101,27 @@ class yafObject(object):
                 yi.paramsSetFloat("scale", camera.ortho_scale)
 
             elif camType in {"perspective", "architect"}:
-                f_aspect = 1.0
-                if x < y:
+                # Blenders GSOC 2011 project "tomato branch" merged into trunk.
+                # Check for sensor settings and use them in yafaray exporter also.
+                if camera.sensor_fit == 'AUTO':
+                    horizontal_fit = (x > y)
+                    sensor_size = camera.sensor_width
+                elif camera.sensor_fit == 'HORIZONTAL':
+                    horizontal_fit = True
+                    sensor_size = camera.sensor_width
+                else:
+                    horizontal_fit = False
+                    sensor_size = camera.sensor_height
+
+                if horizontal_fit:
+                    f_aspect = 1.0
+                else:
                     f_aspect = x / y
 
-                sensor_width = 32.0
-                if hasattr(camera, "sensor_width"):
-                    sensor_width = camera.sensor_width
-                yi.paramsSetFloat("focal", camera.lens / (f_aspect * sensor_width))
+                yi.paramsSetFloat("focal", camera.lens / (f_aspect * sensor_size))
 
                 # DOF params, only valid for real camera
                 # use DOF object distance if present or fixed DOF
-
                 if camera.dof_object is not None:
                     # use DOF object distance
                     dist = (pos.xyz - camera.dof_object.location.xyz).length
@@ -516,19 +525,15 @@ class yafObject(object):
 
         ymaterial = self.materialMap["default"]
 
-        if not self.scene.gs_clay_render:
-            if len(meshMats) and meshMats[matIndex]:
-                mat = meshMats[matIndex]
-
-                if mat in self.materialMap:
-                    ymaterial = self.materialMap[mat]
-            else:
-                for mat_slot in matSlots:
-                    if mat_slot.material in self.materialMap:
-                        ymaterial = self.materialMap[mat_slot.material]
-        else:
-            # set material to "clay", if "Clay Render" option is enabled in general settings
+        if self.scene.gs_clay_render:
             ymaterial = self.materialMap["clay"]
+        elif len(meshMats) and meshMats[matIndex]:
+            mat = meshMats[matIndex]
+            if mat in self.materialMap:
+                ymaterial = self.materialMap[mat]
+        else:
+            for mat_slots in [ms for ms in matSlots if ms.material in self.materialMap]:
+                ymaterial = self.materialMap[mat_slot.material]
 
         return ymaterial
 
@@ -539,54 +544,58 @@ class yafObject(object):
         if hasattr(object, 'particle_systems') == False:
             return
 
+        # Check for hair particles:
         for pSys in object.particle_systems:
+            for mod in [m for m in object.modifiers if (m is not None) and (m.type == 'PARTICLE_SYSTEM')]:
+                if (pSys.settings.render_type == 'PATH') and mod.show_render and (pSys.name == mod.particle_system.name):
+                    yi.printInfo("Exporter: Creating Particle System {!r}".format(pSys.name))
+                    tstart = time.time()
+                    # TODO: clay particles uses at least materials thikness?
+                    if object.active_material is not None:
+                        pmaterial = object.active_material
 
-            if pSys.settings.render_type == 'PATH':  # Export Hair particles
-                yi.printInfo("Exporter: Creating Particle System {!r}".format(pSys.name))
-                tstart = time.time()
-                # TODO: clay particles uses at least materials thikness?
-                if object.active_material is not None:
-                    pmaterial = object.active_material
+                        if pmaterial.strand.use_blender_units:
+                            strandStart = pmaterial.strand.root_size
+                            strandEnd = pmaterial.strand.tip_size
+                            strandShape = pmaterial.strand.shape
+                        else:  # Blender unit conversion
+                            strandStart = pmaterial.strand.root_size / 100
+                            strandEnd = pmaterial.strand.tip_size / 100
+                            strandShape = pmaterial.strand.shape
+                    else:
+                        pmaterial = "default"  # No material assigned in blender, use default one
+                        strandStart = 0.01
+                        strandEnd = 0.01
+                        strandShape = 0.0
 
-                    if pmaterial.strand.use_blender_units:
-                        strandStart = pmaterial.strand.root_size
-                        strandEnd = pmaterial.strand.tip_size
-                        strandShape = pmaterial.strand.shape
-                    else:  # Blender unit conversion
-                        strandStart = pmaterial.strand.root_size / 100
-                        strandEnd = pmaterial.strand.tip_size / 100
-                        strandShape = pmaterial.strand.shape
+                    for particle in pSys.particles:
+                        if particle.is_exist and particle.is_visible:
+                            p = True
+                        else:
+                            p = False
+                        CID = yi.getNextFreeID()
+                        yi.paramsClearAll()
+                        yi.startGeometry()
+                        yi.startCurveMesh(CID, p)
+                        for location in particle.hair_keys:
+                            vertex = matrix * location.co  # use reverse vector multiply order, API changed with rev. 38674
+                            yi.addVertex(vertex[0], vertex[1], vertex[2])
+                        #this section will be changed after the material settings been exported
+                        if self.materialMap[pmaterial]:
+                            yi.endCurveMesh(self.materialMap[pmaterial], strandStart, strandEnd, strandShape)
+                        else:
+                            yi.endCurveMesh(self.materialMap["default"], strandStart, strandEnd, strandShape)
+                    # TODO: keep object smooth
+                    #yi.smoothMesh(0, 60.0)
+                        yi.endGeometry()
+                    yi.printInfo("Exporter: Particle creation time: {0:.3f}".format(time.time() - tstart))
+
+                    if pSys.settings.use_render_emitter:
+                        renderEmitter = True
                 else:
-                    pmaterial = "default"  # No material assigned in blender, use default one
-                    strandStart = 0.01
-                    strandEnd = 0.01
-                    strandShape = 0.0
+                    self.writeMesh(object, matrix)
 
-                for particle in pSys.particles:
-                    if particle.is_exist and particle.is_visible:
-                        p = True
-                    else:
-                        p = False
-                    CID = yi.getNextFreeID()
-                    yi.paramsClearAll()
-                    yi.startGeometry()
-                    yi.startCurveMesh(CID, p)
-                    for location in particle.hair_keys:
-                        vertex = matrix * location.co  # use reverse vector multiply order, API changed with rev. 38674
-                        yi.addVertex(vertex[0], vertex[1], vertex[2])
-                    #this section will be changed after the material settings been exported
-                    if self.materialMap[pmaterial]:
-                        yi.endCurveMesh(self.materialMap[pmaterial], strandStart, strandEnd, strandShape)
-                    else:
-                        yi.endCurveMesh(self.materialMap["default"], strandStart, strandEnd, strandShape)
-                # TODO: keep object smooth
-                #yi.smoothMesh(0, 60.0)
-                    yi.endGeometry()
-                yi.printInfo("Exporter: Particle creation time: {0:.3f}".format(time.time() - tstart))
-
-                if (pSys.settings.use_render_emitter):
-                    renderEmitter = True
         # We only need to render emitter object once
         if renderEmitter:
-            ymat = self.materialMap["default"]
+            # ymat = self.materialMap["default"]  /* UNUSED */
             self.writeMesh(object, matrix)

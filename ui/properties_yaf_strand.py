@@ -61,3 +61,8 @@ class YAF_PT_strand_settings(Panel):
                 col.prop_search(tan, "uv_layer", ob.data, "uv_textures", text="")
             else:
                 col.prop(tan, "uv_layer", text="")
+
+
+if __name__ == "__main__":  # only for live edit.
+    import bpy
+    bpy.utils.register_module(__name__)

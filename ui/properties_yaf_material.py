@@ -19,10 +19,9 @@
 # <pep8 compliant>
 
 import bpy
-from .ior_values import ior_list
+from yafaray.ui.ior_values import ior_list
 from bpy.types import Panel, Menu
-from bl_ui.properties_material import (MATERIAL_MT_specials,
-                                       MaterialButtonsPanel,
+from bl_ui.properties_material import (MaterialButtonsPanel,
                                        active_node_mat,
                                        check_material)
 
@@ -329,3 +328,8 @@ class YAF_PT_blend_(MaterialTypePanel, Panel):
         col = split.column()
         col.label(text="Material Two:")
         col.prop_search(yaf_mat, "material2", bpy.data, 'materials', text="")
+
+
+if __name__ == "__main__":  # only for live edit.
+    import bpy
+    bpy.utils.register_module(__name__)

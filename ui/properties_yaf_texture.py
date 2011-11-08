@@ -573,3 +573,8 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, Panel):
         if isinstance(idblock, bpy.types.Material) or isinstance(idblock, bpy.types.World):
             layout.separator()
             layout.row().prop(tex, "default_value", text="Default Value", slider=True)
+
+
+if __name__ == "__main__":  # only for live edit.
+    import bpy
+    bpy.utils.register_module(__name__)

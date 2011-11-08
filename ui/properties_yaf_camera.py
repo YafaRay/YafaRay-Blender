@@ -18,14 +18,15 @@
 
 # <pep8 compliant>
 
+import bpy
 from bpy.types import Panel
 from bl_ui.properties_data_camera import CameraButtonsPanel
 
 CameraButtonsPanel.COMPAT_ENGINES = {'YAFA_RENDER'}
 
 
-class YAF_PT_camera(CameraButtonsPanel, Panel):
-    bl_label = "Camera"
+class YAF_PT_lens(CameraButtonsPanel, Panel):
+    bl_label = "Lens"
 
     def draw(self, context):
         layout = self.layout
@@ -63,6 +64,46 @@ class YAF_PT_camera(CameraButtonsPanel, Panel):
             layout.prop(camera, "bokeh_bias")
             layout.prop(camera, "bokeh_rotation")
 
+        layout.separator()
+        split = layout.split()
+        col = split.column()
+        col.prop(camera, "use_clipping")
+
+        col = split.column(align=True)
+        sub = col.column()
+        sub.active = camera.use_clipping
+        sub.prop(camera, "clip_start", text="Start")
+        sub.prop(camera, "clip_end", text="End")
+
+
+class YAF_PT_camera(CameraButtonsPanel, Panel):
+    bl_label = "Camera"
+
+    def draw(self, context):
+        layout = self.layout
+
+        camera = context.camera
+
+        row = layout.row(align=True)
+
+        row.menu("CAMERA_MT_presets", text=bpy.types.CAMERA_MT_presets.bl_label)
+        row.operator("camera.preset_add", text="", icon="ZOOMIN")
+        row.operator("camera.preset_add", text="", icon="ZOOMOUT").remove_active = True
+
+        layout.label(text="Sensor:")
+
+        split = layout.split()
+
+        col = split.column(align=True)
+        if camera.sensor_fit == 'AUTO':
+            col.prop(camera, "sensor_width", text="Size")
+        else:
+            col.prop(camera, "sensor_width", text="Width")
+            col.prop(camera, "sensor_height", text="Height")
+
+        col = split.column(align=True)
+        col.prop(camera, "sensor_fit", text="")
+
 
 class YAF_PT_camera_display(CameraButtonsPanel, Panel):
     bl_label = "Display"
@@ -75,26 +116,20 @@ class YAF_PT_camera_display(CameraButtonsPanel, Panel):
         split = layout.split()
 
         col = split.column()
-        col.prop(camera, "show_limits")
-        col.prop(camera, "show_title_safe")
-        col.prop(camera, "show_name")
+        col.prop(camera, "show_limits", text="Limits")
+        col.prop(camera, "show_title_safe", text="Title Safe")
+        col.prop(camera, "show_sensor", text="Sensor")
+        col.prop(camera, "show_name", text="Name")
 
         col = split.column()
+        col.prop_menu_enum(camera, "show_guide")
         col.prop(camera, "draw_size", text="Size")
         col.prop(camera, "show_passepartout", text="Passepartout")
         sub = col.column()
         sub.active = camera.show_passepartout
         sub.prop(camera, "passepartout_alpha", text="Alpha", slider=True)
 
-        layout.separator()
-        layout.prop(camera, "use_clipping")
 
-        split = layout.split()
-        col = split.column(align=True)
-        clip = col.column()
-        clip.active = camera.use_clipping
-        clip.prop(camera, "clip_start", text="Start")
-        clip.prop(camera, "clip_end", text="End")
-
-        col = split.column()
-        col.prop_menu_enum(camera, "show_guide")
+if __name__ == "__main__":  # only for live edit.
+    import bpy
+    bpy.utils.register_module(__name__)

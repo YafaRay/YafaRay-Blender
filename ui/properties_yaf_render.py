@@ -74,9 +74,9 @@ class YAFRENDER_PT_dimensions(RenderButtonsPanel, Panel):
         sub.prop(scene, "frame_end", text="End")
         sub.prop(scene, "frame_step", text="Step")
 
-from yafaray.ui import properties_yaf_general_settings
-from yafaray.ui import properties_yaf_integrator
-from yafaray.ui import properties_yaf_AA_settings
+from . import properties_yaf_general_settings
+from . import properties_yaf_integrator
+from . import properties_yaf_AA_settings
 
 
 class YAFRENDER_PT_output(RenderButtonsPanel, Panel):

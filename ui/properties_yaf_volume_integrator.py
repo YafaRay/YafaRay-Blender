@@ -41,3 +41,8 @@ class YAF_PT_vol_integrator(WorldButtonsPanel, Panel):
             layout.prop(world, "v_int_optimize")
             if world.v_int_optimize:
                 layout.prop(world, "v_int_attgridres")
+
+
+if __name__ == "__main__":  # only for live edit.
+    import bpy
+    bpy.utils.register_module(__name__)

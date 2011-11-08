@@ -18,7 +18,6 @@
 
 # <pep8 compliant>
 
-import bpy
 from bpy.types import Panel
 
 
@@ -176,3 +175,8 @@ class YAF_PT_lamp_ies(LampButtonsPanel, Panel):
         layout.prop(lamp, "ies_soft_shadows", toggle=True)
         if lamp.ies_soft_shadows:
             layout.box().prop(lamp, "yaf_samples")
+
+
+if __name__ == "__main__":  # only for live edit.
+    import bpy
+    bpy.utils.register_module(__name__)
