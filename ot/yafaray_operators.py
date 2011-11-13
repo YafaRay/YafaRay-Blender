@@ -229,8 +229,10 @@ class RENDER_OT_render_still(Operator):
     def poll(cls, context):
 
         # turn off Blenders color management for correct YafaRay render results
-        if context.scene.render.use_color_management:
-            context.scene.render.use_color_management = False
+        # YafaRay has own settings 'Gamma' and 'Gamma input' for linear workflow
+        render = context.scene.render
+        if render.use_color_management and render.engine == 'YAFA_RENDER':
+            render.use_color_management = False
         return context.scene.render.engine == 'YAFA_RENDER'
 
     def execute(self, context):
