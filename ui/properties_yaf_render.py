@@ -87,6 +87,7 @@ class YAFRENDER_PT_output(RenderButtonsPanel, Panel):
 
         rd = context.scene.render
         sc = context.scene
+        image_settings = rd.image_settings
 
         layout.prop(rd, "filepath", text="")
 
@@ -94,7 +95,7 @@ class YAFRENDER_PT_output(RenderButtonsPanel, Panel):
         col = split.column()
         col.prop(sc, "img_output", text="", icon='IMAGE_DATA')
         col = split.column()
-        col.row().prop(rd, "color_mode", text="Color", expand=True)
+        col.row().prop(image_settings, "color_mode", text="Color", expand=True)
 
 
 class YAFRENDER_PT_post_processing(RenderButtonsPanel, Panel):

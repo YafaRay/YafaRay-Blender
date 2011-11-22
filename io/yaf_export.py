@@ -253,7 +253,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             outputFile, output, file_type = self.decideOutputFileName(rfilepath, scene.img_output)
             self.yi.paramsClearAll()
             self.yi.paramsSetString("type", file_type)
-            self.yi.paramsSetBool("alpha_channel", r.color_mode == "RGBA")
+            self.yi.paramsSetBool("alpha_channel", r.image_settings.color_mode == "RGBA")
             self.yi.paramsSetBool("z_channel", scene.gs_z_channel)
             self.yi.paramsSetInt("width", x + bStartX)
             self.yi.paramsSetInt("height", y + bStartY)
@@ -303,7 +303,10 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                         self.tag = args[0]
                     elif command == "progress":
                         self.prog = args[0]
-                    self.update_stats("YafaRay Rendering... ", "{0} - {1:.2f}%".format(self.tag, self.prog))
+                    self.update_stats("YafaRay Rendering... ", "{0}".format(self.tag))
+                    # use blender's progress bar in the header to show progress of render
+                    # update_progress needs float range 0.0 to 1.0, yafaray returns 0.0 to 100.0
+                    self.update_progress(self.prog / 100)
 
             def drawAreaCallback(*args):
                 x, y, w, h, tile = args

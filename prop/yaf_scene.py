@@ -34,9 +34,9 @@ Scene = bpy.types.Scene
 def call_update_fileformat(self, context):
     scene = context.scene
     render = scene.render
-    if scene.img_output != render.file_format:
-        render.file_format = scene.img_output
-        if render.file_format == "OPEN_EXR" and scene.gs_z_channel:
+    if scene.img_output != render.image_settings.file_format:
+        render.image_settings.file_format = scene.img_output
+        if render.image_settings.file_format == "OPEN_EXR" and scene.gs_z_channel:
             render.exr_zbuf = True
 
 

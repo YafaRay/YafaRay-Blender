@@ -37,7 +37,7 @@ bl_info = {
               "Rodrigo Placencia (DarkTide), Alexander Smirnov (Exvion)",
     "version": (0, 1, 2, 'alpha'),
     "blender": (2, 6, 0),
-    "api": 41098,
+    "api": 42041,
     "location": "Info Header > Engine dropdown menu",
     "warning": "both YafaRay 0.1.2 and this script are in alpha state",
     "wiki_url": "http://www.yafaray.org/community/forum",
