@@ -69,15 +69,30 @@ if "bpy" in locals():
     imp.reload(ot)
 else:
     import bpy
+    from bpy.app.handlers import persistent
     from . import prop
     from . import io
     from . import ui
     from . import ot
 
 
+@persistent
+def load_handler(dummy):
+    for tex in bpy.data.textures:
+        if tex is not None:
+            # set the correct texture type on file load....
+            # converts old files, where propertie yaf_tex_type wasn't defined
+            print("Load Handler: Convert Yafaray texture \"{0}\" with texture type: \"{1}\" to \"{2}\"".format(tex.name, tex.yaf_tex_type, tex.type))
+            tex.yaf_tex_type = tex.type
+    # convert image output file type setting from blender to yafaray's file type setting on file load, so that both are the same...
+    if bpy.context.scene.render.image_settings.file_format != bpy.context.scene.img_output:
+        bpy.context.scene.img_output = bpy.context.scene.render.image_settings.file_format
+
+
 def register():
     prop.register()
     bpy.utils.register_module(__name__)
+    bpy.app.handlers.load_post.append(load_handler)
     # register keys for 'render 3d view', 'render still' and 'render animation'
     km = bpy.context.window_manager.keyconfigs.addon.keymaps.new(name='Screen')
     kmi = km.keymap_items.new('render.render_view', 'F12', 'PRESS', False, False, False, True)
@@ -94,6 +109,7 @@ def unregister():
         or kmi.idname == 'render.render_still':
             kma.keymap_items.remove(kmi)
     bpy.utils.unregister_module(__name__)
+    bpy.app.handlers.load_post.remove(load_handler)
 
 
 if __name__ == '__main__':

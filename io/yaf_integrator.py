@@ -33,7 +33,7 @@ class yafIntegrator:
         yi.paramsSetBool("transpShad", scene.gs_transp_shad)
 
         light_type = scene.intg_light_method
-        yi.printInfo("Exporting Integrator:" + light_type)
+        yi.printInfo("Exporting Integrator: {0}".format(light_type))
 
         if light_type == "Direct Lighting":
             yi.paramsSetString("type", "directlighting")
@@ -136,7 +136,7 @@ class yafIntegrator:
 
         if world:
             vint_type = world.v_int_type
-            yi.printInfo("Exporter: Creating Volume Integrator: \"" + vint_type + "\"...")
+            yi.printInfo("Exporting Volume Integrator: {0}".format(vint_type))
 
             if vint_type == 'Single Scatter':
                 yi.paramsSetString("type", "SingleScatterIntegrator")

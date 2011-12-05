@@ -261,6 +261,7 @@ def register():
         description="Set the volume integrator",
         items=(
             ('None', "None", ""),
+            ('Sky', "Sky", ""),
             ('Single Scatter', "Single Scatter", "")
         ),
         default='None')
@@ -289,9 +290,22 @@ def register():
         default=1)
 
     # ??? not sure about the following properties ???
-    # World.v_int_scale = FloatProperty(attr = "v_int_scale")
-    # World.v_int_alpha =       FloatProperty(attr = "v_int_alpha")
-    # World.v_int_dsturbidity = FloatProperty(attr = "v_int_dsturbidity")
+    World.v_int_scale = FloatProperty(
+        name="Sigma T",
+        min=0.0, precision=3,
+        description="",
+        default=0.100)
+
+    World.v_int_alpha = FloatProperty(
+        name="Alpha",
+        min=0.0, precision=3,
+        description="",
+        default=0.500)
+
+    World.v_int_dsturbidity = FloatProperty(
+        name = "Turbidity",
+        description="",
+        default=3.0)
 
 
 def unregister():
@@ -332,3 +346,6 @@ def unregister():
     World.v_int_adaptive
     World.v_int_optimize
     World.v_int_attgridres
+    World.v_int_scale
+    World.v_int_alpha
+    World.v_int_dsturbidity

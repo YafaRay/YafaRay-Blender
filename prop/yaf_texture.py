@@ -25,11 +25,14 @@ from bpy.props import (EnumProperty,
 Texture = bpy.types.Texture
 
 
-# update blender propertie texture.type to YafaRay's texture.yaf_tex_type
+# try to update blender propertie texture.type to YafaRay's texture.yaf_tex_type
 def call_tex_type_update(self, context):
-    tex = context.texture
-    if tex is not None:
-        tex.type = tex.yaf_tex_type
+    try:
+        tex = context.texture
+        if tex is not None:
+            tex.type = tex.yaf_tex_type
+    except:
+        pass
 
 
 def register():
@@ -49,15 +52,6 @@ def register():
         update=call_tex_type_update,
         default='NONE')
 
-    Texture.yaf_tex_interpolate = EnumProperty(
-        name="Interpolation",
-        items=(
-            ('bilinear', "Bilinear", ""),
-            ('bicubic', "Bicubic", ""),
-            ('none', "None", "")
-        ),
-        default='bilinear')
-
     Texture.yaf_is_normal_map = BoolProperty(
         name="Use map as normal map",
         description="Use image RGB values for normal mapping",
@@ -66,5 +60,4 @@ def register():
 
 def unregister():
     Texture.yaf_tex_type
-    Texture.yaf_tex_interpolate
     Texture.yaf_is_normal_map

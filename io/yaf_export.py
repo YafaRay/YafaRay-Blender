@@ -60,7 +60,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         self.yi.loadPlugins(PLUGIN_PATH)
         self.yaf_object = yafObject(self.yi, self.materialMap)
-        self.yaf_lamp = yafLight(self.yi, self.preview)
+        self.yaf_lamp = yafLight(self.yi, self.is_preview)
         self.yaf_world = yafWorld(self.yi)
         self.yaf_integrator = yafIntegrator(self.yi)
         self.yaf_texture = yafTexture(self.yi)
@@ -83,7 +83,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                     mat2 = bpy.data.materials[mat_slot.material.material2]
                     for bm in [mat1, mat2]:
                         for blendtex in [bt for bt in bm.texture_slots if (bt and bt.texture and bt.use)]:
-                            if self.preview and blendtex.texture.name == 'fakeshadow':
+                            if self.is_preview and blendtex.texture.name == 'fakeshadow':
                                 continue
                             self.yaf_texture.writeTexture(self.scene, blendtex.texture)
                 else:
@@ -92,10 +92,10 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         for obj in self.scene.objects:
             for mat_slot in [m for m in obj.material_slots if m.material is not None]:
                 for tex in [t for t in mat_slot.material.texture_slots if (t and t.texture and t.use)]:
-                    if self.preview and tex.texture.name == "fakeshadow":
+                    if self.is_preview and tex.texture.name == "fakeshadow":
                         continue
                     # stretched plane needs to be fixed for texture preview
-                    if self.preview and obj.name == 'texture':
+                    if self.is_preview and obj.name == 'texture':
                         bpy.types.YAFA_RENDER.is_texPrev = True
                     else:
                         bpy.types.YAFA_RENDER.is_texPrev = False
@@ -189,7 +189,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.handleBlendMat(material)
             else:
                 self.materials.add(material)
-                self.yaf_material.writeMaterial(material, self.preview)
+                self.yaf_material.writeMaterial(material, self.is_preview)
 
     def decideOutputFileName(self, output_path, filetype):
 
@@ -219,53 +219,53 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         return outputFile, output, filetype
 
-    # callback to render scene
-    def render(self, scene):
 
-        self.preview = (scene.name == "preview")
-        self.bl_use_postprocess = False
+    # callback to export the scene
+    def update(self, data, scene):
         self.update_stats("", "Setting up render")
-
-        if not self.preview:
+        if not self.is_preview:
             scene.frame_set(scene.frame_current)
 
         self.scene = scene
-        r = scene.render
+        render = scene.render
 
-        [sizeX, sizeY, bStartX, bStartY, bsizeX, bsizeY, camDummy] = yaf_scene.getRenderCoords(scene)
+        fp = bpy.path.abspath(render.filepath)
+        fp = os.path.realpath(fp)
+        fp = os.path.normpath(fp)
 
-        if r.use_border:
-            x = bsizeX
-            y = bsizeY
+        [self.sizeX, self.sizeY, self.bStartX, self.bStartY, self.bsizeX, self.bsizeY, camDummy] = yaf_scene.getRenderCoords(scene)
+
+        if render.use_border:
+            self.x = self.bsizeX
+            self.y = self.bsizeY
         else:
-            x = sizeX
-            y = sizeY
-
-        self.setInterface(yafrayinterface.yafrayInterface_t())
-
-        self.yi.setInputGamma(scene.gs_gamma_input, True)
-
-        rfilepath = bpy.path.abspath(r.filepath)
-        rfilepath = os.path.realpath(rfilepath)
-        rfilepath = os.path.normpath(rfilepath)
+            self.x = self.sizeX
+            self.y = self.sizeY        
 
         if scene.gs_type_render == "file":
-            outputFile, output, file_type = self.decideOutputFileName(rfilepath, scene.img_output)
+            self.setInterface(yafrayinterface.yafrayInterface_t())
+            self.yi.setInputGamma(scene.gs_gamma_input, True)
+            self.outputFile, self.output, self.file_type = self.decideOutputFileName(fp, scene.img_output)
             self.yi.paramsClearAll()
-            self.yi.paramsSetString("type", file_type)
-            self.yi.paramsSetBool("alpha_channel", r.image_settings.color_mode == "RGBA")
+            self.yi.paramsSetString("type", self.file_type)
+            self.yi.paramsSetBool("alpha_channel", render.image_settings.color_mode == "RGBA")
             self.yi.paramsSetBool("z_channel", scene.gs_z_channel)
-            self.yi.paramsSetInt("width", x + bStartX)
-            self.yi.paramsSetInt("height", y + bStartY)
-            ih = self.yi.createImageHandler("outFile")
-            co = yafrayinterface.imageOutput_t(ih, str(outputFile), 0, 0)
+            self.yi.paramsSetInt("width", self.x + self.bStartX)
+            self.yi.paramsSetInt("height", self.y + self.bStartY)
+            self.ih = self.yi.createImageHandler("outFile")
+            self.co = yafrayinterface.imageOutput_t(self.ih, str(self.outputFile), 0, 0)
 
-        # Export the Scene to XML File
-        if scene.gs_type_render == "xml":
-            outputFile, output, file_type = self.decideOutputFileName(rfilepath, 'XML')
+        elif scene.gs_type_render == "xml":
             self.setInterface(yafrayinterface.xmlInterface_t())
-            co = yafrayinterface.imageOutput_t()
-            self.yi.setOutfile(outputFile)
+            self.yi.setInputGamma(scene.gs_gamma_input, True)
+            self.outputFile, self.output, self.file_type = self.decideOutputFileName(fp, 'XML')
+            self.yi.paramsClearAll()
+            self.co = yafrayinterface.imageOutput_t()
+            self.yi.setOutfile(self.outputFile)
+
+        else:
+            self.setInterface(yafrayinterface.yafrayInterface_t())
+            self.yi.setInputGamma(scene.gs_gamma_input, True)
 
         self.yi.startScene()
         self.exportScene()
@@ -275,27 +275,30 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         # must be called last as the params from here will be used by render()
         yaf_scene.exportRenderSettings(self.yi, self.scene)
 
+    # callback to render scene
+    def render(self, scene):
+        self.bl_use_postprocess = False
+
         if scene.gs_type_render == "file":
-            self.yi.printInfo("Exporter: Rendering to file {0}".format(outputFile))
-            self.update_stats("YafaRay Rendering:", "Rendering to {0}".format(outputFile))
-            self.yi.render(co)
-            result = self.begin_result(bStartX, bStartY, x + bStartX, y + bStartY)
+            self.yi.printInfo("Exporter: Rendering to file {0}".format(self.outputFile))
+            self.update_stats("YafaRay Rendering:", "Rendering to {0}".format(self.outputFile))
+            self.yi.render(self.co)
+            result = self.begin_result(self.bStartX, self.bStartY, self.x + self.bStartX, self.y + self.bStartY)
             lay = result.layers[0]
 
             # exr format has z-buffer included, so no need to load '_zbuffer' - file
             if scene.gs_z_channel and not scene.img_output == 'OPEN_EXR':
-                lay.load_from_file(output + '_zbuffer.' + file_type)
+                lay.load_from_file(self.output + '_zbuffer.' + self.file_type)
             else:
-                lay.load_from_file(outputFile)
+                lay.load_from_file(self.outputFile)
 
             self.end_result(result)
 
-        # Export the Scene to XML File
-        if scene.gs_type_render == "xml":
-            self.yi.printInfo("Exporter: Writing XML to file {0}".format(outputFile))
-            self.yi.render(co)
+        elif scene.gs_type_render == "xml":
+            self.yi.printInfo("Exporter: Writing XML to file {0}".format(self.outputFile))
+            self.yi.render(self.co)
 
-        elif scene.gs_type_render == "into_blender":
+        else:
 
             def progressCallback(command, *args):
                 if not self.test_break():
@@ -328,8 +331,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
             t = threading.Thread(
                                     target=self.yi.render,
-                                    args=(sizeX, sizeY, 0, 0,
-                                    self.preview,
+                                    args=(self.sizeX, self.sizeY, 0, 0,
+                                    self.is_preview,
                                     drawAreaCallback,
                                     flushCallback,
                                     progressCallback)
@@ -349,9 +352,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.bl_use_postprocess = True
                 return
 
-        self.update_stats("", "Done!")
-        if scene.gs_type_render == "into_blender":
-            t.join()
         self.yi.clearAll()
         del self.yi
+        self.update_stats("", "Done!")
         self.bl_use_postprocess = True

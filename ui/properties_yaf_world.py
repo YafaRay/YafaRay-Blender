@@ -69,7 +69,7 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
                     layout.template_ID(context.world, "active_texture")  # new="texture.new")
                 except:
                     pass
-                if  tex.type == "IMAGE":  # it allows to change the used image
+                if  tex.yaf_tex_type == "IMAGE":  # it allows to change the used image
                     try:
                         layout.template_image(tex, "image", tex.image_user, compact=True)
                     except:
@@ -221,7 +221,7 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
             # for all options that uses IBL
             col = split.column()
             col.prop(world, "bg_ibl_samples")
-            col.prop(world, "bg_power")
+            col.prop(world, "bg_power", text="Power")
 
 
 from . import properties_yaf_volume_integrator

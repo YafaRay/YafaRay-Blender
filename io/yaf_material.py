@@ -105,9 +105,9 @@ class yafMaterial:
         tex = mtex.texture  # texture object instance
         # lots to do...
 
-        isImage = (tex.type == 'IMAGE')
+        isImage = (tex.yaf_tex_type == 'IMAGE')
 
-        if (isImage or (tex.type == 'VORONOI' and tex.color_mode != 'INTENSITY')):
+        if (isImage or (tex.yaf_tex_type == 'VORONOI' and tex.color_mode != 'INTENSITY')):
             isColored = True
         else:
             isColored = False

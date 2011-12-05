@@ -189,35 +189,6 @@ def convertLight(lightObj):
     return problemList
 
 
-def convertTextures(textures):
-    problemList = []
-
-    for tex in textures:
-        try:
-            tex.name = tex.name
-        except:
-            tex.name = "Problem"
-            problemList.append("Renaming texture name to {0}".format(tex.name))
-
-    for tex in textures:
-        problemList += convertTexture(tex)
-
-    return problemList
-
-
-def convertTexture(tex):
-    problemList = []
-
-    texType = tex.type
-
-    if texType is not None:
-        tex.yaf_tex_type = texType
-    else:
-        problemList.append("No texture type on texture {0}".format(tex.name))
-
-    return problemList
-
-
 def convertMaterials(materials):
     problemList = []
 
@@ -312,12 +283,15 @@ def convertWorld(world):
     switch_bg_Type = {"Single Color": "Single Color", "Gradient": "Gradient", "Texture": "Texture", \
                       "Sunsky": "Sunsky1", "DarkTide's SunSky": "Sunsky2"}
     world.bg_type = switch_bg_Type.get(props["bg_type"], "Single Color")
-    world.v_int_type = props["volType"]
-    world.v_int_step_size = props["stepSize"]
-    world.v_int_adaptive = props["adaptive"]
-    world.v_int_optimize = props["optimize"]
-    world.v_int_attgridres = props["attgridScale"]
     world.bg_from = props["from"]
+
+    # check for Volume Integrator settings...
+    if props.get("volType"):
+        world.v_int_type = props["volType"]
+        world.v_int_step_size = props["stepSize"]
+        world.v_int_adaptive = props["adaptive"]
+        world.v_int_optimize = props["optimize"]
+        world.v_int_attgridres = props["attgridScale"]
 
     variableDict = dict(
         color="single_color",
@@ -336,11 +310,6 @@ def convertWorld(world):
         dspower="power",
         dsexposure="exposure",
         dsgammaenc="gamma_enc")
-        # volType="v_int_type",
-        # stepSize="v_int_step_size",
-        # adaptive="v_int_adaptive",
-        # optimize="v_int_optimize",
-        # attgridScale="v_int_attgridres")
 
     for p in props:
         value = props[p]
@@ -418,7 +387,7 @@ def convertGeneralSettings(scene):
     props = propsDummy.get("Renderer", None)
 
     switch_output_method = {"GUI": "into_blender", "Image": "file", "XML": "xml"}
-    if hasattr(props, "output_method"):
+    if props.get("output_method"):
         scene.gs_type_render = switch_output_method.get(props["output_method"], "into_blender")
         if props["output_method"] == "Image":
             switch_file_type = {"TIFF [Tag Image File Format]": "TIFF", "TGA [Truevision TARGA]": "TARGA", \
@@ -522,7 +491,6 @@ class ConvertYafarayProperties(bpy.types.Operator):
 
         problemList = []
 
-        problemList += convertTextures(data.textures)
         problemList += convertMaterials(data.materials)
         problemList += convertLights([l for l in data.objects if l.type == "LAMP"])
         problemList += convertCameras([c for c in data.objects if c.type == "CAMERA"])
