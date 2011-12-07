@@ -533,7 +533,7 @@ class yafObject(object):
                 ymaterial = self.materialMap[mat]
         else:
             for mat_slots in [ms for ms in matSlots if ms.material in self.materialMap]:
-                ymaterial = self.materialMap[mat_slot.materials]
+                ymaterial = self.materialMap[mat_slots.material]
 
         return ymaterial
 
