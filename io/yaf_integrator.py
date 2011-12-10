@@ -74,26 +74,23 @@ class yafIntegrator:
             yi.paramsSetInt("bounces", scene.intg_bounces)
             yi.paramsSetBool("no_recursive", scene.intg_no_recursion)
 
-            caus_type = scene.intg_caustic_method
-            photons = False
-
-            if caus_type == "None":
-                yi.paramsSetString("caustic_type", "none")
-            elif caus_type == "Path":
-                yi.paramsSetString("caustic_type", "path")
-            elif caus_type == "Photon":
-                yi.paramsSetString("caustic_type", "photon")
-                photons = True
-            elif caus_type == "Path+Photon":
-                yi.paramsSetString("caustic_type", "both")
-                photons = True
-
-            if photons:
+            #-- test for simplify code
+            causticTypeStr = scene.intg_caustic_method
+            switchCausticType = {
+                'None' : 'none',
+                'Path' : 'path',
+                'Photon': 'photon',
+                'Path+Photon': 'both',
+            }
+            causticType = switchCausticType.get(causticTypeStr)
+            yi.paramsSetString("caustic_type", causticType)
+            
+            if causticType != 'none' and causticType != 'path':
                 yi.paramsSetInt("photons", scene.intg_photons)
                 yi.paramsSetInt("caustic_mix", scene.intg_caustic_mix)
                 yi.paramsSetInt("caustic_depth", scene.intg_caustic_depth)
                 yi.paramsSetFloat("caustic_radius", scene.intg_caustic_radius)
-
+            
         elif light_type == "Bidirectional":
             yi.paramsSetString("type", "bidirectional")
 
