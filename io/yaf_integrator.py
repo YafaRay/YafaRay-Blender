@@ -77,20 +77,21 @@ class yafIntegrator:
             #-- test for simplify code
             causticTypeStr = scene.intg_caustic_method
             switchCausticType = {
-                'None' : 'none',
-                'Path' : 'path',
+                'None': 'none',
+                'Path': 'path',
                 'Photon': 'photon',
                 'Path+Photon': 'both',
             }
+
             causticType = switchCausticType.get(causticTypeStr)
             yi.paramsSetString("caustic_type", causticType)
-            
+
             if causticType != 'none' and causticType != 'path':
                 yi.paramsSetInt("photons", scene.intg_photons)
                 yi.paramsSetInt("caustic_mix", scene.intg_caustic_mix)
                 yi.paramsSetInt("caustic_depth", scene.intg_caustic_depth)
                 yi.paramsSetFloat("caustic_radius", scene.intg_caustic_radius)
-            
+
         elif light_type == "Bidirectional":
             yi.paramsSetString("type", "bidirectional")
 

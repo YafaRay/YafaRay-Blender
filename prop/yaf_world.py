@@ -30,7 +30,7 @@ World = bpy.types.World
 
 def call_world_update(self, context):
     world = context.scene.world
-    world.ambient_color = world.ambient_color
+    world.ambient_color.update_tag()
 
 
 def register():
@@ -303,7 +303,7 @@ def register():
         default=0.500)
 
     World.v_int_dsturbidity = FloatProperty(
-        name = "Turbidity",
+        name="Turbidity",
         description="",
         default=3.0)
 

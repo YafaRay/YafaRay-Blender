@@ -20,6 +20,7 @@
 
 import bpy
 import os
+from bpy.path import abspath, clean_name
 
 
 def noise2string(ntype):
@@ -268,20 +269,47 @@ class yafTexture:
 
             textureConfigured = True
 
-        elif tex.yaf_tex_type == 'IMAGE' and tex.image:
-            image_tex = tex.image
-            image_file = bpy.path.abspath(image_tex.filepath)
-            image_file = os.path.realpath(image_file)
-            image_file = os.path.normpath(image_file)
+        elif tex.yaf_tex_type == 'IMAGE' and tex.image and tex.image.source in {'FILE', 'GENERATED'}:
 
-            if image_file != "" and not os.path.exists(image_file):
-                yi.printInfo("Exporter: No valid texture image supplied.")
-                return False
+            filename = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
 
-            yi.printInfo("Exporter: Creating Texture: '{0}' type {1}: {2}".format(name, tex.yaf_tex_type, image_file))
+            if not any(filename):
+                filename = "untitled"
+                save_dir = os.path.expanduser("~")
+            else:
+                save_dir = "//"
+
+            filename = clean_name(filename)
+            fileformat = scene.render.image_settings.file_format.lower()
+            extract_path = os.path.join(filename, "{:05d}".format(scene.frame_current))
+
+            if tex.image.source == 'GENERATED':
+                image_tex = "yaf_baked_image_{0}.{1}".format(clean_name(tex.name), fileformat)
+                image_tex = os.path.join(save_dir, extract_path, image_tex)
+                image_tex = abspath(image_tex)
+                tex.image.save_render(image_tex, scene)
+            if tex.image.source == 'FILE':
+                if tex.image.packed_file:
+                    image_tex = "yaf_extracted_image_{0}.{1}".format(clean_name(tex.name), fileformat)
+                    image_tex = os.path.join(save_dir, extract_path, image_tex)
+                    image_tex = abspath(image_tex)
+                    texture.image.save_render(image_tex, scene)
+                else:
+                    if tex.image.library is not None:
+                        image_tex = abspath(tex.image.filepath, library=tex.image.library)
+                    else:
+                        image_tex = abspath(tex.image.filepath)
+                    if not os.path.exists(image_tex):
+                        yi.printError("Exporter: Image texture {0} not found on: {1}".format(tex.name, image_tex))
+                        return False
+
+            image_tex = os.path.realpath(image_tex)
+            image_tex = os.path.normpath(image_tex)
+
+            yi.printInfo("Exporter: Creating Texture: '{0}' type {1}: {2}".format(name, tex.yaf_tex_type, image_tex))
 
             yi.paramsSetString("type", "image")
-            yi.paramsSetString("filename", image_file)
+            yi.paramsSetString("filename", image_tex)
 
             yi.paramsSetBool("use_alpha", tex.use_alpha)
             yi.paramsSetBool("calc_alpha", tex.use_calculate_alpha)
