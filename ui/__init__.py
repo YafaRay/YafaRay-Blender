@@ -62,3 +62,13 @@ for member in dir(properties_data_speaker):  # add all "speaker (SOC 2011, peppe
     except:
         pass
 del properties_data_speaker
+
+# YafaRay did not display the Scene panels anymore, due to addition of COMPAT_ENGINES to them
+from bl_ui import properties_scene as properties_scene
+for member in dir(properties_scene):
+    subclass = getattr(properties_scene, member)
+    try:
+        subclass.COMPAT_ENGINES.add('YAFA_RENDER')
+    except:
+        pass
+del properties_scene

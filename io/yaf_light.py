@@ -19,7 +19,7 @@
 # <pep8 compliant>
 
 import os
-import mathutils
+from mathutils import Vector
 from math import degrees, pi, sin, cos
 from bpy.path import abspath
 
@@ -74,8 +74,10 @@ class yafLight:
 
         if matrix is None:
             matrix = lamp_object.matrix_world.copy()
-        pos = matrix[3]
-        dir = matrix[2]
+        # matrix indexing (row, colums) changed in Blender rev.42816, for explanation see also:
+        # http://wiki.blender.org/index.php/User:TrumanBlending/Matrix_Indexing
+        pos = matrix.col[3]
+        dir = matrix.col[2]
         # up = matrix[1]  /* UNUSED */
         to = pos - dir
 
@@ -176,10 +178,10 @@ class yafLight:
             # the light's position as the centerpoint and transform it
             # using its transformation matrix
 
-            point = mathutils.Vector((-sizeX / 2, -sizeY / 2, 0))
-            corner1 = mathutils.Vector((-sizeX / 2, sizeY / 2, 0))
-            corner2 = mathutils.Vector((sizeX / 2, sizeY / 2, 0))
-            corner3 = mathutils.Vector((sizeX / 2, -sizeY / 2, 0))
+            point = Vector((-sizeX / 2, -sizeY / 2, 0))
+            corner1 = Vector((-sizeX / 2, sizeY / 2, 0))
+            corner2 = Vector((sizeX / 2, sizeY / 2, 0))
+            corner3 = Vector((sizeX / 2, -sizeY / 2, 0))
             point = matrix * point  # use reverse vector multiply order, API changed with rev. 38674
             corner1 = matrix * corner1  # use reverse vector multiply order, API changed with rev. 38674
             corner2 = matrix * corner2  # use reverse vector multiply order, API changed with rev. 38674

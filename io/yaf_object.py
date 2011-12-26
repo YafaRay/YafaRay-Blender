@@ -58,8 +58,7 @@ class yafObject(object):
             # at 0,0,0 looking towards 0,0,1 (y axis being up)
 
             m = bpy.types.YAFA_RENDER.viewMatrix
-
-            m.transpose()
+            # m.transpose() --> not needed anymore: matrix indexing changed with Blender rev.42816
             inv = m.inverted()
 
             pos = multiplyMatrix4x4Vector4(inv, mathutils.Vector((0, 0, 0, 1)))
@@ -70,10 +69,13 @@ class yafObject(object):
             up = aboveCam
 
         else:
-            matrix = camera.matrix_world.copy()  # get cam worldspace transformation matrix, e.g. if cam is parented local does not work
-            pos = matrix[3]
-            dir = matrix[2]
-            up = pos + matrix[1]
+            # get cam worldspace transformation matrix, e.g. if cam is parented matrix_local does not work
+            matrix = camera.matrix_world.copy()
+            # matrix indexing (row, colums) changed in Blender rev.42816, for explanation see also:
+            # http://wiki.blender.org/index.php/User:TrumanBlending/Matrix_Indexing
+            pos = matrix.col[3]
+            dir = matrix.col[2]
+            up = pos + matrix.col[1]
 
         to = pos - dir
 
@@ -189,8 +191,8 @@ class yafObject(object):
         elif obj.bgp_enable:  # BGPortal Light
             self.writeBGPortal(obj, matrix)
 
-        elif obj.particle_systems:  # Particle system
-            self.writeParticlesObject(obj, matrix)
+        elif obj.particle_systems:  # Particle Hair system
+            self.writeParticleStrands(obj, matrix)
 
         else:  # The rest of the object types
             self.writeMesh(obj, matrix)
@@ -213,7 +215,7 @@ class yafObject(object):
         self.yi.printInfo("Exporting Instance of {0} [ID = {1:d}]".format(name, oID))
 
         mat4 = obj2WorldMatrix.to_4x4()
-        mat4.transpose()
+        # mat4.transpose() --> not needed anymore: matrix indexing changed with Blender rev.42816
 
         o2w = self.get4x4Matrix(mat4)
 
@@ -291,14 +293,10 @@ class yafObject(object):
         yi = self.yi
         # me = obj.data  /* UNUSED */
         # me_materials = me.materials  /* UNUSED */
-
-        mesh = obj.to_mesh(self.scene, True, 'RENDER')
-
-        if matrix is not None:
-            mesh.transform(matrix)
-        else:
-            return
-
+        bb_obj = obj.copy()
+        mesh = bb_obj.to_mesh(self.scene, True, 'RENDER')
+        mesh.transform(bb_obj.matrix_world)
+        bb_obj.data = mesh
         yi.paramsClearAll()
 
         if obj.vol_region == 'ExpDensity Volume':
@@ -330,13 +328,13 @@ class yafObject(object):
         yi.paramsSetFloat("sigma_s", obj.vol_scatter)
         yi.paramsSetInt("attgridScale", self.scene.world.v_int_attgridres)
 
-        min = [1e10, 1e10, 1e10]
+        '''min = [1e10, 1e10, 1e10]
         max = [-1e10, -1e10, -1e10]
         vertLoc = []
         for v in mesh.vertices:
-            vertLoc.append(v.co[0])
-            vertLoc.append(v.co[1])
-            vertLoc.append(v.co[2])
+            vertLoc.append(v.co.x)
+            vertLoc.append(v.co.y)
+            vertLoc.append(v.co.z)
 
             if vertLoc[0] < min[0]:
                 min[0] = vertLoc[0]
@@ -351,16 +349,33 @@ class yafObject(object):
             if vertLoc[2] > max[2]:
                 max[2] = vertLoc[2]
 
-            vertLoc = []
+            vertLoc = []'''
 
-        yi.paramsSetFloat("minX", min[0])
-        yi.paramsSetFloat("minY", min[1])
-        yi.paramsSetFloat("minZ", min[2])
-        yi.paramsSetFloat("maxX", max[0])
-        yi.paramsSetFloat("maxY", max[1])
-        yi.paramsSetFloat("maxZ", max[2])
+        vx = vy = vz = []
 
-        yi.createVolumeRegion("VR_" + obj.name + "." + str(obj.__hash__()))
+        for x, y, z in bb_obj.bound_box:
+            vx.append(x)
+            vy.append(y)
+            vz.append(z)
+        minx = max(min(vx), -1e3)
+        miny = max(min(vy), -1e3)
+        minz = max(min(vz), -1e3)
+
+        maxx = min(max(vx), 1e3)
+        maxy = min(max(vy), 1e3)
+        maxz = min(max(vz), 1e3)
+
+        yi.paramsSetFloat("minX", minx)
+        yi.paramsSetFloat("minY", miny)
+        yi.paramsSetFloat("minZ", minz)
+        yi.paramsSetFloat("maxX", maxx)
+        yi.paramsSetFloat("maxY", maxy)
+        yi.paramsSetFloat("maxZ", maxz)
+        yi.printWarning("BBox values min: {0:.4}, {1:.4}, {2:.4}, max: {3:.4}, {4:.4}, {5:.4}".format(minx, miny, minz, maxx, maxy, maxz))
+        yi.createVolumeRegion("VR.{0}-{1}".format(obj.name, str(obj.__hash__())))
+        #bpy.data.meshes.remove(mesh)
+        bb_obj.user_clear()
+        bpy.data.objects.remove(bb_obj)
 
     def writeGeometry(self, ID, obj, matrix, obType=0, oMat=None):
 
@@ -471,7 +486,7 @@ class yafObject(object):
 
         return ymaterial
 
-    def writeParticlesObject(self, object, matrix):
+    def writeParticleStrands(self, object, matrix):
 
         yi = self.yi
         renderEmitter = False
@@ -482,7 +497,7 @@ class yafObject(object):
         for pSys in object.particle_systems:
             for mod in [m for m in object.modifiers if (m is not None) and (m.type == 'PARTICLE_SYSTEM')]:
                 if (pSys.settings.render_type == 'PATH') and mod.show_render and (pSys.name == mod.particle_system.name):
-                    yi.printInfo("Exporter: Creating Particle System {!r}".format(pSys.name))
+                    yi.printInfo("Exporter: Creating Hair Particle System {!r}".format(pSys.name))
                     tstart = time.time()
                     # TODO: clay particles uses at least materials thikness?
                     if object.active_material is not None:
