@@ -293,10 +293,7 @@ class yafObject(object):
         yi = self.yi
         # me = obj.data  /* UNUSED */
         # me_materials = me.materials  /* UNUSED */
-        bb_obj = obj.copy()
-        mesh = bb_obj.to_mesh(self.scene, True, 'RENDER')
-        mesh.transform(bb_obj.matrix_world)
-        bb_obj.data = mesh
+
         yi.paramsClearAll()
 
         if obj.vol_region == 'ExpDensity Volume':
@@ -328,42 +325,19 @@ class yafObject(object):
         yi.paramsSetFloat("sigma_s", obj.vol_scatter)
         yi.paramsSetInt("attgridScale", self.scene.world.v_int_attgridres)
 
-        '''min = [1e10, 1e10, 1e10]
-        max = [-1e10, -1e10, -1e10]
-        vertLoc = []
-        for v in mesh.vertices:
-            vertLoc.append(v.co.x)
-            vertLoc.append(v.co.y)
-            vertLoc.append(v.co.z)
+        v = [list(bb) for bb in obj.bound_box]
+        bmin = min(v)
+        bmax = max(v)
 
-            if vertLoc[0] < min[0]:
-                min[0] = vertLoc[0]
-            if vertLoc[1] < min[1]:
-                min[1] = vertLoc[1]
-            if vertLoc[2] < min[2]:
-                min[2] = vertLoc[2]
-            if vertLoc[0] > max[0]:
-                max[0] = vertLoc[0]
-            if vertLoc[1] > max[1]:
-                max[1] = vertLoc[1]
-            if vertLoc[2] > max[2]:
-                max[2] = vertLoc[2]
-
-            vertLoc = []'''
-
-        vx = vy = vz = []
-
-        for x, y, z in bb_obj.bound_box:
-            vx.append(x)
-            vy.append(y)
-            vz.append(z)
-        minx = max(min(vx), -1e3)
-        miny = max(min(vy), -1e3)
-        minz = max(min(vz), -1e3)
-
-        maxx = min(max(vx), 1e3)
-        maxy = min(max(vy), 1e3)
-        maxz = min(max(vz), 1e3)
+        # BoundingBox: get the low corner (minx, miny, minz) and the
+        # up corner (maxx, maxy, maxz) then apply object scale, also
+        # clamp the values to min: -1e10 and max: 1e10
+        minx = max(bmin[0] * obj.scale.x, -1e10)
+        miny = max(bmin[1] * obj.scale.y, -1e10)
+        minz = max(bmin[2] * obj.scale.z, -1e10)
+        maxx = min(bmax[0] * obj.scale.x, 1e10)
+        maxy = min(bmax[1] * obj.scale.y, 1e10)
+        maxz = min(bmax[2] * obj.scale.z, 1e10)
 
         yi.paramsSetFloat("minX", minx)
         yi.paramsSetFloat("minY", miny)
@@ -371,11 +345,8 @@ class yafObject(object):
         yi.paramsSetFloat("maxX", maxx)
         yi.paramsSetFloat("maxY", maxy)
         yi.paramsSetFloat("maxZ", maxz)
-        yi.printWarning("BBox values min: {0:.4}, {1:.4}, {2:.4}, max: {3:.4}, {4:.4}, {5:.4}".format(minx, miny, minz, maxx, maxy, maxz))
+
         yi.createVolumeRegion("VR.{0}-{1}".format(obj.name, str(obj.__hash__())))
-        #bpy.data.meshes.remove(mesh)
-        bb_obj.user_clear()
-        bpy.data.objects.remove(bb_obj)
 
     def writeGeometry(self, ID, obj, matrix, obType=0, oMat=None):
 
