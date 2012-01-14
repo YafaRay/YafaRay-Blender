@@ -325,28 +325,24 @@ class yafObject(object):
         yi.paramsSetFloat("sigma_s", obj.vol_scatter)
         yi.paramsSetInt("attgridScale", self.scene.world.v_int_attgridres)
 
-        v = [list(bb) for bb in obj.bound_box]
-        bmin = min(v)
-        bmax = max(v)
+        # Calculate BoundingBox: get the low corner (minx, miny, minz)
+        # and the up corner (maxx, maxy, maxz) then apply object scale,
+        # also clamp the values to min: -1e10 and max: 1e10
 
-        # BoundingBox: get the low corner (minx, miny, minz) and the
-        # up corner (maxx, maxy, maxz) then apply object scale, also
-        # clamp the values to min: -1e10 and max: 1e10
-        minx = max(bmin[0] * obj.scale.x, -1e10)
-        miny = max(bmin[1] * obj.scale.y, -1e10)
-        minz = max(bmin[2] * obj.scale.z, -1e10)
-        maxx = min(bmax[0] * obj.scale.x, 1e10)
-        maxy = min(bmax[1] * obj.scale.y, 1e10)
-        maxz = min(bmax[2] * obj.scale.z, 1e10)
+        mesh = obj.to_mesh(self.scene, True, 'RENDER')
+        mesh.transform(matrix)
 
-        yi.paramsSetFloat("minX", minx)
-        yi.paramsSetFloat("minY", miny)
-        yi.paramsSetFloat("minZ", minz)
-        yi.paramsSetFloat("maxX", maxx)
-        yi.paramsSetFloat("maxY", maxy)
-        yi.paramsSetFloat("maxZ", maxz)
+        vec = [j for v in mesh.vertices for j in v.co]
+
+        yi.paramsSetFloat("minX", max(min(vec[0::3]), -1e10))
+        yi.paramsSetFloat("minY", max(min(vec[1::3]), -1e10))
+        yi.paramsSetFloat("minZ", max(min(vec[2::3]), -1e10))
+        yi.paramsSetFloat("maxX", min(max(vec[0::3]), 1e10))
+        yi.paramsSetFloat("maxY", min(max(vec[1::3]), 1e10))
+        yi.paramsSetFloat("maxZ", min(max(vec[2::3]), 1e10))
 
         yi.createVolumeRegion("VR.{0}-{1}".format(obj.name, str(obj.__hash__())))
+        bpy.data.meshes.remove(mesh)
 
     def writeGeometry(self, ID, obj, matrix, obType=0, oMat=None):
 
