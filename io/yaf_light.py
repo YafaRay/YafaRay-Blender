@@ -115,7 +115,7 @@ class yafLight:
             power = 0.5 * power * power  # original value
 
             if getattr(lamp, "use_sphere", False):
-                radius = lamp.shadow_soft_size
+                radius = max(lamp.shadow_soft_size, 0.01)  # avoid ZeroDivisionError
                 power /= (radius * radius)  # radius < 1 crash geometry ?
 
                 if lamp.create_geometry:

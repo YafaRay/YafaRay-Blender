@@ -293,7 +293,7 @@ class yafTexture:
                     image_tex = "yaf_extracted_image_{0}.{1}".format(clean_name(tex.name), fileformat)
                     image_tex = os.path.join(save_dir, extract_path, image_tex)
                     image_tex = abspath(image_tex)
-                    texture.image.save_render(image_tex, scene)
+                    tex.image.save_render(image_tex, scene)
                 else:
                     if tex.image.library is not None:
                         image_tex = abspath(tex.image.filepath, library=tex.image.library)

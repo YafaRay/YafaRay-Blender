@@ -28,11 +28,6 @@ from bpy.props import (EnumProperty,
 World = bpy.types.World
 
 
-def call_world_update(self, context):
-    world = context.scene.world
-    world.ambient_color.update_tag()
-
-
 def register():
     ########### YafaRays world background properties #############
     World.bg_type = EnumProperty(
@@ -44,8 +39,7 @@ def register():
             ('Sunsky2', "Sunsky2", "New model of Sunsky background"),
             ('Single Color', "Single Color", "Single color background")
         ),
-        default="Single Color",
-        update=call_world_update)
+        default="Single Color")
 
     World.bg_color_space = EnumProperty(
         name="Color space",
@@ -55,48 +49,42 @@ def register():
             ('sRGB (D65)', "sRGB (D65)", "Select color space model"),
             ('sRGB (D50)', "sRGB (D50)", "Select color space model")
         ),
-        default="CIE (E)",
-        update=call_world_update)
+        default="CIE (E)")
 
     World.bg_zenith_color = FloatVectorProperty(
         name="Zenith color",
         description="Zenith color",
         subtype='COLOR',
         min=0.0, max=1.0,
-        default=(0.57, 0.65, 1.0),
-        update=call_world_update)
+        default=(0.57, 0.65, 1.0))
 
     World.bg_horizon_color = FloatVectorProperty(
         name="Horizon color",
         description="Horizon color",
         subtype='COLOR',
         min=0.0, max=1.0,
-        default=(1.0, 1.0, 0.5),
-        update=call_world_update)
+        default=(1.0, 1.0, 0.5))
 
     World.bg_zenith_ground_color = FloatVectorProperty(
         name="Zenith ground color",
         description="Zenith ground color",
         subtype='COLOR',
         min=0.0, max=1.0,
-        default=(1.0, 0.9, 0.8),
-        update=call_world_update)
+        default=(1.0, 0.9, 0.8))
 
     World.bg_horizon_ground_color = FloatVectorProperty(
         name="Horizon ground color",
         description="Horizon ground color",
         subtype='COLOR',
         min=0.0, max=1.0,
-        default=(0.8, 0.6, 0.3),
-        update=call_world_update)
+        default=(0.8, 0.6, 0.3))
 
     World.bg_single_color = FloatVectorProperty(
         name="Background color",
         description="Background color",
         subtype='COLOR',
         min=0.0, max=1.0,
-        default=(0.7, 0.7, 0.7),
-        update=call_world_update)
+        default=(0.7, 0.7, 0.7))
 
     World.bg_use_ibl = BoolProperty(
         name="Use IBL",
@@ -123,57 +111,49 @@ def register():
         name="Rotation",
         description="Rotation offset of background texture",
         min=0.0, max=360.0,
-        default=0.0,
-        update=call_world_update)
+        default=0.0)
 
     World.bg_turbidity = FloatProperty(
         name="Turbidity",
         description="Turbidity of the atmosphere",
         min=1.0, max=20.0,
-        default=2.0,
-        update=call_world_update)
+        default=2.0)
 
     World.bg_ds_turbidity = FloatProperty(  # Darktides turbidity has different values
         name="Turbidity",
         description="Turbidity of the atmosphere",
         min=2.0, max=12.0,
-        default=2.0,
-        update=call_world_update)
+        default=2.0)
 
     World.bg_a_var = FloatProperty(
         name="Brightness of horizon gradient",
         description="Darkening or brightening towards horizon",
         min=0.0, max=10.0,
-        default=1.0,
-        update=call_world_update)
+        default=1.0)
 
     World.bg_b_var = FloatProperty(
         name="Luminance of horizon",
         description="Luminance gradient near the horizon",
         min=0.0, max=10.0,
-        default=1.0,
-        update=call_world_update)
+        default=1.0)
 
     World.bg_c_var = FloatProperty(
         name="Solar region intensity",
         description="Relative intensity of circumsolar region",
         min=0.0, max=10.0,
-        default=1.0,
-        update=call_world_update)
+        default=1.0)
 
     World.bg_d_var = FloatProperty(
         name="Width of circumsolor region",
         description="Width of circumsolar region",
         min=0.0, max=10.0,
-        default=1.0,
-        update=call_world_update)
+        default=1.0)
 
     World.bg_e_var = FloatProperty(
         name="Backscattered light",
         description="Relative backscattered light",
         min=0.0, max=10.0,
-        default=1.0,
-        update=call_world_update)
+        default=1.0)
 
     World.bg_from = FloatVectorProperty(
         name="Set sun position",
@@ -181,68 +161,58 @@ def register():
         subtype='DIRECTION',
         step=10, precision=3,
         min=-1.0, max=1.0,
-        default=(1.0, 1.0, 1.0),
-        update=call_world_update)
+        default=(1.0, 1.0, 1.0))
 
     World.bg_add_sun = BoolProperty(
         name="Add sun",
         description="Add a real sun light",
-        default=False,
-        update=call_world_update)
+        default=False)
 
     World.bg_sun_power = FloatProperty(
         name="Sunlight power",
         description="Sunlight power",
         min=0.0, max=10.0,
-        default=1.0,
-        update=call_world_update)
+        default=1.0)
 
     World.bg_background_light = BoolProperty(
         name="Add skylight",
         description="Add skylight",
-        default=False,
-        update=call_world_update)
+        default=False)
 
     World.bg_light_samples = IntProperty(
         name="Samples",
         description="Set skylight and sunlight samples",
         min=1, max=512,
-        default=16,
-        update=call_world_update)
+        default=16)
 
     World.bg_dsaltitude = FloatProperty(
         name="Altitude",
         description="Moves the sky dome above or below the camera position",
         min=-1.0, max=2.0,
-        default=0.0,
-        update=call_world_update)
+        default=0.0)
 
     World.bg_dsnight = BoolProperty(
         name="Night",
         description="Activate experimental night mode",
-        default=False,
-        update=call_world_update)
+        default=False)
 
     World.bg_dsbright = FloatProperty(
         name="Sky brightness",
         description="Brightness of the sky",
         min=0.0, max=10.0,
-        default=1.0,
-        update=call_world_update)
+        default=1.0)
 
     World.bg_power = FloatProperty(
         name="Skylight power",
         description="Multiplier for background color",
         min=0.0,
-        default=1.0,
-        update=call_world_update)
+        default=1.0)
 
     World.bg_exposure = FloatProperty(
         name="Exposure",
         description="Exposure correction for the sky (0 = no correction)",
         min=0.0, max=10.0,
-        default=1.0,
-        update=call_world_update)
+        default=1.0)
 
     World.bg_clamp_rgb = BoolProperty(
         name="Clamp RGB",
@@ -252,8 +222,7 @@ def register():
     World.bg_gamma_enc = BoolProperty(
         name="Gamma encoding",
         description="Apply gamma encoding to the sky",
-        default=True,
-        update=call_world_update)
+        default=True)
 
     ########### YafaRays volume integrator properties #############
     World.v_int_type = EnumProperty(
