@@ -31,7 +31,7 @@ Lamp = bpy.types.Lamp
 def call_lighttype_update(self, context):
     lamp = context.lamp
     if lamp is not None:
-        switchLampType = {'area': 'AREA', 'spot': 'SPOT', 'sun': 'SUN', 'point': 'POINT', 'ies': 'SPOT'}
+        switchLampType = {'area': 'AREA', 'spot': 'SPOT', 'sun': 'SUN', 'point': 'POINT', 'ies': 'SPOT', 'directional': 'SUN'}
         lamp.type = switchLampType.get(lamp.lamp_type)
 
 
@@ -44,7 +44,8 @@ def register():
             ('sun', "Sun", "Constant direction parallel ray light source"),
             ('spot', "Spot", "Directional cone light source"),
             ('ies', "IES", "Directional cone light source from ies file"),
-            ('area', "Area", "Directional area light source")
+            ('area', "Area", "Directional area light source"),
+            ('directional', "Directional", "Directional Sun light")
         ),
         default="point", update=call_lighttype_update)
 
@@ -56,7 +57,7 @@ def register():
 
     Lamp.directional = BoolProperty(
         name="Directional",
-        description="",
+        description="Directional sunlight type, like 'spot' (for concentrate photons at area)",
         default=False)
 
     Lamp.create_geometry = BoolProperty(
@@ -107,7 +108,7 @@ def register():
         description="Number of samples to be taken for direct lighting",
         min=0, max=512,
         default=16)
-
+    
 
 def unregister():
     del Lamp.lamp_type

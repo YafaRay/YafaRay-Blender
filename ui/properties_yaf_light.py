@@ -31,7 +31,7 @@ class LampButtonsPanel():
     def poll(cls, context):
         engine = context.scene.render.engine
         lamp = context.lamp
-        switchLampType = {'area': 'AREA', 'spot': 'SPOT', 'sun': 'SUN', 'point': 'POINT', 'ies': 'SPOT'}
+        switchLampType = {'area': 'AREA', 'spot': 'SPOT', 'sun': 'SUN', 'point': 'POINT', 'ies': 'SPOT', 'directional': "SUN"}
         return lamp and ((lamp.lamp_type == cls.lamp_type) and (lamp.type == switchLampType.get(lamp.lamp_type, None)) and (engine in cls.COMPAT_ENGINES))
 
 
@@ -133,13 +133,24 @@ class YAF_PT_lamp_sun(LampButtonsPanel, Panel):
 
         layout.prop(lamp, "color")
         layout.prop(lamp, "yaf_energy", text="Power")
-        layout.prop(lamp, "angle")
         layout.prop(lamp, "yaf_samples")
-        layout.prop(lamp, "directional", toggle=True)
-        if lamp.directional:
-            box = layout.box()
-            box.prop(lamp, "shadow_soft_size")
-            box.prop(lamp, "infinite")
+        layout.prop(lamp, "angle")
+        
+
+class YAF_PT_lamp_directional(LampButtonsPanel, Panel):
+    bl_label = "Directional lamp settings" 
+    lamp_type = 'directional'
+    
+    def draw(self, context):
+        layout = self.layout
+        lamp = context.lamp
+        
+        #
+        layout.prop(lamp, "color")
+        layout.prop(lamp, "yaf_energy", text="Power")
+        layout.prop(lamp, "infinite")
+        if not lamp.infinite:
+            layout.prop(lamp,"shadow_soft_size", text='Radio of directional cone')
 
 
 class YAF_PT_lamp_point(LampButtonsPanel, Panel):
@@ -156,7 +167,8 @@ class YAF_PT_lamp_point(LampButtonsPanel, Panel):
             layout.prop(lamp, "use_sphere", toggle=True)
             if lamp.use_sphere:
                 box = layout.box()
-                box.prop(lamp, "shadow_soft_size")
+                box.prop(lamp, "distance", text= "Radio of sphere light")
+                #box.prop(lamp, "shadow_soft_size")
                 box.prop(lamp, "yaf_samples")
                 box.prop(lamp, "create_geometry")
 
