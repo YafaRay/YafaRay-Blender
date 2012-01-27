@@ -108,7 +108,7 @@ def register():
         description="Number of samples to be taken for direct lighting",
         min=0, max=512,
         default=16)
-    
+
 
 def unregister():
     del Lamp.lamp_type

@@ -381,12 +381,8 @@ def register():
         items=(
             ('box', "Box", "AA filter type"),
             ('mitchell', "Mitchell", "AA filter type"),
-            ('mitchell_blender', "Blenders Mitchell", ""),
             ('gauss', "Gauss", "AA filter type"),
-            ('lanczos', "Lanczos", "AA filter type"),
-            ('sinc', "Sinc", "AA filter type"),
-            ('catmull', "CatmullRom", "AA filter type"),
-            ('catmull_blender', "Blenders Catmull", "")
+            ('lanczos', "Lanczos", "AA filter type")
         ),
         default="gauss")
 

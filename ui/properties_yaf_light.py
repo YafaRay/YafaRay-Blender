@@ -135,22 +135,21 @@ class YAF_PT_lamp_sun(LampButtonsPanel, Panel):
         layout.prop(lamp, "yaf_energy", text="Power")
         layout.prop(lamp, "yaf_samples")
         layout.prop(lamp, "angle")
-        
+
 
 class YAF_PT_lamp_directional(LampButtonsPanel, Panel):
-    bl_label = "Directional lamp settings" 
+    bl_label = "Directional lamp settings"
     lamp_type = 'directional'
-    
+
     def draw(self, context):
         layout = self.layout
         lamp = context.lamp
-        
-        #
+
         layout.prop(lamp, "color")
         layout.prop(lamp, "yaf_energy", text="Power")
         layout.prop(lamp, "infinite")
         if not lamp.infinite:
-            layout.prop(lamp,"shadow_soft_size", text='Radio of directional cone')
+            layout.prop(lamp, "shadow_soft_size", text="Radius of directional cone")
 
 
 class YAF_PT_lamp_point(LampButtonsPanel, Panel):
@@ -167,8 +166,7 @@ class YAF_PT_lamp_point(LampButtonsPanel, Panel):
             layout.prop(lamp, "use_sphere", toggle=True)
             if lamp.use_sphere:
                 box = layout.box()
-                box.prop(lamp, "distance", text= "Radio of sphere light")
-                #box.prop(lamp, "shadow_soft_size")
+                box.prop(lamp, "distance", text="Radius of sphere light")
                 box.prop(lamp, "yaf_samples")
                 box.prop(lamp, "create_geometry")
 
