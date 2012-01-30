@@ -104,7 +104,7 @@ class yafLight:
 
         if lamp.create_geometry and not self.lightMat:
             self.yi.paramsClearAll()
-            self.yi.paramsSetColor("color", color[0], color[1], color[2])  # color for spherelight mesh -> fix from povmaniaco
+            self.yi.paramsSetColor("color", color[0], color[1], color[2])  # color for spherelight and area light geometry
             self.yi.paramsSetString("type", "light_mat")
             self.lightMat = self.yi.createMaterial("lm")
             self.yi.paramsClearAll()
