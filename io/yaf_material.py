@@ -105,9 +105,9 @@ class yafMaterial:
         tex = mtex.texture  # texture object instance
         # lots to do...
 
-        isImage = (tex.yaf_tex_type == 'IMAGE')
+        isImage = tex.yaf_tex_type == 'IMAGE'
 
-        if (isImage or (tex.yaf_tex_type == 'VORONOI' and tex.color_mode != 'INTENSITY')):
+        if (isImage or (tex.yaf_tex_type == 'VORONOI' and tex.color_mode not in 'INTENSITY')):
             isColored = True
         else:
             isColored = False
@@ -352,7 +352,7 @@ class yafMaterial:
         bEmit = mat.emit
 
         if self.preview:
-            if mat.name.find("check") != -1:
+            if mat.name.startswith("checker"):
                 bEmit = 0.35
 
         i = 0

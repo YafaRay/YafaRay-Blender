@@ -103,9 +103,9 @@ class yafLight:
         yi.printInfo("Exporting Lamp: {0} [{1}]".format(name, lampType))
 
         if lamp.create_geometry and not self.lightMat:
-            self.yi.paramsClearAll()
-            self.yi.paramsSetColor("color", color[0], color[1], color[2])  # color for spherelight and area light geometry
-            self.yi.paramsSetString("type", "light_mat")
+            yi.paramsClearAll()
+            yi.paramsSetColor("color", color[0], color[1], color[2])  # color for spherelight and area light geometry
+            yi.paramsSetString("type", "light_mat")
             self.lightMat = self.yi.createMaterial("lm")
             self.yi.paramsClearAll()
 
@@ -113,7 +113,6 @@ class yafLight:
             yi.paramsSetString("type", "pointlight")
             if getattr(lamp, "use_sphere"):
                 radius = max(lamp.distance, 0.01)  # avoid ZeroDivisionError
-                power /= (radius * radius)
                 if lamp.create_geometry:
                     ID = self.makeSphere(24, 48, pos[0], pos[1], pos[2], radius, self.lightMat)
                     yi.paramsSetInt("object", ID)
@@ -157,7 +156,8 @@ class yafLight:
             yi.paramsSetString("type", "ieslight")
             yi.paramsSetPoint("to", to[0], to[1], to[2])
             ies_file = abspath(lamp.ies_file)
-            if ies_file != "" and not os.path.exists(ies_file):
+            if not any(ies_file) and not os.path.exists(ies_file):
+                yi.printWarning("IES file not found for {0}".format(name))
                 return False
             yi.paramsSetString("file", ies_file)
             yi.paramsSetInt("samples", lamp.yaf_samples)
@@ -207,7 +207,10 @@ class yafLight:
             # "from" is not used for sunlight and infinite directional light
             yi.paramsSetPoint("from", pos[0], pos[1], pos[2])
         if lampType in {"point", "spot"}:
-            power = 0.5 * power * power
+            if getattr(lamp, "use_sphere"):
+                power = 0.5 * power * power / (radius * radius)
+            else:
+                power = 0.5 * power * power
 
         yi.paramsSetColor("color", color[0], color[1], color[2])
         yi.paramsSetFloat("power", power)

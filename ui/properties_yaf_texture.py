@@ -19,8 +19,14 @@
 # <pep8 compliant>
 
 import bpy
+from bl_ui.properties_material import active_node_mat
 from bl_ui.properties_texture import context_tex_datablock
-from bpy.types import Panel
+from bpy.types import (Panel,
+                       Texture,
+                       Brush,
+                       Material,
+                       World,
+                       ParticleSettings)
 
 
 class YAF_TextureButtonsPanel():
@@ -32,7 +38,7 @@ class YAF_TextureButtonsPanel():
     @classmethod
     def poll(cls, context):
         tex = context.texture
-        return tex and (tex.yaf_tex_type != 'NONE' or tex.use_nodes) and (context.scene.render.engine in cls.COMPAT_ENGINES)
+        return tex and (tex.yaf_tex_type not in 'NONE' or tex.use_nodes) and (context.scene.render.engine in cls.COMPAT_ENGINES)
 
 
 class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel, Panel):
@@ -47,26 +53,26 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel, Panel):
             return False
 
         return ((context.material or context.world or context.brush or context.texture \
-        or context.particle_system or isinstance(context.space_data.pin_id, bpy.types.ParticleSettings)) \
+        or context.particle_system or isinstance(context.space_data.pin_id, ParticleSettings)) \
         and (engine in cls.COMPAT_ENGINES))
 
     def draw(self, context):
         layout = self.layout
-        slot = context.texture_slot
-        node = context.texture_node
+        slot = getattr(context, "texture_slot", None)
+        node = getattr(context, "texture_node", None)
         space = context.space_data
         tex = context.texture
         idblock = context_tex_datablock(context)
         pin_id = space.pin_id
 
-        if space.use_pin_id and not isinstance(pin_id, bpy.types.Texture):
+        if space.use_pin_id and not isinstance(pin_id, Texture):
             idblock = pin_id
             pin_id = None
 
         if not space.use_pin_id:
             layout.prop(space, "texture_context", expand=True)
 
-        tex_collection = (pin_id is None) and (node is None) and (not isinstance(idblock, bpy.types.Brush))
+        tex_collection = (pin_id is None) and (node is None) and (not isinstance(idblock, Brush))
 
         if tex_collection:
             row = layout.row()
@@ -78,7 +84,7 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel, Panel):
             col.operator("texture.slot_move", text="", icon='TRIA_DOWN').type = 'DOWN'
             col.menu("TEXTURE_MT_specials", icon='DOWNARROW_HLT', text="")
 
-        split = layout.split(percentage=0.75)
+        split = layout.split(percentage=0.65)
         col = split.column()
 
         if tex_collection:
@@ -94,8 +100,7 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel, Panel):
         col = split.column()
 
         if tex:
-            layout.separator()
-            split = layout.split(percentage=0.3)
+            split = layout.split(percentage=0.2)
 
             if tex.use_nodes:
 
@@ -104,7 +109,7 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel, Panel):
                     split.prop(slot, "output_node", text="")
 
             else:
-                split.label(text="Texture type:")
+                split.label(text="Type:")
                 split.prop(tex, "yaf_tex_type", text="")
 
 
@@ -123,6 +128,10 @@ class YAF_TEXTURE_PT_preview(YAF_TextureButtonsPanel, Panel):
             layout.template_preview(tex, parent=idblock, slot=slot)
         else:
             layout.template_preview(tex, slot=slot)
+
+        #Show Alpha Button for Brush Textures, see #29502
+        if context.space_data.texture_context == 'BRUSH':
+            layout.prop(tex, "use_preview_alpha")
 
 
 class YAF_TextureSlotPanel(YAF_TextureButtonsPanel):
@@ -147,6 +156,7 @@ class YAF_TextureTypePanel(YAF_TextureButtonsPanel):
         return tex and ((tex.yaf_tex_type == cls.tex_type and not tex.use_nodes) and (engine in cls.COMPAT_ENGINES))
 
 
+# --- YafaRay's own Texture Type Panels --- #
 class YAF_TEXTURE_PT_clouds(YAF_TextureTypePanel, Panel):
     bl_label = "Clouds"
     tex_type = 'CLOUDS'
@@ -230,7 +240,7 @@ class YAF_TEXTURE_PT_blend(YAF_TextureTypePanel, Panel):
 
         tex = context.texture
         layout.prop(tex, "progression")
-        if tex.progression != 'LINEAR':  # TODO: remove this if other progression types are supported
+        if tex.progression not in 'LINEAR':  # TODO: remove this if other progression types are supported
             layout.label(text="Not yet supported in YafaRay")
         else:
             layout.label(text=" ")
@@ -401,6 +411,22 @@ class YAF_TEXTURE_PT_distortednoise(YAF_TextureTypePanel, Panel):
         split.prop(tex, "noise_scale", text="Size")
 
 
+class YAF_TEXTURE_PT_ocean(YAF_TextureTypePanel, Panel):
+    bl_label = "Ocean"
+    tex_type = 'OCEAN'
+    COMPAT_ENGINES = {'YAFA_RENDER'}
+
+    def draw(self, context):
+        layout = self.layout
+
+        tex = context.texture
+        ot = tex.ocean
+
+        col = layout.column()
+        col.prop(ot, "ocean_object")
+        col.prop(ot, "output")
+
+
 class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel, Panel):
     bl_label = "YafaRay Mapping (Map Input)"
     COMPAT_ENGINES = {'YAFA_RENDER'}
@@ -408,7 +434,7 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel, Panel):
     @classmethod
     def poll(cls, context):
         idblock = context_tex_datablock(context)
-        if isinstance(idblock, bpy.types.Brush) and not context.sculpt_object:
+        if isinstance(idblock, Brush) and not context.sculpt_object:
             return False
 
         if not getattr(context, "texture_slot", None):
@@ -425,7 +451,7 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel, Panel):
         tex = context.texture_slot
         # textype = context.texture
 
-        if not isinstance(idblock, bpy.types.Brush):
+        if not isinstance(idblock, Brush):
             split = layout.split(percentage=0.3)
             col = split.column()
             col.label(text="Coordinates:")
@@ -450,7 +476,7 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel, Panel):
                 split.label(text="Object:")
                 split.prop(tex, "object", text="")
 
-        if isinstance(idblock, bpy.types.Brush):
+        if isinstance(idblock, Brush):
             if context.sculpt_object:
                 layout.label(text="Brush Mapping:")
                 layout.prop(tex, "map_mode", expand=True)
@@ -459,7 +485,7 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel, Panel):
                 row.active = tex.map_mode in {'FIXED', 'TILED'}
                 row.prop(tex, "angle")
         else:
-            if isinstance(idblock, bpy.types.Material):
+            if isinstance(idblock, Material):
                 split = layout.split(percentage=0.3)
                 split.label(text="Projection:")
                 split.prop(tex, "mapping", text="")
@@ -492,7 +518,7 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, Panel):
     @classmethod
     def poll(cls, context):
         idblock = context_tex_datablock(context)
-        if isinstance(idblock, bpy.types.Brush):
+        if isinstance(idblock, Brush):
             return False
 
         if not getattr(context, "texture_slot", None):
@@ -537,7 +563,7 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, Panel):
         materialShaderNodes["shinydiffusemat"] = ["DiffuseColor", "MirrorAmount", "MirrorColor", "Transparency", "Translucency", "Bump"]
         materialShaderNodes["blend"] = ["BlendAmount"]
 
-        if isinstance(idblock, bpy.types.Material):
+        if isinstance(idblock, Material):
             nodes = materialShaderNodes[idblock.mat_type]
             col = layout.column()
 
@@ -547,7 +573,7 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, Panel):
                 if node == "Bump" and getattr(tex, "use_map_normal") and texture.yaf_tex_type == 'IMAGE':
                     col.prop(texture, "yaf_is_normal_map", "Use map as normal map")
 
-        elif isinstance(idblock, bpy.types.World):  # for setup world texture
+        elif isinstance(idblock, World):  # for setup world texture
             split = layout.split()
 
             col = split.column()
@@ -558,7 +584,7 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, Panel):
             factor_but(col, "use_map_zenith_up", "zenith_up_factor", "Zenith Up")
             factor_but(col, "use_map_zenith_down", "zenith_down_factor", "Zenith Down")
 
-        if not isinstance(idblock, bpy.types.ParticleSettings) and not isinstance(idblock, bpy.types.World):
+        if not isinstance(idblock, ParticleSettings) and not isinstance(idblock, World):
             split = layout.split()
 
             col = split.column()
@@ -570,7 +596,7 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, Panel):
             col.prop(tex, "invert", text="Negative")
             col.prop(tex, "use_stencil")
 
-        if isinstance(idblock, bpy.types.Material) or isinstance(idblock, bpy.types.World):
+        if isinstance(idblock, Material) or isinstance(idblock, World):
             layout.separator()
             layout.row().prop(tex, "default_value", text="Default Value", slider=True)
 

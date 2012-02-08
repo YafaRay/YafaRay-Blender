@@ -84,7 +84,7 @@ def load_handler(dummy):
             print("Load Handler: Convert Yafaray texture \"{0}\" with texture type: \"{1}\" to \"{2}\"".format(tex.name, tex.yaf_tex_type, tex.type))
             tex.yaf_tex_type = tex.type
     # convert image output file type setting from blender to yafaray's file type setting on file load, so that both are the same...
-    if bpy.context.scene.render.image_settings.file_format != bpy.context.scene.img_output:
+    if bpy.context.scene.render.image_settings.file_format is not bpy.context.scene.img_output:
         bpy.context.scene.img_output = bpy.context.scene.render.image_settings.file_format
 
 

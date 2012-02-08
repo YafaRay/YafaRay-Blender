@@ -86,7 +86,7 @@ class yafIntegrator:
             causticType = switchCausticType.get(causticTypeStr)
             yi.paramsSetString("caustic_type", causticType)
 
-            if causticType != 'none' and causticType != 'path':
+            if causticType not in {'none', 'path'}:
                 yi.paramsSetInt("photons", scene.intg_photons)
                 yi.paramsSetInt("caustic_mix", scene.intg_caustic_mix)
                 yi.paramsSetInt("caustic_depth", scene.intg_caustic_depth)
