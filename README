@@ -1,4 +1,4 @@
-Yafaray exporter for Blender 2.61:
+Yafaray exporter for Blender 2.62:
 
 The exporter is in an experimental stage, so use it for testing purposes only.
 For the latest exporter updates check:
@@ -14,7 +14,7 @@ or look into this forum post for other platform builds:
 
 http://www.yafaray.org/community/forum/viewtopic.php?f=16&t=3520
 
-Download and extract the exporter files and folders to the 'Blender/2.61/scripts/addons/yafaray' directory.
+Download and extract the exporter files and folders to the 'Blender/2.62/scripts/addons/yafaray' directory.
 
 We need to test it, please post bugreports and feature requests here:
 http://www.yafaray.org/development/bugtracker/yafaray
