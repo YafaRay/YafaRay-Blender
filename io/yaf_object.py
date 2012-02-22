@@ -349,7 +349,7 @@ class yafObject(object):
         mesh = obj.to_mesh(self.scene, True, 'RENDER')
         isSmooth = False
         hasOrco = False
-        hasUV = mesh.uv_textures
+        hasUV = mesh.tessface_uv_textures
 
         # Check if the object has an orco mapped texture
         for mat in [mmat for mmat in mesh.materials if mmat is not None]:
@@ -409,7 +409,7 @@ class yafObject(object):
 
             co = None
             if hasUV:
-                co = mesh.uv_textures.active.data[index]
+                co = mesh.tessface_uv_textures.active.data[index]
                 uv0 = self.yi.addUV(co.uv1[0], co.uv1[1])
                 uv1 = self.yi.addUV(co.uv2[0], co.uv2[1])
                 uv2 = self.yi.addUV(co.uv3[0], co.uv3[1])
