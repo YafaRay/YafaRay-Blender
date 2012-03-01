@@ -135,7 +135,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         baseIds = {}
         dupBaseIds = {}
 
-        for obj in [o for o in self.scene.objects if not o.hide_render and o.is_visible(self.scene) \
+        for obj in [o for o in self.scene.objects if not o.hide_render and (o.is_visible(self.scene) or o.hide) \
         and (o.type in {'MESH', 'SURFACE', 'CURVE', 'FONT', 'EMPTY'})]:
             # Exporting dupliObjects as instances: disabled exporting instances when global
             # option "transp. shadows" is on -> crashes yafaray render engine
