@@ -64,7 +64,7 @@ class YAF_PT_object_light(Panel):
             layout.prop(ob, "vol_region")
             layout.separator()
             col = layout.column(align=True)
-            col.prop(ob, "vol_absorp", text="Absroption")
+            col.prop(ob, "vol_absorp", text="Absorption")
             col.prop(ob, "vol_scatter", text="Scatter")
 
             if ob.vol_region == "ExpDensity Volume":
