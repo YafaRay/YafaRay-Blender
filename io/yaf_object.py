@@ -349,7 +349,15 @@ class yafObject(object):
         mesh = obj.to_mesh(self.scene, True, 'RENDER')
         isSmooth = False
         hasOrco = False
-        hasUV = mesh.tessface_uv_textures
+        hasUV = bool(mesh.tessface_uv_textures.active) # check for UV's
+        
+        # BMesh API update, check for tessellated faces, if needed calculate them...
+        if not mesh.tessfaces and mesh.polygons:
+            mesh.update(calc_tessface=True)
+
+        if not mesh.tessfaces: # if there are no faces, no need to write geometry, remove mesh data then...
+            bpy.data.meshes.remove(mesh)
+            return
 
         # Check if the object has an orco mapped texture
         for mat in [mmat for mmat in mesh.materials if mmat is not None]:
@@ -390,7 +398,7 @@ class yafObject(object):
         self.yi.paramsClearAll()
         self.yi.startGeometry()
 
-        self.yi.startTriMesh(ID, len(mesh.vertices), len(mesh.faces), hasOrco, hasUV, obType)
+        self.yi.startTriMesh(ID, len(mesh.vertices), len(mesh.tessfaces), hasOrco, hasUV, obType)
 
         for ind, v in enumerate(mesh.vertices):
             if hasOrco:
@@ -398,18 +406,18 @@ class yafObject(object):
             else:
                 self.yi.addVertex(v.co[0], v.co[1], v.co[2])
 
-        for index, f in enumerate(mesh.faces):
+        for index, f in enumerate(mesh.tessfaces):
             if f.use_smooth:
                 isSmooth = True
 
-            if oMat is not None:
+            if oMat:
                 ymaterial = oMat
             else:
                 ymaterial = self.getFaceMaterial(mesh.materials, f.material_index, obj.material_slots)
 
             co = None
             if hasUV:
-                co = mesh.tessface_uv_textures.active.data[index]
+                co = mesh.tessface_uv_textures.active.data[f.index]
                 uv0 = self.yi.addUV(co.uv1[0], co.uv1[1])
                 uv1 = self.yi.addUV(co.uv2[0], co.uv2[1])
                 uv2 = self.yi.addUV(co.uv3[0], co.uv3[1])
@@ -420,9 +428,9 @@ class yafObject(object):
             if len(f.vertices) == 4:
                 if hasUV:
                     uv3 = self.yi.addUV(co.uv4[0], co.uv4[1])
-                    self.yi.addTriangle(f.vertices[2], f.vertices[3], f.vertices[0], uv2, uv3, uv0, ymaterial)
+                    self.yi.addTriangle(f.vertices[0], f.vertices[2], f.vertices[3], uv0, uv2, uv3, ymaterial)
                 else:
-                    self.yi.addTriangle(f.vertices[2], f.vertices[3], f.vertices[0], ymaterial)
+                    self.yi.addTriangle(f.vertices[0], f.vertices[2], f.vertices[3], ymaterial)
 
         self.yi.endTriMesh()
 
