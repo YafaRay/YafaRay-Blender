@@ -349,13 +349,13 @@ class yafObject(object):
         mesh = obj.to_mesh(self.scene, True, 'RENDER')
         isSmooth = False
         hasOrco = False
-        hasUV = bool(mesh.tessface_uv_textures.active) # check for UV's
-        
+        hasUV = bool(mesh.tessface_uv_textures.active)  # check for UV's
+
         # BMesh API update, check for tessellated faces, if needed calculate them...
         if not mesh.tessfaces and mesh.polygons:
             mesh.update(calc_tessface=True)
 
-        if not mesh.tessfaces: # if there are no faces, no need to write geometry, remove mesh data then...
+        if not mesh.tessfaces:  # if there are no faces, no need to write geometry, remove mesh data then...
             bpy.data.meshes.remove(mesh)
             return
 
