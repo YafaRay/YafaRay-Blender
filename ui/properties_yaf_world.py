@@ -113,9 +113,9 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
             col = split.column()
             col.label(text=" ")
             sub = col.column(align=True)
-            sub.operator("world.get_position", text="Get Position")
-            sub.operator("world.get_angle", text="Get Angle")
-            sub.operator("world.update_sun", text="Update Sun")
+            sub.operator("world.get_position", text="Get from Location")
+            sub.operator("world.get_angle", text="Get from Angle")
+            sub.operator("world.update_sun", text="Update Lamp in 3D View")
 
             layout.separator()
 
@@ -136,7 +136,7 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
 
             layout.column().prop(world, "bg_light_samples")
 
-        ## DarkTide Sunsky NOT more updated? ----->
+        ## DarkTide Sunsky
         elif world.bg_type == "Sunsky2":
             self.ibl = False
             layout.separator()
@@ -157,9 +157,9 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
             col = split.column()
             col.label(text=" ")
             sub = col.column(align=True)
-            sub.operator("world.get_position", text="Get Position")
-            sub.operator("world.get_angle", text="Get Angle")
-            sub.operator("world.update_sun", text="Update Sun")
+            sub.operator("world.get_position", text="Get from Location")
+            sub.operator("world.get_angle", text="Get from Angle")
+            sub.operator("world.update_sun", text="Update Lamp in 3D View")
             col.prop(world, "bg_dsaltitude")
 
             layout.separator()

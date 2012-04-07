@@ -26,7 +26,7 @@ from bpy.types import Operator
 class OBJECT_OT_get_position(Operator):
     bl_label = "From( get position )"
     bl_idname = "world.get_position"
-    bl_description = "Get position from selected sun lamp"
+    bl_description = "Get the position of the sun from the selected lamp location"
 
     def execute(self, context):
         warning_message = sunPosAngle(mode="get", val="position")
@@ -40,7 +40,7 @@ class OBJECT_OT_get_position(Operator):
 class OBJECT_OT_get_angle(Operator):
     bl_label = "From( get angle )"
     bl_idname = "world.get_angle"
-    bl_description = "Get angle from selected sun lamp"
+    bl_description = "Get the position of the sun from selected lamp angle"
 
     def execute(self, context):
         warning_message = sunPosAngle(mode="get", val="angle")
@@ -54,7 +54,7 @@ class OBJECT_OT_get_angle(Operator):
 class OBJECT_OT_update_sun(Operator):
     bl_label = "From( update sun )"
     bl_idname = "world.update_sun"
-    bl_description = "Update position and angle of selected sun lamp according to GUI values"
+    bl_description = "Update the position and angle of selected lamp in 3D View according to GUI values"
 
     def execute(self, context):
         warning_message = sunPosAngle(mode="update")
@@ -70,9 +70,10 @@ def sunPosAngle(mode="get", val="position"):
     scene = bpy.context.scene
     world = scene.world
 
-    if active_object and active_object.type == "LAMP" and active_object.data.type == "SUN":
+    if active_object and active_object.type == "LAMP":
 
         if mode == "get":
+            # get the position of the sun from selected lamp 'location'
             if val == "position":
                 location = mathutils.Vector(active_object.location)
 
@@ -83,47 +84,25 @@ def sunPosAngle(mode="get", val="position"):
 
                 world.bg_from = point
                 return
-
+            # get the position of the sun from selected lamps 'angle'
             elif val == "angle":
-                inv_matrix = mathutils.Matrix(active_object.matrix_local).copy().inverted()
-                world.bg_from = (inv_matrix[0][2], inv_matrix[1][2], inv_matrix[2][2])
+                matrix = mathutils.Matrix(active_object.matrix_local).copy()
+                world.bg_from = (matrix[0][2], matrix[1][2], matrix[2][2])
                 return
 
         elif mode == "update":
 
             # get gui from vector and normalize it
-            bg_from = mathutils.Vector(world.bg_from)
+            bg_from = mathutils.Vector(world.bg_from).copy()
             if bg_from.length:
                 bg_from.normalize()
 
-            # set location -----------------------------------
+            # set location
             sundist = mathutils.Vector(active_object.location).length
             active_object.location = sundist * bg_from
 
-            # compute and set rotation -----------------------
-            # initialize rotation angle
-            ang = 0.0
-
-            # set reference vector for angle to -z
-            vtrack = mathutils.Vector((0, 0, -1))
-
-            # compute sun ray direction from position
-            vray = bg_from.copy()
-            if bg_from.length:
-                vray.negate()
-                vray.normalize()
-
-            # get angle between sun ray and reference vector
-            if vtrack.length and vray.length:
-                ang = vtrack.angle(vray, 0.0)  # 0.0 is the falloff value
-            else:
-                print("Zero length input vector - sun angle set to 0")
-
-            # get rotation axis
-            axis = vtrack.cross(vray).normalized()
-
-            # get quaternion representing rotation and get corresponding euler angles
-            quat = mathutils.Quaternion(axis, ang)
+            # compute and set rotation
+            quat = bg_from.to_track_quat("Z", "Y")
             eul = quat.to_euler()
 
             # update sun rotation and redraw the 3D windows
@@ -131,7 +110,7 @@ def sunPosAngle(mode="get", val="position"):
             return
 
     else:
-        return "No selected Sun lamp object in the scene!"
+        return "No selected LAMP object in the scene!"
 
 
 def checkSceneLights():
