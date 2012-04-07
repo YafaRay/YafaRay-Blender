@@ -64,8 +64,11 @@ class YAFRENDER_PT_dimensions(RenderButtonsPanel, Panel):
         sub.prop(rd, "resolution_y", text="Y")
         sub.prop(rd, "resolution_percentage", text="")
 
-        # Border render disabled in UI, has to be solved in YafaRay engine first...
-        # layout.row().prop(rd, "use_border", text="Border", toggle=True)
+        row = col.row()
+        row.prop(rd, "use_border", text="Border")
+        sub = row.row()
+        sub.active = rd.use_border
+        sub.prop(rd, "use_crop_to_border", text="Crop")
 
         col = split.column()
         sub = col.column(align=True)
