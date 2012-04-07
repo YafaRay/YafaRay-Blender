@@ -35,6 +35,14 @@ def call_lighttype_update(self, context):
         lamp.type = switchLampType.get(lamp.lamp_type)
 
 
+def set_shadow_method(self, context):
+    lamp = context.lamp
+    if lamp.yaf_show_dist_clip:
+        lamp.shadow_method = 'BUFFER_SHADOW'
+    else:
+        lamp.shadow_method = 'RAY_SHADOW'
+
+
 def register():
     Lamp.lamp_type = EnumProperty(
         name="Light type",
@@ -109,6 +117,11 @@ def register():
         min=0, max=512,
         default=16)
 
+    Lamp.yaf_show_dist_clip = BoolProperty(
+        name="Show distance and clipping",
+        description="Show distance, clip start and clip end settings for spot lamp in 3D view",
+        default=False, update=set_shadow_method)
+
 
 def unregister():
     del Lamp.lamp_type
@@ -123,3 +136,4 @@ def unregister():
     del Lamp.ies_soft_shadows
     del Lamp.ies_file
     del Lamp.yaf_samples
+    del Lamp.yaf_show_dist_clip

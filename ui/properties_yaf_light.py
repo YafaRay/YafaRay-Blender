@@ -116,11 +116,18 @@ class YAF_PT_spotshape(LampButtonsPanel, Panel):
 
         col = split.column()
         col.prop(lamp, "spot_size", text="Size")
-        col.prop(lamp, "show_cone")
+        col.prop(lamp, "yaf_show_dist_clip")
+        if lamp.yaf_show_dist_clip:
+            col.prop(lamp, "distance")
+            col.prop(lamp, "shadow_buffer_clip_start", text="Clip Start")
 
         col = split.column()
 
         col.prop(lamp, "spot_blend", text="Blend", slider=True)
+        col.prop(lamp, "show_cone")
+        if lamp.yaf_show_dist_clip:
+            col.label(text="")
+            col.prop(lamp, "shadow_buffer_clip_end", text=" Clip End")
 
 
 class YAF_PT_lamp_sun(LampButtonsPanel, Panel):
