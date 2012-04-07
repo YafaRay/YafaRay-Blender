@@ -310,11 +310,11 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         [self.sizeX, self.sizeY, self.bStartX, self.bStartY, self.bsizeX, self.bsizeY, camDummy] = yaf_scene.getRenderCoords(scene)
 
         if render.use_border:
-            self.x = self.bsizeX
-            self.y = self.bsizeY
+            self.resX = self.bsizeX
+            self.resY = self.bsizeY
         else:
-            self.x = self.sizeX
-            self.y = self.sizeY
+            self.resX = self.sizeX
+            self.resY = self.sizeY
 
         if scene.gs_type_render == "file":
             self.setInterface(yafrayinterface.yafrayInterface_t())
@@ -324,8 +324,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.yi.paramsSetString("type", self.file_type)
             self.yi.paramsSetBool("alpha_channel", render.image_settings.color_mode == "RGBA")
             self.yi.paramsSetBool("z_channel", scene.gs_z_channel)
-            self.yi.paramsSetInt("width", self.x + self.bStartX)
-            self.yi.paramsSetInt("height", self.y + self.bStartY)
+            self.yi.paramsSetInt("width", self.sizeX)
+            self.yi.paramsSetInt("height", self.sizeY)
             self.ih = self.yi.createImageHandler("outFile")
             self.co = yafrayinterface.imageOutput_t(self.ih, str(self.outputFile), 0, 0)
 
@@ -357,10 +357,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.yi.printInfo("Exporter: Rendering to file {0}".format(self.outputFile))
             self.update_stats("YafaRay Rendering:", "Rendering to {0}".format(self.outputFile))
             self.yi.render(self.co)
-            result = self.begin_result(self.bStartX,
-                                       self.bStartY,
-                                       self.x + self.bStartX,
-                                       self.y + self.bStartY)
+            result = self.begin_result(0, 0, self.resX, self.resY)
             lay = result.layers[0]
 
             # exr format has z-buffer included, so no need to load '_zbuffer' - file
@@ -408,7 +405,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
             t = threading.Thread(
                                     target=self.yi.render,
-                                    args=(self.sizeX, self.sizeY, 0, 0,
+                                    args=(self.resX, self.resY, self.bStartX, self.bStartY,
                                     self.is_preview,
                                     drawAreaCallback,
                                     flushCallback,
