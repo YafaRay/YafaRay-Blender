@@ -23,6 +23,12 @@ from bl_ui.properties_world import WorldButtonsPanel
 
 WorldButtonsPanel.COMPAT_ENGINES = {'YAFA_RENDER'}
 
+# Inherit World data block
+from bl_ui.properties_world import WORLD_PT_context_world
+WORLD_PT_context_world.COMPAT_ENGINES.add('YAFA_RENDER')
+del WORLD_PT_context_world
+
+# Inherit World Preview Panel
 from bl_ui.properties_world import WORLD_PT_preview
 WORLD_PT_preview.COMPAT_ENGINES.add('YAFA_RENDER')
 del WORLD_PT_preview
