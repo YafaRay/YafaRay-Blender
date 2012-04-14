@@ -83,7 +83,7 @@ from . import properties_yaf_AA_settings
 
 
 class YAFRENDER_PT_output(RenderButtonsPanel, Panel):
-    bl_label = "Output Settings"
+    bl_label = "Output"
 
     def draw(self, context):
         layout = self.layout

@@ -59,7 +59,7 @@ class YAF_PT_lamp_type(Panel):
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "data"
-    bl_label = "Lamp type"
+    bl_label = "Lamp"
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
     @classmethod

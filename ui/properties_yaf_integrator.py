@@ -26,7 +26,7 @@ RenderButtonsPanel.COMPAT_ENGINES = {'YAFA_RENDER'}
 
 
 class YAF_PT_render(RenderButtonsPanel, Panel):
-    bl_label = "Yafaray Integrator"
+    bl_label = "Integrator"
 
     def draw(self, context):
         layout = self.layout
