@@ -112,13 +112,12 @@ class yafLight:
         if lampType == "point":
             yi.paramsSetString("type", "pointlight")
             if getattr(lamp, "use_sphere", False):
-                radius = max(lamp.distance, 0.01)  # avoid ZeroDivisionError
                 if lamp.create_geometry:
-                    ID = self.makeSphere(24, 48, pos[0], pos[1], pos[2], radius, self.lightMat)
+                    ID = self.makeSphere(24, 48, pos[0], pos[1], pos[2], lamp.yaf_sphere_radius, self.lightMat)
                     yi.paramsSetInt("object", ID)
                 yi.paramsSetString("type", "spherelight")
                 yi.paramsSetInt("samples", lamp.yaf_samples)
-                yi.paramsSetFloat("radius", radius)
+                yi.paramsSetFloat("radius", lamp.yaf_sphere_radius)
 
         elif lampType == "spot":
             if self.preview and name == "Lamp.002":
@@ -207,8 +206,8 @@ class yafLight:
             # "from" is not used for sunlight and infinite directional light
             yi.paramsSetPoint("from", pos[0], pos[1], pos[2])
         if lampType in {"point", "spot"}:
-            if getattr(lamp, "use_sphere", False):
-                power = 0.5 * power * power / (radius * radius)
+            if getattr(lamp, "use_sphere", False) and lampType == "point":
+                power = 0.5 * power * power / (lamp.yaf_sphere_radius * lamp.yaf_sphere_radius)
             else:
                 power = 0.5 * power * power
 

@@ -43,6 +43,12 @@ def set_shadow_method(self, context):
         lamp.shadow_method = 'RAY_SHADOW'
 
 
+def sync_with_distance(self, context):
+    lamp = context.lamp
+    if lamp.yaf_sphere_radius != lamp.distance:
+        lamp.distance = lamp.yaf_sphere_radius
+
+
 def register():
     Lamp.lamp_type = EnumProperty(
         name="Light type",
@@ -62,6 +68,13 @@ def register():
         description="Intensity multiplier for color",
         min=0.0, max=10000.0,
         default=1.0)
+
+    Lamp.yaf_sphere_radius = FloatProperty(
+        name="Radius",
+        description="Radius of the sphere light",
+        min=0.01, max=10000.0,
+        soft_min=0.01, soft_max=100.0,
+        default=1.0, update=sync_with_distance)
 
     Lamp.directional = BoolProperty(
         name="Directional",
@@ -126,6 +139,7 @@ def register():
 def unregister():
     del Lamp.lamp_type
     del Lamp.yaf_energy
+    del Lamp.yaf_sphere_radius
     del Lamp.directional
     del Lamp.create_geometry
     del Lamp.infinite
