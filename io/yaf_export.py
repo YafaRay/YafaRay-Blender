@@ -324,8 +324,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.yi.paramsSetString("type", self.file_type)
             self.yi.paramsSetBool("alpha_channel", render.image_settings.color_mode == "RGBA")
             self.yi.paramsSetBool("z_channel", scene.gs_z_channel)
-            self.yi.paramsSetInt("width", self.sizeX)
-            self.yi.paramsSetInt("height", self.sizeY)
+            self.yi.paramsSetInt("width", self.resX)
+            self.yi.paramsSetInt("height", self.resY)
             self.ih = self.yi.createImageHandler("outFile")
             self.co = yafrayinterface.imageOutput_t(self.ih, str(self.outputFile), 0, 0)
 
