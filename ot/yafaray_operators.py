@@ -158,11 +158,6 @@ class RENDER_OT_render_view(Operator):
             bpy.types.YAFA_RENDER.useViewToRender = False
             return {'CANCELLED'}
 
-        elif scene.render.use_border:
-            self.report({'WARNING'}, ("Border render not yet supported in YafaRay!"))
-            # turn off border render
-            scene.render.use_border = False
-            return {'CANCELLED'}
 
         else:
             bpy.types.YAFA_RENDER.viewMatrix = view3d.view_matrix.copy()
@@ -186,12 +181,6 @@ class RENDER_OT_render_animation(Operator):
 
         if not sceneLights and scene.intg_light_method == "Bidirectional":
             self.report({'WARNING'}, ("No lights in the scene and lighting method is bidirectional!"))
-            return {'CANCELLED'}
-
-        elif scene.render.use_border:
-            self.report({'WARNING'}, ("Border render not yet supported in YafaRay!"))
-            # turn off border render
-            scene.render.use_border = False
             return {'CANCELLED'}
 
         else:
@@ -222,11 +211,6 @@ class RENDER_OT_render_still(Operator):
             self.report({'WARNING'}, ("No lights in the scene and lighting method is bidirectional!"))
             return {'CANCELLED'}
 
-        elif scene.render.use_border:
-            self.report({'WARNING'}, ("Border render not yet supported in YafaRay!"))
-            # turn off border render
-            scene.render.use_border = False
-            return {'CANCELLED'}
 
         else:
             bpy.ops.render.render('INVOKE_DEFAULT')
