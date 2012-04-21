@@ -39,6 +39,38 @@ class YAFRENDER_PT_render(RenderButtonsPanel, Panel):
         layout.row().operator("render.render_view", text="Render 3D View", icon='VIEW3D')
         layout.prop(rd, "display_mode", text="Display")
 
+class YAFRENDER_PT_layers(RenderButtonsPanel, Panel):
+    bl_label = "Layers"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    def draw(self, context):
+        layout = self.layout
+        
+        scene = context.scene
+        rd = scene.render
+
+        row = layout.row()
+        row.template_list(rd, "layers", rd.layers, "active_index", rows=2)
+
+        col = row.column(align=True)
+        col.operator("scene.render_layer_add", icon='ZOOMIN', text="")
+        col.operator("scene.render_layer_remove", icon='ZOOMOUT', text="")
+
+        row = layout.row()
+        rl = rd.layers.active
+        row.prop(rl, "name")
+        row.prop(rd, "use_single_layer", text="", icon_only=True)
+        
+        split = layout.split()
+
+        col = split.column()
+        col.prop(scene, "layers", text="Scene")
+        # TODO: Implement material override
+        #col.prop(rl, "material_override", text="Material")
+
+        col = split.column()
+        # TODO: Implement render layers
+        #col.prop(rl, "layers", text="Layer")
 
 class YAFRENDER_PT_dimensions(RenderButtonsPanel, Panel):
     bl_label = "Dimensions"
