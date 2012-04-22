@@ -149,7 +149,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                         if mat_slot.material not in self.materials:
                             self.exportMaterial(mat_slot.material)
 
-                    if has_orco:
+                    if has_orco or not self.scene.render.use_instances:
                         matrix = obj_dupli.matrix.copy()
                         self.yaf_object.writeMesh(obj_dupli.object, matrix)
                     else:
@@ -174,7 +174,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 continue
 
             # Exporting objects with shared mesh data blocks as instances
-            elif obj.data.users > 1:
+            elif obj.data.users > 1 and self.scene.render.use_instances:
                 # check materials and textures of object for 'ORCO' texture coordinates
                 # if so: do not export them as instances -> gives weird rendering results!
                 has_orco = self.checkForOrco(obj)

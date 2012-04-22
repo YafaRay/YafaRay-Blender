@@ -39,6 +39,7 @@ class YAF_PT_general_settings(RenderButtonsPanel, Panel):
     def draw(self, context):
         layout = self.layout
         scene = context.scene
+        render = scene.render
 
         row = layout.row(align=True)
         row.menu("YAFARAY_MT_presets_render", text=bpy.types.YAFARAY_MT_presets_render.bl_label)
@@ -88,6 +89,7 @@ class YAF_PT_general_settings(RenderButtonsPanel, Panel):
         col.prop(scene, "gs_auto_threads")
         col.prop(scene, "gs_clamp_rgb")
         col.prop(scene, "gs_show_sam_pix")
+        col.prop(render, "use_instances", text="Instances")
         col.prop(scene, "gs_verbose")
 
         col = layout.column()
