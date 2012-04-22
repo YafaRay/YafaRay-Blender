@@ -137,9 +137,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         for obj in [o for o in self.scene.objects if not o.hide_render and (o.is_visible(self.scene) or o.hide) \
         and (o.type in {'MESH', 'SURFACE', 'CURVE', 'FONT', 'EMPTY'})]:
-            # Exporting dupliObjects as instances: disabled exporting instances when global
-            # option "transp. shadows" is on -> crashes yafaray render engine
-            # also check for dupliObject type 'EMPTY' and don't export them as geometry
+            # Exporting dupliObjects as instances, also check for dupliObject type 'EMPTY' and don't export them as geometry
             if obj.is_duplicator:
                 self.yi.printInfo("Processing duplis for: {0}".format(obj.name))
                 obj.dupli_list_create(self.scene)
@@ -151,7 +149,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                         if mat_slot.material not in self.materials:
                             self.exportMaterial(mat_slot.material)
 
-                    if self.scene.gs_transp_shad or has_orco:
+                    if has_orco:
                         matrix = obj_dupli.matrix.copy()
                         self.yaf_object.writeMesh(obj_dupli.object, matrix)
                     else:
@@ -175,9 +173,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             elif obj.type == 'EMPTY':
                 continue
 
-            # Exporting objects with shared mesh data blocks as instances: disabled exporting instances when global
-            # option "transparent shadows" is on -> crashes yafaray render engine
-            elif obj.data.users > 1 and not self.scene.gs_transp_shad:
+            # Exporting objects with shared mesh data blocks as instances
+            elif obj.data.users > 1:
                 # check materials and textures of object for 'ORCO' texture coordinates
                 # if so: do not export them as instances -> gives weird rendering results!
                 has_orco = self.checkForOrco(obj)
