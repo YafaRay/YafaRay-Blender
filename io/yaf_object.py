@@ -417,7 +417,7 @@ class yafObject(object):
 
             co = None
             if hasUV:
-                co = mesh.tessface_uv_textures.active.data[f.index]
+                co = mesh.tessface_uv_textures.active.data[index]
                 uv0 = self.yi.addUV(co.uv1[0], co.uv1[1])
                 uv1 = self.yi.addUV(co.uv2[0], co.uv2[1])
                 uv2 = self.yi.addUV(co.uv3[0], co.uv3[1])
