@@ -35,8 +35,8 @@ bl_info = {
               "Pedro Alcaide (povmaniaco), Paulo Gomes (tuga3d), "
               "Michele Castigliego (subcomandante), Bert Buchholz, "
               "Rodrigo Placencia (DarkTide), Alexander Smirnov (Exvion)",
-    "version": (0, 1, 2, 'alpha'),
-    "blender": (2, 6, 2),
+    "version": (0, 1, 2, 'beta'),
+    "blender": (2, 6, 3),
     "location": "Info Header > Engine dropdown menu",
     "warning": "both YafaRay 0.1.2 and this script are in alpha state",
     "wiki_url": "http://www.yafaray.org/community/forum",
@@ -48,11 +48,11 @@ bl_info = {
 # Loading order of the dlls is sensible please do not alter it
 if sys.platform == 'win32':
     for file in os.listdir(BIN_PATH):
-        # MVSC installation
+        # load dll's from a MSVC installation
         if file in {'yafaraycore.dll'}:
-            dllArray = ['libxml2', 'yafaraycore', 'yafarayplugin']
+            dllArray = ['zlib1', 'iconv', 'zlib', 'libpng15', 'libxml2', 'yafaraycore', 'yafarayplugin']
             break
-        # MinGW installation
+        # load dll's from a MinGW installation
         else:
             dllArray = ['zlib1', 'libxml2-2', 'libgcc_s_sjlj-1', 'Half', 'Iex', 'IlmThread', 'IlmImf', 'libjpeg-8', \
                        'libpng14', 'libtiff-3', 'libfreetype-6', 'libyafaraycore', 'libyafarayplugin']
@@ -66,7 +66,7 @@ for dll in dllArray:
     try:
         ctypes.cdll.LoadLibrary(os.path.join(BIN_PATH, dll))
     except Exception as e:
-        print("ERROR: Failed to load library " + dll + ", " + repr(e))
+        print("ERROR: Failed to load library {0}, {1}".format(dll, repr(e)))
 
 if "bpy" in locals():
     import imp
