@@ -100,17 +100,6 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                     bpy.types.YAFA_RENDER.is_texPrev = False
                 self.yaf_texture.writeTexture(self.scene, tex.texture)
 
-    def checkForOrco(self, obj):
-        has_orco = False
-        for mat_slot in [m for m in obj.material_slots if m.material is not None]:
-            for tex in [t for t in mat_slot.material.texture_slots if (t and t.texture and t.use)]:
-                if tex.texture_coords == 'ORCO':
-                    has_orco = True
-                    break  # break tex loop
-            if has_orco:
-                break  # break mat_slot loop
-        return has_orco
-
     def exportObjects(self):
         self.yi.printInfo("Exporter: Processing Lamps...")
 
@@ -143,13 +132,12 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 obj.dupli_list_create(self.scene)
 
                 for obj_dupli in [od for od in obj.dupli_list if not od.object.type == 'EMPTY']:
-                    has_orco = self.checkForOrco(obj_dupli.object)
                     self.exportTexture(obj_dupli.object)
                     for mat_slot in obj_dupli.object.material_slots:
                         if mat_slot.material not in self.materials:
                             self.exportMaterial(mat_slot.material)
 
-                    if has_orco or not self.scene.render.use_instances:
+                    if not self.scene.render.use_instances:
                         matrix = obj_dupli.matrix.copy()
                         self.yaf_object.writeMesh(obj_dupli.object, matrix)
                     else:
@@ -175,24 +163,16 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
             # Exporting objects with shared mesh data blocks as instances
             elif obj.data.users > 1 and self.scene.render.use_instances:
-                # check materials and textures of object for 'ORCO' texture coordinates
-                # if so: do not export them as instances -> gives weird rendering results!
-                has_orco = self.checkForOrco(obj)
+                self.yi.printInfo("Processing shared mesh data node object: {0}".format(obj.name))
+                if obj.data.name not in baseIds:
+                    baseIds[obj.data.name] = self.yaf_object.writeInstanceBase(obj)
 
-                if has_orco:
-                    self.yaf_object.writeObject(obj)
-                else:
-                    self.yi.printInfo("Processing shared mesh data node object: {0}".format(obj.name))
-                    if obj.data.name not in baseIds:
-                        baseIds[obj.data.name] = self.yaf_object.writeInstanceBase(obj)
+                if obj.name not in dupBaseIds:
+                    matrix = obj.matrix_world.copy()
+                    self.yaf_object.writeInstance(baseIds[obj.data.name], matrix, obj.data.name)
 
-                    if obj.name not in dupBaseIds:
-                        matrix = obj.matrix_world.copy()
-                        self.yaf_object.writeInstance(baseIds[obj.data.name], matrix, obj.data.name)
-
-            else:
-                if obj.data.name not in baseIds and obj.name not in dupBaseIds:
-                    self.yaf_object.writeObject(obj)
+            elif obj.data.name not in baseIds and obj.name not in dupBaseIds:
+                self.yaf_object.writeObject(obj)
 
     def handleBlendMat(self, mat):
         if mat.name == mat.material1:
