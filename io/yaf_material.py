@@ -182,6 +182,18 @@ class yafMaterial:
         yi.paramsSetInt("proj_y", proj2int(mtex.mapping_y))
         yi.paramsSetInt("proj_z", proj2int(mtex.mapping_z))
 
+        #------------------------------------------
+        switchMappingCoords = {
+                           'FLAT' : 'plain',
+                           'CUBE' : 'cube',
+                           'TUBE' : 'tube',
+                           'SPHERE' : 'sphere',
+                           }
+        mappingCoords = switchMappingCoords.get(mtex.mapping, 'plain')
+        yi.paramsSetString("mapping", mappingCoords)
+        #------------------------------------------
+        
+        '''
         if   mtex.mapping == 'FLAT':
             yi.paramsSetString("mapping", "plain")
         elif mtex.mapping == 'CUBE':
@@ -190,6 +202,7 @@ class yafMaterial:
             yi.paramsSetString("mapping", "tube")
         elif mtex.mapping == 'SPHERE':
             yi.paramsSetString("mapping", "sphere")
+        '''
 
         yi.paramsSetPoint("offset", mtex.offset[0], mtex.offset[1], mtex.offset[2])
         if bpy.types.YAFA_RENDER.is_texPrev:  # check if it is a texture preview render
