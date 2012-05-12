@@ -158,7 +158,6 @@ class RENDER_OT_render_view(Operator):
             bpy.types.YAFA_RENDER.useViewToRender = False
             return {'CANCELLED'}
 
-
         else:
             bpy.types.YAFA_RENDER.viewMatrix = view3d.view_matrix.copy()
             bpy.ops.render.render('INVOKE_DEFAULT')
@@ -210,7 +209,6 @@ class RENDER_OT_render_still(Operator):
         if not sceneLights and scene.intg_light_method == "Bidirectional":
             self.report({'WARNING'}, ("No lights in the scene and lighting method is bidirectional!"))
             return {'CANCELLED'}
-
 
         else:
             bpy.ops.render.render('INVOKE_DEFAULT')

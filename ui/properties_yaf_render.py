@@ -39,13 +39,14 @@ class YAFRENDER_PT_render(RenderButtonsPanel, Panel):
         layout.row().operator("render.render_view", text="Render 3D View", icon='VIEW3D')
         layout.prop(rd, "display_mode", text="Display")
 
+
 class YAFRENDER_PT_layers(RenderButtonsPanel, Panel):
     bl_label = "Layers"
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
         layout = self.layout
-        
+
         scene = context.scene
         rd = scene.render
 
@@ -60,7 +61,7 @@ class YAFRENDER_PT_layers(RenderButtonsPanel, Panel):
         rl = rd.layers.active
         row.prop(rl, "name")
         row.prop(rd, "use_single_layer", text="", icon_only=True)
-        
+
         split = layout.split()
 
         col = split.column()
@@ -71,6 +72,7 @@ class YAFRENDER_PT_layers(RenderButtonsPanel, Panel):
         col = split.column()
         # TODO: Implement render layers
         #col.prop(rl, "layers", text="Layer")
+
 
 class YAFRENDER_PT_dimensions(RenderButtonsPanel, Panel):
     bl_label = "Dimensions"

@@ -183,14 +183,14 @@ class yafMaterial:
         yi.paramsSetInt("proj_z", proj2int(mtex.mapping_z))
 
         switchMappingCoords = {
-            'FLAT' : 'plain',
-            'CUBE' : 'cube',
-            'TUBE' : 'tube',
-            'SPHERE' : 'sphere',
+            'FLAT': 'plain',
+            'CUBE': 'cube',
+            'TUBE': 'tube',
+            'SPHERE': 'sphere',
         }
         mappingCoords = switchMappingCoords.get(mtex.mapping, 'plain')
         yi.paramsSetString("mapping", mappingCoords)
-        
+
         yi.paramsSetPoint("offset", mtex.offset[0], mtex.offset[1], mtex.offset[2])
         if bpy.types.YAFA_RENDER.is_texPrev:  # check if it is a texture preview render
             mtex_X = mtex.scale[0] * 8.998  # tex preview fix: scale X value of tex size for the stretched Plane Mesh in preview scene
