@@ -3,7 +3,7 @@ Yafaray exporter for Blender 2.63:
 The exporter is in an experimental stage, so use it for testing purposes only.
 For the latest exporter updates check:
 
-https://github.com/YafaRay/Blender-2.5-Exporter
+https://github.com/YafaRay/Blender-Exporter
 
 and for the latest Yafaray builds (including exporter files too) 
 check megasofts builds on graphicall.org:
