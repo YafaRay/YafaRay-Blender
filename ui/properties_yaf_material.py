@@ -322,12 +322,12 @@ class YAF_PT_blend_(MaterialTypePanel, Panel):
         box.label(text="Choose the two materials you wish to blend.")
         split = box.split()
         col = split.column()
-        col.label(text="Material One:")
-        col.prop_search(yaf_mat, "material1", bpy.data, 'materials', text="")
+        col.label(text="Material one:")
+        col.prop(yaf_mat, "material1", text="")
 
         col = split.column()
-        col.label(text="Material Two:")
-        col.prop_search(yaf_mat, "material2", bpy.data, 'materials', text="")
+        col.label(text="Material two:")
+        col.prop(yaf_mat, "material2", text="")
 
 
 if __name__ == "__main__":  # only for live edit.

@@ -28,6 +28,20 @@ from bpy.props import (FloatProperty,
 Material = bpy.types.Material
 
 
+def items_mat1(self, context):
+    a = []
+    for mat in [m for m in bpy.data.materials if m.name not in self.name]:
+        a.append((mat.name, mat.name, "First blend material"))
+    return(a)
+
+
+def items_mat2(self, context):
+    a = []
+    for mat in [m for m in bpy.data.materials if m.name not in self.name]:
+        a.append((mat.name, mat.name, "Second blend material"))
+    return(a)
+
+
 def register():
     Material.mat_type = EnumProperty(
         name="Material type",
@@ -248,15 +262,15 @@ def register():
         description="",
         default=False)
 
-    Material.material1 = StringProperty(
-        name="Material One",
-        description="First Blend Material. Same material if nothing is set",
-        default="")
+    Material.material1 = EnumProperty(
+        name="Material one",
+        description="First blend material",
+        items=items_mat1)
 
-    Material.material2 = StringProperty(
-        name="Material Two",
-        description="Second Blend Material. Same material if nothing is set",
-        default="")
+    Material.material2 = EnumProperty(
+        name="Material two",
+        description="Second blend material",
+        items=items_mat2)
 
 
 def unregister():

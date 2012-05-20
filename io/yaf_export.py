@@ -79,8 +79,12 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         # First export the textures of the materials type 'blend'
         for mat_slot in [m for m in obj.material_slots if m.material is not None]:
             if mat_slot.material.mat_type == 'blend':
-                mat1 = bpy.data.materials[mat_slot.material.material1]
-                mat2 = bpy.data.materials[mat_slot.material.material2]
+                try:
+                    mat1 = bpy.data.materials[mat_slot.material.material1]
+                    mat2 = bpy.data.materials[mat_slot.material.material2]
+                except:
+                    self.yi.printWarning("Exporter: Problem with blend material {0}. Could not find one of the two blended materials".format(mat_slot.material.name))
+                    continue
                 for bm in [mat1, mat2]:
                     for blendtex in [bt for bt in bm.texture_slots if (bt and bt.texture and bt.use)]:
                         if self.is_preview and blendtex.texture.name == 'fakeshadow':
@@ -175,21 +179,15 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.yaf_object.writeObject(obj)
 
     def handleBlendMat(self, mat):
-        if mat.name == mat.material1:
-            self.yi.printError("Exporter: Blend material " + mat.name + " contains itself!")
-            return
-        elif mat.name == mat.material2:
-            self.yi.printError("Exporter: Blend material " + mat.name + " contains itself!")
-            return
-        elif mat.material1 == mat.material2:
-            self.yi.printError("Exporter: Blend material " + mat.material1 + " and " + mat.material2 + " are the same!")
-            return
-        elif not (mat.material1 and mat.material2 in bpy.data.materials):
-            self.yi.printWarning("Exporter: Problem with blend material " + mat.name + ". Could not find one of the two blended materials.")
-            return
-        else:
-            mat1 = bpy.data.materials[mat.material1]
-            mat2 = bpy.data.materials[mat.material2]
+            try:
+                mat1 = bpy.data.materials[mat.material1]
+                mat2 = bpy.data.materials[mat.material2]
+            except:
+                self.yi.printWarning("Exporter: Problem with blend material {0}. Could not find one of the two blended materials".format(mat.name))
+                return
+            if mat1.name == mat2.name:
+                self.yi.printWarning("Exporter: Problem with blend material {0}. {1} and {2} to blend are the same materials".format(mat.name, mat1.name, mat2.name))
+                return
 
             if mat1.mat_type == 'blend':
                 self.handleBlendMat(mat1)
