@@ -349,15 +349,26 @@ class yafObject(object):
         mesh = obj.to_mesh(self.scene, True, 'RENDER')
         isSmooth = False
         hasOrco = False
-        hasUV = bool(mesh.tessface_uv_textures.active)  # check for UV's
+        # test for UV Map after BMesh API changes
+        uv_texture = mesh.tessface_uv_textures if 'tessface_uv_textures' in dir(mesh) else mesh.uv_textures
+        # test for faces after BMesh API changes
+        face_attr = 'faces' if 'faces' in dir(mesh) else 'tessfaces'
+        hasUV = len(uv_texture) > 0  # check for UV's
 
-        # BMesh API update, check for tessellated faces, if needed calculate them...
-        if not mesh.tessfaces and mesh.polygons:
-            mesh.update(calc_tessface=True)
+        if face_attr == 'tessfaces':
+            if not mesh.tessfaces and mesh.polygons:
+                # BMesh API update, check for tessellated faces, if needed calculate them...
+                mesh.update(calc_tessface=True)
 
-        if not mesh.tessfaces:  # if there are no faces, no need to write geometry, remove mesh data then...
-            bpy.data.meshes.remove(mesh)
-            return
+            if not mesh.tessfaces:
+                # if there are no faces, no need to write geometry, remove mesh data then...
+                bpy.data.meshes.remove(mesh)
+                return
+        else:
+            if not mesh.faces:
+                # if there are no faces, no need to write geometry, remove mesh data then...
+                bpy.data.meshes.remove(mesh)
+                return
 
         # Check if the object has an orco mapped texture
         for mat in [mmat for mmat in mesh.materials if mmat is not None]:
@@ -398,7 +409,7 @@ class yafObject(object):
         self.yi.paramsClearAll()
         self.yi.startGeometry()
 
-        self.yi.startTriMesh(ID, len(mesh.vertices), len(mesh.tessfaces), hasOrco, hasUV, obType)
+        self.yi.startTriMesh(ID, len(mesh.vertices), len(getattr(mesh, face_attr)), hasOrco, hasUV, obType)
 
         for ind, v in enumerate(mesh.vertices):
             if hasOrco:
@@ -406,7 +417,7 @@ class yafObject(object):
             else:
                 self.yi.addVertex(v.co[0], v.co[1], v.co[2])
 
-        for index, f in enumerate(mesh.tessfaces):
+        for index, f in enumerate(getattr(mesh, face_attr)):
             if f.use_smooth:
                 isSmooth = True
 
@@ -417,7 +428,7 @@ class yafObject(object):
 
             co = None
             if hasUV:
-                co = mesh.tessface_uv_textures.active.data[index]
+                co = uv_texture.active.data[index]
                 uv0 = self.yi.addUV(co.uv1[0], co.uv1[1])
                 uv1 = self.yi.addUV(co.uv2[0], co.uv2[1])
                 uv2 = self.yi.addUV(co.uv3[0], co.uv3[1])
