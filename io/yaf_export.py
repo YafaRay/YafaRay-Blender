@@ -104,6 +104,12 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                     bpy.types.YAFA_RENDER.is_texPrev = False
                 self.yaf_texture.writeTexture(self.scene, tex.texture)
 
+    def object_on_visible_layer(self, obj):
+        obj_visible = False
+        for layer_visible in [object_layers and scene_layers for object_layers, scene_layers in zip(obj.layers, self.scene.layers)]:
+            obj_visible |= layer_visible
+        return obj_visible
+
     def exportObjects(self):
         self.yi.printInfo("Exporter: Processing Lamps...")
 
@@ -129,7 +135,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         dupBaseIds = {}
 
         for obj in [o for o in self.scene.objects if not o.hide_render and (o.is_visible(self.scene) or o.hide) \
-        and (o.type in {'MESH', 'SURFACE', 'CURVE', 'FONT', 'EMPTY'})]:
+        and self.object_on_visible_layer(o) and (o.type in {'MESH', 'SURFACE', 'CURVE', 'FONT', 'EMPTY'})]:
             # Exporting dupliObjects as instances, also check for dupliObject type 'EMPTY' and don't export them as geometry
             if obj.is_duplicator:
                 self.yi.printInfo("Processing duplis for: {0}".format(obj.name))
