@@ -66,10 +66,13 @@ class YAF_PT_lens(CameraButtonsPanel, Panel):
 
         layout.separator()
         split = layout.split()
-        col = split.column()
-        col.prop(camera, "use_clipping")
+        col = split.column(align=True)
+        col.label(text="Shift:")
+        col.prop(camera, "shift_x", text="X")
+        col.prop(camera, "shift_y", text="Y")
 
         col = split.column(align=True)
+        col.prop(camera, "use_clipping")
         sub = col.column()
         sub.active = camera.use_clipping
         sub.prop(camera, "clip_start", text="Start")
