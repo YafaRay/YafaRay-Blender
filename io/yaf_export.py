@@ -347,10 +347,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             else:
                 lay.load_from_file(self.outputFile)
 
-            if bpy.app.version > (2, 63, 17):
-                self.end_result(result, 0)  # API change with SVN revision 50384 (cycles tiles adaption)
-            else:
-                self.end_result(result)
+            self.end_result(result)
 
         elif scene.gs_type_render == "xml":
             self.yi.printInfo("Exporter: Writing XML to file {0}".format(self.outputFile))
@@ -377,10 +374,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 except:
                     pass
 
-                if bpy.app.version > (2, 63, 17):
-                    self.end_result(res, 0)  # API change with SVN revision 50384 (cycles tiles adaption)
-                else:
-                    self.end_result(res)
+                self.end_result(res)
 
             def flushCallback(*args):
                 w, h, tile = args
@@ -390,10 +384,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 except BaseException as e:
                     pass
 
-                if bpy.app.version > (2, 63, 17):
-                    self.end_result(res, 0)  # API change with SVN revision 50384 (cycles tiles adaption)
-                else:
-                    self.end_result(res)
+                self.end_result(res)
 
             t = threading.Thread(
                                     target=self.yi.render,
