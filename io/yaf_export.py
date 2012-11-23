@@ -43,8 +43,6 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
     tag = ""
     useViewToRender = False
     viewMatrix = None
-    # boolean variable to check for texture preview
-    is_texPrev = False
 
     def setInterface(self, yi):
         self.materialMap = {}
@@ -97,11 +95,6 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             for tex in [t for t in mat_slot.material.texture_slots if (t and t.texture and t.use)]:
                 if self.is_preview and tex.texture.name == "fakeshadow":
                     continue
-                # stretched plane needs to be fixed for texture preview
-                if self.is_preview and obj.name == 'texture':
-                    bpy.types.YAFA_RENDER.is_texPrev = True
-                else:
-                    bpy.types.YAFA_RENDER.is_texPrev = False
                 self.yaf_texture.writeTexture(self.scene, tex.texture)
 
     def object_on_visible_layer(self, obj):
