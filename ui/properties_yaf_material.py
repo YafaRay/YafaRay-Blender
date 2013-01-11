@@ -61,7 +61,7 @@ class YAF_PT_context_material(MaterialButtonsPanel, Panel):
         if ob:
             row = layout.row()
 
-            row.template_list(ob, "material_slots", ob, "active_material_index", rows=2)
+            row.template_list("MATERIAL_UL_matslots", "", ob, "material_slots", ob, "active_material_index", rows=2)
 
             col = row.column(align=True)
             col.operator("object.material_slot_add", icon='ZOOMIN', text="")
@@ -328,6 +328,7 @@ class YAF_PT_blend_(MaterialTypePanel, Panel):
         col = split.column()
         col.label(text="Material two:")
         col.prop(yaf_mat, "material2", text="")
+
 
 
 if __name__ == "__main__":  # only for live edit.

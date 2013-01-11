@@ -77,7 +77,7 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel, Panel):
         if tex_collection:
             row = layout.row()
 
-            row.template_list(idblock, "texture_slots", idblock, "active_texture_index", rows=2)
+            row.template_list("TEXTURE_UL_texslots", "", idblock, "texture_slots", idblock, "active_texture_index", rows=2)
 
             col = row.column(align=True)
             col.operator("texture.slot_move", text="", icon='TRIA_UP').type = 'UP'
@@ -269,8 +269,13 @@ class YAF_TEXTURE_PT_image_sampling(YAF_TextureTypePanel, Panel):
 
         tex = context.texture
         layout.label(text="Image:")
-        layout.prop(tex, "use_alpha", text="Use Alpha")
-        layout.prop(tex, "use_calculate_alpha", text="Calculate Alpha")
+        row = layout.row(align=True)
+        row.prop(tex, "yaf_use_alpha", text="Use Alpha")
+        #layout.prop(tex, "yaf_use_alpha", text="Use Alpha")
+        #layout.prop(tex, "use_calculate_alpha", text="Calculate Alpha")
+        row.prop(tex, "use_calculate_alpha", text="Calculate Alpha")
+        # test
+        #layout = self.layout
         layout.prop(tex, "use_flip_axis", text="Flip X/Y Axis")
 
 

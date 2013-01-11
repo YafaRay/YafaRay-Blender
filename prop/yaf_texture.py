@@ -56,8 +56,14 @@ def register():
         name="Use map as normal map",
         description="Use image RGB values for normal mapping",
         default=False)
+    #test
+    Texture.yaf_use_alpha = BoolProperty(
+        name="Use alpha image info",
+        description="Use alpha values for image mapping",
+        default=False)
 
 
 def unregister():
     Texture.yaf_tex_type
     Texture.yaf_is_normal_map
+    Texture.yaf_use_alpha

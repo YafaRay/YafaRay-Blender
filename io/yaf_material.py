@@ -116,7 +116,7 @@ class yafMaterial:
         yi.paramsSetBool("color_input", isColored)
 
         if isImage:
-            useAlpha = (tex.use_alpha) and not(tex.use_calculate_alpha)
+            useAlpha = (tex.yaf_use_alpha) and not(tex.use_calculate_alpha)
 
         yi.paramsSetBool("use_alpha", useAlpha)
 

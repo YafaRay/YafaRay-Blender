@@ -70,7 +70,7 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
 
             tex = context.scene.world.active_texture
 
-            if tex is not None:  # and tex.type == 'IMAGE': # revised if changed to yaf_tex_type
+            if tex is not None:
                 try:
                     layout.template_ID(context.world, "active_texture")  # new="texture.new")
                 except:
@@ -83,7 +83,7 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
             else:
                 try:
                     layout.template_ID(context.world, "active_texture", new="texture.new")
-                except:  # TODO: create only image texture? procedural not supported.. ?
+                except:
                     pass
             layout.prop(world, "bg_rotation")
 
@@ -91,6 +91,7 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
 
             col = split.column()
             col.prop(world, "bg_use_ibl")
+            
             if world.bg_use_ibl:
                 row = layout.row()
                 row.prop(world, "bg_with_diffuse")
