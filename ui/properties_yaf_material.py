@@ -60,8 +60,10 @@ class YAF_PT_context_material(MaterialButtonsPanel, Panel):
 
         if ob:
             row = layout.row()
-
-            row.template_list("MATERIAL_UL_matslots", "", ob, "material_slots", ob, "active_material_index", rows=2)
+            if bpy.app.version < (2, 65, 3 ):
+                row.template_list(ob, "material_slots", ob, "active_material_index", rows=2)
+            else:
+                row.template_list("MATERIAL_UL_matslots", "", ob, "material_slots", ob, "active_material_index", rows=2)
 
             col = row.column(align=True)
             col.operator("object.material_slot_add", icon='ZOOMIN', text="")
