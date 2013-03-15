@@ -23,7 +23,6 @@ from mathutils import Vector
 from math import degrees, pi, sin, cos
 from bpy.path import abspath
 
-
 class yafLight:
     def __init__(self, interface, preview):
         self.yi = interface
@@ -75,9 +74,9 @@ class yafLight:
         # matrix indexing (row, colums) changed in Blender rev.42816, for explanation see also:
         # http://wiki.blender.org/index.php/User:TrumanBlending/Matrix_Indexing
         pos = matrix.col[3]
-        dir = matrix.col[2]
+        direct = matrix.col[2] # msg 'Assignment to reserved built-in symbol: dir' ( change to direct)
         # up = matrix[1]  /* UNUSED */
-        to = pos - dir
+        to = pos - direct
 
         lampType = lamp.lamp_type
         power = lamp.yaf_energy
@@ -141,11 +140,11 @@ class yafLight:
             yi.paramsSetString("type", "sunlight")
             yi.paramsSetInt("samples", lamp.yaf_samples)
             yi.paramsSetFloat("angle", lamp.angle)
-            yi.paramsSetPoint("direction", dir[0], dir[1], dir[2])
+            yi.paramsSetPoint("direction", direct[0], direct[1], direct[2])
 
         elif lampType == "directional":
             yi.paramsSetString("type", "directional")
-            yi.paramsSetPoint("direction", dir[0], dir[1], dir[2])
+            yi.paramsSetPoint("direction", direct[0], direct[1], direct[2])
             yi.paramsSetBool("infinite", lamp.infinite)
             if not lamp.infinite:
                 yi.paramsSetFloat("radius", lamp.shadow_soft_size)
@@ -163,23 +162,24 @@ class yafLight:
             yi.paramsSetBool("soft_shadows", lamp.ies_soft_shadows)
 
         elif lampType == "area":
-            sizeX = 1.0
-            sizeY = 1.0
+            sizeX = lamp.size
+            sizeY = lamp.size_y
             matrix = lamp_object.matrix_world.copy()
+            
 
             # generate an untransformed rectangle in the XY plane with
             # the light's position as the centerpoint and transform it
             # using its transformation matrix
-
             point = Vector((-sizeX / 2, -sizeY / 2, 0))
             corner1 = Vector((-sizeX / 2, sizeY / 2, 0))
             corner2 = Vector((sizeX / 2, sizeY / 2, 0))
             corner3 = Vector((sizeX / 2, -sizeY / 2, 0))
+            
             point = matrix * point  # use reverse vector multiply order, API changed with rev. 38674
             corner1 = matrix * corner1  # use reverse vector multiply order, API changed with rev. 38674
             corner2 = matrix * corner2  # use reverse vector multiply order, API changed with rev. 38674
             corner3 = matrix * corner3  # use reverse vector multiply order, API changed with rev. 38674
-
+            
             yi.paramsClearAll()
             if lamp.create_geometry:
                 ID = yi.getNextFreeID()
