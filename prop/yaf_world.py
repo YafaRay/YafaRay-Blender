@@ -50,6 +50,17 @@ def register():
             ('sRGB (D50)', "sRGB (D50)", "Select color space model")
         ),
         default="CIE (E)")
+    
+    ## povman: create a list of YafaRay mapping modes ##########
+    # 
+    World.yaf_mapworld_type = EnumProperty(
+        name="Mapping Type",
+        items=(
+            ('SPHERE', "Spherical", "Spherical mapping"),
+            ('ANGMAP', "Angular", "Angular mapping")
+        ),
+        default='SPHERE')
+    ########## end test ########################
 
     World.bg_zenith_color = FloatVectorProperty(
         name="Zenith color",
@@ -318,3 +329,5 @@ def unregister():
     World.v_int_scale
     World.v_int_alpha
     World.v_int_dsturbidity
+    
+    World.yaf_mapworld_type
