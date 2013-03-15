@@ -51,7 +51,7 @@ def register():
         ),
         default="CIE (E)")
     
-    ## povman: create a list of YafaRay mapping modes ##########
+    ## povman test: create a list of YafaRay mapping modes ##########
     # 
     World.yaf_mapworld_type = EnumProperty(
         name="Mapping Type",
@@ -330,4 +330,5 @@ def unregister():
     World.v_int_alpha
     World.v_int_dsturbidity
     
+    # povman test --->
     World.yaf_mapworld_type
