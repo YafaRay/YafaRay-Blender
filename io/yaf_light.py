@@ -163,8 +163,10 @@ class yafLight:
 
         elif lampType == "area":
             sizeX = lamp.size
-            sizeY = lamp.size_y
-            matrix = lamp_object.matrix_world.copy()
+            sizeY = lamp.size
+            if lamp.shape == 'RECTANGLE':
+                sizeY = lamp.size_y                       
+            matrix = lamp_object.matrix_world.copy()           
             
 
             # generate an untransformed rectangle in the XY plane with
