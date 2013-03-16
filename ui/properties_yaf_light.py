@@ -24,8 +24,7 @@ from bl_ui.properties_data_lamp import DataButtonsPanel
 # Inherit Lamp data block
 from bl_ui.properties_data_lamp import DATA_PT_context_lamp
 DATA_PT_context_lamp.COMPAT_ENGINES.add('YAFA_RENDER')
-del DATA_PT_context_lamp
-
+del DATA_PT_context_lamp    
 
 class YAF_PT_preview(Panel):
     bl_space_type = 'PROPERTIES'
@@ -104,6 +103,32 @@ class YAF_PT_lamp(DataButtonsPanel, Panel):
             if lamp.ies_soft_shadows:
                 layout.box().prop(lamp, "yaf_samples")
 
+# povman test
+class YAF_PT_area(DataButtonsPanel, Panel):
+    bl_label = "Area Shape"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
+
+    @classmethod
+    def poll(cls, context):
+        lamp = context.lamp
+        engine = context.scene.render.engine
+        return (lamp and lamp.type == 'AREA') and (engine in cls.COMPAT_ENGINES)
+
+    def draw(self, context):
+        layout = self.layout
+
+        lamp = context.lamp
+
+        col = layout.column()
+        col.row().prop(lamp, "shape", expand=True)
+        sub = col.row(align=True)
+
+        if lamp.shape == 'SQUARE':
+            sub.prop(lamp, "size")
+        elif lamp.shape == 'RECTANGLE':
+            sub.prop(lamp, "size", text="Size X")
+            sub.prop(lamp, "size_y", text="Size Y")
+# end
 
 class YAF_PT_spot(DataButtonsPanel, Panel):
     bl_label = "Spot Shape"

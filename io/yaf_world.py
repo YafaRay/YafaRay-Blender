@@ -69,27 +69,30 @@ class yafWorld:
                     yi.paramsSetString("filename", image_file)
 
                     # exposure_adjust not restricted to integer range anymore
-                    yi.paramsSetFloat("exposure_adjust", world.bg_exposure)
+                    yi.paramsSetFloat("exposure_adjust", world.exposure) #bg_exposure)
 
+                    interpolate = 'none'
                     if worldTex.use_interpolation == True:
-                        yi.paramsSetString("interpolate", "bilinear")
-                    else:
-                        yi.paramsSetString("interpolate", "none")
-
+                        interpolate = 'bilinear'
+                    #
+                    yi.paramsSetString("interpolate", interpolate)
+                    
                     yi.createTexture("world_texture")
 
                     # Export the actual background
-                    texco = world.texture_slots[world.active_texture_index].texture_coords
+                    #texco = world.texture_slots[world.active_texture_index].texture_coords
+                    textcoord = world.yaf_mapworld_type
                     yi.paramsClearAll()
-
-                    if texco == 'ANGMAP':
-                        yi.paramsSetString("mapping", "probe")
-                    elif texco == 'SPHERE':
-                        yi.paramsSetString("mapping", "sphere")
-                    else:
-                        yi.printWarning("World texture mapping neither Sphere nor AngMap, set it to Sphere now by default!")
-                        yi.paramsSetString("mapping", "sphere")
-
+                    #
+                    mappingType = {'ANGMAP': 'angular',
+                                   'SPHERE': 'sphere'}                    
+                    texco = mappingType.get(textcoord, "angular")
+                    yi.paramsSetString("mapping", texco)
+                    
+                    # now, this msg is not need , but....
+                    if textcoord not in {'ANGMAP', 'SPHERE'}:
+                        yi.printWarning("World texture mapping neither Sphere or AngMap, set it to AngMap now by default!")
+                        
                     yi.paramsSetString("type", "textureback")
                     yi.paramsSetString("texture", "world_texture")
                     yi.paramsSetBool("ibl", useIBL)
@@ -146,12 +149,14 @@ class yafWorld:
             yi.paramsSetFloat("d_var", world.bg_d_var)
             yi.paramsSetFloat("e_var", world.bg_e_var)
             yi.paramsSetBool("add_sun", world.bg_add_sun)
-            yi.paramsSetFloat("sun_power", world.bg_sun_power)
+            if world.bg_add_sun:
+                yi.paramsSetFloat("sun_power", world.bg_sun_power)
             yi.paramsSetBool("background_light", world.bg_background_light)
-            yi.paramsSetBool("with_caustic", world.bg_with_caustic)
-            yi.paramsSetBool("with_diffuse", world.bg_with_diffuse)
+            if world.bg_background_light:
+                yi.paramsSetBool("with_caustic", world.bg_with_caustic)
+                yi.paramsSetBool("with_diffuse", world.bg_with_diffuse)
+                yi.paramsSetFloat("power", world.bg_power)
             yi.paramsSetInt("light_samples", world.bg_light_samples)
-            yi.paramsSetFloat("power", world.bg_power)
             yi.paramsSetFloat("bright", world.bg_dsbright)
             yi.paramsSetBool("night", world.bg_dsnight)
             yi.paramsSetFloat("exposure", world.bg_exposure)
