@@ -92,6 +92,14 @@ class YAF_PT_general_settings(RenderButtonsPanel, Panel):
         col.prop(render, "use_instances", text="Instances")
         col.prop(scene, "gs_verbose")
 
+        split = layout.split(percentage=0.5)
+        col = split.column()
+        col.prop(scene, "bg_transp")
+
+        if scene.bg_transp:
+            col = split.column()
+            col.prop(scene, "bg_transp_refract")
+            
         col = layout.column()
         col.enabled = scene.gs_draw_params
         col.prop(scene, "gs_custom_string")

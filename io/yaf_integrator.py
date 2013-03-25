@@ -28,6 +28,12 @@ class yafIntegrator:
 
         yi.paramsClearAll()
 
+        yi.paramsSetBool("bg_transp", scene.bg_transp)
+        if scene.bg_transp:
+            yi.paramsSetBool("bg_transp_refract", scene.bg_transp_refract)
+        else:
+            yi.paramsSetBool("bg_transp_refract", False)
+
         yi.paramsSetInt("raydepth", scene.gs_ray_depth)
         yi.paramsSetInt("shadowDepth", scene.gs_shadow_depth)
         yi.paramsSetBool("transpShad", scene.gs_transp_shad)

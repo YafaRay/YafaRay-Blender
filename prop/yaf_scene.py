@@ -116,6 +116,16 @@ def register():
         description="Write the render parameters below the image",
         default=False)
 
+    Scene.bg_transp = BoolProperty(
+        name="Transp.background",
+        description="Render the background as transparent",
+        default=True)
+
+    Scene.bg_transp_refract = BoolProperty(
+        name="Materials transp. refraction",
+        description="Materials refract the background as transparent",
+        default=True)
+        
     Scene.gs_custom_string = StringProperty(
         name="Custom string",
         description="Custom string will be added to the info bar, "
@@ -400,6 +410,8 @@ def unregister():
     Scene.gs_clay_col
     Scene.gs_mask_render
     Scene.gs_draw_params
+    Scene.bg_transp
+    Scene.bg_transp_refract    
     Scene.gs_custom_string
     Scene.gs_premult
     Scene.gs_transp_shad
