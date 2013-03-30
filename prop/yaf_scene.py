@@ -67,7 +67,7 @@ def register():
         name="Gamma",
         description="Gamma correction applied to final output, inverse correction "
                     "of textures and colors is performed",
-        min=0, max=5, default=gamma)
+        min=0, max=5, default= 1.0) #gamma)
 
     Scene.gs_gamma_input = FloatProperty(
         name="Gamma input",
