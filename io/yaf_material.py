@@ -353,7 +353,7 @@ class yafMaterial:
 
         if self.preview:
             if mat.name.startswith("checker"):
-                bEmit = 0.35
+                bEmit = 2.50
 
         i = 0
         used_textures = self.getUsedTextures(mat)
