@@ -51,6 +51,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         if self.is_preview:
             self.yi.setVerbosityMute()
+            self.scene.bg_transp = False #to correct alpha problems in preview roughglass
+            self.scene.bg_transp_refract = False #to correct alpha problems in preview roughglass
         elif self.scene.gs_verbose:
             self.yi.setVerbosityInfo()
         else:
