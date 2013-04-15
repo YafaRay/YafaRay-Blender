@@ -34,9 +34,10 @@ def multiplyMatrix4x4Vector4(matrix, vector):
 
 
 class yafObject(object):
-    def __init__(self, yi, mMap):
+    def __init__(self, yi, mMap, preview):
         self.yi = yi
         self.materialMap = mMap
+        self.is_preview = preview
 
     def setScene(self, scene):
 
@@ -428,17 +429,23 @@ class yafObject(object):
 
             co = None
             if hasUV:
-                co = uv_texture.active.data[index]
-                uv0 = self.yi.addUV(co.uv1[0], co.uv1[1])
-                uv1 = self.yi.addUV(co.uv2[0], co.uv2[1])
-                uv2 = self.yi.addUV(co.uv3[0], co.uv3[1])
+
+                if self.is_preview:
+                    co = uv_texture[0].data[index].uv
+                else:
+                    co = uv_texture.active.data[index].uv
+
+                uv0 = self.yi.addUV(co[0][0], co[0][1])
+                uv1 = self.yi.addUV(co[1][0], co[1][1])
+                uv2 = self.yi.addUV(co[2][0], co[2][1])
+
                 self.yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2, ymaterial)
             else:
                 self.yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2], ymaterial)
 
             if len(f.vertices) == 4:
                 if hasUV:
-                    uv3 = self.yi.addUV(co.uv4[0], co.uv4[1])
+                    uv3 = self.yi.addUV(co[3][0], co[3][1])
                     self.yi.addTriangle(f.vertices[0], f.vertices[2], f.vertices[3], uv0, uv2, uv3, ymaterial)
                 else:
                     self.yi.addTriangle(f.vertices[0], f.vertices[2], f.vertices[3], ymaterial)

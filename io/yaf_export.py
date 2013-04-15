@@ -59,7 +59,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.yi.setVerbosityMute()
 
         self.yi.loadPlugins(PLUGIN_PATH)
-        self.yaf_object = yafObject(self.yi, self.materialMap)
+        self.yaf_object = yafObject(self.yi, self.materialMap, self.is_preview)
         self.yaf_lamp = yafLight(self.yi, self.is_preview)
         self.yaf_world = yafWorld(self.yi)
         self.yaf_integrator = yafIntegrator(self.yi)
@@ -128,7 +128,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         # export only visible objects
         baseIds = {}
         dupBaseIds = {}
-
+        
         for obj in [o for o in self.scene.objects if not o.hide_render and (o.is_visible(self.scene) or o.hide) \
         and self.object_on_visible_layer(o) and (o.type in {'MESH', 'SURFACE', 'CURVE', 'FONT', 'EMPTY'})]:
             # Exporting dupliObjects as instances, also check for dupliObject type 'EMPTY' and don't export them as geometry
@@ -398,11 +398,6 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.update_stats("", "Aborting...")
                 self.yi.abort()
                 t.join()
-                self.yi.clearAll()
-                del self.yi
-                self.update_stats("", "Render is aborted")
-                self.bl_use_postprocess = True
-                return
 
         self.yi.clearAll()
         del self.yi
