@@ -35,10 +35,9 @@ bl_info = {
               "Paulo Gomes (tuga3d), Michele Castigliego (subcomandante),"
               "Bert Buchholz, Rodrigo Placencia (DarkTide),"
               "Alexander Smirnov (Exvion), Olaf Arnold (olaf)",
-    "version": (0, 1, 2, 'beta'),
+    "version": (0, 1, 5, 'Stable'),
     "blender": (2, 6, 3),
     "location": "Info Header > Engine dropdown menu",
-    "warning": "both YafaRay 0.1.2 and this script are in alpha state",
     "wiki_url": "http://www.yafaray.org/community/forum",
     "tracker_url": "http://www.yafaray.org/development/bugtracker/yafaray",
     "category": "Render"

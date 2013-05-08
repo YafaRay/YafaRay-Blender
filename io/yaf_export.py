@@ -128,7 +128,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         # export only visible objects
         baseIds = {}
         dupBaseIds = {}
-        
+
         for obj in [o for o in self.scene.objects if not o.hide_render and (o.is_visible(self.scene) or o.hide) \
         and self.object_on_visible_layer(o) and (o.type in {'MESH', 'SURFACE', 'CURVE', 'FONT', 'EMPTY'})]:
             # Exporting dupliObjects as instances, also check for dupliObject type 'EMPTY' and don't export them as geometry
@@ -356,7 +356,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                         self.tag = args[0]
                     elif command == "progress":
                         self.prog = args[0]
-                    self.update_stats("YafaRay Rendering... ", "{0}".format(self.tag))
+                    self.update_stats("YafaRay Render: ", "{0}".format(self.tag))
                     # use blender's progress bar in the header to show progress of render
                     # update_progress needs float range 0.0 to 1.0, yafaray returns 0.0 to 100.0
                     self.update_progress(self.prog / 100)
@@ -365,7 +365,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 x, y, w, h, tile = args
                 res = self.begin_result(x, y, w, h)
                 try:
-                    res.layers[0].rect = tile
+                    l = res.layers[0]
+                    l.rect, l.passes[0].rect = tile
                 except:
                     pass
 
@@ -375,7 +376,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 w, h, tile = args
                 res = self.begin_result(0, 0, w, h)
                 try:
-                    res.layers[0].rect = tile
+                    l = res.layers[0]
+                    l.rect, l.passes[0].rect = tile
                 except BaseException as e:
                     pass
 

@@ -360,7 +360,6 @@ class yafObject(object):
             if not mesh.tessfaces and mesh.polygons:
                 # BMesh API update, check for tessellated faces, if needed calculate them...
                 mesh.update(calc_tessface=True)
-                mesh.calc_tesfaces()
 
             if not mesh.tessfaces:
                 # if there are no faces, no need to write geometry, remove mesh data then...
@@ -419,8 +418,6 @@ class yafObject(object):
             else:
                 self.yi.addVertex(v.co[0], v.co[1], v.co[2])
 
-            self.yi.addNormal(v.normal[0], v.normal[1], v.normal[2])
-
         for index, f in enumerate(getattr(mesh, face_attr)):
             if f.use_smooth:
                 isSmooth = True
@@ -455,14 +452,12 @@ class yafObject(object):
 
         self.yi.endTriMesh()
 
-        '''
         if isSmooth and mesh.use_auto_smooth:
             self.yi.smoothMesh(0, math.degrees(mesh.auto_smooth_angle))
         elif isSmooth and obj.type == 'FONT':  # getting nicer result with smooth angle 60 degr. for text objects
             self.yi.smoothMesh(0, 60)
         elif isSmooth:
             self.yi.smoothMesh(0, 181)
-        '''
 
         self.yi.endGeometry()
 

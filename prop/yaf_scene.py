@@ -125,7 +125,7 @@ def register():
         name="Materials transp. refraction",
         description="Materials refract the background as transparent",
         default=True)
-        
+
     Scene.gs_custom_string = StringProperty(
         name="Custom string",
         description="Custom string will be added to the info bar, "
@@ -135,7 +135,7 @@ def register():
     Scene.gs_premult = BoolProperty(
         name="Premultiply",
         description="Premultipy Alpha channel for renders with transparent background",
-        default=False)
+        default=True)
 
     Scene.gs_transp_shad = BoolProperty(
         name="Transparent shadows",
@@ -411,7 +411,7 @@ def unregister():
     Scene.gs_mask_render
     Scene.gs_draw_params
     Scene.bg_transp
-    Scene.bg_transp_refract    
+    Scene.bg_transp_refract
     Scene.gs_custom_string
     Scene.gs_premult
     Scene.gs_transp_shad
