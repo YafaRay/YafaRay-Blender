@@ -114,10 +114,10 @@ def exportRenderSettings(yi, scene):
     yi.paramsSetInt("tile_size", scene.gs_tile_size)
     yi.paramsSetString("tiles_order", scene.gs_tile_order)
 
+    yi.paramsSetBool("z_channel", scene.gs_z_channel)
+
     if scene.gs_type_render == "into_blender":
-        yi.paramsSetBool("z_channel", True)
-    else:
-        yi.paramsSetBool("z_channel", scene.gs_z_channel)
+        yi.paramsSetBool("normalize_z_channel", False)
 
     yi.paramsSetBool("drawParams", scene.gs_draw_params)
     yi.paramsSetString("customString", scene.gs_custom_string)
