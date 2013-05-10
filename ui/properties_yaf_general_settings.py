@@ -73,33 +73,28 @@ class YAF_PT_general_settings(RenderButtonsPanel, Panel):
 
         split = layout.split()
         col = split.column()
-        sub = col.split(percentage=0.7)
-        sub.prop(scene, "gs_clay_render")
-        if scene.gs_clay_render:
-            sub.prop(scene, "gs_clay_col", text="")
-        # col.prop(scene, "gs_mask_render")
-        sub = col.column()
-        sub.enabled = scene.gs_type_render == "file"
-        sub.prop(scene, "gs_z_channel")
-        col.prop(scene, "gs_transp_shad")
-        col.prop(scene, "gs_premult")
-        col.prop(scene, "gs_draw_params")
+        col.prop(scene, "gs_clay_render", toggle=True)
+        col.prop(scene, "gs_z_channel", toggle=True)
+        col.prop(scene, "gs_transp_shad", toggle=True)
+        col.prop(scene, "gs_draw_params", toggle=True)
+        col.prop(scene, "gs_clamp_rgb", toggle=True)
 
         col = split.column()
-        col.prop(scene, "gs_auto_threads")
-        col.prop(scene, "gs_clamp_rgb")
-        col.prop(scene, "gs_show_sam_pix")
-        col.prop(render, "use_instances", text="Instances")
-        col.prop(scene, "gs_verbose")
+        if scene.gs_clay_render:
+            col.prop(scene, "gs_clay_col", text="")
+        col.prop(scene, "gs_auto_threads", toggle=True)
+        col.prop(scene, "gs_show_sam_pix", toggle=True)
+        col.prop(render, "use_instances", text="Use instances", toggle=True)
+        col.prop(scene, "gs_verbose", toggle=True)
 
         split = layout.split(percentage=0.5)
         col = split.column()
-        col.prop(scene, "bg_transp")
+        col.prop(scene, "bg_transp", toggle=True)
+        col = split.column()
+        sub = col.column()
+        sub.enabled = scene.bg_transp
+        sub.prop(scene, "bg_transp_refract", toggle=True)
 
-        if scene.bg_transp:
-            col = split.column()
-            col.prop(scene, "bg_transp_refract")
-            
         col = layout.column()
         col.enabled = scene.gs_draw_params
         col.prop(scene, "gs_custom_string")

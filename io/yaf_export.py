@@ -51,13 +51,15 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         if self.is_preview:
             self.yi.setVerbosityMute()
+            self.scene.bg_transp = False #to correct alpha problems in preview roughglass
+            self.scene.bg_transp_refract = False #to correct alpha problems in preview roughglass
         elif self.scene.gs_verbose:
             self.yi.setVerbosityInfo()
         else:
             self.yi.setVerbosityMute()
 
         self.yi.loadPlugins(PLUGIN_PATH)
-        self.yaf_object = yafObject(self.yi, self.materialMap)
+        self.yaf_object = yafObject(self.yi, self.materialMap, self.is_preview)
         self.yaf_lamp = yafLight(self.yi, self.is_preview)
         self.yaf_world = yafWorld(self.yi)
         self.yaf_integrator = yafIntegrator(self.yi)
@@ -354,7 +356,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                         self.tag = args[0]
                     elif command == "progress":
                         self.prog = args[0]
-                    self.update_stats("YafaRay Rendering... ", "{0}".format(self.tag))
+                    self.update_stats("YafaRay Render: ", "{0}".format(self.tag))
                     # use blender's progress bar in the header to show progress of render
                     # update_progress needs float range 0.0 to 1.0, yafaray returns 0.0 to 100.0
                     self.update_progress(self.prog / 100)
@@ -363,7 +365,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 x, y, w, h, tile = args
                 res = self.begin_result(x, y, w, h)
                 try:
-                    res.layers[0].rect = tile
+                    l = res.layers[0]
+                    l.rect, l.passes[0].rect = tile
                 except:
                     pass
 
@@ -373,7 +376,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 w, h, tile = args
                 res = self.begin_result(0, 0, w, h)
                 try:
-                    res.layers[0].rect = tile
+                    l = res.layers[0]
+                    l.rect, l.passes[0].rect = tile
                 except BaseException as e:
                     pass
 
@@ -396,11 +400,6 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.update_stats("", "Aborting...")
                 self.yi.abort()
                 t.join()
-                self.yi.clearAll()
-                del self.yi
-                self.update_stats("", "Render is aborted")
-                self.bl_use_postprocess = True
-                return
 
         self.yi.clearAll()
         del self.yi
