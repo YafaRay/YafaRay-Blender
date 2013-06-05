@@ -82,15 +82,10 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
                     # TODO: create message about not allow texture type
                     pass
             else:
-                #try:
                 layout.template_ID(context.world, "active_texture", new="texture.new")
-                #except:
-                #    pass
 
             layout.label(text="Background Texture controls")
             layout.prop(world,"bg_rotation")
-            # this option is used in YafaRay Core. With more or less effect :)
-            layout.prop(world, "bg_exposure")
             layout.prop(world,"yaf_mapworld_type", text="Mapping Coord")
             layout.separator()
 

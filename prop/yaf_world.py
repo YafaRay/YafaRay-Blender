@@ -316,8 +316,8 @@ def unregister():
     World.bg_dsaltitude
     World.bg_dsnight
     World.bg_dsbright
-    World.bg_power
     World.bg_exposure
+    World.bg_power
     World.bg_clamp_rgb
     World.bg_gamma_enc
 

@@ -131,6 +131,42 @@ for ior_group, ior_n in ior_list:
     bpy.utils.register_class(submenu)
     submenus.append(submenu)
 
+# povman test for nodes
+def find_node(material, nodetype):
+    if material and material.node_tree:
+        ntree = material.node_tree
+
+        for node in ntree.nodes:
+            if getattr(node, "type", None) == nodetype:
+                return node
+
+    return None
+
+
+def find_node_input(node, name):
+    for input in node.inputs:
+        if input.name == name:
+            return input
+
+    return None
+
+
+def panel_node_draw(layout, id_data, output_type, input_name):
+    if not id_data.use_nodes:
+        layout.prop(id_data, "use_nodes", icon='NODETREE')
+        return False
+
+    ntree = id_data.node_tree
+
+    node = find_node(id_data, output_type)
+    if not node:
+        layout.label(text="No output node")
+    else:
+        input = find_node_input(node, input_name)
+        layout.template_node_view(ntree, node, input)
+
+    return True
+# end
 
 class YAF_MT_presets_ior_list(Menu):
     bl_label = "Glass"

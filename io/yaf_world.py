@@ -69,7 +69,7 @@ class yafWorld:
                     yi.paramsSetString("filename", image_file)
 
                     # exposure_adjust not restricted to integer range anymore
-                    yi.paramsSetFloat("exposure_adjust", world.exposure) #bg_exposure)
+                    #yi.paramsSetFloat("exposure_adjust", world.exposure) #bg_exposure)
 
                     interpolate = 'none'
                     if worldTex.use_interpolation == True:

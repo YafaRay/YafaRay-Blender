@@ -119,7 +119,7 @@ def register():
     Scene.bg_transp = BoolProperty(
         name="Transp.background",
         description="Render the background as transparent",
-        default=True)
+        default=False)
 
     Scene.bg_transp_refract = BoolProperty(
         name="Materials transp. refraction",
