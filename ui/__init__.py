@@ -26,7 +26,6 @@ from . import properties_yaf_world
 from . import properties_yaf_strand
 from . import properties_yaf_object
 from . import properties_yaf_light
-from . import properties_yaf_custom_nodes
 
 from bl_ui import properties_object as properties_object
 for member in dir(properties_object):  # add all "object" panels from blender
