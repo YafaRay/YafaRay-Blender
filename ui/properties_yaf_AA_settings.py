@@ -40,10 +40,14 @@ class YAF_PT_AA_settings(RenderButtonsPanel, Panel):
         col.prop(scene, "AA_pixelwidth")
         # fix suggest by 'samo' in http://www.yafaray.org/node/581
         col = split.column()
-        col.enabled = scene.intg_light_method != "SPPM"
-        col.prop(scene, "AA_passes")
+        spp = col.column()
         sub = col.column()
-        sub.enabled = scene.AA_passes > 1
+        spp.enabled = False
+        if scene.intg_light_method != "SPPM":
+            sub.enabled = scene.AA_passes > 1
+            spp.enabled = True
+        #
+        spp.prop(scene, "AA_passes")
         sub.prop(scene, "AA_inc_samples")
         sub.prop(scene, "AA_threshold")
 
