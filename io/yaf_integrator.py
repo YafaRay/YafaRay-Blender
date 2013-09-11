@@ -51,12 +51,11 @@ class yafIntegrator:
                 yi.paramsSetInt("caustic_mix", scene.intg_caustic_mix)
                 yi.paramsSetInt("caustic_depth", scene.intg_caustic_depth)
                 yi.paramsSetFloat("caustic_radius", scene.intg_caustic_radius)
-
-            if scene.intg_use_AO:
                 yi.paramsSetBool("do_AO", scene.intg_use_AO)
+                
+            if scene.intg_use_AO:
                 yi.paramsSetInt("AO_samples", scene.intg_AO_samples)
                 yi.paramsSetFloat("AO_distance", scene.intg_AO_distance)
-
                 c = scene.intg_AO_color
                 yi.paramsSetColor("AO_color", c[0], c[1], c[2])
 
@@ -68,11 +67,15 @@ class yafIntegrator:
             yi.paramsSetFloat("diffuseRadius", scene.intg_diffuse_radius)
             yi.paramsSetFloat("causticRadius", scene.intg_caustic_radius)
             yi.paramsSetInt("search", scene.intg_search)
-            yi.paramsSetBool("show_map", scene.intg_show_map)
-            yi.paramsSetInt("fg_bounces", scene.intg_fg_bounces)
             yi.paramsSetInt("caustic_mix", scene.intg_caustic_mix)
-            yi.paramsSetBool("finalGather", scene.intg_final_gather)
-            yi.paramsSetInt("bounces", scene.intg_bounces)
+            #
+            yi.paramsSetBool("finalGather", scene.intg_final_gather)            
+            #
+            if scene.intg_final_gather:
+                yi.paramsSetInt("fg_bounces", scene.intg_fg_bounces)
+                yi.paramsSetInt("fg_samples", scene.intg_fg_samples)
+                yi.paramsSetBool("show_map", scene.intg_show_map)
+                
 
         elif light_type == "Pathtracing":
             yi.paramsSetString("type", "pathtracing")
@@ -122,8 +125,8 @@ class yafIntegrator:
         elif light_type == "SPPM":
             yi.paramsSetString("type", "SPPM")
             yi.paramsSetInt("photons", scene.intg_photons)
-            yi.paramsSetFloat("diffuseRadius", scene.intg_diffuse_radius)
-            yi.paramsSetInt("search", scene.intg_search)
+            yi.paramsSetFloat("photonRadius", scene.intg_diffuse_radius)
+            yi.paramsSetInt("searchNum", scene.intg_search)
             yi.paramsSetFloat("times", scene.intg_times)
             yi.paramsSetInt("bounces", scene.intg_bounces)
             yi.paramsSetInt("passNums", scene.intg_pass_num)

@@ -115,9 +115,14 @@ def sunPosAngle(mode="get", val="position"):
 
 def checkSceneLights():
     scene = bpy.context.scene
+    # expand fuction for include light from 'add sun' or 'add skylight' in sunsky or sunsky2 mode
+    world = scene.world
+    worldLight = False
+    if world.bg_add_sun or world.bg_background_light:
+        worldLight = True
 
     for l in scene.objects:
-        if not l.hide_render and l.is_visible(scene) and l.type == "LAMP":
+        if not l.hide_render and l.is_visible(scene) and l.type == "LAMP" or worldLight:
             sceneLights = True
             break
         else:
@@ -154,7 +159,7 @@ class RENDER_OT_render_view(Operator):
             return {'CANCELLED'}
 
         elif not sceneLights and scene.intg_light_method == "Bidirectional":
-            self.report({'WARNING'}, ("No lights in the scene and lighting method is bidirectional!"))
+            self.report({'WARNING'}, ("No lights in the scene and lighting method is Bidirectional!"))
             bpy.types.YAFA_RENDER.useViewToRender = False
             return {'CANCELLED'}
 
@@ -179,7 +184,7 @@ class RENDER_OT_render_animation(Operator):
         scene = context.scene
 
         if not sceneLights and scene.intg_light_method == "Bidirectional":
-            self.report({'WARNING'}, ("No lights in the scene and lighting method is bidirectional!"))
+            self.report({'WARNING'}, ("No lights in the scene and lighting method is Bidirectional!"))
             return {'CANCELLED'}
 
         else:
@@ -202,7 +207,7 @@ class RENDER_OT_render_still(Operator):
         scene = context.scene
 
         if not sceneLights and scene.intg_light_method == "Bidirectional":
-            self.report({'WARNING'}, ("No lights in the scene and lighting method is bidirectional!"))
+            self.report({'WARNING'}, ("No lights in the scene and lighting method is Bidirectional!"))
             return {'CANCELLED'}
 
         else:

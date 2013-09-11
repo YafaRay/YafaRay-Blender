@@ -336,7 +336,7 @@ def register():
         default=False)
 
     Scene.intg_pm_ire = BoolProperty(
-        name="PM IRE",
+        name="PM Initial Radius Estimate",
         default=False)
 
     Scene.intg_pass_num = IntProperty(
@@ -347,6 +347,7 @@ def register():
     Scene.intg_times = FloatProperty(
         name="Radius factor",
         min=0.0,
+        description= "Initial radius times",
         default=1.0)
 
     Scene.intg_photon_radius = FloatProperty(
