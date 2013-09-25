@@ -54,7 +54,7 @@ class YAFRENDER_PT_layers(RenderButtonsPanel, Panel):
         if bpy.app.version < (2, 65, 3 ):
             row.template_list(rd, "layers", rd.layers, "active_index", rows=2)
         else:
-            row.template_list("RENDER_UL_renderlayers", "", rd, "layers", rd.layers, "active_index", rows=2)
+            row.template_list("RENDERLAYER_UL_renderlayers", "", rd, "layers", rd.layers, "active_index", rows=2)
 
         col = row.column(align=True)
         col.operator("scene.render_layer_add", icon='ZOOMIN', text="")
