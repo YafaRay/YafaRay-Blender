@@ -115,16 +115,17 @@ def sunPosAngle(mode="get", val="position"):
 
 def checkSceneLights():
     scene = bpy.context.scene
-    # expand fuction for include light from 'add sun' or 'add skylight' in sunsky or sunsky2 mode
     world = scene.world
-    worldLight = False
-    if world.bg_add_sun or world.bg_background_light:
-        worldLight = True
-
+    
+    # expand fuction for include light from 'add sun' or 'add skylight' in sunsky or sunsky2 mode    
     for l in scene.objects:
-        if not l.hide_render and l.is_visible(scene) and l.type == "LAMP" or worldLight:
-            sceneLights = True
-            break
+        if not l.hide_render and l.is_visible(scene): # use lamp object or meshlight
+            if l.type == "LAMP" or l.ml_enable:
+                sceneLights = True
+                break
+        elif world.bg_add_sun or world.bg_background_light: # use light create with sunsky or sunsky2
+                sceneLights = True
+                break
         else:
             sceneLights = False
     return sceneLights
