@@ -51,7 +51,8 @@ class yafIntegrator:
                 yi.paramsSetInt("caustic_mix", scene.intg_caustic_mix)
                 yi.paramsSetInt("caustic_depth", scene.intg_caustic_depth)
                 yi.paramsSetFloat("caustic_radius", scene.intg_caustic_radius)
-                yi.paramsSetBool("do_AO", scene.intg_use_AO)
+                
+            yi.paramsSetBool("do_AO", scene.intg_use_AO)
                 
             if scene.intg_use_AO:
                 yi.paramsSetInt("AO_samples", scene.intg_AO_samples)
