@@ -118,18 +118,17 @@ def checkSceneLights():
     world = scene.world
     
     # expand fuction for include light from 'add sun' or 'add skylight' in sunsky or sunsky2 mode    
-    for l in scene.objects:
-        if not l.hide_render and l.is_visible(scene): # use lamp object or meshlight
-            if l.type == "LAMP" or l.ml_enable:
-                sceneLights = True
+    haveLights = False
+    if world.bg_add_sun or world.bg_background_light: # use light create with sunsky or sunsky2
+        return True
+    # if above is true, this 'for' is not used
+    for sceneObj in scene.objects:
+        if not sceneObj.hide_render and sceneObj.is_visible(scene): # check lamp, meshlight or portal light object
+            if sceneObj.type == "LAMP" or sceneObj.ml_enable or sceneObj.bgp_enable:
+                haveLights = True
                 break
-        elif world.bg_add_sun or world.bg_background_light: # use light create with sunsky or sunsky2
-                sceneLights = True
-                break
-        else:
-            sceneLights = False
-    return sceneLights
-
+    #
+    return haveLights
 
 class RENDER_OT_render_view(Operator):
     bl_label = "YafaRay render view"
