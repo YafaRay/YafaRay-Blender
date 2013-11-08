@@ -119,7 +119,8 @@ def checkSceneLights():
     
     # expand fuction for include light from 'add sun' or 'add skylight' in sunsky or sunsky2 mode    
     haveLights = False
-    if world.bg_add_sun or world.bg_background_light: # use light create with sunsky or sunsky2
+     # use light create with sunsky, sunsky2 or with use ibl ON
+    if world.bg_add_sun or world.bg_background_light or world.bg_use_ibl:
         return True
     # if above is true, this 'for' is not used
     for sceneObj in scene.objects:
