@@ -62,7 +62,7 @@ class yafIntegrator:
 
         elif light_type == "Photon Mapping":
             yi.paramsSetString("type", "photonmapping")
-            yi.paramsSetInt("fg_samples", scene.intg_fg_samples)
+            yi.paramsSetInt("bounces", scene.intg_bounces)
             yi.paramsSetInt("photons", scene.intg_photons)
             yi.paramsSetInt("cPhotons", scene.intg_cPhotons)
             yi.paramsSetFloat("diffuseRadius", scene.intg_diffuse_radius)
