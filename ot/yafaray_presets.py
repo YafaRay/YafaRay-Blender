@@ -148,7 +148,6 @@ class YAFARAY_OT_presets_renderset(YAF_AddPresetBase, Operator):
         "scene = bpy.context.scene"
     ]
     preset_values = [
-        "scene.render.use_color_management",
         "scene.gs_ray_depth",
         "scene.gs_shadow_depth",
         "scene.gs_threads",
