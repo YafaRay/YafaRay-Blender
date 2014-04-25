@@ -357,9 +357,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                     elif command == "progress":
                         self.prog = args[0]
                     self.update_stats("YafaRay Render: ", "{0}".format(self.tag))
-                    # use blender's progress bar in the header to show progress of render
-                    # update_progress needs float range 0.0 to 1.0, yafaray returns 0.0 to 100.0
-                    self.update_progress(self.prog / 100)
+                    # Now, Blender use same range to YafaRay
+                    self.update_progress(self.prog)
 
             def drawAreaCallback(*args):
                 x, y, w, h, tile = args
