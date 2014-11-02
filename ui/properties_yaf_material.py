@@ -281,6 +281,7 @@ class YAF_PT_glass_real(MaterialTypePanel, Panel):
         col = split.column(align=True)
         col.label(text="Dispersion:")
         col.prop(yaf_mat, "dispersion_power")
+        col.prop(yaf_mat, "render_in_clay")
 
         if yaf_mat.mat_type == "rough_glass":
             box = layout.box()
