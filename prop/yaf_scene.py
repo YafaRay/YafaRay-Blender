@@ -99,27 +99,27 @@ def register():
         default=False)
 
     Scene.gs_clay_render_keep_transparency = BoolProperty(
-        name="Clay: keep transparency",
+        name="Keep transparency",
         description="Keep transparency during clay render",
         default=False)
 
     Scene.gs_clay_render_keep_normals = BoolProperty(
-        name="Clay: keep normal/bump maps",
+        name="Keep normal/bump maps",
         description="Keep normal and bump maps during clay render",
         default=False)
 
     Scene.gs_clay_oren_nayar = BoolProperty(
-        name="Clay: use Oren-Nayar shader",
+        name="Oren-Nayar",
         description="Use Oren-Nayar shader for a more realistic diffuse clay render",
         default=True)
 
     Scene.gs_clay_sigma = FloatProperty(
-        name="Sigma for Clay Oren Nayar",
+        name="Sigma",
         description="Roughness of the clay surfaces when rendering with Clay-Oren Nayar",
         min=0.0, max=1.0,
         step=1, precision=5,
         soft_min=0.0, soft_max=1.0,
-        default=0.10000)
+        default=0.30000)
 
 
     # added clay color property
