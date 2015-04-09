@@ -205,7 +205,7 @@ class yafMaterial:
             nf = mtex.normal_factor * 2
             yi.paramsSetFloat("bump_strength", nf)
 
-    def writeGlassShader(self, mat, rough):
+    def writeGlassShader(self, mat, scene, rough):
 
         # mat : is an instance of material
         yi = self.yi
@@ -218,10 +218,15 @@ class yafMaterial:
             yi.paramsSetString("type", "glass")
 
         yi.paramsSetFloat("IOR", mat.IOR_refraction)  # added IOR for refraction
-        filt_col = mat.filter_color
+        if scene.gs_clay_render and not mat.clay_exclude:
+            filt_col = (1.0, 1.0, 1.0)
+            abs_col = (1.0, 1.0, 1.0)
+        else:
+            filt_col = mat.filter_color
+            abs_col = mat.absorption
         mir_col = mat.glass_mir_col
         tfilt = mat.glass_transmit
-        abs_col = mat.absorption
+        
 
         yi.paramsSetColor("filter_color", filt_col[0], filt_col[1], filt_col[2])
         yi.paramsSetColor("mirror_color", mir_col[0], mir_col[1], mir_col[2])
@@ -263,7 +268,7 @@ class yafMaterial:
 
         return yi.createMaterial(self.namehash(mat))
 
-    def writeGlossyShader(self, mat, coated):  # mat : instance of material class
+    def writeGlossyShader(self, mat, scene, coated):  # mat : instance of material class
         yi = self.yi
         yi.paramsClearAll()
 
@@ -337,7 +342,8 @@ class yafMaterial:
 
         return yi.createMaterial(self.namehash(mat))
 
-    def writeShinyDiffuseShader(self, mat):
+
+    def writeShinyDiffuseShader(self, mat, scene):
         yi = self.yi
         yi.paramsClearAll()
 
@@ -350,6 +356,14 @@ class yafMaterial:
         bTransl = mat.translucency
         bTransmit = mat.transmit_filter
         bEmit = mat.emit
+
+        if scene.gs_clay_render and not mat.clay_exclude:
+            bCol = scene.gs_clay_col
+            bSpecr = 0.0
+            bEmit = 0.0
+            if not scene.gs_clay_render_keep_transparency:
+                bTransp = 0.0
+                bTransl = 0.0
 
         if self.preview:
             if mat.name.startswith("checker"):
@@ -371,35 +385,41 @@ class yafMaterial:
             used = False
             mappername = "map%x" % i
 
-            lname = "diff_layer%x" % i
-            if self.writeTexLayer(lname, mappername, diffRoot, mtex, mtex.use_map_color_diffuse, bCol, mtex.diffuse_color_factor):
-                used = True
-                diffRoot = lname
+            if mat.clay_exclude or not scene.gs_clay_render:
+                lname = "diff_layer%x" % i
+                if self.writeTexLayer(lname, mappername, diffRoot, mtex, mtex.use_map_color_diffuse, bCol, mtex.diffuse_color_factor):
+                    used = True
+                    diffRoot = lname
 
-            lname = "mircol_layer%x" % i
-            if self.writeTexLayer(lname, mappername, mcolRoot, mtex, mtex.use_map_mirror, mirCol, mtex.mirror_factor):
-                used = True
-                mcolRoot = lname
+            if mat.clay_exclude or not scene.gs_clay_render:
+                lname = "mircol_layer%x" % i
+                if self.writeTexLayer(lname, mappername, mcolRoot, mtex, mtex.use_map_mirror, mirCol, mtex.mirror_factor):
+                    used = True
+                    mcolRoot = lname
 
-            lname = "transp_layer%x" % i
-            if self.writeTexLayer(lname, mappername, transpRoot, mtex, mtex.use_map_alpha, [bTransp], mtex.alpha_factor):
-                used = True
-                transpRoot = lname
+            if mat.clay_exclude or scene.gs_clay_render_keep_transparency or not scene.gs_clay_render:
+                lname = "transp_layer%x" % i
+                if self.writeTexLayer(lname, mappername, transpRoot, mtex, mtex.use_map_alpha, [bTransp], mtex.alpha_factor):
+                    used = True
+                    transpRoot = lname
 
-            lname = "translu_layer%x" % i
-            if self.writeTexLayer(lname, mappername, translRoot, mtex, mtex.use_map_translucency, [bTransl], mtex.translucency_factor):
-                used = True
-                translRoot = lname
+            if mat.clay_exclude or scene.gs_clay_render_keep_transparency or not scene.gs_clay_render:
+                lname = "translu_layer%x" % i
+                if self.writeTexLayer(lname, mappername, translRoot, mtex, mtex.use_map_translucency, [bTransl], mtex.translucency_factor):
+                    used = True
+                    translRoot = lname
 
-            lname = "mirr_layer%x" % i
-            if self.writeTexLayer(lname, mappername, mirrorRoot, mtex, mtex.use_map_raymir, [bSpecr], mtex.raymir_factor):
-                used = True
-                mirrorRoot = lname
+            if mat.clay_exclude or not scene.gs_clay_render:
+                lname = "mirr_layer%x" % i
+                if self.writeTexLayer(lname, mappername, mirrorRoot, mtex, mtex.use_map_raymir, [bSpecr], mtex.raymir_factor):
+                    used = True
+                    mirrorRoot = lname
 
-            lname = "bump_layer%x" % i
-            if self.writeTexLayer(lname, mappername, bumpRoot, mtex, mtex.use_map_normal, [0], mtex.normal_factor):
-                used = True
-                bumpRoot = lname
+            if mat.clay_exclude or scene.gs_clay_render_keep_normals or not scene.gs_clay_render:
+                lname = "bump_layer%x" % i
+                if self.writeTexLayer(lname, mappername, bumpRoot, mtex, mtex.use_map_normal, [0], mtex.normal_factor):
+                    used = True
+                    bumpRoot = lname
 
             if used:
                 self.writeMappingNode(mappername, mtex.texture.name, mtex)
@@ -431,13 +451,17 @@ class yafMaterial:
         yi.paramsSetBool("fresnel_effect", mat.fresnel_effect)
         yi.paramsSetFloat("IOR", mat.IOR_reflection)  # added IOR for reflection
 
-        if mat.brdf_type == "oren-nayar":  # oren-nayar fix for shinydiffuse
+        if scene.gs_clay_render and not mat.clay_exclude:
+             if scene.gs_clay_oren_nayar:
+                 yi.paramsSetString("diffuse_brdf", "oren_nayar")
+                 yi.paramsSetFloat("sigma", scene.gs_clay_sigma)
+        elif mat.brdf_type == "oren-nayar":  # oren-nayar fix for shinydiffuse
             yi.paramsSetString("diffuse_brdf", "oren_nayar")
             yi.paramsSetFloat("sigma", mat.sigma)
 
         return yi.createMaterial(self.namehash(mat))
 
-    def writeBlendShader(self, mat):
+    def writeBlendShader(self, mat, scene):
         yi = self.yi
         yi.paramsClearAll()
 
@@ -477,37 +501,41 @@ class yafMaterial:
 
         return yi.createMaterial(self.namehash(mat))
 
-    def writeMatteShader(self, mat):
+    def writeMatteShader(self, mat, scene):
         yi = self.yi
         yi.paramsClearAll()
         yi.paramsSetString("type", "shadow_mat")
         return yi.createMaterial(self.namehash(mat))
 
-    def writeNullMat(self, mat):
+    def writeNullMat(self, mat, scene):
         yi = self.yi
         yi.paramsClearAll()
         yi.paramsSetString("type", "null")
         return yi.createMaterial(self.namehash(mat))
 
-    def writeMaterial(self, mat, preview=False):
+    def writeMaterial(self, mat, scene, preview=False):
         self.preview = preview
         self.yi.printInfo("Exporter: Creating Material: \"" + self.namehash(mat) + "\"")
         ymat = None
         if mat.name == "y_null":
-            ymat = self.writeNullMat(mat)
+            ymat = self.writeNullMat(mat, scene)
+        elif scene.gs_clay_render and not mat.clay_exclude and not (scene.gs_clay_render_keep_transparency and mat.mat_type == "glass"):
+            ymat = self.writeShinyDiffuseShader(mat, scene)
         elif mat.mat_type == "glass":
-            ymat = self.writeGlassShader(mat, False)
+            ymat = self.writeGlassShader(mat, scene, False)
         elif mat.mat_type == "rough_glass":
-            ymat = self.writeGlassShader(mat, True)
+            ymat = self.writeGlassShader(mat, scene, True)
         elif mat.mat_type == "glossy":
-            ymat = self.writeGlossyShader(mat, False)
+            ymat = self.writeGlossyShader(mat, scene, False)
         elif mat.mat_type == "coated_glossy":
-            ymat = self.writeGlossyShader(mat, True)
+            ymat = self.writeGlossyShader(mat, scene, True)
         elif mat.mat_type == "shinydiffusemat":
-            ymat = self.writeShinyDiffuseShader(mat)
+            ymat = self.writeShinyDiffuseShader(mat, scene)
         elif mat.mat_type == "blend":
-            ymat = self.writeBlendShader(mat)
+            ymat = self.writeBlendShader(mat, scene)   #FIXME: in the new Clay render two limitations:
+                #We cannot yet keep transparency in Blend objects. If that's needed to test a scene, better to exclude that particular material from the Clay
+                #We cannot exclude just the blended material from the Clay render, the individual materials that are used to make the blend also have to be excluded
         else:
-            ymat = self.writeNullMat(mat)
+            ymat = self.writeNullMat(mat, scene)
 
         self.materialMap[mat] = ymat

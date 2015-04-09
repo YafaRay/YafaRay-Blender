@@ -95,6 +95,7 @@ class YAF_PT_context_material(MaterialButtonsPanel, Panel):
         if yaf_mat:
             layout.separator()
             layout.prop(yaf_mat, "mat_type")
+            layout.row().prop(yaf_mat, "clay_exclude")
 
 
 class YAF_MATERIAL_PT_preview(MaterialButtonsPanel, Panel):

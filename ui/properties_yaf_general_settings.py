@@ -82,6 +82,11 @@ class YAF_PT_general_settings(RenderButtonsPanel, Panel):
         col = split.column()
         if scene.gs_clay_render:
             col.prop(scene, "gs_clay_col", text="")
+            col.prop(scene, "gs_clay_oren_nayar")
+            if scene.gs_clay_oren_nayar:
+                col.prop(scene, "gs_clay_sigma")
+            col.prop(scene, "gs_clay_render_keep_transparency")
+            col.prop(scene, "gs_clay_render_keep_normals")
         col.prop(scene, "gs_auto_threads", toggle=True)
         col.prop(scene, "gs_show_sam_pix", toggle=True)
         col.prop(render, "use_instances", text="Use instances", toggle=True)

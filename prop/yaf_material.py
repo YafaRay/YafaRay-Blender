@@ -236,6 +236,11 @@ def register():
         description="Let light straight through for shadow calculation. Not to be used with dispersion",
         default=False)
 
+    Material.clay_exclude = BoolProperty(
+        name="Exclude from Clay render",
+        description="Exclude from Clay render mode: this material will be rendered normally even in Clay render mode",
+        default=False)
+
     Material.blend_value = FloatProperty(
         name="Blend value",
         description="The mixing balance: 0 -> only material 1, 1.0 -> only material 2",
@@ -299,6 +304,7 @@ def unregister():
     del Material.dispersion_power
     del Material.refr_roughness
     del Material.fake_shadows
+    del Material.clay_exclude
     del Material.blend_value
     del Material.sigma
     del Material.rough
