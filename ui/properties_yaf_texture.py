@@ -569,6 +569,7 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, Panel):
         shaderNodes = dict()
         shaderNodes["Bump"] = ["use_map_normal", "normal_factor", "Bump"]
         shaderNodes["MirrorAmount"] = ["use_map_raymir", "raymir_factor", "Mirror Amount"]
+        shaderNodes["SigmaOren"] = ["use_map_hardness", "hardness_factor", "Sigma Amount for Oren Nayar"]
         shaderNodes["MirrorColor"] = ["use_map_mirror", "mirror_factor", "Mirror Color"]
         shaderNodes["DiffuseColor"] = ["use_map_color_diffuse", "diffuse_color_factor", "Diffuse Color"]
         shaderNodes["GlossyColor"] = ["use_map_color_spec", "specular_color_factor", "Glossy Color"]
@@ -582,7 +583,7 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, Panel):
         materialShaderNodes["rough_glass"] = ["Bump", "MirrorColor"]
         materialShaderNodes["glossy"] = ["DiffuseColor", "GlossyColor", "GlossyAmount", "Bump"]
         materialShaderNodes["coated_glossy"] = ["DiffuseColor", "GlossyColor", "GlossyAmount", "Bump"]
-        materialShaderNodes["shinydiffusemat"] = ["DiffuseColor", "MirrorAmount", "MirrorColor", "Transparency", "Translucency", "Bump"]
+        materialShaderNodes["shinydiffusemat"] = ["DiffuseColor", "MirrorAmount", "MirrorColor", "Transparency", "Translucency", "Bump", "SigmaOren"]
         materialShaderNodes["blend"] = ["BlendAmount"]
 
         if isinstance(idblock, Material):
