@@ -364,6 +364,7 @@ class yafMaterial:
         translRoot = ''
         mirrorRoot = ''
         bumpRoot = ''
+        sigmaOrenRoot = ''
 
         for mtex in used_textures:
             if not mtex.texture:
@@ -401,6 +402,11 @@ class yafMaterial:
                 used = True
                 bumpRoot = lname
 
+            lname = "sigma_oren_layer%x" % i
+            if self.writeTexLayer(lname, mappername, sigmaOrenRoot, mtex, mtex.use_map_hardness, [0], mtex.hardness_factor):
+                used = True
+                sigmaOrenRoot = lname
+
             if used:
                 self.writeMappingNode(mappername, mtex.texture.name, mtex)
             i += 1
@@ -418,6 +424,8 @@ class yafMaterial:
             yi.paramsSetString("mirror_shader", mirrorRoot)
         if len(bumpRoot) > 0:
             yi.paramsSetString("bump_shader", bumpRoot)
+        if len(sigmaOrenRoot) > 0:
+            yi.paramsSetString("sigma_oren_shader", sigmaOrenRoot)        
 
         yi.paramsSetColor("color", bCol[0], bCol[1], bCol[2])
         yi.paramsSetFloat("transparency", bTransp)
