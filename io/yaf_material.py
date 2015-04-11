@@ -422,10 +422,11 @@ class yafMaterial:
                     used = True
                     bumpRoot = lname
 
-            lname = "sigma_oren_layer%x" % i
-            if self.writeTexLayer(lname, mappername, sigmaOrenRoot, mtex, mtex.use_map_hardness, [0], mtex.hardness_factor):
-                used = True
-                sigmaOrenRoot = lname
+            if mat.clay_exclude or scene.gs_clay_render_keep_normals or not scene.gs_clay_render:
+                lname = "sigma_oren_layer%x" % i
+                if self.writeTexLayer(lname, mappername, sigmaOrenRoot, mtex, mtex.use_map_hardness, [0], mtex.hardness_factor):
+                    used = True
+                    sigmaOrenRoot = lname
 
             if used:
                 self.writeMappingNode(mappername, mtex.texture.name, mtex)

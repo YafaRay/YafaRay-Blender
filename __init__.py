@@ -34,9 +34,9 @@ bl_info = {
     "author": "Shuvro Sarker, Kim Skoglund (Kerbox), Pedro Alcaide (povmaniaco),"
               "Paulo Gomes (tuga3d), Michele Castigliego (subcomandante),"
               "Bert Buchholz, Rodrigo Placencia (DarkTide),"
-              "Alexander Smirnov (Exvion), Olaf Arnold (olaf)",
-    "version": (0, 1, 5, 'Stable'),
-    "blender": (2, 6, 3),
+              "Alexander Smirnov (Exvion), Olaf Arnold (olaf), David Bluecame",
+    "version": (0, 1, 99, 'Experimental'),
+    "blender": (2, 7, 4),
     "location": "Info Header > Engine dropdown menu",
     "wiki_url": "http://www.yafaray.org/community/forum",
     "tracker_url": "http://www.yafaray.org/development/bugtracker/yafaray",
@@ -53,7 +53,7 @@ if sys.platform == 'win32':
             break
         # load dll's from a MinGW installation
         else:
-            dllArray = ['zlib1', 'libxml2-2', 'libgcc_s_sjlj-1', 'Half', 'Iex', 'IlmThread', 'IlmImf', 'libjpeg-8', \
+            dllArray = ['libwinpthread-1', 'libgcc_s_sjlj-1', 'libstdc++-6', 'zlib1', 'libxml2-2', 'Half', 'Iex', 'IlmThread', 'IlmImf', 'libjpeg-8', \
                        'libpng14', 'libtiff-3', 'libfreetype-6', 'libyafaraycore', 'libyafarayplugin']
 
 elif sys.platform == 'darwin':
