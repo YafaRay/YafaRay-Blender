@@ -467,9 +467,9 @@ class yafObject(object):
 
         ymaterial = self.materialMap["default"]
 
-        if self.scene.gs_clay_render:
-            ymaterial = self.materialMap["clay"]
-        elif len(meshMats) and meshMats[matIndex]:
+        #if self.scene.gs_clay_render:
+        #    ymaterial = self.materialMap["clay"]
+        if len(meshMats) and meshMats[matIndex]:
             mat = meshMats[matIndex]
             if mat in self.materialMap:
                 ymaterial = self.materialMap[mat]

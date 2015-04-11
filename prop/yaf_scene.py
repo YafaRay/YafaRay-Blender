@@ -98,13 +98,37 @@ def register():
         description="Override all materials with a white diffuse material",
         default=False)
 
+    Scene.gs_clay_render_keep_transparency = BoolProperty(
+        name="Keep transparency",
+        description="Keep transparency during clay render",
+        default=False)
+
+    Scene.gs_clay_render_keep_normals = BoolProperty(
+        name="Keep normal/bump maps",
+        description="Keep normal and bump maps during clay render",
+        default=False)
+
+    Scene.gs_clay_oren_nayar = BoolProperty(
+        name="Oren-Nayar",
+        description="Use Oren-Nayar shader for a more realistic diffuse clay render",
+        default=True)
+
+    Scene.gs_clay_sigma = FloatProperty(
+        name="Sigma",
+        description="Roughness of the clay surfaces when rendering with Clay-Oren Nayar",
+        min=0.0, max=1.0,
+        step=1, precision=5,
+        soft_min=0.0, soft_max=1.0,
+        default=0.30000)
+
+
     # added clay color property
     Scene.gs_clay_col = FloatVectorProperty(
         name="Clay color",
         description="Color of clay render material",
         subtype='COLOR',
         min=0.0, max=1.0,
-        default=(0.8, 0.8, 0.8))
+        default=(0.5, 0.5, 0.5))
 
     Scene.gs_mask_render = BoolProperty(
         name="Render mask",
@@ -408,6 +432,10 @@ def unregister():
     Scene.gs_tile_order
     Scene.gs_auto_threads
     Scene.gs_clay_render
+    Scene.gs_clay_render_keep_transparency
+    Scene.gs_clay_render_keep_normals
+    Scene.gs_clay_oren_nayar
+    Scene.gs_clay_sigma
     Scene.gs_clay_col
     Scene.gs_mask_render
     Scene.gs_draw_params
