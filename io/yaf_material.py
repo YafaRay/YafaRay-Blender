@@ -352,6 +352,7 @@ class yafMaterial:
         bCol = mat.diffuse_color
         mirCol = mat.mirror_color
         bSpecr = mat.specular_reflect
+        bDiffRefl = mat.diffuse_reflect
         bTransp = mat.transparency
         bTransl = mat.translucency
         bTransmit = mat.transmit_filter
@@ -361,6 +362,7 @@ class yafMaterial:
             bCol = scene.gs_clay_col
             bSpecr = 0.0
             bEmit = 0.0
+            bDiffRefl = 1.0
             if not scene.gs_clay_render_keep_transparency:
                 bTransp = 0.0
                 bTransl = 0.0
@@ -442,7 +444,7 @@ class yafMaterial:
         yi.paramsSetColor("color", bCol[0], bCol[1], bCol[2])
         yi.paramsSetFloat("transparency", bTransp)
         yi.paramsSetFloat("translucency", bTransl)
-        yi.paramsSetFloat("diffuse_reflect", mat.diffuse_reflect)
+        yi.paramsSetFloat("diffuse_reflect", bDiffRefl)
         yi.paramsSetFloat("emit", bEmit)
         yi.paramsSetFloat("transmit_filter", bTransmit)
 
