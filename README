@@ -1,11 +1,13 @@
-Yafaray 0.1.99-beta1 (2015-04-11) David Bluecame experimental exporter for Blender 2.74:
+Yafaray 0.1.99-beta2 (2015-04-18) David Bluecame experimental exporter for Blender 2.74:
 ** THIS BUILD CONTAINS EXPERIMENTAL CHANGES AND FEATURES - DO NOT USE FOR PRODUCTION SCENES **
 
-Unofficial build for Windows 7 and 8.1 (64 bits) by David Bluecame
+Unofficial build for XXXX (XX bits) by David Bluecame
 Based on YafaRay git version + pull requests from David Bluecame not yet in master for
-- New Clay Material
+- New Clay Material, with a small correction since the previous beta1
 - Texture mapping of Sigma factor in Shiny Diffuse/Oren Nayar
-- Fix for Negated colors in Musgrave/Voronoi textures mapped to diffuse color.
+
+*WARNING* This beta2 includes an EXPERIMENTAL change to calculate automatically Shadow Bias and Minimum Ray Dist depending on the scene size. This is to avoid black artifacts when resizing the objects. However as it's a fundamental change that affects everything, perhaps some new artifacts could appear in the images now and further fine tuning needed in this new formula. Please give us feedback about it in the forum:
+http://www.yafaray.org/community/forum/viewtopic.php?f=23&t=5084 
 
 To install YafaRay to blender, copy this entire folder "yafaray" to the "C:\Program Files\Blender Foundation\Blender\2.74\scripts\addons" folder.
 
