@@ -577,13 +577,14 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, Panel):
         shaderNodes["Transparency"] = ["use_map_alpha", "alpha_factor", "Transparency"]
         shaderNodes["Translucency"] = ["use_map_translucency", "translucency_factor", "Translucency"]
         shaderNodes["BlendAmount"] = ["use_map_diffuse", "diffuse_factor", "Blending Amount"]
+        shaderNodes["DiffuseReflection"] = ["use_map_diffuse", "diffuse_factor", "Diffuse reflection Amount"]
 
         materialShaderNodes = dict()
         materialShaderNodes["glass"] = ["Bump", "MirrorColor"]
         materialShaderNodes["rough_glass"] = ["Bump", "MirrorColor"]
         materialShaderNodes["glossy"] = ["DiffuseColor", "GlossyColor", "GlossyAmount", "Bump"]
         materialShaderNodes["coated_glossy"] = ["DiffuseColor", "GlossyColor", "GlossyAmount", "Bump"]
-        materialShaderNodes["shinydiffusemat"] = ["DiffuseColor", "MirrorAmount", "MirrorColor", "Transparency", "Translucency", "Bump", "SigmaOren"]
+        materialShaderNodes["shinydiffusemat"] = ["DiffuseColor", "MirrorAmount", "MirrorColor", "Transparency", "Translucency", "Bump", "SigmaOren", "DiffuseReflection"]
         materialShaderNodes["blend"] = ["BlendAmount"]
 
         if isinstance(idblock, Material):

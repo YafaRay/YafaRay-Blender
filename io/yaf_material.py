@@ -381,6 +381,7 @@ class yafMaterial:
         mirrorRoot = ''
         bumpRoot = ''
         sigmaOrenRoot = ''
+        diffReflectRoot = ''
 
         for mtex in used_textures:
             if not mtex.texture:
@@ -430,6 +431,12 @@ class yafMaterial:
                     used = True
                     sigmaOrenRoot = lname
 
+            if mat.clay_exclude or not scene.gs_clay_render:
+                lname = "diff_refl_layer%x" % i
+                if self.writeTexLayer(lname, mappername, diffReflectRoot, mtex, mtex.use_map_diffuse, [0], mtex.diffuse_factor):
+                    used = True
+                    diffReflectRoot = lname
+
             if used:
                 self.writeMappingNode(mappername, mtex.texture.name, mtex)
             i += 1
@@ -449,6 +456,8 @@ class yafMaterial:
             yi.paramsSetString("bump_shader", bumpRoot)
         if len(sigmaOrenRoot) > 0:
             yi.paramsSetString("sigma_oren_shader", sigmaOrenRoot)        
+        if len(diffReflectRoot) > 0:
+            yi.paramsSetString("diffuse_refl_shader", diffReflectRoot)             
 
         yi.paramsSetColor("color", bCol[0], bCol[1], bCol[2])
         yi.paramsSetFloat("transparency", bTransp)

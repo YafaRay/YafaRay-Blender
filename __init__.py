@@ -35,7 +35,7 @@ bl_info = {
               "Paulo Gomes (tuga3d), Michele Castigliego (subcomandante),"
               "Bert Buchholz, Rodrigo Placencia (DarkTide),"
               "Alexander Smirnov (Exvion), Olaf Arnold (olaf), David Bluecame",
-    "version": (0, 1, 99, 'Experimental'),
+    "version": (0, 1, 99, 'Experimental beta3'),
     "blender": (2, 7, 4),
     "location": "Info Header > Engine dropdown menu",
     "wiki_url": "http://www.yafaray.org/community/forum",
@@ -53,13 +53,12 @@ if sys.platform == 'win32':
             break
         # load dll's from a MinGW installation
         else:
-            dllArray = ['libwinpthread-1', 'libgcc_s_sjlj-1', 'libstdc++-6', 'zlib1', 'libxml2-2', 'Half', 'Iex', 'IlmThread', 'IlmImf', 'libjpeg-8', \
-                       'libpng14', 'libtiff-3', 'libfreetype-6', 'libyafaraycore', 'libyafarayplugin']
+            dllArray = ['libwinpthread-1', 'libgcc_s_sjlj-1', 'libstdc++-6', 'iconv', 'zlib1', 'libxml2-2', 'libHalf-11', 'libIex-2_1-11', 'libIlmThread-2_1-11', 'libIlmImf-Imf_2_1-21', 'libjpeg-62', 'libpng16-16', 'libtiff-5', 'libbz2-1', 'libfreetype-6', 'libyafaraycore', 'libyafarayplugin']
 
 elif sys.platform == 'darwin':
     dllArray = ['libyafaraycore.dylib', 'libyafarayplugin.dylib']
 else:
-    dllArray = ['libyafaraycore.so', 'libyafarayplugin.so']
+    dllArray = ['libHalf.so.6.0.0', 'libIex.so.6.0.0', 'libImath.so.6.0.0', 'libIlmThread.so.6.0.0', 'libIlmImf.so.6.0.0', 'libpython3.4m.so.1.0', 'libjpeg.so.62.0.0', 'libz.so.1.2.3.4', 'libpng12.so.0.44.0', 'libtiff.so.4.3.3', 'libfreetype.so.6.6.0', 'libyafaraycore.so', 'libyafarayplugin.so']
 
 for dll in dllArray:
     try:
