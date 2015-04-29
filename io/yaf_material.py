@@ -241,6 +241,7 @@ class yafMaterial:
         bumpRoot = ''
         filterColorRoot = ''
         IORRoot = ''
+        roughnessRoot = ''
 
         i = 0
         used_textures = self.getUsedTextures(mat)
@@ -265,6 +266,10 @@ class yafMaterial:
             if self.writeTexLayer(lname, mappername, IORRoot, mtex, mtex.use_map_density, [0], mtex.density_factor):
                 used = True
                 IORRoot = lname
+            lname = "roughness_layer%x" % i
+            if self.writeTexLayer(lname, mappername, roughnessRoot, mtex, mtex.use_map_hardness, [0], mtex.hardness_factor):
+                used = True
+                roughnessRoot = lname                
             if used:
                 self.writeMappingNode(mappername, mtex.texture.name, mtex)
                 i += 1
@@ -277,7 +282,9 @@ class yafMaterial:
         if len(filterColorRoot) > 0:
             yi.paramsSetString("filter_color_shader", filterColorRoot)
         if len(IORRoot) > 0:
-            yi.paramsSetString("IOR_shader", IORRoot)            
+            yi.paramsSetString("IOR_shader", IORRoot) 
+        if len(roughnessRoot) > 0:
+            yi.paramsSetString("roughness_shader", roughnessRoot)   
         return yi.createMaterial(self.namehash(mat))
 
     def writeGlossyShader(self, mat, scene, coated):  # mat : instance of material class
