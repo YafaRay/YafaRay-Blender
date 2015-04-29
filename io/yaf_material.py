@@ -310,6 +310,7 @@ class yafMaterial:
         glossRoot = ''
         glRefRoot = ''
         bumpRoot = ''
+        sigmaOrenRoot = ''
 
         i = 0
         used_textures = self.getUsedTextures(mat)
@@ -334,6 +335,10 @@ class yafMaterial:
             if self.writeTexLayer(lname, mappername, bumpRoot, mtex, mtex.use_map_normal, [0], mtex.normal_factor):
                 used = True
                 bumpRoot = lname
+            lname = "sigma_oren_layer%x" % i
+            if self.writeTexLayer(lname, mappername, sigmaOrenRoot, mtex, mtex.use_map_hardness, [0], mtex.hardness_factor):
+                used = True
+                sigmaOrenRoot = lname                
             if used:
                 self.writeMappingNode(mappername, mtex.texture.name, mtex)
             i += 1
@@ -347,7 +352,9 @@ class yafMaterial:
             yi.paramsSetString("glossy_reflect_shader", glRefRoot)
         if len(bumpRoot) > 0:
             yi.paramsSetString("bump_shader", bumpRoot)
-
+        if len(sigmaOrenRoot) > 0:
+            yi.paramsSetString("sigma_oren_shader", sigmaOrenRoot)     
+                    
         if mat.brdf_type == "oren-nayar":  # oren-nayar fix for glossy
             yi.paramsSetString("diffuse_brdf", "Oren-Nayar")
             yi.paramsSetFloat("sigma", mat.sigma)
