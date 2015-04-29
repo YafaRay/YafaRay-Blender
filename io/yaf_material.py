@@ -226,7 +226,6 @@ class yafMaterial:
             abs_col = mat.absorption
         mir_col = mat.glass_mir_col
         tfilt = mat.glass_transmit
-        
 
         yi.paramsSetColor("filter_color", filt_col[0], filt_col[1], filt_col[2])
         yi.paramsSetColor("mirror_color", mir_col[0], mir_col[1], mir_col[2])
@@ -240,6 +239,8 @@ class yafMaterial:
         mcolRoot = ''
         # fcolRoot = '' /* UNUSED */
         bumpRoot = ''
+        filterColorRoot = ''
+        IORRoot = ''
 
         i = 0
         used_textures = self.getUsedTextures(mat)
@@ -256,6 +257,14 @@ class yafMaterial:
             if self.writeTexLayer(lname, mappername, bumpRoot, mtex, mtex.use_map_normal, [0], mtex.normal_factor):
                 used = True
                 bumpRoot = lname
+            lname = "filter_color_layer%x" % i
+            if self.writeTexLayer(lname, mappername, filterColorRoot, mtex, mtex.use_map_color_reflection, filt_col, mtex.reflection_color_factor):
+                used = True
+                filterColorRoot = lname
+            lname = "IOR_layer%x" % i
+            if self.writeTexLayer(lname, mappername, IORRoot, mtex, mtex.use_map_density, [0], mtex.density_factor):
+                used = True
+                IORRoot = lname
             if used:
                 self.writeMappingNode(mappername, mtex.texture.name, mtex)
                 i += 1
@@ -265,7 +274,10 @@ class yafMaterial:
             yi.paramsSetString("mirror_color_shader", mcolRoot)
         if len(bumpRoot) > 0:
             yi.paramsSetString("bump_shader", bumpRoot)
-
+        if len(filterColorRoot) > 0:
+            yi.paramsSetString("filter_color_shader", filterColorRoot)
+        if len(IORRoot) > 0:
+            yi.paramsSetString("IOR_shader", IORRoot)            
         return yi.createMaterial(self.namehash(mat))
 
     def writeGlossyShader(self, mat, scene, coated):  # mat : instance of material class
