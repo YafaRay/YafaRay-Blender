@@ -263,7 +263,7 @@ class yafMaterial:
                 used = True
                 filterColorRoot = lname
             lname = "IOR_layer%x" % i
-            if self.writeTexLayer(lname, mappername, IORRoot, mtex, mtex.use_map_density, [0], mtex.density_factor):
+            if self.writeTexLayer(lname, mappername, IORRoot, mtex, mtex.use_map_warp, [0], mtex.warp_factor):
                 used = True
                 IORRoot = lname
             lname = "roughness_layer%x" % i
@@ -298,8 +298,10 @@ class yafMaterial:
             yi.paramsSetColor("mirror_color", mir_col[0], mir_col[1], mir_col[2])
         else:
             yi.paramsSetString("type", "glossy")
+            mir_col = mat.diffuse_color
 
         diffuse_color = mat.diffuse_color
+        bSpecr = mat.specular_reflect
         color = mat.glossy_color
 
         yi.paramsSetColor("diffuse_color", diffuse_color[0], diffuse_color[1], diffuse_color[2])
@@ -311,6 +313,7 @@ class yafMaterial:
         yi.paramsSetBool("anisotropic", mat.anisotropic)
         yi.paramsSetFloat("exp_u", mat.exp_u)
         yi.paramsSetFloat("exp_v", mat.exp_v)
+        yi.paramsSetFloat("specular_reflect", bSpecr)
 
         diffRoot = ''
         # mcolRoot = ''  /* UNUSED */
@@ -318,6 +321,11 @@ class yafMaterial:
         glRefRoot = ''
         bumpRoot = ''
         sigmaOrenRoot = ''
+        exponentRoot = ''
+        IORRoot = ''
+        diffReflectRoot = ''
+        mirrorRoot = ''
+        mcolRoot = ''
 
         i = 0
         used_textures = self.getUsedTextures(mat)
@@ -346,6 +354,28 @@ class yafMaterial:
             if self.writeTexLayer(lname, mappername, sigmaOrenRoot, mtex, mtex.use_map_hardness, [0], mtex.hardness_factor):
                 used = True
                 sigmaOrenRoot = lname                
+            lname = "exponent_layer%x" % i
+            if self.writeTexLayer(lname, mappername, exponentRoot, mtex, mtex.use_map_ambient, [0], mtex.ambient_factor):
+                used = True
+                exponentRoot = lname
+            lname = "IOR_layer%x" % i
+            if self.writeTexLayer(lname, mappername, IORRoot, mtex, mtex.use_map_warp, [0], mtex.warp_factor):
+                used = True
+                IORRoot = lname
+            lname = "diff_refl_layer%x" % i
+            if self.writeTexLayer(lname, mappername, diffReflectRoot, mtex, mtex.use_map_diffuse, [0], mtex.diffuse_factor):
+                used = True
+                diffReflectRoot = lname
+            lname = "mircol_layer%x" % i
+            if self.writeTexLayer(lname, mappername, mcolRoot, mtex, mtex.use_map_mirror, mir_col, mtex.mirror_factor):
+                used = True
+                mcolRoot = lname
+            lname = "mirr_layer%x" % i
+            if self.writeTexLayer(lname, mappername, mirrorRoot, mtex, mtex.use_map_raymir, [bSpecr], mtex.raymir_factor):
+                used = True
+                mirrorRoot = lname
+
+                
             if used:
                 self.writeMappingNode(mappername, mtex.texture.name, mtex)
             i += 1
@@ -361,7 +391,17 @@ class yafMaterial:
             yi.paramsSetString("bump_shader", bumpRoot)
         if len(sigmaOrenRoot) > 0:
             yi.paramsSetString("sigma_oren_shader", sigmaOrenRoot)     
-                    
+        if len(exponentRoot) > 0:
+            yi.paramsSetString("exponent_shader", exponentRoot) 
+        if len(IORRoot) > 0:
+            yi.paramsSetString("IOR_shader", IORRoot) 
+        if len(diffReflectRoot) > 0:
+            yi.paramsSetString("diffuse_refl_shader", diffReflectRoot)       
+        if len(mcolRoot) > 0:
+            yi.paramsSetString("mirror_color_shader", mcolRoot)
+        if len(mirrorRoot) > 0:
+            yi.paramsSetString("mirror_shader", mirrorRoot)
+                               
         if mat.brdf_type == "oren-nayar":  # oren-nayar fix for glossy
             yi.paramsSetString("diffuse_brdf", "Oren-Nayar")
             yi.paramsSetFloat("sigma", mat.sigma)
@@ -408,6 +448,7 @@ class yafMaterial:
         bumpRoot = ''
         sigmaOrenRoot = ''
         diffReflectRoot = ''
+        IORRoot = ''
 
         for mtex in used_textures:
             if not mtex.texture:
@@ -463,6 +504,12 @@ class yafMaterial:
                     used = True
                     diffReflectRoot = lname
 
+            if mat.clay_exclude or not scene.gs_clay_render:
+                lname = "IOR_layer%x" % i
+                if self.writeTexLayer(lname, mappername, IORRoot, mtex, mtex.use_map_warp, [0], mtex.warp_factor):
+                    used = True
+                    IORRoot = lname
+
             if used:
                 self.writeMappingNode(mappername, mtex.texture.name, mtex)
             i += 1
@@ -484,6 +531,8 @@ class yafMaterial:
             yi.paramsSetString("sigma_oren_shader", sigmaOrenRoot)        
         if len(diffReflectRoot) > 0:
             yi.paramsSetString("diffuse_refl_shader", diffReflectRoot)             
+        if len(IORRoot) > 0:
+            yi.paramsSetString("IOR_shader", IORRoot) 
 
         yi.paramsSetColor("color", bCol[0], bCol[1], bCol[2])
         yi.paramsSetFloat("transparency", bTransp)

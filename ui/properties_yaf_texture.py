@@ -579,15 +579,16 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, Panel):
         shaderNodes["BlendAmount"] = ["use_map_diffuse", "diffuse_factor", "Blending Amount"]
         shaderNodes["DiffuseReflection"] = ["use_map_diffuse", "diffuse_factor", "Diffuse reflection Amount"]
         shaderNodes["FilterColor"] = ["use_map_color_reflection", "reflection_color_factor", "Filter Color Amount"]
-        shaderNodes["IORAmount"] = ["use_map_density", "density_factor", "IOR Amount (added to material IOR)"]
+        shaderNodes["IORAmount"] = ["use_map_warp", "warp_factor", "IOR Amount (added to material IOR)"]
         shaderNodes["RoughnessAmount"] = ["use_map_hardness", "hardness_factor", "Roughness amount"]
-        
+        shaderNodes["ExponentAmount"] = ["use_map_ambient", "ambient_factor", "Glossy Exponent amount"]
+                
         materialShaderNodes = dict()
-        materialShaderNodes["glass"] = ["Bump", "MirrorColor", "FilterColor", "IORAmount"]
-        materialShaderNodes["rough_glass"] = ["Bump", "MirrorColor", "FilterColor", "IORAmount", "RoughnessAmount"]
-        materialShaderNodes["glossy"] = ["DiffuseColor", "GlossyColor", "GlossyAmount", "Bump", "SigmaOren"]
-        materialShaderNodes["coated_glossy"] = ["DiffuseColor", "GlossyColor", "GlossyAmount", "Bump"]
-        materialShaderNodes["shinydiffusemat"] = ["DiffuseColor", "MirrorAmount", "MirrorColor", "Transparency", "Translucency", "Bump", "SigmaOren", "DiffuseReflection"]
+        materialShaderNodes["glass"] = ["FilterColor", "MirrorColor", "IORAmount", "Bump"]
+        materialShaderNodes["rough_glass"] = ["RoughnessAmount", "FilterColor", "MirrorColor", "IORAmount", "Bump"]
+        materialShaderNodes["glossy"] = ["DiffuseColor", "DiffuseReflection", "SigmaOren", "GlossyColor", "GlossyAmount", "ExponentAmount", "Bump"]
+        materialShaderNodes["coated_glossy"] = ["DiffuseColor", "DiffuseReflection", "SigmaOren", "GlossyColor", "GlossyAmount", "ExponentAmount", "MirrorAmount", "MirrorColor", "IORAmount", "Bump"]
+        materialShaderNodes["shinydiffusemat"] = ["DiffuseColor", "DiffuseReflection", "SigmaOren", "MirrorAmount", "MirrorColor", "IORAmount", "Transparency", "Translucency", "Bump"]
         materialShaderNodes["blend"] = ["BlendAmount"]
 
         if isinstance(idblock, Material):

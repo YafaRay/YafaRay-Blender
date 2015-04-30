@@ -256,6 +256,7 @@ class YAF_PT_glossy_specular(MaterialTypePanel, Panel):
             col.label(text="Fresnel reflection:")
             col.prop(yaf_mat, "IOR_reflection")
             col.label()
+            layout.row().prop(yaf_mat, "specular_reflect", slider=True)
 
 
 class YAF_PT_glass_real(MaterialTypePanel, Panel):
