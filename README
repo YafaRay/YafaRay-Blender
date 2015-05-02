@@ -12,16 +12,23 @@ Based on YafaRay git version + pull requests from David Bluecame not yet in mast
 
 - Extended Texture Mapping system (very experimental!!), allowing using textures to map additional properties in materials, to be able to create either more realistic or more exotic materials and reduce the dependency on the "blend" material. More information in: http://www.yafaray.org/community/forum/viewtopic.php?f=22&t=5091
 
+Important note: when using some of the new mappings, the renders may slow down. I'm not sure whether it's because of the additional calculations (very likely) or if it's something we can optimize further in the future. In any case, it should only be noticeable when using the new mappings, and I think it's worth the ability to create new materials now.
+
 The new texture mappings in addition to the existing ones are: 
 	- Diffuse Reflection Amount in Shiny Diffuse, Glossy and Coated Glossy materials
 	- Sigma factor for Oren Nayar in Shiny Diffuse, Glossy and Coated Glossy materials
 	- Filter color in Glass and Rough Glass.
 	- IOR refractive factor in Glass and Rough Glass. The texture amounts are added to the IOR of the material.
-	- IOR refractive factor for the Fresnel in Shiny Diffuse, Glossy and Coated Glossy materials.
+	- IOR refractive factor for the Fresnel in Shiny Diffuse and Coated Glossy materials.
 	- Roughness factor in Rough Glass material.
 	- Exponent factor in Glossy and Coated Glossy materials
 	- Mirror amount in Coated Glossy materials.
-	- Mirror Color in Glass, Rough Glass and Coated Glossy Materials
+	- Mirror Color in Coated Glossy Materials
+
+
+I also added a (non-texture) mirror amount slider in the Coated Glossy material
+
+Unfortunately due to Blender API limitations, in some of the new texture sliders, the "tooltip" information that appears when hovering the mouse over the slider, can be misleading and not represent the actual function of that slider. However, I took care in setting the description correctly so just by looking at the slider itself you can see what does it map.
 
 
 *WARNING* This build includes an EXPERIMENTAL change to calculate automatically Shadow Bias and Minimum Ray Dist depending on the scene size. This is to avoid black artifacts when resizing the objects. However as it's a fundamental change that affects everything, perhaps some new artifacts could appear in the images now and further fine tuning needed in this new formula. Please give us feedback about it in the forum:
