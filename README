@@ -1,4 +1,4 @@
-Yafaray 0.1.99-beta3 (2015-05-02) David Bluecame experimental exporter for Blender 2.74.5:
+Yafaray 0.1.99-beta3 (2015-05-02) David Bluecame experimental exporter for Blender 2.74.5 (up to Blender builbots for 2015-05-02):
 ** THIS BUILD CONTAINS EXPERIMENTAL CHANGES AND FEATURES - DO NOT USE FOR PRODUCTION SCENES **
 
 Unofficial build for XXXX (XX bits) by David Bluecame
@@ -8,7 +8,11 @@ Based on YafaRay git version + pull requests from David Bluecame not yet in mast
 
 - New Clay Material system, more flexible and powerful. More information in: http://www.yafaray.org/community/forum/viewtopic.php?f=16&t=5079
 
-- Extended Texture Mapping system (very experimental!!), allowing using textures to map additional properties in materials, to be able to create either more realistic or more exotic materials and reduce the dependency on the "blend" material. More information in: http://www.yafaray.org/community/forum/viewtopic.php?f=22&t=5091   The new texture mappings in addition to the existing ones are: 
+- Fix for problem with Rough Glass too bright when dispersion is enabled. See: http://www.yafaray.org/node/642
+
+- Extended Texture Mapping system (very experimental!!), allowing using textures to map additional properties in materials, to be able to create either more realistic or more exotic materials and reduce the dependency on the "blend" material. More information in: http://www.yafaray.org/community/forum/viewtopic.php?f=22&t=5091
+
+The new texture mappings in addition to the existing ones are: 
 	- Diffuse Reflection Amount in Shiny Diffuse, Glossy and Coated Glossy materials
 	- Sigma factor for Oren Nayar in Shiny Diffuse, Glossy and Coated Glossy materials
 	- Filter color in Glass and Rough Glass.
