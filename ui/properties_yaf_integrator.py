@@ -70,15 +70,18 @@ class YAF_PT_render(RenderButtonsPanel, Panel):
             col.prop(scene, "intg_caustic_radius")
             col.prop(scene, "intg_caustic_mix")
 
+            col = layout.row()
+            col.prop(scene, "intg_show_map", toggle=True)
+
             row = layout.row()
-            row.prop(scene, "intg_final_gather", toggle=True, icon='FORCE_FORCE')
+            row.enabled = not scene.intg_show_map
+            row.prop(scene, "intg_final_gather", toggle=False, icon='FORCE_FORCE')
 
             if scene.intg_final_gather:
                 col = layout.row()
+                col.enabled = not scene.intg_show_map
                 col.prop(scene, "intg_fg_bounces")
                 col.prop(scene, "intg_fg_samples")
-                col = layout.row()
-                col.prop(scene, "intg_show_map", toggle=True)
 
         elif scene.intg_light_method == "Pathtracing":
             col = layout.row()
@@ -117,3 +120,4 @@ class YAF_PT_render(RenderButtonsPanel, Panel):
 if __name__ == "__main__":  # only for live edit.
     import bpy
     bpy.utils.register_module(__name__)
+
