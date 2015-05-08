@@ -467,17 +467,15 @@ class yafObject(object):
 
         ymaterial = self.materialMap["default"]
 
-        if len(meshMats) and meshMats[matIndex]:
+        if self.scene.gs_clay_render:
+            ymaterial = self.materialMap["clay"]
+        elif len(meshMats) and meshMats[matIndex]:
             mat = meshMats[matIndex]
             if mat in self.materialMap:
                 ymaterial = self.materialMap[mat]
-                if self.scene.gs_clay_render and not mat.render_in_clay:
-                    ymaterial = self.materialMap["clay"]
         else:
             for mat_slots in [ms for ms in matSlots if ms.material in self.materialMap]:
                 ymaterial = self.materialMap[mat_slots.material]
-                if self.scene.gs_clay_render and not mat_slots.material.render_in_clay:
-                    ymaterial = self.materialMap["clay"]
 
         return ymaterial
 
@@ -543,4 +541,3 @@ class yafObject(object):
         if renderEmitter:
             # ymat = self.materialMap["default"]  /* UNUSED */
             self.writeMesh(object, matrix)
-
