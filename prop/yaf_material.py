@@ -222,11 +222,6 @@ def register():
         soft_min=0.0, soft_max=5.0,
         default=0.0000)
 
-    Material.render_in_clay = BoolProperty(
-        name="Render in clay",
-        description="Turns off clay material in clay render",
-        default=False)
-
     # added refraction roughness propertie for roughglass material
     Material.refr_roughness = FloatProperty(
         name="Exponent",
@@ -314,7 +309,6 @@ def unregister():
     del Material.glass_transmit
     del Material.filter_color
     del Material.dispersion_power
-    del Material.render_in_clay
     del Material.refr_roughness
     del Material.fake_shadows
     del Material.blend_value
