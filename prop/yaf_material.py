@@ -27,14 +27,14 @@ from bpy.props import (FloatProperty,
 
 Material = bpy.types.Material
 
-
+# This code is irrelevant after the change in the blend material to convert it from EnumProperty to StringProperty. I'm keeping this as a reference in case a better solution can be found for the blend material component materials references
 def items_mat1(self, context):
     a = []
     for mat in [m for m in bpy.data.materials if m.name not in self.name]:
         a.append((mat.name, mat.name, "First blend material"))
     return(a)
 
-
+# This code is irrelevant after the change in the blend material to convert it from EnumProperty to StringProperty. I'm keeping this as a reference in case a better solution can be found for the blend material component materials references
 def items_mat2(self, context):
     a = []
     for mat in [m for m in bpy.data.materials if m.name not in self.name]:
@@ -267,6 +267,7 @@ def register():
         description="",
         default=False)
 
+    #Deprecated blend material component Enum references, only to keep compatibility with old scenes
     Material.material1 = EnumProperty(
         name="Material one",
         description="First blend material",
@@ -276,6 +277,17 @@ def register():
         name="Material two",
         description="Second blend material",
         items=items_mat2)
+
+    #New blend material component String references, when opening old scenes it should copy the old Enum Property materials to the new String Properties
+    Material.material1name = StringProperty(
+        name="Material one",
+        description="First blend material")
+        #,        get=get_blend_mat1_old_scenes)
+
+    Material.material2name = StringProperty(
+        name="Material two",
+        description="Second blend material")
+        #,        get=get_blend_mat2_old_scenes)
 
 
 def unregister():
@@ -311,3 +323,5 @@ def unregister():
     del Material.coated
     del Material.material1
     del Material.material2
+    del Material.material1name
+    del Material.material2name

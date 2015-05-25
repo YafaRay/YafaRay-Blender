@@ -441,10 +441,10 @@ class yafMaterial:
         yi = self.yi
         yi.paramsClearAll()
 
-        yi.printInfo("Exporter: Blend material with: [" + mat.material1 + "] [" + mat.material2 + "]")
+        yi.printInfo("Exporter: Blend material with: [" + mat.material1name + "] [" + mat.material2name + "]")
         yi.paramsSetString("type", "blend_mat")
-        yi.paramsSetString("material1", self.namehash(bpy.data.materials[mat.material1]))
-        yi.paramsSetString("material2", self.namehash(bpy.data.materials[mat.material2]))
+        yi.paramsSetString("material1", self.namehash(bpy.data.materials[mat.material1name]))
+        yi.paramsSetString("material2", self.namehash(bpy.data.materials[mat.material2name]))
 
         i = 0
 
