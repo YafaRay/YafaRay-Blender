@@ -1,4 +1,4 @@
-Yafaray 0.1.99-beta3 (2015-05-02) David Bluecame experimental exporter for Blender 2.74.5 (up to Blender builbots for 2015-05-02):
+Yafaray 0.1.99-beta4 (2015-06-20) David Bluecame experimental exporter for Blender 2.75 RC:
 ** THIS BUILD CONTAINS EXPERIMENTAL CHANGES AND FEATURES - DO NOT USE FOR PRODUCTION SCENES **
 
 Unofficial build for XXXX (XX bits) by David Bluecame
@@ -31,8 +31,19 @@ I also added a (non-texture) mirror amount slider in the Coated Glossy material
 Unfortunately due to Blender API limitations, in some of the new texture sliders, the "tooltip" information that appears when hovering the mouse over the slider, can be misleading and not represent the actual function of that slider. However, I took care in setting the description correctly so just by looking at the slider itself you can see what does it map.
 
 
-*WARNING* This build includes an EXPERIMENTAL change to calculate automatically Shadow Bias and Minimum Ray Dist depending on the scene size. This is to avoid black artifacts when resizing the objects. However as it's a fundamental change that affects everything, perhaps some new artifacts could appear in the images now and further fine tuning needed in this new formula. Please give us feedback about it in the forum:
-http://www.yafaray.org/community/forum/viewtopic.php?f=23&t=5084 
+* Changes to the blend material "component" material1,material2 handling. In previous versions if you created or deleted materials in the .blend file, sometimes all the material components of the blend materials changed or dissapeared randomly. To avoid it, now the materials are referenced by name using strings. You cannot use dropdown menus anymore to select the blend submaterials, and you have to be careful now not to rename the materials used by "blend" materials. However, with the new system if you create or delete other materials it will not affect the blend material1,material2 assignments.
+
+Also, I've increased the level of detail in the YafaRay Log, so if there are any problems with missing components in blend materials it should be easy to spot and correct by reading the YafaRay Log.
+
+WARNING: this change breaks backwards compatibility. When opening a .blend created with an older version of YafaRay the blend material components will be "upgraded" to the new system, but the"blend" materials in a blend made with the new version could behave wrongly if you open it with an older version.
+
+* New advanced parameters for fine control of Shadow Bias/Min Ray Dist if the automatic calculation is not good enough. Please give us feedback about it in the forum: http://www.yafaray.org/community/forum/viewtopic.php?f=23&t=5084 
+
+* Fix for caustics noise coming from Non-IBL background in Photon Mapping. Now the background will only be used for Caustics if IBL is enabled and (if there is a caustics parameter available in the background settings) if caustics is enabled in the background.
+
+* Background "power" parameters relocated to places where they make more sense. They were hidden and only visible when IBL was enabled, but most of the times the power parameter affects the background rendering even if IBL is disabled.
+
+
 
 To install YafaRay to blender:
 * Don't use the Blender from the distro repositories. Download the Blender official Linux 64bit build from: http://ftp.halifax.rwth-aachen.de/blender/release/Blender2.74/blender-2.74-linux-glibc211-x86_64.tar.bz2 and uncompress it in a folder, for example in $HOME/
