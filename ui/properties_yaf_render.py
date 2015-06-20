@@ -165,6 +165,30 @@ class YAF_PT_convert(RenderButtonsPanel, Panel):
         layout.column().operator("data.convert_yafaray_properties", text="Convert data from 2.4x")
 
 
+class YAF_PT_advanced(RenderButtonsPanel, Panel):
+    bl_label = "Advanced Settings - only for experts"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    def draw(self, context):
+        scene = context.scene
+        layout = self.layout
+        split = layout.split()
+        col = split.column()
+        col.prop(scene, "adv_auto_shadow_bias_enabled")
+        if not scene.adv_auto_shadow_bias_enabled:
+            col = split.column()
+            sub = col.column()
+            sub.prop(scene, "adv_shadow_bias_value")
+
+        split = layout.split()
+        col = split.column()
+        col.prop(scene, "adv_auto_min_raydist_enabled")
+        if not scene.adv_auto_min_raydist_enabled:
+            col = split.column()
+            sub = col.column()
+            sub.prop(scene, "adv_min_raydist_value")
+
+
 if __name__ == "__main__":  # only for live edit.
     import bpy
     bpy.utils.register_module(__name__)
