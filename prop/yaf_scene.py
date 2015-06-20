@@ -126,6 +126,26 @@ def register():
         description="Materials refract the background as transparent",
         default=True)
 
+    Scene.adv_auto_shadow_bias_enabled = BoolProperty(
+        name="Shadow Bias Automatic",
+        description="Shadow Bias Automatic Calculation (recommended). Disable ONLY if artifacts or black dots due to bad self-shadowing, otherwise LEAVE THIS ENABLED FOR NORMAL SCENES",
+        default=True)
+
+    Scene.adv_shadow_bias_value = FloatProperty(
+        name="Shadow Bias Factor",
+        description="Shadow Bias (default 0.0005). Change ONLY if artifacts or black dots due to bad self-shadowing. Increasing this value can led to artifacts and incorrect renders.",
+        min=0.00000001, max=10000, default=0.0005)
+
+    Scene.adv_auto_min_raydist_enabled = BoolProperty(
+        name="Min Ray Dist Automatic",
+        description="Min Ray Dist Automatic Calculation (recommended), based on the Shadow Bias factor. Disable ONLY if artifacts or light leaks due to bad ray intersections, otherwise LEAVE THIS ENABLED FOR NORMAL SCENES",
+        default=True)
+
+    Scene.adv_min_raydist_value = FloatProperty(
+        name="Min Ray Dist Factor",
+        description="Min Ray Dist (default 0.00005). Change ONLY if artifacts or light leaks due to bad ray intersections. Increasing this value can led to artifacts and incorrect renders.",
+        min=0.00000001, max=10000, default=0.00005)
+
     Scene.gs_custom_string = StringProperty(
         name="Custom string",
         description="Custom string will be added to the info bar, "
@@ -413,6 +433,10 @@ def unregister():
     Scene.gs_draw_params
     Scene.bg_transp
     Scene.bg_transp_refract
+    Scene.adv_auto_shadow_bias_enabled
+    Scene.adv_shadow_bias_value
+    Scene.adv_auto_min_raydist_enabled
+    Scene.adv_min_raydist_value
     Scene.gs_custom_string
     Scene.gs_premult
     Scene.gs_transp_shad

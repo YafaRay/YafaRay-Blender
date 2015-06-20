@@ -128,3 +128,8 @@ def exportRenderSettings(yi, scene):
         yi.paramsSetInt("threads", scene.gs_threads)
 
     yi.paramsSetString("background_name", "world_background")
+
+    yi.paramsSetBool("adv_auto_shadow_bias_enabled", scene.adv_auto_shadow_bias_enabled)
+    yi.paramsSetFloat("adv_shadow_bias_value", scene.adv_shadow_bias_value)
+    yi.paramsSetBool("adv_auto_min_raydist_enabled", scene.adv_auto_min_raydist_enabled)
+    yi.paramsSetFloat("adv_min_raydist_value", scene.adv_min_raydist_value)
