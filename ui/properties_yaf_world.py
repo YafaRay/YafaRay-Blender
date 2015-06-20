@@ -60,6 +60,7 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
             col.prop(world, "bg_horizon_color", text="")
             col.prop(world, "bg_horizon_ground_color", text="")
             col.prop(world, "bg_zenith_ground_color", text="")
+            col.prop(world, "bg_power")          
 
             split = layout.split(percentage=0.40)
             col = split.column()
@@ -88,7 +89,8 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
             layout.prop(world,"bg_rotation")
             layout.prop(world,"yaf_mapworld_type", text="Mapping Coord")
             layout.separator()
-
+            layout.prop(world, "bg_power")
+            
             split = layout.split(percentage=0.33)
             col = split.column()
             col.prop(world, "bg_use_ibl")
@@ -112,7 +114,8 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
             sub.prop(world, "bg_c_var")
             sub.prop(world, "bg_d_var")
             sub.prop(world, "bg_e_var")
-
+            sub.prop(world, "bg_power")
+            
             split = layout.split()
             col = split.column()
             col.label(text="Set sun position:")
@@ -137,10 +140,6 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
 
             col = split.column()
             col.prop(world, "bg_background_light")
-            if world.bg_background_light:
-                col.prop(world, "bg_power")
-            else:
-                col.label(text=" ")
 
             layout.column().prop(world, "bg_light_samples")
 
@@ -213,7 +212,8 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
             col.label("Color:")
             col = split.column()
             col.prop(world, "bg_single_color", text="")
-
+            col.prop(world, "bg_power", text="Power")
+            
             split = layout.split(percentage=0.33)
             col = split.column()
             col.prop(world, "bg_use_ibl")
@@ -223,7 +223,6 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
             # for all options that uses IBL
             col = split.column()
             col.prop(world, "bg_ibl_samples")
-            col.prop(world, "bg_power", text="Power")
 
 
 from . import properties_yaf_volume_integrator
