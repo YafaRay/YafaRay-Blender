@@ -289,6 +289,10 @@ def register():
         description="Second blend material")
         #,        get=get_blend_mat2_old_scenes)
 
+    Material.cast_shadows = BoolProperty(
+        name="Cast shadows",
+        description="Enable casting shadows. This is the normal and expected behavior. Disable it only for special cases!",
+        default=True)
 
 def unregister():
     del Material.mat_type
@@ -325,3 +329,4 @@ def unregister():
     del Material.material2
     del Material.material1name
     del Material.material2name
+    del Material.cast_shadows
