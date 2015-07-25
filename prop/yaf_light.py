@@ -135,6 +135,10 @@ def register():
         description="Show distance, clip start and clip end settings for spot lamp in 3D view",
         default=False, update=set_shadow_method)
 
+    Lamp.light_enabled = BoolProperty(
+        name="Light enabled",
+        description="Enable/Disable light",
+        default=True)
 
 def unregister():
     del Lamp.lamp_type
@@ -151,3 +155,4 @@ def unregister():
     del Lamp.ies_file
     del Lamp.yaf_samples
     del Lamp.yaf_show_dist_clip
+    del Lamp.light_enabled
