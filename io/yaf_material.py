@@ -235,7 +235,7 @@ class yafMaterial:
         yi.paramsSetFloat("absorption_dist", mat.absorption_dist)
         yi.paramsSetFloat("dispersion_power", mat.dispersion_power)
         yi.paramsSetBool("fake_shadows", mat.fake_shadows)
-        yi.paramsSetBool("cast_shadows", mat.cast_shadows)
+        yi.paramsSetString("visibility", mat.visibility)
 
         mcolRoot = ''
         # fcolRoot = '' /* UNUSED */
@@ -315,7 +315,7 @@ class yafMaterial:
         yi.paramsSetFloat("exp_u", mat.exp_u)
         yi.paramsSetFloat("exp_v", mat.exp_v)
         yi.paramsSetFloat("specular_reflect", bSpecr)
-        yi.paramsSetBool("cast_shadows", mat.cast_shadows)
+        yi.paramsSetString("visibility", mat.visibility)
 
         diffRoot = ''
         # mcolRoot = ''  /* UNUSED */
@@ -547,7 +547,7 @@ class yafMaterial:
         yi.paramsSetColor("mirror_color", mirCol[0], mirCol[1], mirCol[2])
         yi.paramsSetBool("fresnel_effect", mat.fresnel_effect)
         yi.paramsSetFloat("IOR", mat.IOR_reflection)  # added IOR for reflection
-        yi.paramsSetBool("cast_shadows", mat.cast_shadows)
+        yi.paramsSetString("visibility", mat.visibility)
 
         if scene.gs_clay_render and not mat.clay_exclude:
              if scene.gs_clay_oren_nayar:
@@ -597,7 +597,7 @@ class yafMaterial:
         else:
             yi.paramsSetFloat("blend_value", mat.blend_value)
 
-        yi.paramsSetBool("cast_shadows", mat.cast_shadows)
+        yi.paramsSetString("visibility", mat.visibility)
 
         return yi.createMaterial(self.namehash(mat))
 

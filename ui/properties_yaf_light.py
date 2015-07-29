@@ -162,6 +162,19 @@ class YAF_PT_spot(DataButtonsPanel, Panel):
             col.label(text="")
             col.prop(lamp, "shadow_buffer_clip_end", text=" Clip End")
 
+class YAF_PT_lamp_advanced(DataButtonsPanel, Panel):
+    bl_label = "Advanced settings"
+    bl_options = {'DEFAULT_CLOSED'}
+    COMPAT_ENGINES = {'YAFA_RENDER'}
+    
+    def draw(self, context):
+        layout = self.layout
+        lamp = context.lamp
+
+        split = layout.split()
+        col = split.column()
+        layout.row().prop(lamp, "cast_shadows")
+
 
 if __name__ == "__main__":  # only for live edit.
     import bpy

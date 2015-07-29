@@ -196,18 +196,6 @@ class YAF_PT_shinydiffuse_specular(MaterialTypePanel, Panel):
         sub.prop(yaf_mat, "IOR_reflection", slider=True)
         layout.row().prop(yaf_mat, "specular_reflect", slider=True)
         
-class YAF_PT_shinydiffuse_advanced(MaterialTypePanel, Panel):
-    bl_label = "Advanced settings"
-    bl_options = {'DEFAULT_CLOSED'}
-    material_type = 'shinydiffusemat'
-
-    def draw(self, context):
-        layout = self.layout
-        yaf_mat = active_node_mat(context.material)
-
-        split = layout.split()
-        col = split.column()
-        layout.row().prop(yaf_mat, "cast_shadows")
 
 class YAF_PT_glossy_diffuse(MaterialTypePanel, Panel):
     bl_label = "Diffuse reflection"
@@ -270,19 +258,6 @@ class YAF_PT_glossy_specular(MaterialTypePanel, Panel):
             col.label()
             layout.row().prop(yaf_mat, "specular_reflect", slider=True)
 
-class YAF_PT_glossy_advanced(MaterialTypePanel, Panel):
-    bl_label = "Advanced settings"
-    bl_options = {'DEFAULT_CLOSED'}
-    material_type = 'glossy', 'coated_glossy'
-
-    def draw(self, context):
-        layout = self.layout
-        yaf_mat = active_node_mat(context.material)
-
-        split = layout.split()
-        col = split.column()
-        layout.row().prop(yaf_mat, "cast_shadows")
-
 
 class YAF_PT_glass_real(MaterialTypePanel, Panel):
     bl_label = "Real glass settings"
@@ -331,19 +306,6 @@ class YAF_PT_glass_fake(MaterialTypePanel, Panel):
         layout.row().prop(yaf_mat, "glass_transmit", slider=True)
         layout.row().prop(yaf_mat, "fake_shadows")
 
-class YAF_PT_glass_advanced(MaterialTypePanel, Panel):
-    bl_label = "Advanced settings"
-    bl_options = {'DEFAULT_CLOSED'}
-    material_type = 'glass', 'rough_glass'
-
-    def draw(self, context):
-        layout = self.layout
-        yaf_mat = active_node_mat(context.material)
-
-        split = layout.split()
-        col = split.column()
-        layout.row().prop(yaf_mat, "cast_shadows")
-
 
 class YAF_PT_blend_(MaterialTypePanel, Panel):
     bl_label = "Blend material settings"
@@ -382,18 +344,18 @@ class YAF_PT_blend_(MaterialTypePanel, Panel):
         col.label(text="Material two:")
         col.prop(yaf_mat, "material2name", text="")
 
-class YAF_PT_blend_advanced(MaterialTypePanel, Panel):
+
+class YAF_PT_advanced(MaterialButtonsPanel, Panel):
     bl_label = "Advanced settings"
     bl_options = {'DEFAULT_CLOSED'}
-    material_type = 'blend'
-
+    
     def draw(self, context):
         layout = self.layout
         yaf_mat = active_node_mat(context.material)
 
         split = layout.split()
         col = split.column()
-        layout.row().prop(yaf_mat, "cast_shadows")
+        layout.row().prop(yaf_mat, "visibility")
 
 
 if __name__ == "__main__":  # only for live edit.
