@@ -139,6 +139,11 @@ def register():
         name="Light enabled",
         description="Enable/Disable light",
         default=True)
+        
+    Lamp.cast_shadows = BoolProperty(
+        name="Cast shadows",
+        description="Enable casting shadows. This is the normal and expected behavior. Disable it only for special cases!",
+        default=True)
 
 def unregister():
     del Lamp.lamp_type
@@ -156,3 +161,4 @@ def unregister():
     del Lamp.yaf_samples
     del Lamp.yaf_show_dist_clip
     del Lamp.light_enabled
+    del Lamp.cast_shadows
