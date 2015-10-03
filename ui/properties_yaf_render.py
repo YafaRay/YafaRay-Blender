@@ -179,7 +179,7 @@ class YAFRENDER_PT_post_processing(RenderButtonsPanel, Panel):
         col.prop(rd, "dither_intensity", text="Dither", slider=True)
 
 
-class YAF_PT_convert(RenderButtonsPanel, Panel):
+class YAFRENDER_PT_convert(RenderButtonsPanel, Panel):
     bl_label = "Convert old YafaRay Settings"
 
     def draw(self, context):
@@ -187,7 +187,7 @@ class YAF_PT_convert(RenderButtonsPanel, Panel):
         layout.column().operator("data.convert_yafaray_properties", text="Convert data from 2.4x")
 
 
-class YAF_PT_advanced(RenderButtonsPanel, Panel):
+class YAFRENDER_PT_advanced(RenderButtonsPanel, Panel):
     bl_label = "Advanced Settings - only for experts"
     bl_options = {'DEFAULT_CLOSED'}
 
