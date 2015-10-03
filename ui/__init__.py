@@ -26,6 +26,7 @@ from . import properties_yaf_world
 from . import properties_yaf_strand
 from . import properties_yaf_object
 from . import properties_yaf_light
+from . import properties_yaf_scene
 
 from bl_ui import properties_object as properties_object
 for member in dir(properties_object):  # add all "object" panels from blender
@@ -63,12 +64,16 @@ for member in dir(properties_data_speaker):  # add all "speaker (SOC 2011, peppe
         pass
 del properties_data_speaker
 
-# YafaRay did not display the Scene panels anymore, due to addition of COMPAT_ENGINES to them
 from bl_ui import properties_scene as properties_scene
 for member in dir(properties_scene):
-    subclass = getattr(properties_scene, member)
-    try:
-        subclass.COMPAT_ENGINES.add('YAFA_RENDER')
-    except:
-        pass
+
+    if member != "SCENE_PT_color_management":   #YafaRay Color management panel is customized in properties_yaf_scene.
+        #FIXME: The customized YafaRay panel appears at the end of the Blender scene tab panels, I don't know how to rearrange the panels to keep YafaRay color management in the same place as Blender Color Management panel was.
+
+            subclass = getattr(properties_scene, member)
+            try:
+                subclass.COMPAT_ENGINES.add('YAFA_RENDER')
+            except:
+                pass
+
 del properties_scene

@@ -195,7 +195,7 @@ class YAF_PT_shinydiffuse_specular(MaterialTypePanel, Panel):
         sub.enabled = yaf_mat.fresnel_effect
         sub.prop(yaf_mat, "IOR_reflection", slider=True)
         layout.row().prop(yaf_mat, "specular_reflect", slider=True)
-        
+
 
 class YAF_PT_glossy_diffuse(MaterialTypePanel, Panel):
     bl_label = "Diffuse reflection"

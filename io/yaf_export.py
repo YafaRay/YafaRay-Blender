@@ -311,7 +311,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         if scene.gs_type_render == "file":
             self.setInterface(yafrayinterface.yafrayInterface_t())
-            self.yi.setInputGamma(scene.gs_gamma_input, True)
+            self.yi.setInputColorSpace("LinearRGB", 1.0)    #When rendering into Blender, color picker floating point data is already linear (linearized by Blender)
             self.outputFile, self.output, self.file_type = self.decideOutputFileName(fp, scene.img_output)
             self.yi.paramsClearAll()
             self.yi.paramsSetString("type", self.file_type)
@@ -324,7 +324,23 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         elif scene.gs_type_render == "xml":
             self.setInterface(yafrayinterface.xmlInterface_t())
-            self.yi.setInputGamma(scene.gs_gamma_input, True)
+            
+            input_color_values_color_space = "sRGB"
+            input_color_values_gamma = 1.0
+
+            if scene.display_settings.display_device == "sRGB":
+                input_color_values_color_space = "sRGB"
+                
+            elif scene.display_settings.display_device == "XYZ":
+                input_color_values_color_space = "XYZ"
+                
+            elif scene.display_settings.display_device == "None":
+                input_color_values_color_space = "Raw_manual_Gamma"
+                input_color_values_gamma = scene.gs_gamma  #We only use the selected gamma if the output device is set to "None"
+            
+            self.yi.setInputColorSpace("LinearRGB", 1.0)    #Values from Blender, color picker floating point data are already linear (linearized by Blender)
+            self.yi.setXMLColorSpace(input_color_values_color_space, input_color_values_gamma)  #To set the XML interface to write the XML values with the correction included for the selected color space (and gamma if applicable)
+            
             self.outputFile, self.output, self.file_type = self.decideOutputFileName(fp, 'XML')
             self.yi.paramsClearAll()
             self.co = yafrayinterface.imageOutput_t()
@@ -332,7 +348,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         else:
             self.setInterface(yafrayinterface.yafrayInterface_t())
-            self.yi.setInputGamma(scene.gs_gamma_input, True)
+            self.yi.setInputColorSpace("LinearRGB", 1.0)    #When rendering into Blender, color picker floating point data is already linear (linearized by Blender)
 
         self.yi.startScene()
         self.exportScene()
@@ -351,7 +367,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.update_stats("YafaRay Rendering:", "Rendering to {0}".format(self.outputFile))
             self.yi.render(self.co)
             result = self.begin_result(0, 0, self.resX, self.resY)
-            lay = result.layers[0] if bpy.app.version < (2, 74, 4 ) else result.layers[0].passes[0]
+            lay = result.layers[0] #if bpy.app.version < (2, 74, 4 ) else result.layers[0].passes[0] #FIXME?
 
             # exr format has z-buffer included, so no need to load '_zbuffer' - file
             if scene.gs_z_channel and not scene.img_output == 'OPEN_EXR':

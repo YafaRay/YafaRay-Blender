@@ -92,7 +92,37 @@ def exportRenderSettings(yi, scene):
     yi.paramsSetString("integrator_name", "default")
     yi.paramsSetString("volintegrator_name", "volintegr")
 
-    yi.paramsSetFloat("gamma", scene.gs_gamma)
+    output_device_color_space = "LinearRGB"
+    output_device_gamma = 1.0
+
+    if scene.gs_type_render == "file" or scene.gs_type_render == "xml":
+        output_device_color_space = "sRGB"
+
+        if scene.img_output == "OPEN_EXR" or scene.img_output == "HDR":  #If the output file is a HDR/EXR file, we force the render output to Linear
+            output_device_color_space = "LinearRGB"
+            
+        elif scene.display_settings.display_device == "sRGB":
+            output_device_color_space = "sRGB"
+            
+        elif scene.display_settings.display_device == "XYZ":
+            output_device_color_space = "XYZ"
+            
+        elif scene.display_settings.display_device == "None":
+            output_device_color_space = "Raw_manual_Gamma"
+            output_device_gamma = scene.gs_gamma  #We only use the selected gamma if the output device is set to "None"
+
+    else:   #Render into Blender
+        output_device_color_space = "LinearRGB"    #Blender expects a linear output from YafaRay
+
+        if scene.display_settings.display_device == "sRGB" or scene.display_settings.display_device == "XYZ" or scene.display_settings.display_device == "Rec709":
+            output_device_color_space = "LinearRGB"  #If we render into Blender, YafaRay generates linear output and Blender does the conversion to the color space
+           
+        elif scene.display_settings.display_device == "None":
+            output_device_color_space = "Raw_manual_Gamma"
+            output_device_gamma = scene.gs_gamma  #We only use the selected gamma if the output device is set to "None"
+        
+    yi.paramsSetString("color_space", output_device_color_space)
+    yi.paramsSetFloat("gamma", output_device_gamma)
 
     exportAA(yi, scene)
 

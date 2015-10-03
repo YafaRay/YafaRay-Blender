@@ -76,6 +76,25 @@ class yafWorld:
                         interpolate = 'bilinear'
                     #
                     yi.paramsSetString("interpolate", interpolate)
+
+                    texture_color_space = "sRGB"
+                    texture_gamma = 1.0
+
+                    if worldTex.image.colorspace_settings.name == "sRGB" or worldTex.image.colorspace_settings.name == "VD16":
+                        texture_color_space = "sRGB"
+                        
+                    elif worldTex.image.colorspace_settings.name == "XYZ":
+                        texture_color_space = "XYZ"
+                        
+                    elif worldTex.image.colorspace_settings.name == "Linear" or worldTex.image.colorspace_settings.name == "Linear ACES" or worldTex.image.colorspace_settings.name == "Non-Color":
+                        texture_color_space = "LinearRGB"
+                        
+                    elif worldTex.image.colorspace_settings.name == "Raw":
+                        texture_color_space = "Raw_manualGamma"
+                        texture_gamma = worldTex.yaf_gamma_input  #We only use the selected gamma if the color space is set to "Raw"
+                
+                    yi.paramsSetString("color_space", texture_color_space)
+                    yi.paramsSetFloat("gamma", texture_gamma)
                     
                     yi.createTexture("world_texture")
 

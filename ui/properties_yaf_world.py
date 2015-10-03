@@ -78,6 +78,26 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
                 if  tex.yaf_tex_type == "IMAGE":  # it allows to change the used image
                     #
                     layout.template_image(tex, "image", tex.image_user, compact=True)
+                    
+                    if tex.image.colorspace_settings.name == "sRGB" or tex.image.colorspace_settings.name == "Linear" or tex.image.colorspace_settings.name == "Non-Color":
+                        pass
+                    
+                    elif tex.image.colorspace_settings.name == "XYZ":
+                        row = layout.row(align=True)
+                        row.label(text="YafaRay 'XYZ' support is experimental and may not give the expected results", icon="ERROR")
+                    
+                    elif tex.image.colorspace_settings.name == "Linear ACES":
+                        row = layout.row(align=True)
+                        row.label(text="YafaRay doesn't support '" + tex.image.colorspace_settings.name + "', assuming linear RGB", icon="ERROR")
+                    
+                    elif tex.image.colorspace_settings.name == "Raw":
+                        row = layout.row(align=True)
+                        row.prop(tex, "yaf_gamma_input", text="Texture gamma input correction")
+
+                    else:
+                        row = layout.row(align=True)
+                        row.label(text="YafaRay doesn't support '" + tex.image.colorspace_settings.name + "', assuming sRGB", icon="ERROR")
+                    
                     #
                 else:
                     # TODO: create message about not allow texture type
