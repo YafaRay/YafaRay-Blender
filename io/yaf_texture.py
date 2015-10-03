@@ -306,15 +306,34 @@ class yafTexture:
             image_tex = os.path.realpath(image_tex)
             image_tex = os.path.normpath(image_tex)
 
-            yi.printInfo("Exporter: Creating Texture: '{0}' type {1}: {2}".format(name, tex.yaf_tex_type, image_tex))
-
             yi.paramsSetString("type", "image")
             yi.paramsSetString("filename", image_tex)
 
             yi.paramsSetBool("use_alpha", tex.yaf_use_alpha)
             yi.paramsSetBool("calc_alpha", tex.use_calculate_alpha)
             yi.paramsSetBool("normalmap", tex.yaf_is_normal_map)
-            yi.paramsSetFloat("gamma", scene.gs_gamma_input)
+            yi.paramsSetString("fileformat", fileformat.upper())
+            
+            texture_color_space = "sRGB"
+            texture_gamma = 1.0
+
+            if tex.image.colorspace_settings.name == "sRGB" or tex.image.colorspace_settings.name == "VD16":
+                texture_color_space = "sRGB"
+                
+            elif tex.image.colorspace_settings.name == "XYZ":
+                texture_color_space = "XYZ"
+                
+            elif tex.image.colorspace_settings.name == "Linear" or tex.image.colorspace_settings.name == "Linear ACES" or tex.image.colorspace_settings.name == "Non-Color":
+                texture_color_space = "LinearRGB"
+                
+            elif tex.image.colorspace_settings.name == "Raw":
+                texture_color_space = "Raw_manual_Gamma"
+                texture_gamma = tex.yaf_gamma_input  #We only use the selected gamma if the color space is set to "Raw"
+                
+            yi.paramsSetString("color_space", texture_color_space)
+            yi.paramsSetFloat("gamma", texture_gamma)
+
+            yi.printInfo("Exporter: Creating Texture: '{0}' type {1}: {2}. Texture Color Space: '{3}', gamma={4}".format(name, tex.yaf_tex_type, image_tex, texture_color_space, texture_gamma))
 
             # repeat
             repeat_x = 1

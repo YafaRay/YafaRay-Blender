@@ -51,7 +51,6 @@ class YAF_PT_general_settings(RenderButtonsPanel, Panel):
         split = layout.split(percentage=0.58)
         col = split.column()
         col.prop(scene, "gs_ray_depth")
-        col.prop(scene, "gs_gamma")
         col.prop(scene, "gs_type_render")
         sub = col.column()
         sub.enabled = scene.gs_type_render == "into_blender"
@@ -61,7 +60,7 @@ class YAF_PT_general_settings(RenderButtonsPanel, Panel):
         sub = col.column()
         sub.enabled = scene.gs_transp_shad
         sub.prop(scene, "gs_shadow_depth")
-        col.prop(scene, "gs_gamma_input")
+        #col.prop(scene, "gs_gamma_input")      #No longer needed
         sub = col.column()
         sub.enabled = scene.gs_auto_threads == False
         sub.prop(scene, "gs_threads")
