@@ -108,7 +108,7 @@ def exportRenderSettings(yi, scene):
             output_device_color_space = "XYZ"
             
         elif scene.display_settings.display_device == "None":
-            output_device_color_space = "Raw_manual_Gamma"
+            output_device_color_space = "Raw_Manual_Gamma"
             output_device_gamma = scene.gs_gamma  #We only use the selected gamma if the output device is set to "None"
 
     else:   #Render into Blender
@@ -118,7 +118,7 @@ def exportRenderSettings(yi, scene):
             output_device_color_space = "LinearRGB"  #If we render into Blender, YafaRay generates linear output and Blender does the conversion to the color space
            
         elif scene.display_settings.display_device == "None":
-            output_device_color_space = "Raw_manual_Gamma"
+            output_device_color_space = "Raw_Manual_Gamma"
             output_device_gamma = scene.gs_gamma  #We only use the selected gamma if the output device is set to "None"
         
     yi.paramsSetString("color_space", output_device_color_space)

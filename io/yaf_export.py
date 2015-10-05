@@ -318,7 +318,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 input_color_values_color_space = "XYZ"
                 
             elif scene.display_settings.display_device == "None":
-                input_color_values_color_space = "Raw_manual_Gamma"
+                input_color_values_color_space = "Raw_Manual_Gamma"
                 input_color_values_gamma = scene.gs_gamma  #We only use the selected gamma if the output device is set to "None"
             
             self.yi.setInputColorSpace("LinearRGB", 1.0)    #Values from Blender, color picker floating point data are already linear (linearized by Blender)

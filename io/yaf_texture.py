@@ -327,7 +327,7 @@ class yafTexture:
                 texture_color_space = "LinearRGB"
                 
             elif tex.image.colorspace_settings.name == "Raw":
-                texture_color_space = "Raw_manual_Gamma"
+                texture_color_space = "Raw_Manual_Gamma"
                 texture_gamma = tex.yaf_gamma_input  #We only use the selected gamma if the color space is set to "Raw"
                 
             yi.paramsSetString("color_space", texture_color_space)
