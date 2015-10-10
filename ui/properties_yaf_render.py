@@ -101,31 +101,10 @@ class YAFRENDER_PT_output(RenderButtonsPanel, Panel):
         col.prop(sc, "img_output", text="", icon='IMAGE_DATA')
         col = split.column()
         col.row().prop(image_settings, "color_mode", text="Color", expand=True)
+
         if sc.img_output == "OPEN_EXR":
             split = layout.split()
             split.prop(sc, "img_multilayer")
-
-        if sc.img_output == "OPEN_EXR" or sc.img_output == "HDR":  #If the output file is a HDR/EXR file, we force the render output to Linear
-                pass
-        elif sc.gs_type_render == "file" or sc.gs_type_render == "xml":
-                split = layout.split(percentage=0.6)
-                col = split.column()
-                col.prop(sc.display_settings, "display_device")
-                
-                if sc.display_settings.display_device == "None":
-                    col = split.column()
-                    col.prop(scene, "gs_gamma", text = "Gamma")
-
-                if sc.display_settings.display_device == "sRGB":
-                    pass
-                elif sc.display_settings.display_device == "None":
-                    pass
-                elif sc.display_settings.display_device == "XYZ":
-                    row = layout.row(align=True)
-                    row.label(text="YafaRay 'XYZ' support is experimental and may not give the expected results", icon="ERROR")
-                else:
-                    row = layout.row(align=True)
-                    row.label(text="YafaRay doesn't support '" + sc.display_settings.display_device + "', assuming sRGB", icon="ERROR")
 
         if sc.img_output == "OPEN_EXR" or sc.img_output == "HDR":  #If the output file is a HDR/EXR file, we force the render output to Linear
                 pass
