@@ -127,6 +127,28 @@ class YAFRENDER_PT_output(RenderButtonsPanel, Panel):
                     row = layout.row(align=True)
                     row.label(text="YafaRay doesn't support '" + sc.display_settings.display_device + "', assuming sRGB", icon="ERROR")
 
+        if sc.img_output == "OPEN_EXR" or sc.img_output == "HDR":  #If the output file is a HDR/EXR file, we force the render output to Linear
+                pass
+        elif sc.gs_type_render == "file" or sc.gs_type_render == "xml":
+                split = layout.split(percentage=0.6)
+                col = split.column()
+                col.prop(sc.display_settings, "display_device")
+                
+                if sc.display_settings.display_device == "None":
+                    col = split.column()
+                    col.prop(scene, "gs_gamma", text = "Gamma")
+
+                if sc.display_settings.display_device == "sRGB":
+                    pass
+                elif sc.display_settings.display_device == "None":
+                    pass
+                elif sc.display_settings.display_device == "XYZ":
+                    row = layout.row(align=True)
+                    row.label(text="YafaRay 'XYZ' support is experimental and may not give the expected results", icon="ERROR")
+                else:
+                    row = layout.row(align=True)
+                    row.label(text="YafaRay doesn't support '" + sc.display_settings.display_device + "', assuming sRGB", icon="ERROR")
+
 
 class YAFRENDER_PT_post_processing(RenderButtonsPanel, Panel):
     bl_label = "Post Processing"
