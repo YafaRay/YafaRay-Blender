@@ -306,8 +306,6 @@ class yafTexture:
             image_tex = os.path.realpath(image_tex)
             image_tex = os.path.normpath(image_tex)
 
-            yi.printInfo("Exporter: Creating Texture: '{0}' type {1}: {2}".format(name, tex.yaf_tex_type, image_tex))
-
             yi.paramsSetString("type", "image")
             yi.paramsSetString("filename", image_tex)
 

@@ -101,7 +101,6 @@ class YAFRENDER_PT_output(RenderButtonsPanel, Panel):
         col.prop(sc, "img_output", text="", icon='IMAGE_DATA')
         col = split.column()
         col.row().prop(image_settings, "color_mode", text="Color", expand=True)
-
         if sc.img_output == "OPEN_EXR":
             split = layout.split()
             split.prop(sc, "img_multilayer")
