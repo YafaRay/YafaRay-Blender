@@ -41,6 +41,12 @@ class yafIntegrator:
         light_type = scene.intg_light_method
         yi.printInfo("Exporting Integrator: {0}".format(light_type))
 
+        yi.paramsSetBool("do_AO", scene.intg_use_AO)
+        yi.paramsSetInt("AO_samples", scene.intg_AO_samples)
+        yi.paramsSetFloat("AO_distance", scene.intg_AO_distance)
+        c = scene.intg_AO_color
+        yi.paramsSetColor("AO_color", c[0], c[1], c[2])
+
         if light_type == "Direct Lighting":
             yi.paramsSetString("type", "directlighting")
 
@@ -51,14 +57,6 @@ class yafIntegrator:
                 yi.paramsSetInt("caustic_mix", scene.intg_caustic_mix)
                 yi.paramsSetInt("caustic_depth", scene.intg_caustic_depth)
                 yi.paramsSetFloat("caustic_radius", scene.intg_caustic_radius)
-                
-            yi.paramsSetBool("do_AO", scene.intg_use_AO)
-                
-            if scene.intg_use_AO:
-                yi.paramsSetInt("AO_samples", scene.intg_AO_samples)
-                yi.paramsSetFloat("AO_distance", scene.intg_AO_distance)
-                c = scene.intg_AO_color
-                yi.paramsSetColor("AO_color", c[0], c[1], c[2])
 
         elif light_type == "Photon Mapping":
             yi.paramsSetString("type", "photonmapping")

@@ -27,6 +27,7 @@ RenderButtonsPanel.COMPAT_ENGINES = {'YAFA_RENDER'}
 
 class YAF_PT_AA_settings(RenderButtonsPanel, Panel):
     bl_label = "Anti-Aliasing"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
 
     def draw(self, context):
 

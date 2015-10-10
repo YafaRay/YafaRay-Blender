@@ -53,6 +53,7 @@ class YAF_PT_lamp(DataButtonsPanel, Panel):
 
         layout.prop(lamp, "lamp_type", expand=True)
         layout.prop(lamp, "light_enabled")
+        layout.prop(lamp, "light_group")
 
         if lamp.lamp_type == "area":
             layout.prop(lamp, "color")

@@ -20,7 +20,8 @@
 
 import bpy
 from bpy.props import (EnumProperty,
-                       BoolProperty)
+                       BoolProperty,
+                       FloatProperty)
 
 Texture = bpy.types.Texture
 
@@ -61,9 +62,15 @@ def register():
         name="Use alpha image info",
         description="Use alpha values for image mapping",
         default=False)
+        
+    Texture.yaf_gamma_input = FloatProperty(
+        name="Gamma input",
+        description="Gamma correction applied to input texture",
+        min=0, max=5, default=1.0)
 
 
 def unregister():
     Texture.yaf_tex_type
     Texture.yaf_is_normal_map
     Texture.yaf_use_alpha
+    Texture.yaf_gamma_input

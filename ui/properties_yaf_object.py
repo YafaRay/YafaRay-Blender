@@ -42,6 +42,7 @@ class YAF_PT_object_light(Panel):
 
         if ob.ml_enable:
             col = layout.column(align=True)
+            col.prop(ob, "ml_light_group")
             col.prop(ob, "ml_color")
             col.prop(ob, "ml_power")
             layout.prop(ob, "ml_samples")
@@ -78,6 +79,7 @@ class YAF_PT_object_light(Panel):
                 col.prop(ob, "vol_cover")
                 col.prop(ob, "vol_density")
 
+        #layout.prop(ob, "pass_index")  #no need for this, there is a pass_index field by default in the object properties panel, but just in case I'm leaving this here.
 
 if __name__ == "__main__":  # only for live edit.
     import bpy

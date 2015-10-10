@@ -43,115 +43,156 @@ class yafObject(object):
 
         self.scene = scene
 
-    def createCamera(self):
+    def createCameras(self):
 
         yi = self.yi
-        yi.printInfo("Exporting Camera")
+        yi.printInfo("Exporting Cameras")
 
-        camera = self.scene.camera
+        camera_scene = self.scene.camera
         render = self.scene.render
-
-        if bpy.types.YAFA_RENDER.useViewToRender and bpy.types.YAFA_RENDER.viewMatrix:
-            # use the view matrix to calculate the inverted transformed
-            # points cam pos (0,0,0), front (0,0,1) and up (0,1,0)
-            # view matrix works like the opengl view part of the
-            # projection matrix, i.e. transforms everything so camera is
-            # at 0,0,0 looking towards 0,0,1 (y axis being up)
-
-            m = bpy.types.YAFA_RENDER.viewMatrix
-            # m.transpose() --> not needed anymore: matrix indexing changed with Blender rev.42816
-            inv = m.inverted()
-
-            pos = multiplyMatrix4x4Vector4(inv, mathutils.Vector((0, 0, 0, 1)))
-            aboveCam = multiplyMatrix4x4Vector4(inv, mathutils.Vector((0, 1, 0, 1)))
-            frontCam = multiplyMatrix4x4Vector4(inv, mathutils.Vector((0, 0, 1, 1)))
-
-            dir = frontCam - pos
-            up = aboveCam
-
+        
+        class viewLightGroupCameraData:
+            def __init__ (self, camera, view, light_group):
+                self.camera = camera
+                self.view = view
+                self.light_group = light_group
+        
+        view_lightgroup_camera_data_list = []
+    
+        if bpy.types.YAFA_RENDER.useViewToRender or not render.use_multiview:
+            view_lightgroup_camera_data_list.append(viewLightGroupCameraData(camera_scene, None, 0))
+            
         else:
-            # get cam worldspace transformation matrix, e.g. if cam is parented matrix_local does not work
-            matrix = camera.matrix_world.copy()
-            # matrix indexing (row, colums) changed in Blender rev.42816, for explanation see also:
-            # http://wiki.blender.org/index.php/User:TrumanBlending/Matrix_Indexing
-            pos = matrix.col[3]
-            dir = matrix.col[2]
-            up = pos + matrix.col[1]
+            camera_base_name = camera_scene.name.rsplit('_',1)[0]
+            
+            if len(self.scene.views_lightgroup_list) == 0:
+                for view in render.views:
+                    if view.use:
+                        view_lightgroup_camera_data_list.append(viewLightGroupCameraData(self.scene.objects[camera_base_name+view.camera_suffix], view, 0))
+            
+            else:
+                for view_lightgroup in self.scene.views_lightgroup_list:
+                    if view_lightgroup.view_number < len(self.scene.render.views) and self.scene.render.views[view_lightgroup.view_number].use:
+                        view_lightgroup_camera_data_list.append(viewLightGroupCameraData(self.scene.objects[camera_base_name+self.scene.render.views[view_lightgroup.view_number].camera_suffix], self.scene.render.views[view_lightgroup.view_number], view_lightgroup.light_group))
+        
+        for view_lightgroup_camera_data in view_lightgroup_camera_data_list:
+            
+            if bpy.types.YAFA_RENDER.useViewToRender:
+                camera_name = "3D viewport"
+            elif view_lightgroup_camera_data.view == None:
+                camera_name = view_lightgroup_camera_data.camera.name
+            elif view_lightgroup_camera_data.light_group == 0:
+                camera_name = view_lightgroup_camera_data.camera.name+" ("+view_lightgroup_camera_data.view.name+")"
+            else:
+                camera_name = view_lightgroup_camera_data.camera.name+" ("+view_lightgroup_camera_data.view.name+", LG "+str(view_lightgroup_camera_data.light_group)+")"
+            
+            if bpy.types.YAFA_RENDER.useViewToRender and bpy.types.YAFA_RENDER.viewMatrix:
+                # use the view matrix to calculate the inverted transformed
+                # points cam pos (0,0,0), front (0,0,1) and up (0,1,0)
+                # view matrix works like the opengl view part of the
+                # projection matrix, i.e. transforms everything so camera is
+                # at 0,0,0 looking towards 0,0,1 (y axis being up)
 
-        to = pos - dir
+                m = bpy.types.YAFA_RENDER.viewMatrix
+                # m.transpose() --> not needed anymore: matrix indexing changed with Blender rev.42816
+                inv = m.inverted()
 
-        x = int(render.resolution_x * render.resolution_percentage * 0.01)
-        y = int(render.resolution_y * render.resolution_percentage * 0.01)
+                pos = multiplyMatrix4x4Vector4(inv, mathutils.Vector((0, 0, 0, 1)))
+                aboveCam = multiplyMatrix4x4Vector4(inv, mathutils.Vector((0, 1, 0, 1)))
+                frontCam = multiplyMatrix4x4Vector4(inv, mathutils.Vector((0, 0, 1, 1)))
 
-        yi.paramsClearAll()
+                dir = frontCam - pos
+                up = aboveCam
 
-        if bpy.types.YAFA_RENDER.useViewToRender:
-            yi.paramsSetString("type", "perspective")
-            yi.paramsSetFloat("focal", 0.7)
-            bpy.types.YAFA_RENDER.useViewToRender = False
+            else:
+                # get cam worldspace transformation matrix, e.g. if cam is parented matrix_local does not work
+                matrix = view_lightgroup_camera_data.camera.matrix_world.copy()
+                # matrix indexing (row, colums) changed in Blender rev.42816, for explanation see also:
+                # http://wiki.blender.org/index.php/User:TrumanBlending/Matrix_Indexing
+                pos = matrix.col[3]
+                dir = matrix.col[2]
+                up = pos + matrix.col[1]
 
-        else:
-            camera = camera.data
-            camType = camera.camera_type
+            to = pos - dir
 
-            yi.paramsSetString("type", camType)
+            x = int(render.resolution_x * render.resolution_percentage * 0.01)
+            y = int(render.resolution_y * render.resolution_percentage * 0.01)
 
-            if camera.use_clipping:
-                yi.paramsSetFloat("nearClip", camera.clip_start)
-                yi.paramsSetFloat("farClip", camera.clip_end)
+            yi.paramsClearAll()
+            
+            if view_lightgroup_camera_data.view:
+                yi.paramsSetString("view_name", view_lightgroup_camera_data.view.name)
+            else:
+                yi.paramsSetString("view_name", "")
+            yi.paramsSetInt("light_group_filter", view_lightgroup_camera_data.light_group)
 
-            if camType == "orthographic":
-                yi.paramsSetFloat("scale", camera.ortho_scale)
+            if bpy.types.YAFA_RENDER.useViewToRender:
+                yi.paramsSetString("type", "perspective")
+                yi.paramsSetFloat("focal", 0.7)
+                bpy.types.YAFA_RENDER.useViewToRender = False
 
-            elif camType in {"perspective", "architect"}:
-                # Blenders GSOC 2011 project "tomato branch" merged into trunk.
-                # Check for sensor settings and use them in yafaray exporter also.
-                if camera.sensor_fit == 'AUTO':
-                    horizontal_fit = (x > y)
-                    sensor_size = camera.sensor_width
-                elif camera.sensor_fit == 'HORIZONTAL':
-                    horizontal_fit = True
-                    sensor_size = camera.sensor_width
-                else:
-                    horizontal_fit = False
-                    sensor_size = camera.sensor_height
+            else:
+                camera = view_lightgroup_camera_data.camera.data
+                camType = camera.camera_type
 
-                if horizontal_fit:
-                    f_aspect = 1.0
-                else:
-                    f_aspect = x / y
+                yi.paramsSetString("type", camType)
 
-                yi.paramsSetFloat("focal", camera.lens / (f_aspect * sensor_size))
+                if camera.use_clipping:
+                    yi.paramsSetFloat("nearClip", camera.clip_start)
+                    yi.paramsSetFloat("farClip", camera.clip_end)
 
-                # DOF params, only valid for real camera
-                # use DOF object distance if present or fixed DOF
-                if camera.dof_object is not None:
-                    # use DOF object distance
-                    dist = (pos.xyz - camera.dof_object.location.xyz).length
-                    dof_distance = dist
-                else:
-                    # use fixed DOF distance
-                    dof_distance = camera.dof_distance
+                if camType == "orthographic":
+                    yi.paramsSetFloat("scale", camera.ortho_scale)
 
-                yi.paramsSetFloat("dof_distance", dof_distance)
-                yi.paramsSetFloat("aperture", camera.aperture)
-                # bokeh params
-                yi.paramsSetString("bokeh_type", camera.bokeh_type)
-                yi.paramsSetFloat("bokeh_rotation", camera.bokeh_rotation)
+                elif camType in {"perspective", "architect"}:
+                    # Blenders GSOC 2011 project "tomato branch" merged into trunk.
+                    # Check for sensor settings and use them in yafaray exporter also.
+                    if camera.sensor_fit == 'AUTO':
+                        horizontal_fit = (x > y)
+                        sensor_size = camera.sensor_width
+                    elif camera.sensor_fit == 'HORIZONTAL':
+                        horizontal_fit = True
+                        sensor_size = camera.sensor_width
+                    else:
+                        horizontal_fit = False
+                        sensor_size = camera.sensor_height
 
-            elif camType == "angular":
-                yi.paramsSetBool("circular", camera.circular)
-                yi.paramsSetBool("mirrored", camera.mirrored)
-                yi.paramsSetFloat("max_angle", camera.max_angle)
-                yi.paramsSetFloat("angle", camera.angular_angle)
+                    if horizontal_fit:
+                        f_aspect = 1.0
+                    else:
+                        f_aspect = x / y
 
-        yi.paramsSetInt("resx", x)
-        yi.paramsSetInt("resy", y)
+                    yi.paramsSetFloat("focal", camera.lens / (f_aspect * sensor_size))
 
-        yi.paramsSetPoint("from", pos[0], pos[1], pos[2])
-        yi.paramsSetPoint("up", up[0], up[1], up[2])
-        yi.paramsSetPoint("to", to[0], to[1], to[2])
-        yi.createCamera("cam")
+                    # DOF params, only valid for real camera
+                    # use DOF object distance if present or fixed DOF
+                    if camera.dof_object is not None:
+                        # use DOF object distance
+                        dist = (pos.xyz - camera.dof_object.location.xyz).length
+                        dof_distance = dist
+                    else:
+                        # use fixed DOF distance
+                        dof_distance = camera.dof_distance
+
+                    yi.paramsSetFloat("dof_distance", dof_distance)
+                    yi.paramsSetFloat("aperture", camera.aperture)
+                    # bokeh params
+                    yi.paramsSetString("bokeh_type", camera.bokeh_type)
+                    yi.paramsSetFloat("bokeh_rotation", camera.bokeh_rotation)
+
+                elif camType == "angular":
+                    yi.paramsSetBool("circular", camera.circular)
+                    yi.paramsSetBool("mirrored", camera.mirrored)
+                    yi.paramsSetFloat("max_angle", camera.max_angle)
+                    yi.paramsSetFloat("angle", camera.angular_angle)
+
+            yi.paramsSetInt("resx", x)
+            yi.paramsSetInt("resy", y)
+
+            yi.paramsSetPoint("from", pos[0], pos[1], pos[2])
+            yi.paramsSetPoint("up", up[0], up[1], up[2])
+            yi.paramsSetPoint("to", to[0], to[1], to[2])
+            yi.createCamera(camera_name)
 
     def getBBCorners(self, object):
         bb = object.bound_box   # look bpy.types.Object if there is any problem
@@ -207,7 +248,10 @@ class yafObject(object):
 
         obType = 512  # Create this geometry object as a base object for instances
 
-        self.writeGeometry(ID, obj, None, obType)  # We want the vertices in object space
+        self.yi.paramsClearAll()
+        self.yi.paramsSetInt("obj_pass_index", obj.pass_index)
+        
+        self.writeGeometry(ID, obj, None, obj.pass_index, obType)  # We want the vertices in object space
 
         return ID
 
@@ -230,8 +274,11 @@ class yafObject(object):
 
         # Generate unique object ID
         ID = self.yi.getNextFreeID()
+        
+        self.yi.paramsClearAll()
+        self.yi.paramsSetInt("obj_pass_index", obj.pass_index)
 
-        self.writeGeometry(ID, obj, matrix)  # obType in 0, default, the object is rendered
+        self.writeGeometry(ID, obj, matrix, obj.pass_index)  # obType in 0, default, the object is rendered
 
     def writeBGPortal(self, obj, matrix):
 
@@ -241,6 +288,7 @@ class yafObject(object):
         ID = self.yi.getNextFreeID()
 
         self.yi.paramsClearAll()
+        self.yi.paramsSetInt("obj_pass_index", obj.pass_index)
         self.yi.paramsSetString("type", "bgPortalLight")
         self.yi.paramsSetFloat("power", obj.bgp_power)
         self.yi.paramsSetInt("samples", obj.bgp_samples)
@@ -252,7 +300,7 @@ class yafObject(object):
 
         obType = 256  # Makes object invisible to the renderer (doesn't enter the kdtree)
 
-        self.writeGeometry(ID, obj, matrix, obType)
+        self.writeGeometry(ID, obj, matrix, obj.pass_index, obType)
 
     def writeMeshLight(self, obj, matrix):
 
@@ -265,27 +313,31 @@ class yafObject(object):
         ml_matname += obj.name + "." + str(obj.__hash__())
 
         self.yi.paramsClearAll()
+        self.yi.paramsSetInt("obj_pass_index", obj.pass_index)
         self.yi.paramsSetString("type", "light_mat")
         self.yi.paramsSetBool("double_sided", obj.ml_double_sided)
         c = obj.ml_color
         self.yi.paramsSetColor("color", c[0], c[1], c[2])
         self.yi.paramsSetFloat("power", obj.ml_power)
+        self.yi.paramsSetInt("light_group", obj.ml_light_group)
         ml_mat = self.yi.createMaterial(ml_matname)
 
         self.materialMap[ml_matname] = ml_mat
 
         # Export mesh light
         self.yi.paramsClearAll()
+        self.yi.paramsSetInt("obj_pass_index", obj.pass_index)
         self.yi.paramsSetString("type", "meshlight")
         self.yi.paramsSetBool("double_sided", obj.ml_double_sided)
         c = obj.ml_color
         self.yi.paramsSetColor("color", c[0], c[1], c[2])
         self.yi.paramsSetFloat("power", obj.ml_power)
         self.yi.paramsSetInt("samples", obj.ml_samples)
+        self.yi.paramsSetInt("light_group", obj.ml_light_group)
         self.yi.paramsSetInt("object", ID)
         self.yi.createLight(obj.name)
 
-        self.writeGeometry(ID, obj, matrix, 0, ml_mat)  # obType in 0, default, the object is rendered
+        self.writeGeometry(ID, obj, matrix, obj.pass_index, 0, ml_mat)  # obType in 0, default, the object is rendered
 
     def writeVolumeObject(self, obj, matrix):
 
@@ -296,6 +348,7 @@ class yafObject(object):
         # me_materials = me.materials  /* UNUSED */
 
         yi.paramsClearAll()
+        yi.paramsSetInt("obj_pass_index", obj.pass_index)
 
         if obj.vol_region == 'ExpDensity Volume':
             yi.paramsSetString("type", "ExpDensityVolume")
@@ -345,7 +398,7 @@ class yafObject(object):
         yi.createVolumeRegion("VR.{0}-{1}".format(obj.name, str(obj.__hash__())))
         bpy.data.meshes.remove(mesh)
 
-    def writeGeometry(self, ID, obj, matrix, obType=0, oMat=None):
+    def writeGeometry(self, ID, obj, matrix, pass_index, obType=0, oMat=None):
 
         mesh = obj.to_mesh(self.scene, True, 'RENDER')
         isSmooth = False
@@ -410,7 +463,7 @@ class yafObject(object):
         self.yi.paramsClearAll()
         self.yi.startGeometry()
 
-        self.yi.startTriMesh(ID, len(mesh.vertices), len(getattr(mesh, face_attr)), hasOrco, hasUV, obType)
+        self.yi.startTriMesh(ID, len(mesh.vertices), len(getattr(mesh, face_attr)), hasOrco, hasUV, obType, pass_index)
 
         for ind, v in enumerate(mesh.vertices):
             if hasOrco:

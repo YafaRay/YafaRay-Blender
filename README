@@ -1,10 +1,12 @@
-Yafaray 0.1.99-beta4c (2015-07-29) David Bluecame experimental exporter for Blender 2.75 RC:
+Yafaray-E (Experimental) v1.0.0 (2015-0x-xx) David Bluecame experimental exporter for Blender 2.76:
 ** THIS BUILD CONTAINS EXPERIMENTAL CHANGES AND FEATURES - DO NOT USE FOR PRODUCTION SCENES **
 
 Unofficial build for XXXX (XX bits) by David Bluecame
 * Important: the Linux 32bit build requires a processor with SSE/SSE2 instructions. Any non-ancient processor should have them *
 
 Based on YafaRay git version + pull requests from David Bluecame not yet in master for
+
+FIXME: (PENDING TO UPDATE CHANGELOG!!!!!)
 
 - New Clay Material system, more flexible and powerful. More information in: http://www.yafaray.org/community/forum/viewtopic.php?f=16&t=5079
 

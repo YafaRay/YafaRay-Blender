@@ -105,6 +105,10 @@ class yafLight:
             yi.paramsClearAll()
             yi.paramsSetColor("color", color[0], color[1], color[2])  # color for spherelight and area light geometry
             yi.paramsSetString("type", "light_mat")
+            power_sphere = power / lamp.yaf_sphere_radius
+            yi.paramsSetFloat("power", power_sphere)
+            yi.paramsSetInt("light_group", lamp.light_group)
+        
             self.lightMat = self.yi.createMaterial(name)
             self.yi.paramsClearAll()
             #yi.paramsSetBool("light_enabled", lamp.light_enabled)
@@ -120,6 +124,7 @@ class yafLight:
                 yi.paramsSetFloat("radius", lamp.yaf_sphere_radius)
                 yi.paramsSetBool("light_enabled", lamp.light_enabled)
                 yi.paramsSetBool("cast_shadows", lamp.cast_shadows)
+                yi.paramsSetInt("light_group", lamp.light_group)
 
         elif lampType == "spot":
             if self.preview and name == "Lamp.002":
@@ -139,7 +144,8 @@ class yafLight:
             yi.paramsSetBool("photon_only", lamp.photon_only)
             yi.paramsSetInt("samples", lamp.yaf_samples)
             yi.paramsSetBool("light_enabled", lamp.light_enabled)
-            yi.paramsSetBool("cast_shadows", lamp.cast_shadows)            
+            yi.paramsSetBool("cast_shadows", lamp.cast_shadows)
+            yi.paramsSetInt("light_group", lamp.light_group)            
 
         elif lampType == "sun":
             yi.paramsSetString("type", "sunlight")
@@ -148,6 +154,7 @@ class yafLight:
             yi.paramsSetPoint("direction", direct[0], direct[1], direct[2])
             yi.paramsSetBool("light_enabled", lamp.light_enabled)
             yi.paramsSetBool("cast_shadows", lamp.cast_shadows)
+            yi.paramsSetInt("light_group", lamp.light_group)
 
         elif lampType == "directional":
             yi.paramsSetString("type", "directional")
@@ -158,6 +165,7 @@ class yafLight:
                 yi.paramsSetPoint("from", pos[0], pos[1], pos[2])
             yi.paramsSetBool("light_enabled", lamp.light_enabled)
             yi.paramsSetBool("cast_shadows", lamp.cast_shadows)
+            yi.paramsSetInt("light_group", lamp.light_group)
 
         elif lampType == "ies":
             yi.paramsSetString("type", "ieslight")
@@ -171,6 +179,7 @@ class yafLight:
             yi.paramsSetBool("soft_shadows", lamp.ies_soft_shadows)
             yi.paramsSetBool("light_enabled", lamp.light_enabled)
             yi.paramsSetBool("cast_shadows", lamp.cast_shadows)
+            yi.paramsSetInt("light_group", lamp.light_group)
 
         elif lampType == "area":
             sizeX = lamp.size
@@ -216,6 +225,7 @@ class yafLight:
             yi.paramsSetPoint("point2", corner3[0], corner3[1], corner3[2])
             yi.paramsSetBool("light_enabled", lamp.light_enabled)
             yi.paramsSetBool("cast_shadows", lamp.cast_shadows)
+            yi.paramsSetInt("light_group", lamp.light_group)
 
         if lampType not in {"sun", "directional"}:
             # "from" is not used for sunlight and infinite directional light
@@ -230,6 +240,7 @@ class yafLight:
         yi.paramsSetFloat("power", power)
         yi.paramsSetBool("light_enabled", lamp.light_enabled)
         yi.paramsSetBool("cast_shadows", lamp.cast_shadows)
+        yi.paramsSetInt("light_group", lamp.light_group)
         yi.createLight(name)
 
         return True

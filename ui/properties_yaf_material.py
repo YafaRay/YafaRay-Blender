@@ -100,6 +100,7 @@ class YAF_PT_context_material(MaterialButtonsPanel, Panel):
 
 class YAF_MATERIAL_PT_preview(MaterialButtonsPanel, Panel):
     bl_label = "Preview"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
 
     def draw(self, context):
         self.layout.template_preview(context.material)
@@ -135,6 +136,7 @@ for ior_group, ior_n in ior_list:
 
 class YAF_MT_presets_ior_list(Menu):
     bl_label = "Glass"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
 
     def draw(self, context):
         sl = self.layout
@@ -144,6 +146,7 @@ class YAF_MT_presets_ior_list(Menu):
 
 class YAF_PT_shinydiffuse_diffuse(MaterialTypePanel, Panel):
     bl_label = "Diffuse reflection"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
     material_type = 'shinydiffusemat'
 
     def draw(self, context):
@@ -178,6 +181,7 @@ class YAF_PT_shinydiffuse_diffuse(MaterialTypePanel, Panel):
 
 class YAF_PT_shinydiffuse_specular(MaterialTypePanel, Panel):
     bl_label = "Specular reflection"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
     material_type = 'shinydiffusemat'
 
     def draw(self, context):
@@ -195,10 +199,11 @@ class YAF_PT_shinydiffuse_specular(MaterialTypePanel, Panel):
         sub.enabled = yaf_mat.fresnel_effect
         sub.prop(yaf_mat, "IOR_reflection", slider=True)
         layout.row().prop(yaf_mat, "specular_reflect", slider=True)
-        
+
 
 class YAF_PT_glossy_diffuse(MaterialTypePanel, Panel):
     bl_label = "Diffuse reflection"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
     material_type = 'glossy', 'coated_glossy'
 
     def draw(self, context):
@@ -221,6 +226,7 @@ class YAF_PT_glossy_diffuse(MaterialTypePanel, Panel):
 
 class YAF_PT_glossy_specular(MaterialTypePanel, Panel):
     bl_label = "Specular reflection"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
     material_type = 'glossy', 'coated_glossy'
 
     def draw(self, context):
@@ -261,6 +267,7 @@ class YAF_PT_glossy_specular(MaterialTypePanel, Panel):
 
 class YAF_PT_glass_real(MaterialTypePanel, Panel):
     bl_label = "Real glass settings"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
     material_type = 'glass', 'rough_glass'
 
     def draw(self, context):
@@ -292,6 +299,7 @@ class YAF_PT_glass_real(MaterialTypePanel, Panel):
 
 class YAF_PT_glass_fake(MaterialTypePanel, Panel):
     bl_label = "Fake glass settings"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
     material_type = 'glass', 'rough_glass'
 
     def draw(self, context):
@@ -309,6 +317,7 @@ class YAF_PT_glass_fake(MaterialTypePanel, Panel):
 
 class YAF_PT_blend_(MaterialTypePanel, Panel):
     bl_label = "Blend material settings"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
     material_type = 'blend'
 
     def draw(self, context):
@@ -347,11 +356,14 @@ class YAF_PT_blend_(MaterialTypePanel, Panel):
 
 class YAF_PT_advanced(MaterialButtonsPanel, Panel):
     bl_label = "Advanced settings"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
     
     def draw(self, context):
         layout = self.layout
         yaf_mat = active_node_mat(context.material)
+
+        layout.prop(yaf_mat, "pass_index")
 
         split = layout.split()
         col = split.column()

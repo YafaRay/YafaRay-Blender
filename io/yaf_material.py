@@ -211,6 +211,8 @@ class yafMaterial:
         yi = self.yi
         yi.paramsClearAll()
 
+        yi.paramsSetInt("mat_pass_index", mat.pass_index)
+
         if rough:  # create bool property "rough"
             yi.paramsSetString("type", "rough_glass")
             yi.paramsSetFloat("alpha", mat.refr_roughness)  # added refraction roughness for roughglass material
@@ -291,6 +293,8 @@ class yafMaterial:
     def writeGlossyShader(self, mat, scene, coated):  # mat : instance of material class
         yi = self.yi
         yi.paramsClearAll()
+
+        yi.paramsSetInt("mat_pass_index", mat.pass_index)
 
         if coated:  # create bool property
             yi.paramsSetString("type", "coated_glossy")
@@ -414,6 +418,8 @@ class yafMaterial:
     def writeShinyDiffuseShader(self, mat, scene):
         yi = self.yi
         yi.paramsClearAll()
+
+        yi.paramsSetInt("mat_pass_index", mat.pass_index)
 
         yi.paramsSetString("type", "shinydiffusemat")
 

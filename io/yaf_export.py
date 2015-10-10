@@ -19,6 +19,8 @@
 # <pep8 compliant>
 
 #TODO: Use Blender enumerators if any
+import sys
+import copy
 import bpy
 import os
 import threading
@@ -72,7 +74,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.exportMaterials()
         self.yaf_object.setScene(self.scene)
         self.exportObjects()
-        self.yaf_object.createCamera()
+        self.yaf_object.createCameras()
         self.yaf_world.exportWorld(self.scene)
 
     def exportTexture(self, obj):
@@ -311,12 +313,12 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         if scene.gs_type_render == "file":
             self.setInterface(yafrayinterface.yafrayInterface_t())
-            self.yi.setInputGamma(scene.gs_gamma_input, True)
+            self.yi.setInputColorSpace("LinearRGB", 1.0)    #When rendering into Blender, color picker floating point data is already linear (linearized by Blender)
             self.outputFile, self.output, self.file_type = self.decideOutputFileName(fp, scene.img_output)
             self.yi.paramsClearAll()
             self.yi.paramsSetString("type", self.file_type)
+            self.yi.paramsSetBool("img_multilayer", scene.img_multilayer)
             self.yi.paramsSetBool("alpha_channel", render.image_settings.color_mode == "RGBA")
-            self.yi.paramsSetBool("z_channel", scene.gs_z_channel)
             self.yi.paramsSetInt("width", self.resX)
             self.yi.paramsSetInt("height", self.resY)
             self.ih = self.yi.createImageHandler("outFile")
@@ -324,7 +326,23 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         elif scene.gs_type_render == "xml":
             self.setInterface(yafrayinterface.xmlInterface_t())
-            self.yi.setInputGamma(scene.gs_gamma_input, True)
+            
+            input_color_values_color_space = "sRGB"
+            input_color_values_gamma = 1.0
+
+            if scene.display_settings.display_device == "sRGB":
+                input_color_values_color_space = "sRGB"
+                
+            elif scene.display_settings.display_device == "XYZ":
+                input_color_values_color_space = "XYZ"
+                
+            elif scene.display_settings.display_device == "None":
+                input_color_values_color_space = "Raw_Manual_Gamma"
+                input_color_values_gamma = scene.gs_gamma  #We only use the selected gamma if the output device is set to "None"
+            
+            self.yi.setInputColorSpace("LinearRGB", 1.0)    #Values from Blender, color picker floating point data are already linear (linearized by Blender)
+            self.yi.setXMLColorSpace(input_color_values_color_space, input_color_values_gamma)  #To set the XML interface to write the XML values with the correction included for the selected color space (and gamma if applicable)
+            
             self.outputFile, self.output, self.file_type = self.decideOutputFileName(fp, 'XML')
             self.yi.paramsClearAll()
             self.co = yafrayinterface.imageOutput_t()
@@ -332,7 +350,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         else:
             self.setInterface(yafrayinterface.yafrayInterface_t())
-            self.yi.setInputGamma(scene.gs_gamma_input, True)
+            self.yi.setInputColorSpace("LinearRGB", 1.0)    #When rendering into Blender, color picker floating point data is already linear (linearized by Blender)
 
         self.yi.startScene()
         self.exportScene()
@@ -345,19 +363,17 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
     # callback to render scene
     def render(self, scene):
         self.bl_use_postprocess = False
+        self.scene = scene
 
         if scene.gs_type_render == "file":
             self.yi.printInfo("Exporter: Rendering to file {0}".format(self.outputFile))
             self.update_stats("YafaRay Rendering:", "Rendering to {0}".format(self.outputFile))
             self.yi.render(self.co)
             result = self.begin_result(0, 0, self.resX, self.resY)
-            lay = result.layers[0] if bpy.app.version < (2, 74, 4 ) else result.layers[0].passes[0]
+            lay = result.layers[0] #if bpy.app.version < (2, 74, 4 ) else result.layers[0].passes[0] #FIXME?
 
-            # exr format has z-buffer included, so no need to load '_zbuffer' - file
-            if scene.gs_z_channel and not scene.img_output == 'OPEN_EXR':
-                lay.load_from_file("{0}_zbuffer.{1}".format(self.output, self.file_type))
-            else:
-                lay.load_from_file(self.outputFile)
+            lay.load_from_file(self.outputFile)
+            #lay.passes["Depth"].load_from_file("{0} (Depth).{1}".format(self.output, self.file_type)) #FIXME? Unfortunately I cannot find a way to load the exported images back to the appropiate passes in Blender. Blender probably needs to improve their API to allow per-pass loading of files. Also, Blender does not allow opening multi layer EXR files with this function.
 
             self.end_result(result)
 
@@ -378,33 +394,71 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                     self.update_progress(self.prog)
 
             def drawAreaCallback(*args):
-                x, y, w, h, tile = args
+                x, y, w, h, view_number, tiles = args
                 res = self.begin_result(x, y, w, h)
+
                 try:
                     l = res.layers[0]
                     if bpy.app.version < (2, 74, 4 ):
-                        l.rect, l.passes[0].rect = tile
+                        l.rect, l.passes[0].rect = tiles
                     else:
-                        l.passes[0].rect, l.passes[1].rect = tile
+                        if scene.render.use_multiview:
+                            #due to Blender limitations while drawing the tiles, I cannot use the view names properly and I have to repeat the currently drawing tile into all views so it shows correctly. Maybe there is a better way?
+                            for view_number,view in enumerate(scene.render.views):
+                                view_suffix = '.'+scene.render.views[view_number].name
+                            
+                                for tile in tiles:
+                                    view_name, tile_name, tile_bitmap = tile
+                                    try:
+                                        l.passes[tile_name+view_suffix].rect = tile_bitmap
+                                    except: print("Unexpected error:", sys.exc_info())
+                                    
+                        else:
+                            for tile in tiles:
+                                view_name, tile_name, tile_bitmap = tile
+                                try:
+                                    l.passes[tile_name].rect = tile_bitmap
+                                except: print("Unexpected error:", sys.exc_info())
+
                 except:
-                    pass
+                    print("Unexpected error:", sys.exc_info())
 
                 self.end_result(res)
 
             def flushCallback(*args):
-                w, h, tile = args
+                w, h, view_number, tiles = args
                 res = self.begin_result(0, 0, w, h)
+
                 try:
                     l = res.layers[0]
                     if bpy.app.version < (2, 74, 4 ):
-                        l.rect, l.passes[0].rect = tile
+                        l.rect, l.passes[0].rect = tiles
                     else:
-                        l.passes[0].rect, l.passes[1].rect = tile
+                        for tile in tiles:
+                            view_name, tile_name, tile_bitmap = tile
+                            if scene.render.use_multiview:
+                                if view_name == "":  #In case we use Render 3D vierpowrt with Views enabled, it will copy the result to all views
+                                    for view_number,view in enumerate(scene.render.views):
+                                        full_tile_name = tile_name + "." + view.name
+                                        try:
+                                            l.passes[full_tile_name].rect = tile_bitmap
+                                        except: print("Unexpected error:", sys.exc_info())
+                                else:
+                                    full_tile_name = tile_name + "." + view_name
+                                    try:
+                                        l.passes[full_tile_name].rect = tile_bitmap
+                                    except: print("Unexpected error:", sys.exc_info())
+                            else:
+                                full_tile_name = tile_name
+                                try:
+                                    l.passes[full_tile_name].rect = tile_bitmap
+                                except: print("Unexpected error:", sys.exc_info())
+
                 except BaseException as e:
-                    pass
+                    print("Unexpected error:", sys.exc_info())
 
                 self.end_result(res)
-
+                
             t = threading.Thread(
                                     target=self.yi.render,
                                     args=(self.resX, self.resY, self.bStartX, self.bStartY,
