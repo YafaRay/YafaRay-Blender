@@ -127,6 +127,17 @@ class YAFRENDER_PT_output(RenderButtonsPanel, Panel):
                 else:
                     row = layout.row(align=True)
                     row.label(text="YafaRay doesn't support '" + sc.display_settings.display_device + "', assuming sRGB", icon="ERROR")
+                    
+        if sc.gs_type_render == "file" or sc.gs_type_render == "xml":
+                split = layout.split(percentage=0.6)
+                col = split.column()
+                col.prop(sc, "gs_premult", text = "Premultiply Alpha")
+                if sc.img_output  == "OPEN_EXR" and not sc.gs_premult:
+                    row = layout.row(align=True)
+                    row.label(text="Typically you should enable Premultiply in EXR files", icon="INFO")
+                if sc.img_output  == "PNG" and sc.gs_premult:
+                    row = layout.row(align=True)
+                    row.label(text="Typically you should disable Premultiply in PNG files", icon="INFO")
 
 
 class YAFRENDER_PT_post_processing(RenderButtonsPanel, Panel):
