@@ -531,6 +531,7 @@ def register():
             ('adv-subsurface-indirect', "Adv: SubSurf.Indirect", "Advanced: SubSurface Indirect light", "", 415),
             ('adv-subsurface-color', "Adv: SubSurf.color", "Advanced: SubSurface color", "", 416),
             ('adv-indirect', "Adv: Indirect", "Adv: Indirect light (depends on the integrator but usually caustics only)", "", 417),
+            ('adv-surface-integration', "Adv: Surface Integration", "Advanced: Surface Integration", "", 418),
         ), key=lambda index: index[1])
 
     renderPassItemsAO=sorted((
