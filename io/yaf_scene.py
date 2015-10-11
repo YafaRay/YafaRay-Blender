@@ -139,7 +139,11 @@ def exportRenderSettings(yi, scene):
 
     yi.paramsSetBool("clamp_rgb", scene.gs_clamp_rgb)
     yi.paramsSetBool("show_sam_pix", scene.gs_show_sam_pix)
-    yi.paramsSetBool("premult", scene.gs_premult)
+
+    if scene.gs_type_render == "file" or scene.gs_type_render == "xml":
+        yi.paramsSetBool("premult", scene.gs_premult)
+    else:
+        yi.paramsSetBool("premult", True)   #We force alpha premultiply when rendering into Blender as it expects premultiplied input
 
     yi.paramsSetInt("tile_size", scene.gs_tile_size)
     yi.paramsSetString("tiles_order", scene.gs_tile_order)
