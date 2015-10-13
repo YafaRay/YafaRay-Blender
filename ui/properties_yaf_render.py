@@ -146,7 +146,7 @@ class YAFRENDER_PT_output(RenderButtonsPanel, Panel):
                 
                 if sc.display_settings.display_device == "None":
                     col = split.column()
-                    col.prop(scene, "gs_gamma", text = "Gamma")
+                    col.prop(sc, "gs_gamma", text = "Gamma")
 
                 if sc.display_settings.display_device == "sRGB":
                     pass
