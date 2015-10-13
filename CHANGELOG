@@ -1,0 +1,163 @@
+YafaRay-E (Experimental) Change Log (current version at the top, oldest at the bottom)
+
+Note: this CHANGELOG file only shows the YafaRay-E releases and changes, not the official stable YafaRay changes.
+
+For more information about releases and changes see: https://github.com/DavidBluecame/Blender-Exporter/releases
+
+
+Yafaray-E v1.0.0 (2015-10-13) for Blender 2.76:
+-----------------------------------------------
+Note: from v1.0.0 I will no longer use the suffix "beta", as all YafaRay-Experimental versions are inherently betas ;-). I will use for version scheme: "Major.Minor.Bugfix". Major will be very important and structural changes with possible API breakage, Minor will be new and modified functionality without API breakage, Bugfix will be small changes and bugfixes.
+
+- IMPORTANT CHANGES to Color Management and Color Pipeline Linear Workflow: http://www.yafaray.org/node/670
+
+Initial prototype to try to fix the (apparently broken) YafaRay color pipeline workflow and to replace the simple gamma input/output correction with a proper sRGB decoding/coding in non-HDR files.
+
+More information here: http://www.yafaray.org/node/670
+
+So, I've prepared a YafaRay prototype that fixes the next issues:
+
+* Improved Blender Color Space integration.
+* The "simple" gamma correction has been replaced by Color Spaces:
+	- LinearRGB			Linear values, no gamma correction
+	- sRGB				sRGB encoding/decoding
+	- XYZ				XYZ (very experimental) support
+	- Raw_Manual_Gamma	Raw linear values that allow to set a simple gamma output correction manually
+
+* Fixed: Double application of input gamma to the Blender Color picker. So now scenes will look brighter in general, but they should also look more realistic with less tweaking.
+* Gamma input correction no longer used. The color picker floating point color values will be considered already linear and no conversion applied to them.
+* For textures, added specific per-texture Color Space and gamma parameters.
+* The color values exported to the XML file will be encoded acording to Blender Output Device Color Space setting.
+* In yafaray-xml, new commandline option added: "-ics" or "--input-color-space" that allows to select how to interpret the XML color values. By default, for backwards compatibility, color values will be read as "LinearRGB", but using "-ics sRGB", the color values will be interpreted as sRGB. This setting does *not* affect the textures, as they have already per-texture specific color space/gamma parameters.
+* Fixed: when exporting to file there was an error in Blender while reopening it to be shown in the Blender image view.
+
+
+Several bug tracker entries are supposed to be fixed with this change:
+* Color pipeline bug: http://www.yafaray.org/node/670
+* Linear output forced on every scene: http://www.yafaray.org/node/603
+* Gamma 1.80 input on linux: http://www.yafaray.org/node/604
+* Forward compatibility with Blender Color Management: http://www.yafaray.org/node/547
+* Gamma correction performed on EXR files: http://www.yafaray.org/node/549
+
+
+
+- IMPORTANT CHANGES to Volumetrics for proper raytracing of volumes:
+
+Problems with volumes and transparent objects have been reported in the bug tracker several times:
+http://yafaray.org/node/289
+http://yafaray.org/node/666
+
+The problem was that Volumes were not really included in the raytracing process, so they were not reflected nor refracted. Now Volumes have been included in the raytracing process, so they can be refracted and reflected as any other objects. This is a significant change that could cause new issues, so please let us know about any problems in YafaRay bug tracker.
+
+Now, if there are no parameters set in the XML for transparent background or transparent refracted background, their default values will be "false" and not "true" as until now. This will avoid confusion due to the new way "transparent refracted background" works, not rendering the background at all so volumes rendered against a transparent background do not carry "remains" of the background with them. 
+
+- Fix for attenuation when using 2 or more volumetric objects: http://www.yafaray.org/node/332
+
+- Fix for error message "Index out of bounds in pdf1D_t" when spotlights with falloff > 0.70 and photons were used: http://www.yafaray.org/node/681
+
+- Fix for Alpha Premultiply broken in Blender exporter: http://www.yafaray.org/node/682  Now the "Premultiply Alpha" option is back in the Exporter, but only when Export to file or to xml is selected. Premultiply will now be forced to true when exporting into Blender. 
+
+
+
+Yafaray-E v0.1.99-beta4c (2015-07-29) for Blender 2.75 RC:
+----------------------------------------------------------
+Note: builds were not created for this version, as it was only used for limited-scale testing. However, the changes made in this version remain in newer Releases and builds.
+
+More info about the discussion and changes: http://www.yafaray.org/node/662
+
+- Fix for issue where Final Gather uses non-IBL background in glass: http://www.yafaray.org/node/572
+
+- Fix for white dots in Path Tracer integrator: http://www.yafaray.org/node/662
+
+- Fix for bump mapping artifacts: http://www.yafaray.org/node/660
+WARNING: I've made significant changes to the bump mapping when using image textures, trying to improve it and get results more similar to Blender, but it could cause new issues so enough testing should be done to make sure bump/normal mapping still works correctly.
+ 
+- Improvements to the noise fireflies in Rough Glass: http://www.yafaray.org/node/663
+
+- New parameter to enable/disable lights. In the XML, into each "light" section you can add:
+<light_enabled bval="false"/> or <light_enabled bval="true"/>
+
+- Ability to control per-light shadow casting. In blender exporter this is in the new "advanced settings" at the very bottom of the light panel. In the xml file, you can add this to the "light" sections:
+<cast_shadows bval="true"/> or <cast_shadows bval="false"/>
+
+- New per-material "visibility" enum parameter that can have the following values:
+
+'normal' (default): Normal - Normal visibility - visible casting shadows.
+'no_shadows': No shadows - visible but not casting shadows.
+'shadow_only': Shadows only - invisible but casting shadows.
+'invisible': Invisible: totally invisible material.
+
+This new parameter is at the bottom of the material panel, in the new advanced settings. In XML it would be something like, in the material section, for example:
+
+<visibility sval="shadow_only"/>
+
+
+
+Yafaray-E v0.1.99-beta4 (2015-06-20) for Blender 2.75 RC:
+---------------------------------------------------------
+
+- Changes to the blend material "component" material1,material2 handling: http://www.yafaray.org/node/546
+
+In previous versions if you created or deleted materials in the .blend file, sometimes all the material components of the blend materials changed or dissapeared randomly. To avoid it, now the materials are referenced by name using strings. You cannot use dropdown menus anymore to select the blend submaterials, and you have to be careful now not to rename the materials used by "blend" materials. However, with the new system if you create or delete other materials it will not affect the blend material1,material2 assignments.
+
+Increased the level of detail in the YafaRay Log, so if there are any problems with missing components in blend materials it should be easy to spot and correct by reading the YafaRay Log.
+
+WARNING: this change breaks backwards compatibility. When opening a .blend created with an older version of YafaRay the blend material components will be "upgraded" to the new system, but the"blend" materials in a blend made with the new version could behave wrongly if you open it with an older version.
+
+- New advanced parameters for fine control of Shadow Bias/Min Ray Dist if the automatic calculation is not good enough. Please give us feedback about it in the forum: http://www.yafaray.org/community/forum/viewtopic.php?f=23&t=5084 
+
+- Fix for caustics noise coming from Non-IBL background in Photon Mapping. Now the background will only be used for Caustics if IBL is enabled and (if there is a caustics parameter available in the background settings) if caustics is enabled in the background.
+
+- Background "power" parameters relocated to places where they make more sense. They were hidden and only visible when IBL was enabled, but most of the times the power parameter affects the background rendering even if IBL is disabled.
+
+
+
+Yafaray-E v0.1.99-beta3 (2015-05-02) for Blender 2.74.5 (up to Blender builbots for 2015-05-02):
+------------------------------------------------------------------------------------------------
+Blender made a change to their API in their development branch 2.74.4 to include MultiView. That change caused YafaRay to render black images despite being working fine.
+
+Very kindly Jens Verwiebe sent us the fix for Blender Exporter so YafaRay can work again with Blender 2.74.4. This fix is not a full integration in the new MultiView functionality, it just allows YafaRay to work again with Blender.
+
+More changes in this beta3 version:
+
+- Fix for -NAN results in the Bidirectional integrator when using Architectural, Angular and Ortho cameras. See: http://www.yafaray.org/node/538
+
+- Fix for problem with Rough Glass too bright when dispersion is enabled. See: http://www.yafaray.org/node/642
+
+- Extended Texture Mapping system, allowing using textures to map additional properties in materials, to be able to create either more realistic or more exotic materials and reduce the dependency on the "blend" material. More information in: http://www.yafaray.org/community/forum/viewtopic.php?f=22&t=5091
+
+Important note: when using some of the new mappings, the renders may slow down. I'm not sure whether it's because of the additional calculations (very likely) or if it's something we can optimize further in the future. In any case, it should only be noticeable when using the new mappings, and I think it's worth the ability to create new materials now.
+
+The new texture mappings in addition to the existing ones are: 
+	- Diffuse Reflection Amount in Shiny Diffuse, Glossy and Coated Glossy materials
+	- Sigma factor for Oren Nayar in Shiny Diffuse, Glossy and Coated Glossy materials
+	- Filter color in Glass and Rough Glass.
+	- IOR refractive factor in Glass and Rough Glass. The texture amounts are added to the IOR of the material.
+	- IOR refractive factor for the Fresnel in Shiny Diffuse and Coated Glossy materials.
+	- Roughness factor in Rough Glass material.
+	- Exponent factor in Glossy and Coated Glossy materials
+	- Mirror amount in Coated Glossy materials.
+	- Mirror Color in Coated Glossy Materials
+
+Also added a (non-texture) mirror amount slider in the Coated Glossy material
+
+Unfortunately due to Blender API limitations, in some of the new texture sliders, the "tooltip" information that appears when hovering the mouse over the slider, can be misleading and not represent the actual function of that slider. However, I took care in setting the description correctly so just by looking at the slider itself you can see what does it map.
+
+
+
+Yafaray-E v0.1.99-beta2 (2015-04-18) for Blender 2.74:
+-------------------------------------------------------
+- New Clay Material, with a small correction since the previous beta1
+- Fix for bad NaN normals that happened sometimes.
+- Calculate automatically Shadow Bias and Minimum Ray Dist depending on the scene size. This is to avoid black artifacts when resizing the objects. However as it's a fundamental change that affects everything, perhaps some new artifacts could appear in the images now and further fine tuning needed in this new formula. Please give us feedback about it in the forum:
+http://www.yafaray.org/community/forum/viewtopic.php?f=23&t=5084 
+
+
+
+Yafaray-E v0.1.99-beta1 (2015-04-11) for Blender 2.74:
+------------------------------------------------------
+Based on the official stable YafaRay v0.1.5 git version
+
+- New Clay Material system, more powerful and flexible
+- Texture mapping of Sigma factor in Shiny Diffuse/Oren Nayar
+- Fix for Negated colors in Musgrave/Voronoi textures mapped to diffuse color.
