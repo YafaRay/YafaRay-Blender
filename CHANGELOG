@@ -57,6 +57,9 @@ Now, if there are no parameters set in the XML for transparent background or tra
 
 - Fix for Alpha Premultiply broken in Blender exporter: http://www.yafaray.org/node/682  Now the "Premultiply Alpha" option is back in the Exporter, but only when Export to file or to xml is selected. Premultiply will now be forced to true when exporting into Blender. 
 
+- Fix for some YafaRay camera panels incorrectly appearing in LuxRender! http://www.luxrender.net/forum/viewtopic.php?f=16&t=12405&sid=14e5a712bb33cbdee95c65fb1920ad38&start=20
+https://github.com/DavidBluecame/Blender-Exporter/commit/70138b7ec2c2aa3f94d3c820babc10d12af6f943 
+
 
 
 Yafaray-E v0.1.99-beta4c (2015-07-29) for Blender 2.75 RC:
