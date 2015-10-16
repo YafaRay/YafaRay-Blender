@@ -1,67 +1,30 @@
-Yafaray-E (Experimental) v1.0.0 (2015-0x-xx) David Bluecame experimental exporter for Blender 2.76:
-** THIS BUILD CONTAINS EXPERIMENTAL CHANGES AND FEATURES - DO NOT USE FOR PRODUCTION SCENES **
+DESCRIPTION
+-----------
+YafaRay is a free open-source montecarlo raytracing engine released under the LGPL 2.1 license. Raytracing is a rendering technique for generating realistic images by tracing the path of light through a 3D scene. 
 
-Unofficial build for XXXX (XX bits) by David Bluecame
-* Important: the Linux 32bit build requires a processor with SSE/SSE2 instructions. Any non-ancient processor should have them *
-
-Based on YafaRay git version + pull requests from David Bluecame not yet in master for
-
-FIXME: (PENDING TO UPDATE CHANGELOG!!!!!)
-
-- New Clay Material system, more flexible and powerful. More information in: http://www.yafaray.org/community/forum/viewtopic.php?f=16&t=5079
-
-- Fix for problem with Rough Glass too bright when dispersion is enabled. See: http://www.yafaray.org/node/642
-
-- Extended Texture Mapping system (very experimental!!), allowing using textures to map additional properties in materials, to be able to create either more realistic or more exotic materials and reduce the dependency on the "blend" material. More information in: http://www.yafaray.org/community/forum/viewtopic.php?f=22&t=5091
-
-Important note: when using some of the new mappings, the renders may slow down. I'm not sure whether it's because of the additional calculations (very likely) or if it's something we can optimize further in the future. In any case, it should only be noticeable when using the new mappings, and I think it's worth the ability to create new materials now.
-
-The new texture mappings in addition to the existing ones are: 
-	- Diffuse Reflection Amount in Shiny Diffuse, Glossy and Coated Glossy materials
-	- Sigma factor for Oren Nayar in Shiny Diffuse, Glossy and Coated Glossy materials
-	- Filter color in Glass and Rough Glass.
-	- IOR refractive factor in Glass and Rough Glass. The texture amounts are added to the IOR of the material.
-	- IOR refractive factor for the Fresnel in Shiny Diffuse and Coated Glossy materials.
-	- Roughness factor in Rough Glass material.
-	- Exponent factor in Glossy and Coated Glossy materials
-	- Mirror amount in Coated Glossy materials.
-	- Mirror Color in Coated Glossy Materials
+For more information, see: http://www.yafaray.org
 
 
-I also added a (non-texture) mirror amount slider in the Coated Glossy material
+YafaRay-E (Experimental) is an unofficial testing/unstable branch for fixes and new features, maintained by David Bluecame. Some of these fixes and features could be eventually accepted into the official/stable YafaRay, while others may end up rejected or implemented in a different way.
 
-Unfortunately due to Blender API limitations, in some of the new texture sliders, the "tooltip" information that appears when hovering the mouse over the slider, can be misleading and not represent the actual function of that slider. However, I took care in setting the description correctly so just by looking at the slider itself you can see what does it map.
+*WARNING*: YafaRay-E contains EXPERIMENTAL CHANGES AND FEATURES, so it's recommended not to use it for production scenes. This application is provided as is, and no guarantee is given that this code will preform in the desired way.
 
-
-* Changes to the blend material "component" material1,material2 handling. In previous versions if you created or deleted materials in the .blend file, sometimes all the material components of the blend materials changed or dissapeared randomly. To avoid it, now the materials are referenced by name using strings. You cannot use dropdown menus anymore to select the blend submaterials, and you have to be careful now not to rename the materials used by "blend" materials. However, with the new system if you create or delete other materials it will not affect the blend material1,material2 assignments.
-
-Also, I've increased the level of detail in the YafaRay Log, so if there are any problems with missing components in blend materials it should be easy to spot and correct by reading the YafaRay Log.
-
-WARNING: this change breaks backwards compatibility. When opening a .blend created with an older version of YafaRay the blend material components will be "upgraded" to the new system, but the"blend" materials in a blend made with the new version could behave wrongly if you open it with an older version.
-
-* New advanced parameters for fine control of Shadow Bias/Min Ray Dist if the automatic calculation is not good enough. Please give us feedback about it in the forum: http://www.yafaray.org/community/forum/viewtopic.php?f=23&t=5084 
-
-* Fix for caustics noise coming from Non-IBL background in Photon Mapping. Now the background will only be used for Caustics if IBL is enabled and (if there is a caustics parameter available in the background settings) if caustics is enabled in the background.
-
-* Background "power" parameters relocated to places where they make more sense. They were hidden and only visible when IBL was enabled, but most of the times the power parameter affects the background rendering even if IBL is disabled.
+Please post bugreports and feature requests here:
+http://www.yafaray.org/development/bugtracker/yafaray
 
 
+RELEASES
+--------
 
-To install YafaRay to blender:
-* Don't use the Blender from the distro repositories. Download the Blender official Linux 64bit build from: http://ftp.halifax.rwth-aachen.de/blender/release/Blender2.74/blender-2.74-linux-glibc211-x86_64.tar.bz2 and uncompress it in a folder, for example in $HOME/
-* Copy this entire folder "yafaray" to:
-  - in Linux 64bit, for example: "$HOME/blender-2.74-linux-glibc211-x86_64/2.74/scripts/addons" folder.
-  - in Windows 64bit, for example: "C:\Program Files\Blender Foundation\Blender\2.74\scripts\addons" folder.
+YafaRay-E (Experimental) releases can be found here:
+https://github.com/DavidBluecame/Blender-Exporter/releases
 
-After it, start Blender, go to User Preferences, AddOns and try to enable Render:YafaRay. Once (hopefully) enabled you should see it in the list of renderers.
+YafaRay-E latest source code:
+* Core code: https://github.com/DavidBluecame/Core
+* Blender Exporter: https://github.com/DavidBluecame/Blender-Exporter
 
-This application is provided as is, and no guarantee is given that this code will preform in the desired way.
+More information about the changes in each YafaRay-E version see the file CHANGELOG
 
-I hope this helps and you can start or continue to use this very nice and fast renderer!
-
-Best regards. David.
-
-****
 
 
 For the official YafaRay latest exporter updates check:
@@ -69,14 +32,12 @@ For the official YafaRay latest exporter updates check:
 https://github.com/YafaRay/Blender-Exporter
 
 and for the latest Yafaray builds (including exporter files too) 
-check for builds on graphicall.org:
+check for builds here:
 
-http://www.graphicall.org/yafaray
+* http://www.yafaray.org/download
+* http://www.graphicall.org/yafaray
 
 or look into this forum post for other platform builds:
-
-http://www.yafaray.org/community/forum/viewtopic.php?f=16&t=3520
-
 http://www.yafaray.org/community/forum/viewforum.php?f=12
 
 Please post bugreports and feature requests here:
