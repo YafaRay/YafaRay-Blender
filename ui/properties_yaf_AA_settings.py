@@ -51,6 +51,8 @@ class YAF_PT_AA_settings(RenderButtonsPanel, Panel):
         spp.prop(scene, "AA_passes")
         sub.prop(scene, "AA_inc_samples")
         sub.prop(scene, "AA_threshold")
+        if scene.intg_light_method != "SPPM":
+            sub.prop(scene, "AA_resampled_floor")
 
 
 if __name__ == "__main__":  # only for live edit.

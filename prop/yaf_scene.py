@@ -417,6 +417,13 @@ def register():
         min=0.0, max=1.0, precision=4,
         default=0.05)
 
+    Scene.AA_resampled_floor = IntProperty(
+        name="Resampled floor",
+        description=("For better noise reduction, if the amount of resampled pixels go below this value,"
+                     " the AA threshold will automatically decrease before the next pass"),
+        min=0,
+        default=0)
+
     Scene.AA_pixelwidth = FloatProperty(
         name="Pixelwidth",
         description="AA filter size",
@@ -849,6 +856,7 @@ def unregister():
     Scene.AA_threshold
     Scene.AA_pixelwidth
     Scene.AA_filter_type
+    Scene.AA_resampled_floor
 
     Scene.pass_enable    
     Scene.pass_mask_obj_index
@@ -889,3 +897,4 @@ def unregister():
     Scene.views_lightgroup_list
     Scene.views_lightgroup_list_index
     bpy.utils.unregister_class(ViewsLightGroupList)
+    
