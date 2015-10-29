@@ -79,6 +79,7 @@ def exportAA(yi, scene):
     yi.paramsSetFloat("AA_pixelwidth", scene.AA_pixelwidth)
     yi.paramsSetFloat("AA_threshold", scene.AA_threshold)
     yi.paramsSetString("filter_type", scene.AA_filter_type)
+    yi.paramsSetInt("AA_resampled_floor", scene.AA_resampled_floor)
 
 
 def exportRenderSettings(yi, scene):
