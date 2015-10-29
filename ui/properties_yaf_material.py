@@ -28,6 +28,22 @@ from bl_ui.properties_material import (MaterialButtonsPanel,
 MaterialButtonsPanel.COMPAT_ENGINES = {'YAFA_RENDER'}
 
 
+def blend_one_draw(layout, mat):
+    try:
+        layout.prop_search(mat, "material1name", bpy.data, "materials")
+    except:
+        return False
+    
+    return True
+
+def blend_two_draw(layout, mat):
+    try:
+        layout.prop_search(mat, "material2name", bpy.data, "materials")
+    except:
+        return False
+    return True
+
+
 class MaterialTypePanel(MaterialButtonsPanel):
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
@@ -335,14 +351,8 @@ class YAF_PT_blend_(MaterialTypePanel, Panel):
         #col.label(text="Material two:")
         #col.prop(yaf_mat, "material2", text="")
 
-        split = box.split()
-        col = split.column()
-        col.label(text="Material one:")
-        col.prop(yaf_mat, "material1name", text="")
-
-        col = split.column()
-        col.label(text="Material two:")
-        col.prop(yaf_mat, "material2name", text="")
+        blend_one_draw(layout, yaf_mat)
+        blend_two_draw(layout, yaf_mat)
 
 
 class YAF_PT_advanced(MaterialButtonsPanel, Panel):
