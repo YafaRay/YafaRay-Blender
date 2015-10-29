@@ -299,6 +299,11 @@ def register():
             
         ),
         default='normal')
+        
+    Material.receive_shadows = BoolProperty(
+        name="Receive Shadows",
+        description="If this parameter is set to false, the material will not receive shadows from other objects",
+        default=True)
 
 def unregister():
     del Material.mat_type
@@ -336,3 +341,4 @@ def unregister():
     del Material.material1name
     del Material.material2name
     del Material.visibility
+    del Material.receive_shadows
