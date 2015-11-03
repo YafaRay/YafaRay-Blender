@@ -68,9 +68,19 @@ def register():
         description="Gamma correction applied to input texture",
         min=0, max=5, default=1.0)
 
+    Texture.yaf_tex_interpolate = EnumProperty(
+        name="Interpolation",
+        items=(
+            ('bilinear', "Bilinear (default)", ""),
+            ('bicubic', "Bicubic", ""),
+            ('none', "No interpolation", "")
+        ),
+        default='bilinear')
+
 
 def unregister():
     Texture.yaf_tex_type
     Texture.yaf_is_normal_map
     Texture.yaf_use_alpha
     Texture.yaf_gamma_input
+    Texture.yaf_tex_interpolate
