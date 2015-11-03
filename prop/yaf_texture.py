@@ -62,8 +62,18 @@ def register():
         description="Use alpha values for image mapping",
         default=False)
 
+    Texture.yaf_tex_interpolate = EnumProperty(
+        name="Interpolation",
+        items=(
+            ('bilinear', "Bilinear (default)", ""),
+            ('bicubic', "Bicubic", ""),
+            ('none', "No interpolation", "")
+        ),
+        default='bilinear')
+
 
 def unregister():
     Texture.yaf_tex_type
     Texture.yaf_is_normal_map
     Texture.yaf_use_alpha
+    Texture.yaf_tex_interpolate
