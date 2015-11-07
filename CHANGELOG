@@ -5,6 +5,22 @@ Note: this CHANGELOG file only shows the YafaRay-E releases and changes, not the
 For more information about releases and changes see: https://github.com/DavidBluecame/Blender-Exporter/releases
 
 
+Yafaray-E v1.1.0 (2015-11-06) for Blender 2.76:
+-----------------------------------------------
+- Changes to the Core code and build files to enable building for Mac OSX 64bit (v10.6 or higher), based on the excellent work from Jens Verwiebe. Thank you very much, Jens!!
+
+- Added a new "Resampled Floor" parameter to the Adaptative AA calculations, to increase the noise reduction performance. The idea is that if the amount of resampled pixels go below that "floor" value during a certain pass, the AA threshold is automatically decreased in 10% for the next pass. More information: http://yafaray.org/node/690
+
+- Blend materials can now be selected using drop down menus. This feature has been ported from povmaniaco's The Bounty fork of YafaRay. Thanks, povmaniaco!!
+
+- Added a new texture sampling parameter in Blender Exporter to control the type of interpolation in the image texture. Options will be: bilinear (default), bicubic or none. See: http://www.yafaray.org/community/forum/viewtopic.php?f=22&t=5121
+
+- Added a per-material parameter to control reception of shadows. Now it's possible to select if a material should receive shadows from other objects (as default) or not. See: http://yafaray.org/node/687
+
+- Minor changes for existing material visibility feature to improve (just a tiny bit) performance. 
+
+
+
 Yafaray-E v1.0.0 (2015-10-13) for Blender 2.76:
 -----------------------------------------------
 Note: from v1.0.0 I will no longer use the suffix "beta", as all YafaRay-Experimental versions are inherently betas ;-). I will use for version scheme: "Major.Minor.Bugfix". Major will be very important and structural changes with possible API breakage, Minor will be new and modified functionality without API breakage, Bugfix will be small changes and bugfixes.
