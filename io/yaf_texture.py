@@ -316,6 +316,8 @@ class yafTexture:
             yi.paramsSetBool("normalmap", tex.yaf_is_normal_map)
             yi.paramsSetFloat("gamma", scene.gs_gamma_input)
 
+            yi.paramsSetString("interpolate", tex.yaf_tex_interpolate)
+
             # repeat
             repeat_x = 1
             repeat_y = 1
