@@ -24,6 +24,7 @@ import os
 import threading
 import time
 import yafrayinterface
+import traceback
 from yafaray import PLUGIN_PATH
 from yafaray import YAF_ID_NAME
 from .yaf_object import yafObject
@@ -368,11 +369,17 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                     if bpy.app.version < (2, 74, 4 ):
                         l.rect, l.passes[0].rect = tile
                     else:
-                        l.passes[0].rect, l.passes[1].rect = tile
-                except:
-                    pass
+                        if self.is_preview:
+                            l.passes[0].rect = tile[0]
+                        else:
+                            l.passes[0].rect, l.passes[1].rect = tile
+                    
+                    self.end_result(res)
 
-                self.end_result(res)
+                except:
+                    print("Exporter: Exception while rendering in drawAreaCallback function:")
+                    traceback.print_exc()
+
 
             def flushCallback(*args):
                 w, h, tile = args
@@ -382,11 +389,16 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                     if bpy.app.version < (2, 74, 4 ):
                         l.rect, l.passes[0].rect = tile
                     else:
-                        l.passes[0].rect, l.passes[1].rect = tile
-                except BaseException as e:
-                    pass
+                        if self.is_preview:
+                            l.passes[0].rect = tile[0]
+                        else:
+                            l.passes[0].rect, l.passes[1].rect = tile
 
-                self.end_result(res)
+                    self.end_result(res)
+
+                except BaseException as e:
+                    print("Exporter: Exception while rendering in flushCallback function:")
+                    traceback.print_exc()
 
             t = threading.Thread(
                                     target=self.yi.render,
