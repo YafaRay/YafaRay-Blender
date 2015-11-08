@@ -19,13 +19,13 @@
 # <pep8 compliant>
 
 #TODO: Use Blender enumerators if any
-import sys
 import copy
 import bpy
 import os
 import threading
 import time
 import yafrayinterface
+import traceback
 from yafaray import PLUGIN_PATH
 from yafaray import YAF_ID_NAME
 from .yaf_object import yafObject
@@ -411,19 +411,24 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                                     view_name, tile_name, tile_bitmap = tile
                                     try:
                                         l.passes[tile_name+view_suffix].rect = tile_bitmap
-                                    except: print("Unexpected error:", sys.exc_info())
+                                    except:
+                                        print("Exporter: Exception while rendering in drawAreaCallback function:")
+                                        traceback.print_exc()
                                     
                         else:
                             for tile in tiles:
                                 view_name, tile_name, tile_bitmap = tile
                                 try:
                                     l.passes[tile_name].rect = tile_bitmap
-                                except: print("Unexpected error:", sys.exc_info())
+                                except:
+                                    print("Exporter: Exception while rendering in drawAreaCallback function:")
+                                    traceback.print_exc()
+
+                    self.end_result(res)
 
                 except:
-                    print("Unexpected error:", sys.exc_info())
-
-                self.end_result(res)
+                    print("Exporter: Exception while rendering in drawAreaCallback function:")
+                    traceback.print_exc()
 
             def flushCallback(*args):
                 w, h, view_number, tiles = args
@@ -442,23 +447,30 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                                         full_tile_name = tile_name + "." + view.name
                                         try:
                                             l.passes[full_tile_name].rect = tile_bitmap
-                                        except: print("Unexpected error:", sys.exc_info())
+                                        except:
+                                            print("Exporter: Exception while rendering in flushCallback function:")
+                                            traceback.print_exc()
                                 else:
                                     full_tile_name = tile_name + "." + view_name
                                     try:
                                         l.passes[full_tile_name].rect = tile_bitmap
-                                    except: print("Unexpected error:", sys.exc_info())
+                                    except:
+                                        print("Exporter: Exception while rendering in flushCallback function:")
+                                        traceback.print_exc()
                             else:
                                 full_tile_name = tile_name
                                 try:
                                     l.passes[full_tile_name].rect = tile_bitmap
-                                except: print("Unexpected error:", sys.exc_info())
+                                except:
+                                    print("Exporter: Exception while rendering in flushCallback function:")
+                                    traceback.print_exc()
+
+                    self.end_result(res)
 
                 except BaseException as e:
-                    print("Unexpected error:", sys.exc_info())
+                    print("Exporter: Exception while rendering in flushCallback function:")
+                    traceback.print_exc()
 
-                self.end_result(res)
-                
             t = threading.Thread(
                                     target=self.yi.render,
                                     args=(self.resX, self.resY, self.bStartX, self.bStartY,
