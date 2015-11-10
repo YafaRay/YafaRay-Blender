@@ -240,7 +240,7 @@ def register():
         default=False)
 
     Material.clay_exclude = BoolProperty(
-        name="Exclude from Clay render",
+        update=update_preview, name="Exclude from Clay render",
         description="Exclude from Clay render mode: this material will be rendered normally even in Clay render mode",
         default=False)
 
@@ -283,17 +283,17 @@ def register():
 
     #New blend material component String references, when opening old scenes it should copy the old Enum Property materials to the new String Properties
     Material.material1name = StringProperty(
-        name="Material one",
+        update=update_preview, name="Material one",
         description="First blend material")
         #,        get=get_blend_mat1_old_scenes)
 
     Material.material2name = StringProperty(
-        name="Material two",
+        update=update_preview, name="Material two",
         description="Second blend material")
         #,        get=get_blend_mat2_old_scenes)
 
     Material.visibility = EnumProperty(
-        name="Visibility",
+        update=update_preview, name="Visibility",
         items=(
             ('invisible', "Invisible", "Totally invisible"),
             ('shadow_only', "Shadows only", "Invisible but casting shadows"),
@@ -304,7 +304,7 @@ def register():
         default='normal')
         
     Material.receive_shadows = BoolProperty(
-        name="Receive Shadows",
+        update=update_preview, name="Receive Shadows",
         description="If this parameter is set to false, the material will not receive shadows from other objects",
         default=True)
 
