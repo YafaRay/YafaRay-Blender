@@ -79,7 +79,16 @@ def exportAA(yi, scene):
     yi.paramsSetFloat("AA_pixelwidth", scene.AA_pixelwidth)
     yi.paramsSetFloat("AA_threshold", scene.AA_threshold)
     yi.paramsSetString("filter_type", scene.AA_filter_type)
-    yi.paramsSetInt("AA_resampled_floor", scene.AA_resampled_floor)
+    yi.paramsSetFloat("AA_resampled_floor", scene.AA_resampled_floor)
+    yi.paramsSetFloat("AA_sample_multiplier_factor", scene.AA_sample_multiplier_factor)
+    yi.paramsSetFloat("AA_light_sample_multiplier_factor", scene.AA_light_sample_multiplier_factor)
+    yi.paramsSetFloat("AA_indirect_sample_multiplier_factor", scene.AA_indirect_sample_multiplier_factor)
+    yi.paramsSetBool("AA_detect_color_noise", scene.AA_detect_color_noise)
+    yi.paramsSetFloat("AA_dark_threshold_factor", scene.AA_dark_threshold_factor)
+    yi.paramsSetInt("AA_variance_edge_size", scene.AA_variance_edge_size)
+    yi.paramsSetInt("AA_variance_pixels", scene.AA_variance_pixels)
+    yi.paramsSetFloat("AA_clamp_samples", scene.AA_clamp_samples)
+    yi.paramsSetFloat("AA_clamp_indirect", scene.AA_clamp_indirect)
 
 
 def exportRenderSettings(yi, scene):
