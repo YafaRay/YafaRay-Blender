@@ -391,7 +391,7 @@ def register():
         min=0.0,
         default=1.0)
 
-    ######### YafaRays anti-aliasing properties ###########
+    ######### YafaRays anti-aliasing/noise properties ###########
     Scene.AA_min_samples = IntProperty(
         name="Samples",
         description="Number of samples for first AA pass",
@@ -416,13 +416,6 @@ def register():
         description="Color threshold for additional AA samples in next pass",
         min=0.0, max=1.0, precision=4,
         default=0.05)
-
-    Scene.AA_resampled_floor = IntProperty(
-        name="Resampled floor",
-        description=("For better noise reduction, if the amount of resampled pixels go below this value,"
-                     " the AA threshold will automatically decrease before the next pass"),
-        min=0,
-        default=0)
 
     Scene.AA_pixelwidth = FloatProperty(
         name="Pixelwidth",
@@ -787,6 +780,67 @@ def register():
     Scene.views_lightgroup_list = CollectionProperty(type = ViewsLightGroupList)
     Scene.views_lightgroup_list_index = IntProperty(name = "Index for the Views Light Group List", default = -1)
 
+    Scene.AA_resampled_floor = FloatProperty(
+        name="Resampled floor (%)",
+        description=("Noise reduction: when resampled pixels go below this value (% of total pixels),"
+                     " the AA threshold will automatically decrease before the next pass"),
+        min=0.0, max=100.0, precision=1,
+        default=0.0)
+
+    Scene.AA_sample_multiplier_factor = FloatProperty(
+        name="AA sample multiplier factor",
+        description="Factor to increase the AA samples multiplier for next AA pass.",
+        min=1.0, max=2.0, precision=2,
+        default=1.0)
+
+    Scene.AA_light_sample_multiplier_factor = FloatProperty(
+        name="Light sample multiplier factor",
+        description="Factor to increase the light samples multiplier for next AA pass.",
+        min=1.0, max=2.0, precision=2,
+        default=1.0)
+
+    Scene.AA_indirect_sample_multiplier_factor = FloatProperty(
+        name="Indirect sample multiplier factor",
+        description="Factor to increase the indirect samples (FG for example) multiplier for next AA pass.",
+        min=1.0, max=2.0, precision=2,
+        default=1.0)
+
+    Scene.AA_detect_color_noise = BoolProperty(
+        name="Color noise detection",
+        description="Detect noise in RGB components in addidion to pixel brightness",
+        default=False)
+        
+    Scene.AA_dark_threshold_factor = FloatProperty(
+        name="Dark areas noise detection factor",
+        description=("Factor used to reduce the AA threshold in dark areas."
+                     " It will reduce noise in dark areas, but noise in bright areas will take longer."),
+        min=0.0, max=0.8, precision=2,
+        default=0.0)
+
+    Scene.AA_variance_edge_size = IntProperty(
+        name="Variance window",
+        description="Window edge size for variance noise detection.",
+        min=4, max=20,
+        default=10)
+
+    Scene.AA_variance_pixels = IntProperty(
+        name="Variance threshold",
+        description="Threshold (in pixels) for variance noise detection. 0 disables variance detection",
+        min=0, max=10,
+        default=0)
+
+    Scene.AA_clamp_samples = FloatProperty(
+        name="Clamp samples",
+        description="Clamp RGB values in all samples, less noise but less realism. 0.0 disables clamping.",
+        min=0.0, precision=1,
+        default=0.0)
+
+    Scene.AA_clamp_indirect = FloatProperty(
+        name="Clamp indirect",
+        description="Clamp RGB values in the indirect light, less noise but less realism. 0.0 disables clamping.",
+        min=0.0, precision=1,
+        default=0.0)
+
 
 def unregister():
     Scene.gs_ray_depth
@@ -857,6 +911,15 @@ def unregister():
     Scene.AA_pixelwidth
     Scene.AA_filter_type
     Scene.AA_resampled_floor
+    Scene.AA_sample_multiplier_factor
+    Scene.AA_light_sample_multiplier_factor
+    Scene.AA_indirect_sample_multiplier_factor
+    Scene.AA_detect_color_noise
+    Scene.AA_dark_threshold_factor
+    Scene.AA_variance_edge_size
+    Scene.AA_variance_pixels
+    Scene.AA_clamp_samples
+    Scene.AA_clamp_indirect
 
     Scene.pass_enable    
     Scene.pass_mask_obj_index
