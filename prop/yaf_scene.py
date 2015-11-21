@@ -536,6 +536,7 @@ def register():
 
     renderPassItemsAO=sorted((
             ('ao', "AO", "Ambient Occlusion", "", 501),
+            ('ao-clay', "AO clay", "Ambient Occlusion (clay)", "", 502),
         ), key=lambda index: index[1])
 
     renderPassItemsLightGroup=sorted((
