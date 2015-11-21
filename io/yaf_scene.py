@@ -147,7 +147,6 @@ def exportRenderSettings(yi, scene):
         yi.paramsSetInt("width", sizeX)
         yi.paramsSetInt("height", sizeY)
 
-    yi.paramsSetBool("clamp_rgb", scene.gs_clamp_rgb)
     yi.paramsSetBool("show_sam_pix", scene.gs_show_sam_pix)
 
     if scene.gs_type_render == "file" or scene.gs_type_render == "xml":

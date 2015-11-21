@@ -77,7 +77,6 @@ class YAF_PT_general_settings(RenderButtonsPanel, Panel):
         col = split.column()
         col.prop(scene, "gs_transp_shad", toggle=True)
         col.prop(scene, "gs_draw_params", toggle=True)
-        col.prop(scene, "gs_clamp_rgb", toggle=True)
 
         col = split.column()
         col.prop(scene, "gs_auto_threads", toggle=True)

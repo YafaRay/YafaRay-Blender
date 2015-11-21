@@ -178,11 +178,6 @@ def register():
         description="Compute transparent shadows",
         default=False)
 
-    Scene.gs_clamp_rgb = BoolProperty(
-        name="Clamp RGB",
-        description="Reduce the color's brightness to a low dynamic range",
-        default=False)
-
     Scene.gs_show_sam_pix = BoolProperty(
         name="Show sample pixels",
         description="Masks pixels marked for resampling during adaptive passes",
@@ -869,7 +864,6 @@ def unregister():
     Scene.gs_custom_string
     Scene.gs_premult
     Scene.gs_transp_shad
-    Scene.gs_clamp_rgb
     Scene.gs_show_sam_pix
     Scene.gs_verbose
     Scene.gs_type_render
