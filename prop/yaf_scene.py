@@ -26,6 +26,7 @@ from bpy.props import (IntProperty,
                        EnumProperty,
                        BoolProperty,
                        StringProperty,
+                       PointerProperty,
                        CollectionProperty)
 
 Scene = bpy.types.Scene
@@ -37,6 +38,417 @@ def call_update_fileformat(self, context):
     render = scene.render
     if scene.img_output is not render.image_settings.file_format:
         render.image_settings.file_format = scene.img_output
+
+class YafaRayProperties(bpy.types.PropertyGroup):
+    pass
+    
+class YafaRayNoiseControlProperties(bpy.types.PropertyGroup):
+    resampled_floor = FloatProperty(
+        name="Resampled floor (%)",
+        description=("Noise reduction: when resampled pixels go below this value (% of total pixels),"
+                     " the AA threshold will automatically decrease before the next pass"),
+        min=0.0, max=100.0, precision=1,
+        default=0.0)
+
+    sample_multiplier_factor = FloatProperty(
+        name="AA sample multiplier factor",
+        description="Factor to increase the AA samples multiplier for next AA pass.",
+        min=1.0, max=2.0, precision=2,
+        default=1.0)
+
+    light_sample_multiplier_factor = FloatProperty(
+        name="Light sample multiplier factor",
+        description="Factor to increase the light samples multiplier for next AA pass.",
+        min=1.0, max=2.0, precision=2,
+        default=1.0)
+
+    indirect_sample_multiplier_factor = FloatProperty(
+        name="Indirect sample multiplier factor",
+        description="Factor to increase the indirect samples (FG for example) multiplier for next AA pass.",
+        min=1.0, max=2.0, precision=2,
+        default=1.0)
+
+    detect_color_noise = BoolProperty(
+        name="Color noise detection",
+        description="Detect noise in RGB components in addidion to pixel brightness",
+        default=False)
+        
+    dark_threshold_factor = FloatProperty(
+        name="Dark areas noise detection factor",
+        description=("Factor used to reduce the AA threshold in dark areas."
+                     " It will reduce noise in dark areas, but noise in bright areas will take longer."),
+        min=0.0, max=0.8, precision=2,
+        default=0.0)
+
+    variance_edge_size = IntProperty(
+        name="Variance window",
+        description="Window edge size for variance noise detection.",
+        min=4, max=20,
+        default=10)
+
+    variance_pixels = IntProperty(
+        name="Variance threshold",
+        description="Threshold (in pixels) for variance noise detection. 0 disables variance detection",
+        min=0, max=10,
+        default=0)
+
+    clamp_samples = FloatProperty(
+        name="Clamp samples",
+        description="Clamp RGB values in all samples, less noise but less realism. 0.0 disables clamping.",
+        min=0.0, precision=1,
+        default=0.0)
+
+    clamp_indirect = FloatProperty(
+        name="Clamp indirect",
+        description="Clamp RGB values in the indirect light, less noise but less realism. 0.0 disables clamping.",
+        min=0.0, precision=1,
+        default=0.0)
+
+    
+class YafaRayRenderPassesProperties(bpy.types.PropertyGroup):
+    pass_enable = BoolProperty(
+        name="Enable render passes",
+        default=False)
+
+    pass_mask_obj_index = IntProperty(
+        name="Mask Object Index",
+        description="Object index used for masking in the Mask render passes",
+        min=0,
+        default=0)
+        
+    pass_mask_mat_index = IntProperty(
+        name="Mask Material Index",
+        description="Material index used for masking in the Mask render passes",
+        min=0,
+        default=0)    
+        
+    pass_mask_invert = BoolProperty(
+        name="Invert Mask selection",
+        description="Property to mask-in or mask-out the desired objects/materials in the Mask render passes",
+        default=False)
+    
+    pass_mask_only = BoolProperty(
+        name="Mask Only",
+        description="Property to show the mask only instead of the masked rendered image",
+        default=False)
+
+
+    #The numbers here MUST NEVER CHANGE to keep backwards compatibility with older scenes. The numbers do not need to match the Core internal pass numbers.
+    #The matching between these properties and the YafaRay Core internal passes is done via the first string, for example 'z-depth-abs'. They must match the list of strings for internal passes in the Core: include/core_api/color.h
+
+    renderPassItemsDisabled=sorted((
+            ('disabled', "Disabled", "Disable this pass", "", 999999),
+        ), key=lambda index: index[1])
+
+    renderPassItemsBasic=sorted((
+            ('combined', "Basic: Combined image", "Basic: Combined standard image", "", 0),
+            ('diffuse', "Basic: Diffuse", "Basic: Diffuse materials", "", 1),
+            ('diffuse-noshadow', "Basic: Diffuse (no shadows)", "Basic: Diffuse materials (without shadows)", "", 2),
+            ('shadow', "Basic: Shadow", "Basic: Shadows", "", 3),
+            ('env', "Basic: Environment", "Basic: Environmental light", "", 4),
+            ('indirect', "Basic: Indirect", "Basic: Indirect light (all, including caustics and diffuse)", "", 5),
+            ('emit', "Basic: Emit", "Basic: Objects emitting light", "", 6),
+            ('reflect', "Basic: Reflection", "Basic: Reflections (all, including perfect and glossy)", "", 7),
+            ('refract', "Basic: Refraction", "Basic: Refractions (all, including perfect and sampled)", "", 8),
+            ('mist', "Basic: Mist", "Basic: Mist", "", 9),
+        ), key=lambda index: index[1])
+        
+    renderPassItemsDepth=sorted((
+            ('z-depth-abs', "Z-Depth (absolute)", "Z-Depth (absolute values)", "", 101),
+            ('z-depth-norm', "Z-Depth (normalized)", "Z-Depth (normalized values)", "", 102),
+        ), key=lambda index: index[1])
+                        
+    renderPassItemsIndex=sorted((
+            ('obj-index-abs', "Index-Object (absolute)", "Index-Object: Grayscale value = obj.index in the object properties (absolute values)", "", 201),
+            ('obj-index-norm', "Index-Object (normalized)", "Index-Object: Grayscale value = obj.index in the object properties (normalized values)", "", 202),
+            ('obj-index-auto', "Index-Object (auto)", "Index-Object: A color automatically generated for each object", "", 203),
+            ('obj-index-mask', "Index-Object Mask", "", "Index-Object: Masking object based on obj.index.mask setting", 204),
+            ('obj-index-mask-shadow', "Index-Object Mask Shadow", "", "Index-Object: Masking object shadow based on obj.index.mask setting", 205),
+            ('obj-index-mask-all', "Index-Object Mask All (Object+Shadow)", "", "Index-Object: Masking object+shadow based on obj.index.mask setting", 206),
+            ('mat-index-abs', "Index-Material (absolute)", "Index-Material: Grayscale value = mat.index in the material properties (absolute values)", "", 207),
+            ('mat-index-norm', "Index-Material (normalized)", "Index-Material: Grayscale value = mat.index in the material properties (normalized values)", "", 208),
+            ('mat-index-auto', "Index-Material (auto)", "Index-Material: A color automatically generated for each material", "", 209),
+            ('mat-index-mask', "Index-Material Mask", "", "Index-Material: Masking material based on mat.index.mask setting", 210),
+            ('mat-index-mask-shadow', "Index-Material Mask Shadow", "", "Index-Material: Masking material shadow based on mat.index.mask setting", 211),
+            ('mat-index-mask-all', "Index-Material Mask All (Object+Shadow)", "", "Index-Material: Masking material+shadow based on mat.index.mask setting", 212)
+        ), key=lambda index: index[1])
+        
+    renderPassItemsDebug=sorted((
+            ('debug-aa-samples', "Debug: AA sample count", "Debug: Adaptative AA sample count (estimation), normalized", "", 301),
+            ('debug-uv', "Debug: UV", "Debug: UV coordinates (black for objects with no UV mapping)", "", 302),
+            ('debug-dsdv', "Debug: dSdV", "Debug: shading dSdV", "", 303),
+            ('debug-dsdu', "Debug: dSdU", "Debug: shading dSdU", "", 304),
+            ('debug-dpdv', "Debug: dPdV", "Debug: surface dPdV", "", 305),
+            ('debug-dpdu', "Debug: dPdU", "Debug: surface dPdU", "", 306),
+            ('debug-nv', "Debug: NV", "Debug - surface NV", "", 307),
+            ('debug-nu', "Debug: NU", "Debug - surface NU", "", 308),
+            ('debug-normal-geom', "Debug: Normals (geometric)", "Normals (geometric, no smoothness)", "", 309),
+            ('debug-normal-smooth', "Debug: Normals (smooth)", "Normals (including smoothness)", "", 310),
+        ), key=lambda index: index[1])
+
+    renderInternalPassAdvanced=sorted((
+            ('adv-reflect', "Adv: Reflection ", "Reflections (perfect only)", "", 401),
+            ('adv-refract', "Adv: Refraction", "Refractions (perfect only)", "", 402),
+            ('adv-radiance', "Adv: Photon Radiance map", "Advanced: Radiance map (only for photon mapping)", "", 403),
+            ('adv-volume-transmittance', "Adv: Volume Transmittance", "Advanced: Volume Transmittance", "", 404),
+            ('adv-volume-integration', "Adv: Volume integration", "Advanced: Volume integration", "", 405),
+            ('adv-diffuse-indirect', "Adv: Diffuse Indirect", "Advanced: Diffuse Indirect light", "", 406),
+            ('adv-diffuse-color', "Adv: Diffuse color", "Advanced: Diffuse color", "", 407),
+            ('adv-glossy', "Adv: Glossy", "Advanced: Glossy materials", "", 408),
+            ('adv-glossy-indirect', "Adv: Glossy Indirect", "Advanced: Glossy Indirect light", "", 409),
+            ('adv-glossy-color', "Adv: Glossy color", "Advanced: Glossy color", "", 410),
+            ('adv-trans', "Adv: Transmissive", "Advanced: Transmissive materials", "", 411),
+            ('adv-trans-indirect', "Adv: Trans.Indirect", "Advanced: Transmissive Indirect light", "", 412),
+            ('adv-trans-color', "Adv: Trans.color", "Advanced: Transmissive color", "", 413),
+            ('adv-subsurface', "Adv: SubSurface", "Advanced: SubSurface materials", "", 414),
+            ('adv-subsurface-indirect', "Adv: SubSurf.Indirect", "Advanced: SubSurface Indirect light", "", 415),
+            ('adv-subsurface-color', "Adv: SubSurf.color", "Advanced: SubSurface color", "", 416),
+            ('adv-indirect', "Adv: Indirect", "Adv: Indirect light (depends on the integrator but usually caustics only)", "", 417),
+            ('adv-surface-integration', "Adv: Surface Integration", "Advanced: Surface Integration", "", 418),
+        ), key=lambda index: index[1])
+
+    renderPassItemsAO=sorted((
+            ('ao', "AO", "Ambient Occlusion", "", 501),
+            ('ao-clay', "AO clay", "Ambient Occlusion (clay)", "", 502),
+        ), key=lambda index: index[1])
+
+    renderPassItemsLightGroup=sorted((
+            ('light-group-0', "Light Group 0", "Pass illuminated by lights from the selected light group", "", 600),
+            ('light-group-1', "Light Group 1", "Pass illuminated by lights from the selected light group", "", 601),
+            ('light-group-2', "Light Group 2", "Pass illuminated by lights from the selected light group", "", 602),
+            ('light-group-3', "Light Group 3", "Pass illuminated by lights from the selected light group", "", 603),
+            ('light-group-4', "Light Group 4", "Pass illuminated by lights from the selected light group", "", 604),
+            ('light-group-5', "Light Group 5", "Pass illuminated by lights from the selected light group", "", 605),
+            ('light-group-6', "Light Group 6", "Pass illuminated by lights from the selected light group", "", 606),
+            ('light-group-7', "Light Group 7", "Pass illuminated by lights from the selected light group", "", 607),
+        ), key=lambda index: index[1])
+
+    #This property is not currently used by YafaRay Core, as the combined external pass is always using the internal combined pass. 
+    pass_Combined = EnumProperty(
+        name="Combined",  #RGBA (4 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsDisabled
+        ),
+        default="disabled")
+
+    pass_Depth = EnumProperty(
+        name="Depth",  #Gray (1 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsDepth
+        ),
+        default="z-depth-norm")
+
+    pass_Vector = EnumProperty(
+        name="Vector",  #RGBA (4 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsIndex+renderPassItemsDebug
+        ),
+        default="obj-index-auto")
+
+    pass_Normal = EnumProperty(
+        name="Normal",  #RGB (3 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsIndex+renderPassItemsDebug
+        ),
+        default="debug-normal-smooth")
+        
+    pass_UV = EnumProperty(
+        name="UV",  #RGB (3 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsIndex+renderPassItemsDebug
+        ),
+        default="debug-uv")
+
+    pass_Color = EnumProperty(
+        name="Color",  #RGBA (4 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsIndex+renderPassItemsDebug
+        ),
+        default="mat-index-auto")
+
+    pass_Emit = EnumProperty(
+        name="Emit",  #RGB (3 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsBasic+renderInternalPassAdvanced
+        ),
+        default="emit")
+        
+    pass_Mist = EnumProperty(
+        name="Mist",  #RGB (3 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        ),
+        default="mist")
+
+    pass_Diffuse = EnumProperty(
+        name="Diffuse",  #RGB (3 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsBasic+renderInternalPassAdvanced
+        ),
+        default="diffuse")
+        
+    pass_Spec = EnumProperty(
+        name="Spec",  #RGB (3 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsBasic+renderInternalPassAdvanced
+        ),
+        default="adv-reflect")
+
+    pass_AO = EnumProperty(
+        name="AO",  #RGB (3 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsAO
+        ),
+        default="ao")
+
+    pass_Env = EnumProperty(
+        name="Env",  #RGB (3 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsBasic+renderInternalPassAdvanced
+        ),
+        default="env")
+
+    pass_Indirect = EnumProperty(
+        name="Indirect",  #RGB (3 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsBasic+renderInternalPassAdvanced
+        ),
+        default="indirect")
+
+    pass_Shadow = EnumProperty(
+        name="Shadow",  #RGB (3 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsBasic+renderInternalPassAdvanced
+        ),
+        default="shadow")
+
+    pass_Reflect = EnumProperty(
+        name="Reflect",  #RGB (3 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsBasic+renderInternalPassAdvanced
+        ),
+        default="reflect")
+
+    pass_Refract = EnumProperty(
+        name="Refract",  #RGB (3 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsBasic+renderInternalPassAdvanced
+        ),
+        default="refract")
+
+    pass_IndexOB = EnumProperty(
+        name="Object Index",  #Gray (1 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsIndex
+        ),
+        default="obj-index-norm")
+        
+    pass_IndexMA = EnumProperty(
+        name="Material Index",  #Gray (1 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsIndex
+        ),
+        default="mat-index-norm")
+
+    pass_DiffDir = EnumProperty(
+        name="Diff Dir",  #RGB (3 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        ),
+        default="diffuse")
+        
+    pass_DiffInd = EnumProperty(
+        name="Diff Ind",  #RGB (3 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        ),
+        default="adv-diffuse-indirect")
+
+    pass_DiffCol = EnumProperty(
+        name="Diff Col",  #RGB (3 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        ),
+        default="adv-diffuse-color")
+
+    pass_GlossDir = EnumProperty(
+        name="Gloss Dir",  #RGB (3 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        ),
+        default="adv-glossy")
+        
+    pass_GlossInd = EnumProperty(
+        name="Gloss Ind",  #RGB (3 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        ),
+        default="adv-glossy-indirect")
+
+    pass_GlossCol = EnumProperty(
+        name="Gloss Col",  #RGB (3 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        ),
+        default="adv-glossy-color")
+
+    pass_TransDir = EnumProperty(
+        name="Trans Dir",  #RGB (3 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        ),
+        default="adv-trans")
+        
+    pass_TransInd = EnumProperty(
+        name="Trans Ind",  #RGB (3 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        ),
+        default="adv-trans-indirect")
+
+    pass_TransCol = EnumProperty(
+        name="Trans Col",  #RGB (3 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        ),
+        default="adv-trans-color")
+
+    pass_SubsurfaceDir = EnumProperty(
+        name="SubSurface Dir",  #RGB (3 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        ),
+        default="adv-subsurface")
+        
+    pass_SubsurfaceInd = EnumProperty(
+        name="SubSurface Ind",  #RGB (3 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        ),
+        default="adv-subsurface-indirect")
+
+    pass_SubsurfaceCol = EnumProperty(
+        name="SubSurface Col",  #RGB (3 x float)
+        description="Select the type of image you want to be displayed in this pass.",
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        ),
+        default="adv-subsurface-color")
+
+
+class ViewsLightGroupList(bpy.types.PropertyGroup):
+    view_number = IntProperty(
+           name="View Number",
+           description="View Number to which we will assign a light group filter",
+           default=0,
+           min=0)
+    
+    light_group = IntProperty(
+           name="Light Group",
+           description="Light group filter [1..100]. Value 0 will render all light groups",
+           default=0,
+           min=0,
+           max=100)
+
 
 def register():
     ########### YafaRays general settings properties #############
@@ -428,414 +840,19 @@ def register():
         ),
         default="gauss")
         
-    Scene.pass_enable = BoolProperty(
-        name="Enable render passes",
-        default=False)
+    bpy.utils.register_class(YafaRayProperties)
+    bpy.types.Scene.yafaray = PointerProperty(type=YafaRayProperties)
+
+    bpy.utils.register_class(YafaRayRenderPassesProperties)
+    YafaRayProperties.passes = PointerProperty(type=YafaRayRenderPassesProperties)
     
-    Scene.pass_mask_obj_index = IntProperty(
-        name="Mask Object Index",
-        description="Object index used for masking in the Mask render passes",
-        min=0,
-        default=0)
-        
-    Scene.pass_mask_mat_index = IntProperty(
-        name="Mask Material Index",
-        description="Material index used for masking in the Mask render passes",
-        min=0,
-        default=0)    
-        
-    Scene.pass_mask_invert = BoolProperty(
-        name="Invert Mask selection",
-        description="Property to mask-in or mask-out the desired objects/materials in the Mask render passes",
-        default=False)
-    
-    Scene.pass_mask_only = BoolProperty(
-        name="Mask Only",
-        description="Property to show the mask only instead of the masked rendered image",
-        default=False)
-
-
-    #The numbers here MUST NEVER CHANGE to keep backwards compatibility with older scenes. The numbers do not need to match the Core internal pass numbers.
-    #The matching between these properties and the YafaRay Core internal passes is done via the first string, for example 'z-depth-abs'. They must match the list of strings for internal passes in the Core: include/core_api/color.h
-
-    renderPassItemsDisabled=sorted((
-            ('disabled', "Disabled", "Disable this pass", "", 999999),
-        ), key=lambda index: index[1])
-
-    renderPassItemsBasic=sorted((
-            ('combined', "Basic: Combined image", "Basic: Combined standard image", "", 0),
-            ('diffuse', "Basic: Diffuse", "Basic: Diffuse materials", "", 1),
-            ('diffuse-noshadow', "Basic: Diffuse (no shadows)", "Basic: Diffuse materials (without shadows)", "", 2),
-            ('shadow', "Basic: Shadow", "Basic: Shadows", "", 3),
-            ('env', "Basic: Environment", "Basic: Environmental light", "", 4),
-            ('indirect', "Basic: Indirect", "Basic: Indirect light (all, including caustics and diffuse)", "", 5),
-            ('emit', "Basic: Emit", "Basic: Objects emitting light", "", 6),
-            ('reflect', "Basic: Reflection", "Basic: Reflections (all, including perfect and glossy)", "", 7),
-            ('refract', "Basic: Refraction", "Basic: Refractions (all, including perfect and sampled)", "", 8),
-            ('mist', "Basic: Mist", "Basic: Mist", "", 9),
-        ), key=lambda index: index[1])
-        
-    renderPassItemsDepth=sorted((
-            ('z-depth-abs', "Z-Depth (absolute)", "Z-Depth (absolute values)", "", 101),
-            ('z-depth-norm', "Z-Depth (normalized)", "Z-Depth (normalized values)", "", 102),
-        ), key=lambda index: index[1])
-                        
-    renderPassItemsIndex=sorted((
-            ('obj-index-abs', "Index-Object (absolute)", "Index-Object: Grayscale value = obj.index in the object properties (absolute values)", "", 201),
-            ('obj-index-norm', "Index-Object (normalized)", "Index-Object: Grayscale value = obj.index in the object properties (normalized values)", "", 202),
-            ('obj-index-auto', "Index-Object (auto)", "Index-Object: A color automatically generated for each object", "", 203),
-            ('obj-index-mask', "Index-Object Mask", "", "Index-Object: Masking object based on obj.index.mask setting", 204),
-            ('obj-index-mask-shadow', "Index-Object Mask Shadow", "", "Index-Object: Masking object shadow based on obj.index.mask setting", 205),
-            ('obj-index-mask-all', "Index-Object Mask All (Object+Shadow)", "", "Index-Object: Masking object+shadow based on obj.index.mask setting", 206),
-            ('mat-index-abs', "Index-Material (absolute)", "Index-Material: Grayscale value = mat.index in the material properties (absolute values)", "", 207),
-            ('mat-index-norm', "Index-Material (normalized)", "Index-Material: Grayscale value = mat.index in the material properties (normalized values)", "", 208),
-            ('mat-index-auto', "Index-Material (auto)", "Index-Material: A color automatically generated for each material", "", 209),
-            ('mat-index-mask', "Index-Material Mask", "", "Index-Material: Masking material based on mat.index.mask setting", 210),
-            ('mat-index-mask-shadow', "Index-Material Mask Shadow", "", "Index-Material: Masking material shadow based on mat.index.mask setting", 211),
-            ('mat-index-mask-all', "Index-Material Mask All (Object+Shadow)", "", "Index-Material: Masking material+shadow based on mat.index.mask setting", 212)
-        ), key=lambda index: index[1])
-        
-    renderPassItemsDebug=sorted((
-            ('debug-aa-samples', "Debug: AA sample count", "Debug: Adaptative AA sample count (estimation), normalized", "", 301),
-            ('debug-uv', "Debug: UV", "Debug: UV coordinates (black for objects with no UV mapping)", "", 302),
-            ('debug-dsdv', "Debug: dSdV", "Debug: shading dSdV", "", 303),
-            ('debug-dsdu', "Debug: dSdU", "Debug: shading dSdU", "", 304),
-            ('debug-dpdv', "Debug: dPdV", "Debug: surface dPdV", "", 305),
-            ('debug-dpdu', "Debug: dPdU", "Debug: surface dPdU", "", 306),
-            ('debug-nv', "Debug: NV", "Debug - surface NV", "", 307),
-            ('debug-nu', "Debug: NU", "Debug - surface NU", "", 308),
-            ('debug-normal-geom', "Debug: Normals (geometric)", "Normals (geometric, no smoothness)", "", 309),
-            ('debug-normal-smooth', "Debug: Normals (smooth)", "Normals (including smoothness)", "", 310),
-        ), key=lambda index: index[1])
-
-    renderInternalPassAdvanced=sorted((
-            ('adv-reflect', "Adv: Reflection ", "Reflections (perfect only)", "", 401),
-            ('adv-refract', "Adv: Refraction", "Refractions (perfect only)", "", 402),
-            ('adv-radiance', "Adv: Photon Radiance map", "Advanced: Radiance map (only for photon mapping)", "", 403),
-            ('adv-volume-transmittance', "Adv: Volume Transmittance", "Advanced: Volume Transmittance", "", 404),
-            ('adv-volume-integration', "Adv: Volume integration", "Advanced: Volume integration", "", 405),
-            ('adv-diffuse-indirect', "Adv: Diffuse Indirect", "Advanced: Diffuse Indirect light", "", 406),
-            ('adv-diffuse-color', "Adv: Diffuse color", "Advanced: Diffuse color", "", 407),
-            ('adv-glossy', "Adv: Glossy", "Advanced: Glossy materials", "", 408),
-            ('adv-glossy-indirect', "Adv: Glossy Indirect", "Advanced: Glossy Indirect light", "", 409),
-            ('adv-glossy-color', "Adv: Glossy color", "Advanced: Glossy color", "", 410),
-            ('adv-trans', "Adv: Transmissive", "Advanced: Transmissive materials", "", 411),
-            ('adv-trans-indirect', "Adv: Trans.Indirect", "Advanced: Transmissive Indirect light", "", 412),
-            ('adv-trans-color', "Adv: Trans.color", "Advanced: Transmissive color", "", 413),
-            ('adv-subsurface', "Adv: SubSurface", "Advanced: SubSurface materials", "", 414),
-            ('adv-subsurface-indirect', "Adv: SubSurf.Indirect", "Advanced: SubSurface Indirect light", "", 415),
-            ('adv-subsurface-color', "Adv: SubSurf.color", "Advanced: SubSurface color", "", 416),
-            ('adv-indirect', "Adv: Indirect", "Adv: Indirect light (depends on the integrator but usually caustics only)", "", 417),
-            ('adv-surface-integration', "Adv: Surface Integration", "Advanced: Surface Integration", "", 418),
-        ), key=lambda index: index[1])
-
-    renderPassItemsAO=sorted((
-            ('ao', "AO", "Ambient Occlusion", "", 501),
-            ('ao-clay', "AO clay", "Ambient Occlusion (clay)", "", 502),
-        ), key=lambda index: index[1])
-
-    renderPassItemsLightGroup=sorted((
-            ('light-group-0', "Light Group 0", "Pass illuminated by lights from the selected light group", "", 600),
-            ('light-group-1', "Light Group 1", "Pass illuminated by lights from the selected light group", "", 601),
-            ('light-group-2', "Light Group 2", "Pass illuminated by lights from the selected light group", "", 602),
-            ('light-group-3', "Light Group 3", "Pass illuminated by lights from the selected light group", "", 603),
-            ('light-group-4', "Light Group 4", "Pass illuminated by lights from the selected light group", "", 604),
-            ('light-group-5', "Light Group 5", "Pass illuminated by lights from the selected light group", "", 605),
-            ('light-group-6', "Light Group 6", "Pass illuminated by lights from the selected light group", "", 606),
-            ('light-group-7', "Light Group 7", "Pass illuminated by lights from the selected light group", "", 607),
-        ), key=lambda index: index[1])
-
-    #This property is not currently used by YafaRay Core, as the combined external pass is always using the internal combined pass. 
-    Scene.pass_Combined = EnumProperty(
-        name="Combined",  #RGBA (4 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsDisabled
-        ),
-        default="disabled")
-
-    Scene.pass_Depth = EnumProperty(
-        name="Depth",  #Gray (1 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsDepth
-        ),
-        default="z-depth-norm")
-
-    Scene.pass_Vector = EnumProperty(
-        name="Vector",  #RGBA (4 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsIndex+renderPassItemsDebug
-        ),
-        default="obj-index-auto")
-
-    Scene.pass_Normal = EnumProperty(
-        name="Normal",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsIndex+renderPassItemsDebug
-        ),
-        default="debug-normal-smooth")
-        
-    Scene.pass_UV = EnumProperty(
-        name="UV",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsIndex+renderPassItemsDebug
-        ),
-        default="debug-uv")
-
-    Scene.pass_Color = EnumProperty(
-        name="Color",  #RGBA (4 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsIndex+renderPassItemsDebug
-        ),
-        default="mat-index-auto")
-
-    Scene.pass_Emit = EnumProperty(
-        name="Emit",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced
-        ),
-        default="emit")
-        
-    Scene.pass_Mist = EnumProperty(
-        name="Mist",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
-        ),
-        default="mist")
-
-    Scene.pass_Diffuse = EnumProperty(
-        name="Diffuse",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced
-        ),
-        default="diffuse")
-        
-    Scene.pass_Spec = EnumProperty(
-        name="Spec",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced
-        ),
-        default="adv-reflect")
-
-    Scene.pass_AO = EnumProperty(
-        name="AO",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsAO
-        ),
-        default="ao")
-
-    Scene.pass_Env = EnumProperty(
-        name="Env",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced
-        ),
-        default="env")
-
-    Scene.pass_Indirect = EnumProperty(
-        name="Indirect",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced
-        ),
-        default="indirect")
-
-    Scene.pass_Shadow = EnumProperty(
-        name="Shadow",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced
-        ),
-        default="shadow")
-
-    Scene.pass_Reflect = EnumProperty(
-        name="Reflect",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced
-        ),
-        default="reflect")
-
-    Scene.pass_Refract = EnumProperty(
-        name="Refract",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced
-        ),
-        default="refract")
-
-    Scene.pass_IndexOB = EnumProperty(
-        name="Object Index",  #Gray (1 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsIndex
-        ),
-        default="obj-index-norm")
-        
-    Scene.pass_IndexMA = EnumProperty(
-        name="Material Index",  #Gray (1 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsIndex
-        ),
-        default="mat-index-norm")
-
-    Scene.pass_DiffDir = EnumProperty(
-        name="Diff Dir",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
-        ),
-        default="diffuse")
-        
-    Scene.pass_DiffInd = EnumProperty(
-        name="Diff Ind",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
-        ),
-        default="adv-diffuse-indirect")
-
-    Scene.pass_DiffCol = EnumProperty(
-        name="Diff Col",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
-        ),
-        default="adv-diffuse-color")
-
-    Scene.pass_GlossDir = EnumProperty(
-        name="Gloss Dir",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
-        ),
-        default="adv-glossy")
-        
-    Scene.pass_GlossInd = EnumProperty(
-        name="Gloss Ind",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
-        ),
-        default="adv-glossy-indirect")
-
-    Scene.pass_GlossCol = EnumProperty(
-        name="Gloss Col",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
-        ),
-        default="adv-glossy-color")
-
-    Scene.pass_TransDir = EnumProperty(
-        name="Trans Dir",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
-        ),
-        default="adv-trans")
-        
-    Scene.pass_TransInd = EnumProperty(
-        name="Trans Ind",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
-        ),
-        default="adv-trans-indirect")
-
-    Scene.pass_TransCol = EnumProperty(
-        name="Trans Col",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
-        ),
-        default="adv-trans-color")
-
-    Scene.pass_SubsurfaceDir = EnumProperty(
-        name="SubSurface Dir",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
-        ),
-        default="adv-subsurface")
-        
-    Scene.pass_SubsurfaceInd = EnumProperty(
-        name="SubSurface Ind",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
-        ),
-        default="adv-subsurface-indirect")
-
-    Scene.pass_SubsurfaceCol = EnumProperty(
-        name="SubSurface Col",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
-        ),
-        default="adv-subsurface-color")
-
-
-    class ViewsLightGroupList(bpy.types.PropertyGroup):
-        view_number = IntProperty(
-               name="View Number",
-               description="View Number to which we will assign a light group filter",
-               default=0,
-               min=0)
-        
-        light_group = IntProperty(
-               name="Light Group",
-               description="Light group filter [1..100]. Value 0 will render all light groups",
-               default=0,
-               min=0,
-               max=100)
+    bpy.utils.register_class(YafaRayNoiseControlProperties)
+    YafaRayProperties.noise_control = PointerProperty(type=YafaRayNoiseControlProperties)
 
     bpy.utils.register_class(ViewsLightGroupList)
 
     Scene.views_lightgroup_list = CollectionProperty(type = ViewsLightGroupList)
     Scene.views_lightgroup_list_index = IntProperty(name = "Index for the Views Light Group List", default = -1)
-
-    Scene.AA_resampled_floor = FloatProperty(
-        name="Resampled floor (%)",
-        description=("Noise reduction: when resampled pixels go below this value (% of total pixels),"
-                     " the AA threshold will automatically decrease before the next pass"),
-        min=0.0, max=100.0, precision=1,
-        default=0.0)
-
-    Scene.AA_sample_multiplier_factor = FloatProperty(
-        name="AA sample multiplier factor",
-        description="Factor to increase the AA samples multiplier for next AA pass.",
-        min=1.0, max=2.0, precision=2,
-        default=1.0)
-
-    Scene.AA_light_sample_multiplier_factor = FloatProperty(
-        name="Light sample multiplier factor",
-        description="Factor to increase the light samples multiplier for next AA pass.",
-        min=1.0, max=2.0, precision=2,
-        default=1.0)
-
-    Scene.AA_indirect_sample_multiplier_factor = FloatProperty(
-        name="Indirect sample multiplier factor",
-        description="Factor to increase the indirect samples (FG for example) multiplier for next AA pass.",
-        min=1.0, max=2.0, precision=2,
-        default=1.0)
-
-    Scene.AA_detect_color_noise = BoolProperty(
-        name="Color noise detection",
-        description="Detect noise in RGB components in addidion to pixel brightness",
-        default=False)
-        
-    Scene.AA_dark_threshold_factor = FloatProperty(
-        name="Dark areas noise detection factor",
-        description=("Factor used to reduce the AA threshold in dark areas."
-                     " It will reduce noise in dark areas, but noise in bright areas will take longer."),
-        min=0.0, max=0.8, precision=2,
-        default=0.0)
-
-    Scene.AA_variance_edge_size = IntProperty(
-        name="Variance window",
-        description="Window edge size for variance noise detection.",
-        min=4, max=20,
-        default=10)
-
-    Scene.AA_variance_pixels = IntProperty(
-        name="Variance threshold",
-        description="Threshold (in pixels) for variance noise detection. 0 disables variance detection",
-        min=0, max=10,
-        default=0)
-
-    Scene.AA_clamp_samples = FloatProperty(
-        name="Clamp samples",
-        description="Clamp RGB values in all samples, less noise but less realism. 0.0 disables clamping.",
-        min=0.0, precision=1,
-        default=0.0)
-
-    Scene.AA_clamp_indirect = FloatProperty(
-        name="Clamp indirect",
-        description="Clamp RGB values in the indirect light, less noise but less realism. 0.0 disables clamping.",
-        min=0.0, precision=1,
-        default=0.0)
 
 
 def unregister():
@@ -905,52 +922,10 @@ def unregister():
     Scene.AA_threshold
     Scene.AA_pixelwidth
     Scene.AA_filter_type
-    Scene.AA_resampled_floor
-    Scene.AA_sample_multiplier_factor
-    Scene.AA_light_sample_multiplier_factor
-    Scene.AA_indirect_sample_multiplier_factor
-    Scene.AA_detect_color_noise
-    Scene.AA_dark_threshold_factor
-    Scene.AA_variance_edge_size
-    Scene.AA_variance_pixels
-    Scene.AA_clamp_samples
-    Scene.AA_clamp_indirect
 
-    Scene.pass_enable    
-    Scene.pass_mask_obj_index
-    Scene.pass_mask_mat_index
-    Scene.pass_mask_invert
-    Scene.pass_mask_only
-    Scene.pass_Combined
-    Scene.pass_Depth
-    Scene.pass_Vector
-    Scene.pass_Normal
-    Scene.pass_UV
-    Scene.pass_Color
-    Scene.pass_Emit
-    Scene.pass_Mist
-    Scene.pass_Diffuse
-    Scene.pass_Spec
-    Scene.pass_AO
-    Scene.pass_Env
-    Scene.pass_Indirect
-    Scene.pass_Shadow
-    Scene.pass_Reflect
-    Scene.pass_Refract
-    Scene.pass_IndexOB
-    Scene.pass_IndexMA
-    Scene.pass_DiffDir
-    Scene.pass_DiffInd
-    Scene.pass_DiffCol
-    Scene.pass_GlossDir
-    Scene.pass_GlossInd
-    Scene.pass_GlossCol
-    Scene.pass_TransDir
-    Scene.pass_TransInd
-    Scene.pass_TransCol
-    Scene.pass_SubsurfaceDir
-    Scene.pass_SubsurfaceInd
-    Scene.pass_SubsurfaceCol
+    bpy.utils.unregister_class(YafaRayNoiseControlProperties)
+    bpy.utils.unregister_class(YafaRayRenderPassesProperties)
+    bpy.utils.unregister_class(YafaRayProperties)
 
     Scene.views_lightgroup_list
     Scene.views_lightgroup_list_index

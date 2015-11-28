@@ -36,9 +36,9 @@ class YAF_PT_AA_settings(RenderButtonsPanel, Panel):
 
         split = layout.split()
         col = split.column()
-        col.prop(scene, "AA_clamp_samples")
+        col.prop(scene.yafaray.noise_control, "clamp_samples")
         col = split.column()
-        col.prop(scene, "AA_clamp_indirect")
+        col.prop(scene.yafaray.noise_control, "clamp_indirect")
 
         split = layout.split()
         col = split.column()
@@ -64,7 +64,7 @@ class YAF_PT_AA_settings(RenderButtonsPanel, Panel):
         if scene.AA_passes > 1 and scene.intg_light_method != "SPPM":
             row.enabled = True
 
-        row.prop(scene, "AA_detect_color_noise")
+        row.prop(scene.yafaray.noise_control, "detect_color_noise")
 
         row = layout.row()
         row.enabled = False
@@ -73,14 +73,14 @@ class YAF_PT_AA_settings(RenderButtonsPanel, Panel):
             row.enabled = True
 
         col = row.column()
-        col.prop(scene, "AA_dark_threshold_factor")
-        col.prop(scene, "AA_sample_multiplier_factor")
-        col.prop(scene, "AA_light_sample_multiplier_factor")
-        col.prop(scene, "AA_indirect_sample_multiplier_factor")
+        col.prop(scene.yafaray.noise_control, "dark_threshold_factor")
+        col.prop(scene.yafaray.noise_control, "sample_multiplier_factor")
+        col.prop(scene.yafaray.noise_control, "light_sample_multiplier_factor")
+        col.prop(scene.yafaray.noise_control, "indirect_sample_multiplier_factor")
         col = row.column()
-        col.prop(scene, "AA_resampled_floor")
-        col.prop(scene, "AA_variance_edge_size")
-        col.prop(scene, "AA_variance_pixels")
+        col.prop(scene.yafaray.noise_control, "resampled_floor")
+        col.prop(scene.yafaray.noise_control, "variance_edge_size")
+        col.prop(scene.yafaray.noise_control, "variance_pixels")
 
 if __name__ == "__main__":  # only for live edit.
     import bpy

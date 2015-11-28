@@ -123,7 +123,7 @@ class YAFRENDER_PT_layer_passes(RenderLayerButtonsPanel, Panel):
 
     def draw_header(self, context):
         scene = context.scene
-        self.layout.prop(scene, "pass_enable", text="")
+        self.layout.prop(scene.yafaray.passes, "pass_enable", text="")
 
     def draw(self, context):
         layout = self.layout
@@ -135,76 +135,76 @@ class YAFRENDER_PT_layer_passes(RenderLayerButtonsPanel, Panel):
         #row = layout.row(align=True)
         #row.alignment = 'LEFT'
 
-        #row.prop(scene, "pass_enable", toggle=True) #, "optional extended description")
-        if scene.pass_enable:
+        #row.prop(scene.yafaray.passes, "pass_enable", toggle=True) #, "optional extended description")
+        if scene.yafaray.passes.pass_enable:
 
                 row = layout.row() #(align=True)
                 #row.alignment = 'LEFT'
                 ##row.prop(rl, "use_pass_combined")
                 ##if scene.render.layers[0].use_pass_combined:
                 ##        sub = row.column(align=True)
-                ##        sub.prop(scene, "pass_combined", "")
+                ##        sub.prop(scene.yafaray.passes, "pass_combined", "")
                 
                 row = layout.row() #(align=True)
                 #row.alignment = 'LEFT'
                 row.prop(rl, "use_pass_z") #, "Z-depth")
                 if scene.render.layers[0].use_pass_z:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_Depth", "")
+                        sub.prop(scene.yafaray.passes, "pass_Depth", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_vector")
                 if scene.render.layers[0].use_pass_vector:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_Vector", "")
+                        sub.prop(scene.yafaray.passes, "pass_Vector", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_normal")
                 if scene.render.layers[0].use_pass_normal:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_Normal", "")
+                        sub.prop(scene.yafaray.passes, "pass_Normal", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_uv")
                 if scene.render.layers[0].use_pass_uv:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_UV", "")
+                        sub.prop(scene.yafaray.passes, "pass_UV", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_color")
                 if scene.render.layers[0].use_pass_color:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_Color", "")
+                        sub.prop(scene.yafaray.passes, "pass_Color", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_emit")
                 if scene.render.layers[0].use_pass_emit:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_Emit", "")
+                        sub.prop(scene.yafaray.passes, "pass_Emit", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_mist")
                 if scene.render.layers[0].use_pass_mist:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_Mist", "")
+                        sub.prop(scene.yafaray.passes, "pass_Mist", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_diffuse")
                 if scene.render.layers[0].use_pass_diffuse:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_Diffuse", "")
+                        sub.prop(scene.yafaray.passes, "pass_Diffuse", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_specular")
                 if scene.render.layers[0].use_pass_specular:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_Spec", "")
+                        sub.prop(scene.yafaray.passes, "pass_Spec", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_ambient_occlusion")
                 if scene.render.layers[0].use_pass_ambient_occlusion:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_AO", "")
+                        sub.prop(scene.yafaray.passes, "pass_AO", "")
                         row = layout.row()
                         col = row.column()
                         col.prop(scene, "intg_AO_color")
@@ -215,127 +215,127 @@ class YAFRENDER_PT_layer_passes(RenderLayerButtonsPanel, Panel):
                 row.prop(rl, "use_pass_environment")
                 if scene.render.layers[0].use_pass_environment:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_Env", "")
+                        sub.prop(scene.yafaray.passes, "pass_Env", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_indirect")
                 if scene.render.layers[0].use_pass_indirect:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_Indirect", "")
+                        sub.prop(scene.yafaray.passes, "pass_Indirect", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_shadow")
                 if scene.render.layers[0].use_pass_shadow:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_Shadow", "")
+                        sub.prop(scene.yafaray.passes, "pass_Shadow", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_reflection")
                 if scene.render.layers[0].use_pass_reflection:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_Reflect", "")
+                        sub.prop(scene.yafaray.passes, "pass_Reflect", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_refraction")
                 if scene.render.layers[0].use_pass_refraction:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_Refract", "")
+                        sub.prop(scene.yafaray.passes, "pass_Refract", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_object_index")
                 if scene.render.layers[0].use_pass_object_index:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_IndexOB", "")
+                        sub.prop(scene.yafaray.passes, "pass_IndexOB", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_material_index")
                 if scene.render.layers[0].use_pass_material_index:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_IndexMA", "")
+                        sub.prop(scene.yafaray.passes, "pass_IndexMA", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_diffuse_direct")
                 if scene.render.layers[0].use_pass_diffuse_direct:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_DiffDir", "")
+                        sub.prop(scene.yafaray.passes, "pass_DiffDir", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_diffuse_indirect")
                 if scene.render.layers[0].use_pass_diffuse_indirect:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_DiffInd", "")
+                        sub.prop(scene.yafaray.passes, "pass_DiffInd", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_diffuse_color")
                 if scene.render.layers[0].use_pass_diffuse_color:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_DiffCol", "")
+                        sub.prop(scene.yafaray.passes, "pass_DiffCol", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_glossy_direct")
                 if scene.render.layers[0].use_pass_glossy_direct:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_GlossDir", "")
+                        sub.prop(scene.yafaray.passes, "pass_GlossDir", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_glossy_indirect")
                 if scene.render.layers[0].use_pass_glossy_indirect:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_GlossInd", "")
+                        sub.prop(scene.yafaray.passes, "pass_GlossInd", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_glossy_color")
                 if scene.render.layers[0].use_pass_glossy_color:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_GlossCol", "")
+                        sub.prop(scene.yafaray.passes, "pass_GlossCol", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_transmission_direct")
                 if scene.render.layers[0].use_pass_transmission_direct:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_TransDir", "")
+                        sub.prop(scene.yafaray.passes, "pass_TransDir", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_transmission_indirect")
                 if scene.render.layers[0].use_pass_transmission_indirect:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_TransInd", "")
+                        sub.prop(scene.yafaray.passes, "pass_TransInd", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_transmission_color")
                 if scene.render.layers[0].use_pass_transmission_color:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_TransCol", "")
+                        sub.prop(scene.yafaray.passes, "pass_TransCol", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_subsurface_direct")
                 if scene.render.layers[0].use_pass_subsurface_direct:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_SubsurfaceDir", "")
+                        sub.prop(scene.yafaray.passes, "pass_SubsurfaceDir", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_subsurface_indirect")
                 if scene.render.layers[0].use_pass_subsurface_indirect:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_SubsurfaceInd", "")
+                        sub.prop(scene.yafaray.passes, "pass_SubsurfaceInd", "")
                 
                 row = layout.row()
                 row.prop(rl, "use_pass_subsurface_color")
                 if scene.render.layers[0].use_pass_subsurface_color:
                         sub = row.column(align=True)
-                        sub.prop(scene, "pass_SubsurfaceCol", "")
+                        sub.prop(scene.yafaray.passes, "pass_SubsurfaceCol", "")
 
                 row = layout.row()
-                row.prop(scene, "pass_mask_obj_index")
+                row.prop(scene.yafaray.passes, "pass_mask_obj_index")
                 
                 sub = row.column(align=True)
-                sub.prop(scene, "pass_mask_mat_index")
+                sub.prop(scene.yafaray.passes, "pass_mask_mat_index")
                 
                 row = layout.row()
-                row.prop(scene, "pass_mask_invert")                        
+                row.prop(scene.yafaray.passes, "pass_mask_invert")                        
 
                 sub = row.column(align=True)
-                sub.prop(scene, "pass_mask_only")                        
+                sub.prop(scene.yafaray.passes, "pass_mask_only")                        
 
 
 class YAFRENDER_PT_views(RenderLayerButtonsPanel, Panel):
