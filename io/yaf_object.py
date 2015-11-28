@@ -65,13 +65,13 @@ class yafObject(object):
         else:
             camera_base_name = camera_scene.name.rsplit('_',1)[0]
             
-            if len(self.scene.views_lightgroup_list) == 0:
+            if len(self.scene.yafaray.passes.views_lightgroup_list) == 0:
                 for view in render.views:
                     if view.use:
                         view_lightgroup_camera_data_list.append(viewLightGroupCameraData(self.scene.objects[camera_base_name+view.camera_suffix], view, 0))
             
             else:
-                for view_lightgroup in self.scene.views_lightgroup_list:
+                for view_lightgroup in self.scene.yafaray.passes.views_lightgroup_list:
                     if view_lightgroup.view_number < len(self.scene.render.views) and self.scene.render.views[view_lightgroup.view_number].use:
                         view_lightgroup_camera_data_list.append(viewLightGroupCameraData(self.scene.objects[camera_base_name+self.scene.render.views[view_lightgroup.view_number].camera_suffix], self.scene.render.views[view_lightgroup.view_number], view_lightgroup.light_group))
         

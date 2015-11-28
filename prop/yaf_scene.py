@@ -851,8 +851,8 @@ def register():
 
     bpy.utils.register_class(ViewsLightGroupList)
 
-    Scene.views_lightgroup_list = CollectionProperty(type = ViewsLightGroupList)
-    Scene.views_lightgroup_list_index = IntProperty(name = "Index for the Views Light Group List", default = -1)
+    YafaRayRenderPassesProperties.views_lightgroup_list = CollectionProperty(type = ViewsLightGroupList)
+    YafaRayRenderPassesProperties.views_lightgroup_list_index = IntProperty(name = "Index for the Views Light Group List", default = -1)
 
 
 def unregister():

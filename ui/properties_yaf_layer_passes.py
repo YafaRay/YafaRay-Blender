@@ -52,7 +52,7 @@ class ViewsLightGroupList_OT_NewItem(bpy.types.Operator):
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
     def execute(self, context):
-        context.scene.views_lightgroup_list.add()
+        context.scene.yafaray.passes.views_lightgroup_list.add()
  
         return{'FINISHED'}
 
@@ -65,11 +65,11 @@ class ViewsLightGroupList_OT_DeleteItem(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return len(context.scene.views_lightgroup_list) > 0
+        return len(context.scene.yafaray.passes.views_lightgroup_list) > 0
 
     def execute(self, context):
-        list = context.scene.views_lightgroup_list
-        index = context.scene.views_lightgroup_list_index
+        list = context.scene.yafaray.passes.views_lightgroup_list
+        index = context.scene.yafaray.passes.views_lightgroup_list_index
 
         list.remove(index)
 
@@ -382,17 +382,17 @@ class YAFRENDER_PT_views(RenderLayerButtonsPanel, Panel):
 
                 row = layout.row()
                 row.label(text="Views - Light Group filters:")
-                if len(scene.views_lightgroup_list) == 0:
+                if len(scene.yafaray.passes.views_lightgroup_list) == 0:
                         row = layout.row()
                         row.label(icon="INFO", text="No views/light group filters defined.")
                         row = layout.row()
                         row.label(icon="INFO", text="By default all views will be rendered with all lights.")
                 row = layout.row()
-                row.template_list("ViewsLightGroupList_UL_List", "ViewsLightGroupList", scene, "views_lightgroup_list", scene, "views_lightgroup_list_index", rows=2)
+                row.template_list("ViewsLightGroupList_UL_List", "ViewsLightGroupList", scene.yafaray.passes, "views_lightgroup_list", scene.yafaray.passes, "views_lightgroup_list_index", rows=2)
                 col = row.column(align=True)
                 col.operator('views_lightgroup_list.new_item', icon='ZOOMIN', text="")
                 col.operator('views_lightgroup_list.delete_item', icon='ZOOMOUT', text="")
-                if len(scene.views_lightgroup_list) > 0:
+                if len(scene.yafaray.passes.views_lightgroup_list) > 0:
                         row = layout.row()
                         row.label(icon="INFO", text="Only the selected views with the assigned light groups will be rendered")
                         row = layout.row()
