@@ -241,56 +241,56 @@ class YafaRayRenderPassesProperties(bpy.types.PropertyGroup):
     pass_Vector = EnumProperty(
         name="Vector",  #RGBA (4 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsIndex+renderPassItemsDebug
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO+renderPassItemsDepth+renderPassItemsAO
         ),
         default="obj-index-auto")
 
     pass_Normal = EnumProperty(
         name="Normal",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsIndex+renderPassItemsDebug
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="debug-normal-smooth")
         
     pass_UV = EnumProperty(
         name="UV",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsIndex+renderPassItemsDebug
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="debug-uv")
 
     pass_Color = EnumProperty(
         name="Color",  #RGBA (4 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsIndex+renderPassItemsDebug
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="mat-index-auto")
 
     pass_Emit = EnumProperty(
         name="Emit",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="emit")
         
     pass_Mist = EnumProperty(
         name="Mist",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="mist")
 
     pass_Diffuse = EnumProperty(
         name="Diffuse",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="diffuse")
         
     pass_Spec = EnumProperty(
         name="Spec",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-reflect")
 
@@ -304,35 +304,35 @@ class YafaRayRenderPassesProperties(bpy.types.PropertyGroup):
     pass_Env = EnumProperty(
         name="Env",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="env")
 
     pass_Indirect = EnumProperty(
         name="Indirect",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="indirect")
 
     pass_Shadow = EnumProperty(
         name="Shadow",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="shadow")
 
     pass_Reflect = EnumProperty(
         name="Reflect",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="reflect")
 
     pass_Refract = EnumProperty(
         name="Refract",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="refract")
 
@@ -353,84 +353,84 @@ class YafaRayRenderPassesProperties(bpy.types.PropertyGroup):
     pass_DiffDir = EnumProperty(
         name="Diff Dir",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="diffuse")
         
     pass_DiffInd = EnumProperty(
         name="Diff Ind",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-diffuse-indirect")
 
     pass_DiffCol = EnumProperty(
         name="Diff Col",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-diffuse-color")
 
     pass_GlossDir = EnumProperty(
         name="Gloss Dir",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-glossy")
         
     pass_GlossInd = EnumProperty(
         name="Gloss Ind",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-glossy-indirect")
 
     pass_GlossCol = EnumProperty(
         name="Gloss Col",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-glossy-color")
 
     pass_TransDir = EnumProperty(
         name="Trans Dir",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-trans")
         
     pass_TransInd = EnumProperty(
         name="Trans Ind",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-trans-indirect")
 
     pass_TransCol = EnumProperty(
         name="Trans Col",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-trans-color")
 
     pass_SubsurfaceDir = EnumProperty(
         name="SubSurface Dir",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-subsurface")
         
     pass_SubsurfaceInd = EnumProperty(
         name="SubSurface Ind",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-subsurface-indirect")
 
     pass_SubsurfaceCol = EnumProperty(
         name="SubSurface Col",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass.",
-        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug
+        items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-subsurface-color")
 
