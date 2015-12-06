@@ -76,7 +76,11 @@ def register():
             ('none', "No interpolation", "")
         ),
         default='bilinear')
-
+        
+    Texture.yaf_tex_optimize = BoolProperty(
+        name="Optimize",
+        description="Optimize texture for reduced RAM usage at the cost of being slower",
+        default=False)
 
 def unregister():
     Texture.yaf_tex_type
@@ -84,3 +88,4 @@ def unregister():
     Texture.yaf_use_alpha
     Texture.yaf_gamma_input
     Texture.yaf_tex_interpolate
+    Texture.yaf_optimize
