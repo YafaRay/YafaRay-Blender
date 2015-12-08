@@ -77,10 +77,16 @@ def register():
         ),
         default='bilinear')
         
-    Texture.yaf_tex_optimize = BoolProperty(
-        name="Optimize",
-        description="Optimize texture for reduced RAM usage at the cost of being slower",
-        default=False)
+    Texture.yaf_tex_optimization = EnumProperty(
+        name="Optimization",
+        description="Texture optimization for reduced RAM usage at the cost of being slower/lossy",
+        items=(
+            ('compress-rgb565', "Compressed RGB565", "Lossy compression removing alpha, smaller RAM usage."),
+            ('basic-noalpha', "Basic/No Alpha", "Like Basic but removing the alpha channel, less RAM usage."),
+            ('basic', "Basic", "Basic optimization, lossless, a bit slower, moderate RAM usage."),
+            ('none', "None", "No optimization, lossless and faster but high RAM usage")
+        ),
+        default='basic')
 
 def unregister():
     Texture.yaf_tex_type
@@ -88,4 +94,4 @@ def unregister():
     Texture.yaf_use_alpha
     Texture.yaf_gamma_input
     Texture.yaf_tex_interpolate
-    Texture.yaf_optimize
+    Texture.yaf_tex_optimization

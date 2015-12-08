@@ -306,7 +306,7 @@ class YAF_TEXTURE_PT_image_sampling(YAF_TextureTypePanel, Panel):
         else:
             row.prop(tex, "use_interpolation", text="Use image background interpolation")
             #row.prop(tex, "use_calculate_alpha", text="Calculate Alpha")
-        layout.prop(tex, "yaf_tex_optimize")
+        layout.prop(tex, "yaf_tex_optimization")
 
 
 class YAF_TEXTURE_PT_image_mapping(YAF_TextureTypePanel, Panel):
