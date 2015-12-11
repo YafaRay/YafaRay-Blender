@@ -329,6 +329,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         elif scene.gs_type_render == "xml":
             self.setInterface(yafrayinterface.xmlInterface_t())
+            self.outputFile, self.output, self.file_type = self.decideOutputFileName(fp, 'XML')
+            self.yi.setOutfile(self.outputFile)
             self.yi.startScene()
             yaf_scene.exportRenderPassesSettings(self.yi, self.scene)
             self.yi.setupRenderPasses()
@@ -349,10 +351,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.yi.setInputColorSpace("LinearRGB", 1.0)    #Values from Blender, color picker floating point data are already linear (linearized by Blender)
             self.yi.setXMLColorSpace(input_color_values_color_space, input_color_values_gamma)  #To set the XML interface to write the XML values with the correction included for the selected color space (and gamma if applicable)
             
-            self.outputFile, self.output, self.file_type = self.decideOutputFileName(fp, 'XML')
             self.yi.paramsClearAll()
             self.co = yafrayinterface.imageOutput_t()
-            self.yi.setOutfile(self.outputFile)
 
         else:
             self.setInterface(yafrayinterface.yafrayInterface_t())
