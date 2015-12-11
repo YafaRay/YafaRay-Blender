@@ -172,6 +172,10 @@ def exportRenderSettings(yi, scene):
     yi.paramsSetBool("adv_auto_min_raydist_enabled", scene.adv_auto_min_raydist_enabled)
     yi.paramsSetFloat("adv_min_raydist_value", scene.adv_min_raydist_value)
 
+
+def exportRenderPassesSettings(yi, scene):
+    yi.printInfo("Exporting Render Passes settings")
+
     yi.paramsSetBool("pass_enable", scene.yafaray.passes.pass_enable)
     
     yi.paramsSetInt("pass_mask_obj_index", scene.yafaray.passes.pass_mask_obj_index)

@@ -313,6 +313,9 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         if scene.gs_type_render == "file":
             self.setInterface(yafrayinterface.yafrayInterface_t())
+            self.yi.startScene()
+            yaf_scene.exportRenderPassesSettings(self.yi, self.scene)
+            self.yi.setupRenderPasses()
             self.yi.setInputColorSpace("LinearRGB", 1.0)    #When rendering into Blender, color picker floating point data is already linear (linearized by Blender)
             self.outputFile, self.output, self.file_type = self.decideOutputFileName(fp, scene.img_output)
             self.yi.paramsClearAll()
@@ -326,7 +329,10 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         elif scene.gs_type_render == "xml":
             self.setInterface(yafrayinterface.xmlInterface_t())
-            
+            self.yi.startScene()
+            yaf_scene.exportRenderPassesSettings(self.yi, self.scene)
+            self.yi.setupRenderPasses()
+                        
             input_color_values_color_space = "sRGB"
             input_color_values_gamma = 1.0
 
@@ -350,9 +356,11 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         else:
             self.setInterface(yafrayinterface.yafrayInterface_t())
+            self.yi.startScene()
+            yaf_scene.exportRenderPassesSettings(self.yi, self.scene)
+            self.yi.setupRenderPasses()
             self.yi.setInputColorSpace("LinearRGB", 1.0)    #When rendering into Blender, color picker floating point data is already linear (linearized by Blender)
 
-        self.yi.startScene()
         self.exportScene()
         self.yaf_integrator.exportIntegrator(self.scene)
         self.yaf_integrator.exportVolumeIntegrator(self.scene)
