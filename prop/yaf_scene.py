@@ -610,6 +610,17 @@ def register():
         ),
         default='into_blender')
 
+    Scene.gs_tex_optimization = EnumProperty(
+        name="Textures optimization",
+        description="Textures optimization for reduced RAM usage at the cost of being slower/lossy. Can be set per-texture as well.",
+        items=(
+            ('compress-rgb565', "Compressed RGB565", "Lossy compression removing alpha, smaller RAM usage."),
+            ('basic-noalpha', "Basic/No Alpha", "Like Basic but removing the alpha channel, less RAM usage."),
+            ('basic', "Basic", "Basic optimization, lossless, a bit slower, moderate RAM usage."),
+            ('none', "None", "No optimization, lossless and faster but high RAM usage")
+        ),
+        default='none')
+
     ######### YafaRays own image output property ############
     Scene.img_output = EnumProperty(
         name="Image File Type",
@@ -884,6 +895,7 @@ def unregister():
     Scene.gs_show_sam_pix
     Scene.gs_verbose
     Scene.gs_type_render
+    Scene.gs_tex_optimization
 
     Scene.img_output
     Scene.img_multilayer

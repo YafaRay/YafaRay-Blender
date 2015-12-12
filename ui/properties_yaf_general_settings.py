@@ -75,14 +75,18 @@ class YAF_PT_general_settings(RenderButtonsPanel, Panel):
 
         split = layout.split()
         col = split.column()
+        col.prop(scene, "gs_tex_optimization")
+
+        split = layout.split()
+        col = split.column()
         col.prop(scene, "gs_transp_shad", toggle=True)
         col.prop(scene, "gs_draw_params", toggle=True)
+        col.prop(scene, "gs_verbose", toggle=True)
 
         col = split.column()
         col.prop(scene, "gs_auto_threads", toggle=True)
         col.prop(scene, "gs_show_sam_pix", toggle=True)
         col.prop(render, "use_instances", text="Use instances", toggle=True)
-        col.prop(scene, "gs_verbose", toggle=True)
 
         split = layout.split(percentage=0.5)
         col = split.column()

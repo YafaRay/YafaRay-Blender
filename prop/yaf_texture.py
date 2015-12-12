@@ -84,9 +84,10 @@ def register():
             ('compress-rgb565', "Compressed RGB565", "Lossy compression removing alpha, smaller RAM usage."),
             ('basic-noalpha', "Basic/No Alpha", "Like Basic but removing the alpha channel, less RAM usage."),
             ('basic', "Basic", "Basic optimization, lossless, a bit slower, moderate RAM usage."),
-            ('none', "None", "No optimization, lossless and faster but high RAM usage")
+            ('none', "None", "No optimization, lossless and faster but high RAM usage"),
+            ('default', "Default", "Use global texture optimization setting from the Render tab")
         ),
-        default='basic')
+        default='default')
 
 def unregister():
     Texture.yaf_tex_type
