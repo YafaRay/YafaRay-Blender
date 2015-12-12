@@ -611,8 +611,8 @@ def register():
         default='into_blender')
 
     Scene.gs_tex_optimization = EnumProperty(
-        name="Optimization",
-        description="Texture optimization to reduce RAM usage",
+        name="Textures optimization",
+        description="Textures optimization to reduce RAM usage, can be overriden by per-texture setting",
         items=(
             ('compressed', "Compressed", "Lossy color compression, some color/transparency details will be lost, more RAM improvement"),
             ('optimized', "Optimized", "Lossless optimization, good RAM improvement"),
