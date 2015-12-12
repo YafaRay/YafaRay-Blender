@@ -79,11 +79,10 @@ def register():
         
     Texture.yaf_tex_optimization = EnumProperty(
         name="Optimization",
-        description="Texture optimization for reduced RAM usage at the cost of being slower/lossy",
+        description="Texture optimization to reduce RAM usage",
         items=(
-            ('compress-rgb565', "Compressed RGB565", "Lossy compression removing alpha, smaller RAM usage."),
-            ('basic-noalpha', "Basic/No Alpha", "Like Basic but removing the alpha channel, less RAM usage."),
-            ('basic', "Basic", "Basic optimization, lossless, a bit slower, moderate RAM usage."),
+            ('compressed', "Compressed", "Lossy color compression, some color/transparency details will be lost, more RAM improvement"),
+            ('optimized', "Optimized", "Lossless optimization, good RAM improvement"),
             ('none', "None", "No optimization, lossless and faster but high RAM usage"),
             ('default', "Default", "Use global texture optimization setting from the Render tab")
         ),
