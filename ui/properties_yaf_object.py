@@ -43,6 +43,7 @@ class YAF_PT_object_light(Panel):
         if ob.ml_enable:
             col = layout.column(align=True)
             col.prop(ob, "ml_light_group")
+            col.prop(ob, "ml_light_group_name")
             col.prop(ob, "ml_color")
             col.prop(ob, "ml_power")
             layout.prop(ob, "ml_samples")

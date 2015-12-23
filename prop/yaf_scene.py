@@ -449,6 +449,11 @@ class ViewsLightGroupList(bpy.types.PropertyGroup):
            min=0,
            max=100)
 
+    light_group_name = StringProperty( #FIXME DAVID
+           name="Light Group Name",
+           description="Light Group name for Light Group render filtering",
+           default="")
+
 
 def register():
     ########### YafaRays general settings properties #############

@@ -36,6 +36,7 @@ class ViewsLightGroupList_UL_List(bpy.types.UIList):
                     layout.label(context.scene.render.views[item.view_number].name)
                     layout.label("", icon = 'LAMP')
                     layout.prop(item, "light_group")
+                    layout.prop(item, "light_group_name")
             else:
                     layout.label("", icon = 'ERROR')
                     layout.label("View not defined, skipping.")
