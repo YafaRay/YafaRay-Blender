@@ -52,15 +52,15 @@ class yafObject(object):
         render = self.scene.render
         
         class viewLightGroupCameraData:
-            def __init__ (self, camera, view, light_group):
+            def __init__ (self, camera, view, light_group_name):
                 self.camera = camera
                 self.view = view
-                self.light_group = light_group
+                self.light_group_name = light_group_name
         
         view_lightgroup_camera_data_list = []
     
         if bpy.types.YAFA_RENDER.useViewToRender or not render.use_multiview:
-            view_lightgroup_camera_data_list.append(viewLightGroupCameraData(camera_scene, None, 0))
+            view_lightgroup_camera_data_list.append(viewLightGroupCameraData(camera_scene, None, ""))
             
         else:
             camera_base_name = camera_scene.name.rsplit('_',1)[0]
@@ -68,12 +68,12 @@ class yafObject(object):
             if len(self.scene.yafaray.passes.views_lightgroup_list) == 0:
                 for view in render.views:
                     if view.use:
-                        view_lightgroup_camera_data_list.append(viewLightGroupCameraData(self.scene.objects[camera_base_name+view.camera_suffix], view, 0))
+                        view_lightgroup_camera_data_list.append(viewLightGroupCameraData(self.scene.objects[camera_base_name+view.camera_suffix], view, ""))
             
             else:
                 for view_lightgroup in self.scene.yafaray.passes.views_lightgroup_list:
                     if view_lightgroup.view_number < len(self.scene.render.views) and self.scene.render.views[view_lightgroup.view_number].use:
-                        view_lightgroup_camera_data_list.append(viewLightGroupCameraData(self.scene.objects[camera_base_name+self.scene.render.views[view_lightgroup.view_number].camera_suffix], self.scene.render.views[view_lightgroup.view_number], view_lightgroup.light_group))
+                        view_lightgroup_camera_data_list.append(viewLightGroupCameraData(self.scene.objects[camera_base_name+self.scene.render.views[view_lightgroup.view_number].camera_suffix], self.scene.render.views[view_lightgroup.view_number], view_lightgroup.light_group_name))
         
         for view_lightgroup_camera_data in view_lightgroup_camera_data_list:
             
@@ -81,10 +81,10 @@ class yafObject(object):
                 camera_name = "3D viewport"
             elif view_lightgroup_camera_data.view == None:
                 camera_name = view_lightgroup_camera_data.camera.name
-            elif view_lightgroup_camera_data.light_group == 0:
+            elif view_lightgroup_camera_data.light_group_name == "":
                 camera_name = view_lightgroup_camera_data.camera.name+" ("+view_lightgroup_camera_data.view.name+")"
             else:
-                camera_name = view_lightgroup_camera_data.camera.name+" ("+view_lightgroup_camera_data.view.name+", LG "+str(view_lightgroup_camera_data.light_group)+")"
+                camera_name = view_lightgroup_camera_data.camera.name+" ("+view_lightgroup_camera_data.view.name+", LG "+str(view_lightgroup_camera_data.light_group_name)+")" #FIXME DAVID CHECK THE GROUP NAME DOES NOT CAUSE PROBLEMS, LIMIT CHARACTERS?
             
             if bpy.types.YAFA_RENDER.useViewToRender and bpy.types.YAFA_RENDER.viewMatrix:
                 # use the view matrix to calculate the inverted transformed
@@ -124,7 +124,7 @@ class yafObject(object):
                 yi.paramsSetString("view_name", view_lightgroup_camera_data.view.name)
             else:
                 yi.paramsSetString("view_name", "")
-            yi.paramsSetInt("light_group_filter", view_lightgroup_camera_data.light_group)
+            yi.paramsSetString("light_group_filter_name", view_lightgroup_camera_data.light_group_name)
 
             if bpy.types.YAFA_RENDER.useViewToRender:
                 yi.paramsSetString("type", "perspective")
@@ -319,7 +319,7 @@ class yafObject(object):
         c = obj.ml_color
         self.yi.paramsSetColor("color", c[0], c[1], c[2])
         self.yi.paramsSetFloat("power", obj.ml_power)
-        self.yi.paramsSetInt("light_group", obj.ml_light_group)
+        self.yi.paramsSetString("light_group_name", obj.ml_light_group_name)
         ml_mat = self.yi.createMaterial(ml_matname)
 
         self.materialMap[ml_matname] = ml_mat

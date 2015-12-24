@@ -52,15 +52,16 @@ class YAF_PT_lamp(DataButtonsPanel, Panel):
 
         lamp = context.lamp
 
-        for la in bpy.data.lamps:
-            print(la.color)
+        #FIXME DAVID
+        #for la in bpy.data.lamps:
+        #    print(la.color)
         
-        pepe = ["ajo", "agua", "zanahoria", "agua", "ajo"]
-        pepe = list(set(pepe))
-        pepe.sort()
-        for p in pepe:
-            print(p)
-        pepe2 = "ajo2"
+        #pepe = ["ajo", "agua", "zanahoria", "agua", "ajo"]
+        #pepe = list(set(pepe))
+        #pepe.sort()
+        #for p in pepe:
+        #    print(p)
+        #pepe2 = "ajo2"
 
         layout.prop(lamp, "lamp_type", expand=True)
         layout.prop(lamp, "light_enabled")

@@ -242,5 +242,7 @@ class yafLight:
         yi.paramsSetBool("cast_shadows", lamp.cast_shadows)
         yi.paramsSetInt("light_group", lamp.light_group)
         yi.createLight(name)
+        yi.addLightGroup(name, lamp.light_group_name)   #FIXME DAVID
+        yi.addLightGroup(name, "ajolioli")   #FIXME DAVID
 
         return True
