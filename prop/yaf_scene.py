@@ -52,19 +52,19 @@ class YafaRayNoiseControlProperties(bpy.types.PropertyGroup):
 
     sample_multiplier_factor = FloatProperty(
         name="AA sample multiplier factor",
-        description="Factor to increase the AA samples multiplier for next AA pass.",
+        description="Factor to increase the AA samples multiplier for next AA pass",
         min=1.0, max=2.0, precision=2,
         default=1.0)
 
     light_sample_multiplier_factor = FloatProperty(
         name="Light sample multiplier factor",
-        description="Factor to increase the light samples multiplier for next AA pass.",
+        description="Factor to increase the light samples multiplier for next AA pass",
         min=1.0, max=2.0, precision=2,
         default=1.0)
 
     indirect_sample_multiplier_factor = FloatProperty(
         name="Indirect sample multiplier factor",
-        description="Factor to increase the indirect samples (FG for example) multiplier for next AA pass.",
+        description="Factor to increase the indirect samples (FG for example) multiplier for next AA pass",
         min=1.0, max=2.0, precision=2,
         default=1.0)
 
@@ -76,13 +76,13 @@ class YafaRayNoiseControlProperties(bpy.types.PropertyGroup):
     dark_threshold_factor = FloatProperty(
         name="Dark areas noise detection factor",
         description=("Factor used to reduce the AA threshold in dark areas."
-                     " It will reduce noise in dark areas, but noise in bright areas will take longer."),
+                     " It will reduce noise in dark areas, but noise in bright areas will take longer"),
         min=0.0, max=0.8, precision=2,
         default=0.0)
 
     variance_edge_size = IntProperty(
         name="Variance window",
-        description="Window edge size for variance noise detection.",
+        description="Window edge size for variance noise detection",
         min=4, max=20,
         default=10)
 
@@ -94,13 +94,13 @@ class YafaRayNoiseControlProperties(bpy.types.PropertyGroup):
 
     clamp_samples = FloatProperty(
         name="Clamp samples",
-        description="Clamp RGB values in all samples, less noise but less realism. 0.0 disables clamping.",
+        description="Clamp RGB values in all samples, less noise but less realism. 0.0 disables clamping",
         min=0.0, precision=1,
         default=0.0)
 
     clamp_indirect = FloatProperty(
         name="Clamp indirect",
-        description="Clamp RGB values in the indirect light, less noise but less realism. 0.0 disables clamping.",
+        description="Clamp RGB values in the indirect light, less noise but less realism. 0.0 disables clamping",
         min=0.0, precision=1,
         default=0.0)
 
@@ -215,210 +215,210 @@ class YafaRayRenderPassesProperties(bpy.types.PropertyGroup):
     #This property is not currently used by YafaRay Core, as the combined external pass is always using the internal combined pass. 
     pass_Combined = EnumProperty(
         name="Combined",  #RGBA (4 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsDisabled
         ),
         default="disabled")
 
     pass_Depth = EnumProperty(
         name="Depth",  #Gray (1 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsDepth
         ),
         default="z-depth-norm")
 
     pass_Vector = EnumProperty(
         name="Vector",  #RGBA (4 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO+renderPassItemsDepth+renderPassItemsAO
         ),
         default="obj-index-auto")
 
     pass_Normal = EnumProperty(
         name="Normal",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="debug-normal-smooth")
         
     pass_UV = EnumProperty(
         name="UV",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="debug-uv")
 
     pass_Color = EnumProperty(
         name="Color",  #RGBA (4 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="mat-index-auto")
 
     pass_Emit = EnumProperty(
         name="Emit",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="emit")
         
     pass_Mist = EnumProperty(
         name="Mist",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="mist")
 
     pass_Diffuse = EnumProperty(
         name="Diffuse",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="diffuse")
         
     pass_Spec = EnumProperty(
         name="Spec",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-reflect")
 
     pass_AO = EnumProperty(
         name="AO",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsAO
         ),
         default="ao")
 
     pass_Env = EnumProperty(
         name="Env",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="env")
 
     pass_Indirect = EnumProperty(
         name="Indirect",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="indirect")
 
     pass_Shadow = EnumProperty(
         name="Shadow",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="shadow")
 
     pass_Reflect = EnumProperty(
         name="Reflect",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="reflect")
 
     pass_Refract = EnumProperty(
         name="Refract",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="refract")
 
     pass_IndexOB = EnumProperty(
         name="Object Index",  #Gray (1 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsIndex
         ),
         default="obj-index-norm")
         
     pass_IndexMA = EnumProperty(
         name="Material Index",  #Gray (1 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsIndex
         ),
         default="mat-index-norm")
 
     pass_DiffDir = EnumProperty(
         name="Diff Dir",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="diffuse")
         
     pass_DiffInd = EnumProperty(
         name="Diff Ind",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-diffuse-indirect")
 
     pass_DiffCol = EnumProperty(
         name="Diff Col",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-diffuse-color")
 
     pass_GlossDir = EnumProperty(
         name="Gloss Dir",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-glossy")
         
     pass_GlossInd = EnumProperty(
         name="Gloss Ind",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-glossy-indirect")
 
     pass_GlossCol = EnumProperty(
         name="Gloss Col",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-glossy-color")
 
     pass_TransDir = EnumProperty(
         name="Trans Dir",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-trans")
         
     pass_TransInd = EnumProperty(
         name="Trans Ind",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-trans-indirect")
 
     pass_TransCol = EnumProperty(
         name="Trans Col",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-trans-color")
 
     pass_SubsurfaceDir = EnumProperty(
         name="SubSurface Dir",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-subsurface")
         
     pass_SubsurfaceInd = EnumProperty(
         name="SubSurface Ind",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-subsurface-indirect")
 
     pass_SubsurfaceCol = EnumProperty(
         name="SubSurface Col",  #RGB (3 x float)
-        description="Select the type of image you want to be displayed in this pass.",
+        description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-subsurface-color")
@@ -534,7 +534,7 @@ def register():
 
     Scene.adv_shadow_bias_value = FloatProperty(
         name="Shadow Bias Factor",
-        description="Shadow Bias (default 0.0005). Change ONLY if artifacts or black dots due to bad self-shadowing. Increasing this value can led to artifacts and incorrect renders.",
+        description="Shadow Bias (default 0.0005). Change ONLY if artifacts or black dots due to bad self-shadowing. Increasing this value can led to artifacts and incorrect renders",
         min=0.00000001, max=10000, default=0.0005)
 
     Scene.adv_auto_min_raydist_enabled = BoolProperty(
@@ -544,7 +544,7 @@ def register():
 
     Scene.adv_min_raydist_value = FloatProperty(
         name="Min Ray Dist Factor",
-        description="Min Ray Dist (default 0.00005). Change ONLY if artifacts or light leaks due to bad ray intersections. Increasing this value can led to artifacts and incorrect renders.",
+        description="Min Ray Dist (default 0.00005). Change ONLY if artifacts or light leaks due to bad ray intersections. Increasing this value can led to artifacts and incorrect renders",
         min=0.00000001, max=10000, default=0.00005)
 
     Scene.gs_custom_string = StringProperty(
