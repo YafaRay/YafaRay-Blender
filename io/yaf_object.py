@@ -64,7 +64,7 @@ class yafObject(object):
             camera_base_name = self.scene.camera.name.rsplit('_',1)[0]
 
             for view in render.views:
-                if view.use:
+                if view.use and not (render.views_format == "STEREO_3D" and view.name != "left" and view.name != "right"):
                     cameras.append(CameraData(self.scene.objects[camera_base_name+view.camera_suffix], camera_base_name+view.camera_suffix, view.name))
 
         for cam in cameras:

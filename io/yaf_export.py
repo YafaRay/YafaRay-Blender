@@ -413,7 +413,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                         if scene.render.use_multiview:
                             #due to Blender limitations while drawing the tiles, I cannot use the view names properly and I have to repeat the currently drawing tile into all views so it shows correctly. Maybe there is a better way?
                             for view_number,view in enumerate(scene.render.views):
-                                if view.use:
+                                if view.use and not (scene.render.views_format == "STEREO_3D" and view.name != "left" and view.name != "right"):
                                     view_suffix = '.'+scene.render.views[view_number].name
                                 
                                     for tile in tiles:
@@ -453,7 +453,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                             if scene.render.use_multiview:
                                 if view_name == "":  #In case we use Render 3D vierpowrt with Views enabled, it will copy the result to all views
                                     for view_number,view in enumerate(scene.render.views):
-                                        if view.use:
+                                        if view.use and not (scene.render.views_format == "STEREO_3D" and view.name != "left" and view.name != "right"):
                                             full_tile_name = tile_name + "." + view.name
                                             try:
                                                 l.passes[full_tile_name].rect = tile_bitmap
@@ -461,7 +461,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                                                 print("Exporter: Exception while rendering in flushCallback function:")
                                                 traceback.print_exc()
                                 else:
-                                    if scene.render.views[view_name].use:
+                                    if scene.render.views[view_name].use and not (scene.render.views_format == "STEREO_3D" and view_name != "left" and view_name != "right"):
                                         full_tile_name = tile_name + "." + view_name
                                         try:
                                             l.passes[full_tile_name].rect = tile_bitmap
