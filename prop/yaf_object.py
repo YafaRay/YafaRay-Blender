@@ -60,17 +60,6 @@ def register():
         name="Double sided",
         description="Emit light at both sides of every face",
         default=False)
-        
-    Object.ml_light_group = IntProperty(
-        name="Light Group",
-        description="Light Group number for Light Group render filtering",
-        min=1, max=100,
-        default=1)
-
-    Object.ml_light_group_name = StringProperty( #FIXME DAVID
-        name="Light Group Name",
-        description="Light Group name for Light Group render filtering",
-        default="")
 
     Object.bgp_enable = BoolProperty(
         name="Enable BG portal light",
@@ -174,8 +163,6 @@ def unregister():
     del Object.ml_power
     del Object.ml_samples
     del Object.ml_double_sided
-    del Object.ml_light_group
-    del Object.ml_light_group_name
     del Object.bgp_enable
     del Object.bgp_power
     del Object.bgp_samples

@@ -24,62 +24,6 @@ from bl_ui.properties_render_layer import RenderLayerButtonsPanel
 
 RenderLayerButtonsPanel.COMPAT_ENGINES = {'YAFA_RENDER'}
 
-class ViewsLightGroupList_UL_List(bpy.types.UIList):
-    COMPAT_ENGINES = {'YAFA_RENDER'}
-    def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
- 
-        if self.layout_type in {'DEFAULT', 'COMPACT'}:
-            layout.prop(item, "view_number")
-
-            if item.view_number < len(context.scene.render.views):
-                    layout.label("", icon = 'SCENE')
-                    layout.label(context.scene.render.views[item.view_number].name)
-                    layout.label("", icon = 'LAMP')
-                    layout.prop(item, "light_group")
-                    layout.prop(item, "light_group_name")
-            else:
-                    layout.label("", icon = 'ERROR')
-                    layout.label("View not defined, skipping.")
- 
-        elif self.layout_type in {'GRID'}:
-            layout.alignment = 'CENTER'
-            layout.label("", icon = custom_icon)
-            
-bpy.utils.register_class(ViewsLightGroupList_UL_List)    # ( inside register() )  FIXME DAVID??
-
-class ViewsLightGroupList_OT_NewItem(bpy.types.Operator):
-    bl_idname = "views_lightgroup_list.new_item"
-    bl_label = "Add a new View-Light Group Filter assignment"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
-
-    def execute(self, context):
-        context.scene.yafaray.passes.views_lightgroup_list.add()
- 
-        return{'FINISHED'}
-
-bpy.utils.register_class(ViewsLightGroupList_OT_NewItem)    # ( inside register() )  FIXME DAVID??
-
-class ViewsLightGroupList_OT_DeleteItem(bpy.types.Operator):
-    bl_idname = "views_lightgroup_list.delete_item"
-    bl_label = "Delete a View-Light Group Filter assignment"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
-
-    @classmethod
-    def poll(self, context):
-        return len(context.scene.yafaray.passes.views_lightgroup_list) > 0
-
-    def execute(self, context):
-        list = context.scene.yafaray.passes.views_lightgroup_list
-        index = context.scene.yafaray.passes.views_lightgroup_list_index
-
-        list.remove(index)
-
-        if index > 0:
-            index = index - 1
-
-        return{'FINISHED'}
-
-bpy.utils.register_class(ViewsLightGroupList_OT_DeleteItem)    # ( inside register() )  FIXME DAVID??
 
 class YAFRENDER_PT_layers(RenderLayerButtonsPanel, Panel):
     bl_label = "Layers"
@@ -133,21 +77,10 @@ class YAFRENDER_PT_layer_passes(RenderLayerButtonsPanel, Panel):
         rd = scene.render
         rl = rd.layers.active
 
-        #row = layout.row(align=True)
-        #row.alignment = 'LEFT'
-
-        #row.prop(scene.yafaray.passes, "pass_enable", toggle=True) #, "optional extended description")
         if scene.yafaray.passes.pass_enable:
 
                 row = layout.row() #(align=True)
-                #row.alignment = 'LEFT'
-                ##row.prop(rl, "use_pass_combined")
-                ##if scene.render.layers[0].use_pass_combined:
-                ##        sub = row.column(align=True)
-                ##        sub.prop(scene.yafaray.passes, "pass_combined", "")
-                
                 row = layout.row() #(align=True)
-                #row.alignment = 'LEFT'
                 row.prop(rl, "use_pass_z") #, "Z-depth")
                 if scene.render.layers[0].use_pass_z:
                         sub = row.column(align=True)
@@ -380,25 +313,6 @@ class YAFRENDER_PT_views(RenderLayerButtonsPanel, Panel):
                     row = layout.row()
                     row.label(text="Camera Suffix:")
                     row.prop(rv, "camera_suffix", text="")
-
-                row = layout.row()
-                row.label(text="Views - Light Group filters:")
-                if len(scene.yafaray.passes.views_lightgroup_list) == 0:
-                        row = layout.row()
-                        row.label(icon="INFO", text="No views/light group filters defined.")
-                        row = layout.row()
-                        row.label(icon="INFO", text="By default all views will be rendered with all lights.")
-                row = layout.row()
-                row.template_list("ViewsLightGroupList_UL_List", "ViewsLightGroupList", scene.yafaray.passes, "views_lightgroup_list", scene.yafaray.passes, "views_lightgroup_list_index", rows=2)
-                col = row.column(align=True)
-                col.operator('views_lightgroup_list.new_item', icon='ZOOMIN', text="")
-                col.operator('views_lightgroup_list.delete_item', icon='ZOOMOUT', text="")
-                if len(scene.yafaray.passes.views_lightgroup_list) > 0:
-                        row = layout.row()
-                        row.label(icon="INFO", text="Only the selected views with the assigned light groups will be rendered")
-                        row = layout.row()
-                        row.label(icon="INFO", text="If several light groups are assigned to the same view, ONLY THE LAST ONE will be imported into Blender.")
-        
 
 if __name__ == "__main__":  # only for live edit.
     import bpy

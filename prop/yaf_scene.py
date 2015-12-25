@@ -212,17 +212,6 @@ class YafaRayRenderPassesProperties(bpy.types.PropertyGroup):
             ('ao-clay', "AO clay", "Ambient Occlusion (clay)", "", 502),
         ), key=lambda index: index[1])
 
-    renderPassItemsLightGroup=sorted((
-            ('light-group-0', "Light Group 0", "Pass illuminated by lights from the selected light group", "", 600),
-            ('light-group-1', "Light Group 1", "Pass illuminated by lights from the selected light group", "", 601),
-            ('light-group-2', "Light Group 2", "Pass illuminated by lights from the selected light group", "", 602),
-            ('light-group-3', "Light Group 3", "Pass illuminated by lights from the selected light group", "", 603),
-            ('light-group-4', "Light Group 4", "Pass illuminated by lights from the selected light group", "", 604),
-            ('light-group-5', "Light Group 5", "Pass illuminated by lights from the selected light group", "", 605),
-            ('light-group-6', "Light Group 6", "Pass illuminated by lights from the selected light group", "", 606),
-            ('light-group-7', "Light Group 7", "Pass illuminated by lights from the selected light group", "", 607),
-        ), key=lambda index: index[1])
-
     #This property is not currently used by YafaRay Core, as the combined external pass is always using the internal combined pass. 
     pass_Combined = EnumProperty(
         name="Combined",  #RGBA (4 x float)
@@ -433,27 +422,6 @@ class YafaRayRenderPassesProperties(bpy.types.PropertyGroup):
         items=(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO
         ),
         default="adv-subsurface-color")
-
-
-class ViewsLightGroupList(bpy.types.PropertyGroup):
-    view_number = IntProperty(
-           name="View Number",
-           description="View Number to which we will assign a light group filter",
-           default=0,
-           min=0)
-    
-    light_group = IntProperty(
-           name="Light Group",
-           description="Light group filter [1..100]. Value 0 will render all light groups",
-           default=0,
-           min=0,
-           max=100)
-
-    light_group_name = StringProperty( #FIXME DAVID
-           name="Light Group Name",
-           description="Light Group name for Light Group render filtering",
-           default="")
-
 
 def register():
     ########### YafaRays general settings properties #############
@@ -864,12 +832,6 @@ def register():
     bpy.utils.register_class(YafaRayNoiseControlProperties)
     YafaRayProperties.noise_control = PointerProperty(type=YafaRayNoiseControlProperties)
 
-    bpy.utils.register_class(ViewsLightGroupList)
-
-    YafaRayRenderPassesProperties.views_lightgroup_list = CollectionProperty(type = ViewsLightGroupList)
-    YafaRayRenderPassesProperties.views_lightgroup_list_index = IntProperty(name = "Index for the Views Light Group List", default = -1)
-
-
 def unregister():
     Scene.gs_ray_depth
     Scene.gs_shadow_depth
@@ -942,8 +904,3 @@ def unregister():
     bpy.utils.unregister_class(YafaRayNoiseControlProperties)
     bpy.utils.unregister_class(YafaRayRenderPassesProperties)
     bpy.utils.unregister_class(YafaRayProperties)
-
-    Scene.views_lightgroup_list
-    Scene.views_lightgroup_list_index
-    bpy.utils.unregister_class(ViewsLightGroupList)
-    

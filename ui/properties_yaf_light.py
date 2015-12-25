@@ -18,7 +18,6 @@
 
 # <pep8 compliant>
 
-import bpy
 from bpy.types import Panel
 from bl_ui.properties_data_lamp import DataButtonsPanel
 
@@ -52,22 +51,8 @@ class YAF_PT_lamp(DataButtonsPanel, Panel):
 
         lamp = context.lamp
 
-        #FIXME DAVID
-        #for la in bpy.data.lamps:
-        #    print(la.color)
-        
-        #pepe = ["ajo", "agua", "zanahoria", "agua", "ajo"]
-        #pepe = list(set(pepe))
-        #pepe.sort()
-        #for p in pepe:
-        #    print(p)
-        #pepe2 = "ajo2"
-
         layout.prop(lamp, "lamp_type", expand=True)
         layout.prop(lamp, "light_enabled")
-        layout.prop(lamp, "light_group")
-        layout.prop(lamp, "light_group_name")
-        layout.prop_search(lamp, "light_group_name", bpy.data, "groups")
 
         if lamp.lamp_type == "area":
             layout.prop(lamp, "color")

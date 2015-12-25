@@ -144,18 +144,6 @@ def register():
         name="Cast shadows",
         description="Enable casting shadows. This is the normal and expected behavior. Disable it only for special cases!",
         default=True)
-        
-    Lamp.light_group = IntProperty(
-        name="Light Group",
-        description="Light Group number for Light Group render filtering",
-        min=1, max=100,
-        default=1)
-
-    Lamp.light_group_name = StringProperty( #FIXME DAVID
-        name="Light Group Name",
-        description="Light Group name for Light Group render filtering",
-        default="")
-
 
 def unregister():
     del Lamp.lamp_type
@@ -174,5 +162,3 @@ def unregister():
     del Lamp.yaf_show_dist_clip
     del Lamp.light_enabled
     del Lamp.cast_shadows
-    del Lamp.light_group
-    del Lamp.light_group_name
