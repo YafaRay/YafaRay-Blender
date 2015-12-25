@@ -42,7 +42,7 @@ def items_mat2(self, context):
     return(a)
 
 def update_preview(self, context):
-    bpy.data.materials[0].preview_render_type = bpy.data.materials[0].preview_render_type
+    context.material.preview_render_type = context.material.preview_render_type
 
 
 def register():
