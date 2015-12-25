@@ -593,7 +593,7 @@ def register():
             ('optimized', "Optimized", "Lossless optimization, good RAM improvement"),
             ('none', "None", "No optimization, lossless and faster but high RAM usage")
         ),
-        default='none')
+        default='optimized')
         
     ######### YafaRays own image output property ############
     Scene.img_output = EnumProperty(
