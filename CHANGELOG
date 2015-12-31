@@ -4,6 +4,27 @@ Note: this CHANGELOG file only shows the YafaRay-E releases and changes, not the
 
 For more information about releases and changes see: https://github.com/DavidBluecame/Blender-Exporter/releases
 
+Yafaray-E v2.0.0 (2015-12-31) for Blender 2.76b:
+------------------------------------------------
+- STRUCTURAL CHANGES to implement Render Passes. The Passes are especially intended for Direct Light and Photon Mapping integrators. Some passes may not work (or work incorrectly) in other integrators.
+- STRUCTURAL CHANGES to implement Render Views (Stereo3D / MultiView)
+- STRUCTURAL CHANGES to implement a (hopefully) improved more automatic and reliable Shadow Bias and Intersection Bias, based on triangle size and coordinates positions.
+- New Noise Control parameters, including a new clamping function to reduce noise at the cost of reducing physical accuracy and realism.
+- RAM optimization options for JPG,PNG,TGA and TIFF textures. Using "optimized" (by default now) will reduce RAM usage for those textures in approx. 70%. The "optimized" option is lossless (except in TIFF 16bit). There is a "compressed" option that is lossy but allows an extra reduction of approx. 20% in RAM usage.
+- Support for exporting in MultiLayer EXR files, that can be opened in Blender as well.
+- XML rendering now supports an option to save partially rendered images every "x" seconds, probably useful when creaiting external GUIs to the XML interface.
+- Ability to select what "internal" YafaRay Render Pass has to be mapped to an "external" Render Pass. This provides a lot of power and flexibility when generating Render Passes.
+- Object ID/Material ID passes, with option of automatic ID color pass.
+- Object ID Masking and Material ID masking (objects only, objects+shadows, shadows only)
+- Debug passes and UV debug pass available to be able to find mesh/mapping/texturing problems at the same time as rendering the scene.
+- Samplerate pass, to apply post-processing filters to the noisier parts of the render.
+- Added dispersive caustics to SPPM.
+- Changes to dispersion in rough glass.
+- Removal of entire Qt interface. As far as we know it was old, unmaintained and probably useless anyway.
+- A few speed improvements, I don't expect a significant change but I hope they help a bit, especially in 64bit systems.
+- Fixes to the material preview to be correctly refreshed after any changes to the material properties.
+
+
 
 Yafaray-E v1.1.0 (2015-11-06) for Blender 2.76:
 -----------------------------------------------
