@@ -21,6 +21,7 @@ Yafaray-E v2.0.0 (2016-01-01) for Blender 2.76b:
 - Added dispersive caustics to SPPM.
 - Changes to dispersion in rough glass.
 - Removal of entire Qt interface. As far as we know it was old, unmaintained and probably useless anyway.
+- Fix (although horrible) for the Bidirectional integrator generating black renders with some types of lights.
 - A few speed improvements, I don't expect a significant change but I hope they help a bit, especially in 64bit systems.
 - Fixes to the material preview to be correctly refreshed after any changes to the material properties.
 
