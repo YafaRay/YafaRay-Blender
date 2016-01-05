@@ -4,6 +4,11 @@ Note: this CHANGELOG file only shows the YafaRay-E releases and changes, not the
 
 For more information about releases and changes see: https://github.com/DavidBluecame/Blender-Exporter/releases
 
+Yafaray-E v2.0.1 (2016-01-05) for Blender 2.76b:
+------------------------------------------------
+- Fixed Instances not working in v2.0.0 (regression)
+
+
 Yafaray-E v2.0.0 (2016-01-01) for Blender 2.76b:
 ------------------------------------------------
 - STRUCTURAL CHANGES to implement Render Passes. The Passes are especially intended for Direct Light and Photon Mapping integrators. Some passes may not work (or work incorrectly) in other integrators.
