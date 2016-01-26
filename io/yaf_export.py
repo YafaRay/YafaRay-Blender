@@ -201,18 +201,24 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.yi.printWarning("Exporter: Problem with blend material:\"{0}\". Could not find the second material:\"{1}\"".format(mat.name,mat.material2name))
                 blendmat_error = True
             if blendmat_error:
-                    return
+                    return blendmat_error
             if mat1.name == mat2.name:
                 self.yi.printWarning("Exporter: Problem with blend material \"{0}\". \"{1}\" and \"{2}\" to blend are the same materials".format(mat.name, mat1.name, mat2.name))
 
             if mat1.mat_type == 'blend':
-                self.handleBlendMat(mat1)
+                blendmat_error = self.handleBlendMat(mat1)
+                if blendmat_error:
+                    return
+                    
             elif mat1 not in self.materials:
                 self.materials.add(mat1)
                 self.yaf_material.writeMaterial(mat1, self.scene)
 
             if mat2.mat_type == 'blend':
-                self.handleBlendMat(mat2)
+                blendmat_error = self.handleBlendMat(mat2)
+                if blendmat_error:
+                    return
+                    
             elif mat2 not in self.materials:
                 self.materials.add(mat2)
                 self.yaf_material.writeMaterial(mat2, self.scene)
