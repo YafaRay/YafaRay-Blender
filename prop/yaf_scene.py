@@ -77,7 +77,7 @@ class YafaRayNoiseControlProperties(bpy.types.PropertyGroup):
         name="Dark areas noise detection factor",
         description=("Factor used to reduce the AA threshold in dark areas."
                      " It will reduce noise in dark areas, but noise in bright areas will take longer"),
-        min=0.0, max=0.999, precision=3,
+        min=0.0, max=1.0, precision=3,
         default=0.0)
 
     variance_edge_size = IntProperty(
