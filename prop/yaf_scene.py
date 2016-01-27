@@ -53,19 +53,19 @@ class YafaRayNoiseControlProperties(bpy.types.PropertyGroup):
     sample_multiplier_factor = FloatProperty(
         name="AA sample multiplier factor",
         description="Factor to increase the AA samples multiplier for next AA pass",
-        min=1.0, max=2.0, precision=2,
+        min=1.0, max=4.0, precision=2,
         default=1.0)
 
     light_sample_multiplier_factor = FloatProperty(
         name="Light sample multiplier factor",
         description="Factor to increase the light samples multiplier for next AA pass",
-        min=1.0, max=2.0, precision=2,
+        min=1.0, max=4.0, precision=2,
         default=1.0)
 
     indirect_sample_multiplier_factor = FloatProperty(
         name="Indirect sample multiplier factor",
         description="Factor to increase the indirect samples (FG for example) multiplier for next AA pass",
-        min=1.0, max=2.0, precision=2,
+        min=1.0, max=4.0, precision=2,
         default=1.0)
 
     detect_color_noise = BoolProperty(
