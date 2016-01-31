@@ -5,6 +5,31 @@ Note: this CHANGELOG file only shows the YafaRay-E releases and changes, not the
 For more information about releases and changes see: https://github.com/DavidBluecame/Blender-Exporter/releases
 
 
+Yafaray-E v2.1.0 (2016-01-31) for Blender 2.76b:
+------------------------------------------------
+
+- Added Normal Coordinates for textures, so you can use a gradient texture mapped to normal coordinates to simulate, for example, some cloth materials (see http://yafaray.org/node/188 )
+- Fixed some crashes when changing Material/Texture settings
+- Increased max limit for Sample Multiplier Factor from 2.0 to 4.0 so more steep exponential increase of samples can be done for every pass. Be aware that the number of samples will grow very fast in every pass if the factor is above 1.5.
+
+- Advanced Controls for Material/Texture Preview
+  As requested in http://yafaray.org/node/699 I've made some changes to allow fine-grained control of the Material and Texture Preview window.
+
+  Some videos explaining the new feature:
+
+  * First tests (outdated): https://www.youtube.com/watch?v=AFWcHgufkBw
+  * Latest video with all features: https://www.youtube.com/watch?v=jBgzqZFQ3Y8  
+    
+  The new features are:
+    
+    * Ability to change key light incident angle, so we can place the terminator area on the preview object.: new parameter added to rotate the lights in the Preview window around the preview object. That should allow to set the lights in different angles to look the material under different light conditions
+    * Ability to focus in the observer's terminator area: added parameters to displace the preview object up/down, left/right as well as to scale the preview object. This way, the terminator area can be better explored in detail
+    * Ability to change light power in the material previsualisation window: added a power factor parameter for the lights and another parameter to set the color of the lights themselves to experiment with different lighting conditions on the material
+    * Ability to change previsualisation object size: with the parameter to scale the object plus added parameters to scale/displace the texture as well in the preview
+    * Rendering an object from the scene as a previsualisation object: added a parameter to select an arbitrary object from the blend scene as preview object.
+    * Background selection: added a parameter to select the desired background: "checker" is the default, "none" is a white background and "world" would be the blend scene world definition. Selecting "world" would allow a more realistic and customized material preview, but it will probably be noisier and slower (depending on the samples selected in the World definition)
+
+
 Yafaray-E v2.0.2 (2016-01-26) for Blender 2.76b:
 ------------------------------------------------
 - Fixed crash when Blend materials were used and their components were also blend, which had some component materials missing
