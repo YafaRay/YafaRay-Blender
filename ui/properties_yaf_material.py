@@ -121,6 +121,48 @@ class YAF_MATERIAL_PT_preview(MaterialButtonsPanel, Panel):
     def draw(self, context):
         self.layout.template_preview(context.material)
 
+class YAF_PT_preview_controls(MaterialButtonsPanel, Panel):
+    bl_label = "Preview Controls"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
+    #bl_options = {'DEFAULT_CLOSED'}
+
+    def draw_header(self, context):
+        scene = context.scene
+        self.layout.prop(context.scene.yafaray.preview, "enable", text="")
+    
+    def draw(self, context):
+        if context.scene.yafaray.preview.enable:
+            layout = self.layout
+            yaf_mat = active_node_mat(context.material)
+            split = layout.split()
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "objScale")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "rotZ")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "lightRotZ")
+            split = layout.split()
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "posX")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "posZ")
+            split = layout.split()
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "textureScale")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "textureOffset")
+            split = layout.split()
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "lightPowerFactor")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "lightColor", text="")
+            split = layout.split()
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "previewRayDepth")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "previewBackground", text="")
+            col = split.column()
+            col.prop_search(context.scene.yafaray.preview, "previewObject", bpy.data, "objects", text="")
 
 def draw_generator(ior_n):
     def draw(self, context):

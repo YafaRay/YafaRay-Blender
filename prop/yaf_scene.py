@@ -18,6 +18,7 @@
 
 # <pep8 compliant>
 
+import math
 import bpy
 from sys import platform
 from bpy.props import (IntProperty,
@@ -31,6 +32,8 @@ from bpy.props import (IntProperty,
 
 Scene = bpy.types.Scene
 
+def update_preview(self, context):
+    context.material.preview_render_type = context.material.preview_render_type
 
 # set fileformat for image saving on same format as in YafaRay, both have default PNG
 def call_update_fileformat(self, context):
@@ -424,6 +427,123 @@ class YafaRayRenderPassesProperties(bpy.types.PropertyGroup):
         items=(renderPassAllItems
         ),
         default="adv-subsurface-color")
+
+class YafaRayMaterialPreviewControlProperties(bpy.types.PropertyGroup):
+
+    enable = BoolProperty(
+        update=update_preview,
+        name="Material Preview Controls enabled",
+        description="Enable/Disable material preview controls",
+        default=False)
+
+    objScale = FloatProperty(
+        update=update_preview,
+        name="objScale",
+        description=("Material Preview object scaling factor"),
+        min=0.1, max=10.0, precision=2, step=10,
+        default=1.0)
+
+    rotZ = FloatProperty(
+        update=update_preview,
+        name="rotZ",
+        description=("Material Preview object rotation Z axis"),
+        precision=1, step=1000,
+        #min=math.radians(-360), max=math.radians(360),
+        subtype="ANGLE", unit="ROTATION",
+        default=0.0)
+
+    lightRotZ = FloatProperty(
+        update=update_preview,
+        name="lightRotZ",
+        description=("Material Preview light rotation Z axis"),
+        precision=1, step=1000,
+        #min=math.radians(-360), max=math.radians(360),
+        subtype="ANGLE", unit="ROTATION",
+        default=0.0)
+
+    posX = FloatProperty(
+        update=update_preview,
+        name="posX",
+        description=("Material Preview object position X"),
+        min=-10.0, max=10.0, precision=2, step=50,
+        default=0.0)
+    
+    posY = FloatProperty(
+        update=update_preview,
+        name="posY",
+        description=("Material Preview object position Y"),
+        min=-10.0, max=10.0, precision=2, step=50,
+        default=0.0)
+
+    posZ = FloatProperty(
+        update=update_preview,
+        name="posZ",
+        description=("Material Preview object position Z"),
+        min=-10.0, max=10.0, precision=2, step=50,
+        default=0.0)
+
+    lightPowerFactor = FloatProperty(
+        update=update_preview,
+        name="lightPowerFactor",
+        description=("Material Preview power factor for lights"),
+        min=0.0, max=10.0, precision=2, step=10,
+        default=1.0)
+
+    lightColor = FloatVectorProperty(
+        update=update_preview,
+        name="lightColor",
+        description=("Material Preview color for lights"),
+        subtype='COLOR',
+        step=1, precision=2,
+        min=0.0, max=1.0,
+        soft_min=0.0, soft_max=1.0,
+        default=(1.0, 1.0, 1.0))
+
+    textureScale = FloatVectorProperty(
+        update=update_preview,
+        name="textureScale",
+        description=("Material Preview texture scaling factors"),
+        subtype='XYZ',
+        size=2,
+        step=1, precision=2,
+        #min=0.0, max=1.0,
+        #soft_min=0.0, soft_max=1.0,
+        default=(1.0, 1.0))
+
+    textureOffset = FloatVectorProperty(
+        update=update_preview,
+        name="textureOffset",
+        description=("Material Preview texture offset values"),
+        subtype='XYZ',
+        size=2,
+        step=1, precision=2,
+        #min=0.0, max=1.0,
+        #soft_min=0.0, soft_max=1.0,
+        default=(0.0, 0.0))
+
+    previewRayDepth = IntProperty(
+        update=update_preview,
+        name="previewRayDepth",
+        description=("Material Preview max ray depth, set higher for better (slower) glass preview"),
+        min=0, max=64, default=2)
+
+    previewBackground = EnumProperty(
+        update=update_preview,
+        name="previewBackground",
+        description=("Material Preview background type"),
+        items=(
+            ('none', "None", "No background", 0),
+            ('checker', "Checker", "Checker background (default)", 1),
+            ('world', "Scene World", "Scene world background (can be slow!)", 2)
+        ),
+        default="checker")
+
+    previewObject = StringProperty(
+        update=update_preview,
+        name="previewObject",
+        description=("Material Preview custom object to be shown, if empty will use default preview objects"),
+        default="")
+
 
 def register():
     ########### YafaRays general settings properties #############
@@ -834,6 +954,9 @@ def register():
     bpy.utils.register_class(YafaRayNoiseControlProperties)
     YafaRayProperties.noise_control = PointerProperty(type=YafaRayNoiseControlProperties)
 
+    bpy.utils.register_class(YafaRayMaterialPreviewControlProperties)
+    YafaRayProperties.preview = PointerProperty(type=YafaRayMaterialPreviewControlProperties)
+
 def unregister():
     Scene.gs_ray_depth
     Scene.gs_shadow_depth
@@ -905,4 +1028,5 @@ def unregister():
 
     bpy.utils.unregister_class(YafaRayNoiseControlProperties)
     bpy.utils.unregister_class(YafaRayRenderPassesProperties)
+    bpy.utils.unregister_class(YafaRayMaterialPreviewControlProperties)
     bpy.utils.unregister_class(YafaRayProperties)

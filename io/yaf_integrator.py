@@ -18,6 +18,7 @@
 
 # <pep8 compliant>
 
+import bpy
 
 class yafIntegrator:
     def __init__(self, interface):
@@ -35,6 +36,8 @@ class yafIntegrator:
             yi.paramsSetBool("bg_transp_refract", False)
 
         yi.paramsSetInt("raydepth", scene.gs_ray_depth)
+        if scene.name == "preview" and bpy.data.scenes[0].yafaray.preview.enable:
+            yi.paramsSetInt("raydepth", bpy.data.scenes[0].yafaray.preview.previewRayDepth)
         yi.paramsSetInt("shadowDepth", scene.gs_shadow_depth)
         yi.paramsSetBool("transpShad", scene.gs_transp_shad)
 

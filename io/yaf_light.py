@@ -19,9 +19,17 @@
 # <pep8 compliant>
 
 import os
-from mathutils import Vector
+import mathutils
+import bpy
 from math import degrees, pi, sin, cos
 from bpy.path import abspath
+
+def multiplyMatrix4x4Vector4(matrix, vector):
+    result = mathutils.Vector((0.0, 0.0, 0.0, 0.0))
+    for i in range(4):
+        result[i] = vector * matrix[i]  # use reverse vector multiply order, API changed with rev. 38674
+
+    return result
 
 class yafLight:
     def __init__(self, interface, preview):
@@ -96,6 +104,12 @@ class yafLight:
             elif name == "Lamp.008":
                 lampType = "sun"
                 power = 0.8
+            
+            if bpy.data.scenes[0].yafaray.preview.enable:
+                matrix2 = mathutils.Matrix.Rotation(bpy.data.scenes[0].yafaray.preview.lightRotZ, 4, 'Z')
+                pos = multiplyMatrix4x4Vector4(matrix2, mathutils.Vector((pos[0], pos[1], pos[2], pos[3])))
+                color = bpy.data.scenes[0].yafaray.preview.lightColor
+                power *= bpy.data.scenes[0].yafaray.preview.lightPowerFactor
 
         yi.paramsClearAll()
 

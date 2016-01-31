@@ -135,6 +135,49 @@ class YAF_TEXTURE_PT_preview(YAF_TextureButtonsPanel, Panel):
         if context.space_data.texture_context == 'BRUSH':
             layout.prop(tex, "use_preview_alpha")
 
+class YAF_PT_preview_texture_controls(YAF_TextureButtonsPanel, Panel):
+    bl_label = "Preview Controls"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
+    #bl_options = {'DEFAULT_CLOSED'}
+
+    def draw_header(self, context):
+        scene = context.scene
+        self.layout.prop(context.scene.yafaray.preview, "enable", text="")
+    
+    def draw(self, context):
+        if context.scene.yafaray.preview.enable:
+            layout = self.layout
+            yaf_mat = active_node_mat(context.material)
+            split = layout.split()
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "objScale")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "rotZ")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "lightRotZ")
+            split = layout.split()
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "posX")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "posZ")
+            split = layout.split()
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "textureScale")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "textureOffset")
+            split = layout.split()
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "lightPowerFactor")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "lightColor", text="")
+            split = layout.split()
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "previewRayDepth")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "previewBackground")
+            col = split.column()
+            col.prop_search(context.scene.yafaray.preview, "previewObject", bpy.data, "objects", text="")
+
 
 class YAF_TextureSlotPanel(YAF_TextureButtonsPanel):
     COMPAT_ENGINES = {'YAFA_RENDER'}

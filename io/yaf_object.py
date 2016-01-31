@@ -215,7 +215,13 @@ class yafObject(object):
             self.writeParticleStrands(obj, matrix)
 
         else:  # The rest of the object types
-            self.writeMesh(obj, matrix)
+            if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable:
+                if "checkers" in obj.name and bpy.data.scenes[0].yafaray.preview.previewBackground == "checker":
+                        self.writeMesh(obj, matrix)
+                elif "checkers" not in obj.name:
+                        self.writeMesh(obj, matrix)
+            else:        
+                self.writeMesh(obj, matrix)
 
     def writeInstanceBase(self, obj):
 
@@ -256,7 +262,11 @@ class yafObject(object):
         self.yi.paramsClearAll()
         self.yi.paramsSetInt("obj_pass_index", obj.pass_index)
 
-        self.writeGeometry(ID, obj, matrix, obj.pass_index)  # obType in 0, default, the object is rendered
+        if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable and bpy.data.scenes[0].yafaray.preview.previewObject != "" and "preview" in obj.name and bpy.data.scenes[0].objects[bpy.data.scenes[0].yafaray.preview.previewObject].type=="MESH":
+            ymat = self.materialMap[obj.active_material]
+            self.writeGeometry(ID, bpy.data.scenes[0].objects[bpy.data.scenes[0].yafaray.preview.previewObject], matrix, obj.pass_index, 0, ymat)
+        else:
+            self.writeGeometry(ID, obj, matrix, obj.pass_index)  # obType in 0, default, the object is rendered
 
     def writeBGPortal(self, obj, matrix):
 
@@ -435,6 +445,19 @@ class yafObject(object):
         # Transform the mesh after orcos have been stored and only if matrix exists
         if matrix is not None:
             mesh.transform(matrix)
+            
+        if self.is_preview:
+            if("checker" in obj.name):
+                matrix2 = mathutils.Matrix.Scale(4, 4)
+                mesh.transform(matrix2)
+            elif bpy.data.scenes[0].yafaray.preview.enable:
+                matrix2 = mathutils.Matrix.Scale(bpy.data.scenes[0].yafaray.preview.objScale, 4)
+                mesh.transform(matrix2)
+                matrix2 = mathutils.Matrix.Rotation(bpy.data.scenes[0].yafaray.preview.rotZ, 4, 'Z')
+                mesh.transform(matrix2)
+                matrix2 = matrix2 = mathutils.Matrix.Translation(mathutils.Vector((bpy.data.scenes[0].yafaray.preview.posX, bpy.data.scenes[0].yafaray.preview.posY, bpy.data.scenes[0].yafaray.preview.posZ)))
+                mesh.transform(matrix2)
+            pass
 
         self.yi.paramsClearAll()
         self.yi.startGeometry()

@@ -75,7 +75,11 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.yaf_object.setScene(self.scene)
         self.exportObjects()
         self.yaf_object.createCameras()
-        self.yaf_world.exportWorld(self.scene)
+        
+        if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable and bpy.data.scenes[0].yafaray.preview.previewBackground == "world":
+            self.yaf_world.exportWorld(bpy.data.scenes[0])
+        else:
+            self.yaf_world.exportWorld(self.scene)
 
     def exportTexture(self, obj):
         # First export the textures of the materials type 'blend'
@@ -201,7 +205,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.yi.printWarning("Exporter: Problem with blend material:\"{0}\". Could not find the second material:\"{1}\"".format(mat.name,mat.material2name))
                 blendmat_error = True
             if blendmat_error:
-                    return blendmat_error
+                return blendmat_error
             if mat1.name == mat2.name:
                 self.yi.printWarning("Exporter: Problem with blend material \"{0}\". \"{1}\" and \"{2}\" to blend are the same materials".format(mat.name, mat1.name, mat2.name))
 
