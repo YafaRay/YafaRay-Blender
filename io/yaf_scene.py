@@ -18,6 +18,7 @@
 
 # <pep8 compliant>
 
+import bpy
 
 def computeSceneSize(render):
     sizeX = int(render.resolution_x * render.resolution_percentage * 0.01)
@@ -90,6 +91,10 @@ def exportAA(yi, scene):
     yi.paramsSetFloat("AA_clamp_samples", scene.yafaray.noise_control.clamp_samples)
     yi.paramsSetFloat("AA_clamp_indirect", scene.yafaray.noise_control.clamp_indirect)
 
+    if scene.name == "preview" and bpy.data.scenes[0].yafaray.preview.enable:
+        yi.paramsSetInt("AA_passes", bpy.data.scenes[0].yafaray.preview.previewAApasses)
+        yi.paramsSetFloat("AA_threshold", 0.01)
+
 
 def exportRenderSettings(yi, scene):
     yi.printInfo("Exporting Render Settings")
@@ -148,6 +153,9 @@ def exportRenderSettings(yi, scene):
         yi.paramsSetInt("height", sizeY)
 
     yi.paramsSetBool("show_sam_pix", scene.gs_show_sam_pix)
+
+    if scene.name == "preview" and bpy.data.scenes[0].yafaray.preview.enable:
+        yi.paramsSetBool("show_sam_pix", False)
 
     if scene.gs_type_render == "file" or scene.gs_type_render == "xml":
         yi.paramsSetBool("premult", scene.gs_premult)

@@ -461,33 +461,19 @@ class YafaRayMaterialPreviewControlProperties(bpy.types.PropertyGroup):
         subtype="ANGLE", unit="ROTATION",
         default=0.0)
 
-    posX = FloatProperty(
+    keyLightPowerFactor = FloatProperty(
         update=update_preview,
-        name="posX",
-        description=("Material Preview object position X"),
-        min=-10.0, max=10.0, precision=2, step=50,
-        default=0.0)
-    
-    posY = FloatProperty(
-        update=update_preview,
-        name="posY",
-        description=("Material Preview object position Y"),
-        min=-10.0, max=10.0, precision=2, step=50,
-        default=0.0)
-
-    posZ = FloatProperty(
-        update=update_preview,
-        name="posZ",
-        description=("Material Preview object position Z"),
-        min=-10.0, max=10.0, precision=2, step=50,
-        default=0.0)
-
-    lightPowerFactor = FloatProperty(
-        update=update_preview,
-        name="lightPowerFactor",
-        description=("Material Preview power factor for lights"),
+        name="keyLightPowerFactor",
+        description=("Material Preview power factor for the key light"),
         min=0.0, max=10.0, precision=2, step=10,
         default=1.0)
+
+    fillLightPowerFactor = FloatProperty(
+        update=update_preview,
+        name="lightPowerFactor",
+        description=("Material Preview power factor for the fill lights"),
+        min=0.0, max=10.0, precision=2, step=10,
+        default=0.5)
 
     lightColor = FloatVectorProperty(
         update=update_preview,
@@ -499,33 +485,17 @@ class YafaRayMaterialPreviewControlProperties(bpy.types.PropertyGroup):
         soft_min=0.0, soft_max=1.0,
         default=(1.0, 1.0, 1.0))
 
-    textureScale = FloatVectorProperty(
-        update=update_preview,
-        name="textureScale",
-        description=("Material Preview texture scaling factors"),
-        subtype='XYZ',
-        size=2,
-        step=1, precision=2,
-        #min=0.0, max=1.0,
-        #soft_min=0.0, soft_max=1.0,
-        default=(1.0, 1.0))
-
-    textureOffset = FloatVectorProperty(
-        update=update_preview,
-        name="textureOffset",
-        description=("Material Preview texture offset values"),
-        subtype='XYZ',
-        size=2,
-        step=1, precision=2,
-        #min=0.0, max=1.0,
-        #soft_min=0.0, soft_max=1.0,
-        default=(0.0, 0.0))
-
     previewRayDepth = IntProperty(
         update=update_preview,
         name="previewRayDepth",
         description=("Material Preview max ray depth, set higher for better (slower) glass preview"),
-        min=0, max=64, default=2)
+        min=0, max=20, default=2)
+
+    previewAApasses = IntProperty(
+        update=update_preview,
+        name="previewAApasses",
+        description=("Material Preview AA passes, set higher for better (slower) preview"),
+        min=1, max=20, default=1)
 
     previewBackground = EnumProperty(
         update=update_preview,

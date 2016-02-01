@@ -455,8 +455,6 @@ class yafObject(object):
                 mesh.transform(matrix2)
                 matrix2 = mathutils.Matrix.Rotation(bpy.data.scenes[0].yafaray.preview.rotZ, 4, 'Z')
                 mesh.transform(matrix2)
-                matrix2 = matrix2 = mathutils.Matrix.Translation(mathutils.Vector((bpy.data.scenes[0].yafaray.preview.posX, bpy.data.scenes[0].yafaray.preview.posY, bpy.data.scenes[0].yafaray.preview.posZ)))
-                mesh.transform(matrix2)
             pass
 
         self.yi.paramsClearAll()

@@ -191,12 +191,8 @@ class yafMaterial:
         mappingCoords = switchMappingCoords.get(mtex.mapping, 'plain')
         yi.paramsSetString("mapping", mappingCoords)
 
-        if self.preview and bpy.data.scenes[0].yafaray.preview.enable:
-            yi.paramsSetPoint("scale", mtex.scale[0]*bpy.data.scenes[0].yafaray.preview.textureScale[0], mtex.scale[1]*bpy.data.scenes[0].yafaray.preview.textureScale[1], mtex.scale[2])
-            yi.paramsSetPoint("offset", mtex.offset[0]+bpy.data.scenes[0].yafaray.preview.textureOffset[0], mtex.offset[1]+bpy.data.scenes[0].yafaray.preview.textureOffset[1], mtex.offset[2])
-        else:
-            yi.paramsSetPoint("scale", mtex.scale[0], mtex.scale[1], mtex.scale[2])
-            yi.paramsSetPoint("offset", mtex.offset[0], mtex.offset[1], mtex.offset[2])
+        yi.paramsSetPoint("scale", mtex.scale[0], mtex.scale[1], mtex.scale[2])
+        yi.paramsSetPoint("offset", mtex.offset[0], mtex.offset[1], mtex.offset[2])
 
         if mtex.use_map_normal:  # || mtex->maptoneg & MAP_NORM )
             # scale up the normal factor, it resembles

@@ -94,22 +94,26 @@ class yafLight:
             if name == "Lamp":
                 pos = (-6, -4, 8, 1.0)
                 power = 5
+                power *= bpy.data.scenes[0].yafaray.preview.fillLightPowerFactor
+
             elif name == "Lamp.001":
                 pos = (6, -6, -2, 1.0)
                 power = 6
+                power *= bpy.data.scenes[0].yafaray.preview.fillLightPowerFactor
             elif name == "Lamp.002":
                 pos = (-2.9123109, -7.270790733, 4.439187765, 1.0)
                 to = (-0.0062182024121284485, 0.6771485209465027, 1.8015732765197754, 1.0)
                 power = 5
+                power *= bpy.data.scenes[0].yafaray.preview.keyLightPowerFactor
             elif name == "Lamp.008":
                 lampType = "sun"
                 power = 0.8
+                power *= bpy.data.scenes[0].yafaray.preview.keyLightPowerFactor
             
             if bpy.data.scenes[0].yafaray.preview.enable:
                 matrix2 = mathutils.Matrix.Rotation(bpy.data.scenes[0].yafaray.preview.lightRotZ, 4, 'Z')
                 pos = multiplyMatrix4x4Vector4(matrix2, mathutils.Vector((pos[0], pos[1], pos[2], pos[3])))
                 color = bpy.data.scenes[0].yafaray.preview.lightColor
-                power *= bpy.data.scenes[0].yafaray.preview.lightPowerFactor
 
         yi.paramsClearAll()
 
