@@ -157,6 +157,21 @@ class YAF_PT_preview_controls(MaterialButtonsPanel, Panel):
             col.prop(context.scene.yafaray.preview, "previewBackground", text="")
             col = split.column()
             col.prop_search(context.scene.yafaray.preview, "previewObject", bpy.data, "objects", text="")
+            #split = layout.split()
+            #col = split.column()
+            #col.prop(context.scene.yafaray.preview, "camDist")
+            #col = split.column()
+            #col.prop(context.scene.yafaray.preview, "camRotIncl")
+            #col = split.column()
+            #col.prop(context.scene.yafaray.preview, "camRotAzi")
+            #col = split.column()
+            #col.prop(context.scene.yafaray.preview, "camRotZ")
+            split = layout.split() 
+            col = split.column()
+            col.operator("preview.dynamiccamrot", text='start dynamic camRot (ESC to exit)')
+            col = split.column()
+            col.operator("preview.camrotreset", text='reset camRot')
+
 
 def draw_generator(ior_n):
     def draw(self, context):

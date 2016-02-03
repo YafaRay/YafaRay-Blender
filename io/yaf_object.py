@@ -165,6 +165,17 @@ class yafObject(object):
             yi.paramsSetInt("resx", x)
             yi.paramsSetInt("resy", y)
 
+            if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable:
+
+                    incl = bpy.data.scenes[0].yafaray.preview.camRotIncl
+                    azi = bpy.data.scenes[0].yafaray.preview.camRotAzi
+                    rotZ = bpy.data.scenes[0].yafaray.preview.camRotZ
+                    dist = bpy.data.scenes[0].yafaray.preview.camDist
+
+                    pos = (dist*math.sin(incl)*math.cos(azi), dist*math.sin(incl)*math.sin(azi), dist*math.cos(incl))
+                    up = (math.sin(rotZ), 0, math.cos(rotZ))
+                    to = (0,0,0)
+
             yi.paramsSetPoint("from", pos[0], pos[1], pos[2])
             yi.paramsSetPoint("up", up[0], up[1], up[2])
             yi.paramsSetPoint("to", to[0], to[1], to[2])
@@ -262,9 +273,23 @@ class yafObject(object):
         self.yi.paramsClearAll()
         self.yi.paramsSetInt("obj_pass_index", obj.pass_index)
 
-        if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable and bpy.data.scenes[0].yafaray.preview.previewObject != "" and "preview" in obj.name and bpy.data.scenes[0].objects[bpy.data.scenes[0].yafaray.preview.previewObject].type=="MESH":
+        if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable and "preview" in obj.name:
             ymat = self.materialMap[obj.active_material]
-            self.writeGeometry(ID, bpy.data.scenes[0].objects[bpy.data.scenes[0].yafaray.preview.previewObject], matrix, obj.pass_index, 0, ymat)
+            
+            if bpy.data.scenes[0].yafaray.preview.previewObject != "" and bpy.data.scenes[0].objects[bpy.data.scenes[0].yafaray.preview.previewObject].type=="MESH":
+                    customObj = bpy.data.scenes[0].objects[bpy.data.scenes[0].yafaray.preview.previewObject]
+                    previewMatrix = customObj.matrix_world.copy()
+                    previewMatrix[0][3]=0
+                    previewMatrix[1][3]=0
+                    previewMatrix[2][3]=0
+                    self.writeGeometry(ID, customObj, previewMatrix, obj.pass_index, 0, ymat)
+            else:
+                    previewMatrix = obj.matrix_world.copy()
+                    previewMatrix[0][3]=0
+                    previewMatrix[1][3]=0
+                    previewMatrix[2][3]=0
+                    
+                    self.writeGeometry(ID, obj, previewMatrix, obj.pass_index)
         else:
             self.writeGeometry(ID, obj, matrix, obj.pass_index)  # obType in 0, default, the object is rendered
 

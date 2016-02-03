@@ -33,7 +33,10 @@ from bpy.props import (IntProperty,
 Scene = bpy.types.Scene
 
 def update_preview(self, context):
-    context.material.preview_render_type = context.material.preview_render_type
+    if hasattr(context, "material"):
+        context.material.preview_render_type = context.material.preview_render_type
+    elif len(bpy.data.materials) > 0:
+        bpy.data.materials[0].preview_render_type = bpy.data.materials[0].preview_render_type
 
 # set fileformat for image saving on same format as in YafaRay, both have default PNG
 def call_update_fileformat(self, context):
@@ -440,7 +443,8 @@ class YafaRayMaterialPreviewControlProperties(bpy.types.PropertyGroup):
         update=update_preview,
         name="objScale",
         description=("Material Preview object scaling factor"),
-        min=0.1, max=10.0, precision=2, step=10,
+        min=0.0, #max=10.0, 
+        precision=2, step=10,
         default=1.0)
 
     rotZ = FloatProperty(
@@ -513,6 +517,101 @@ class YafaRayMaterialPreviewControlProperties(bpy.types.PropertyGroup):
         name="previewObject",
         description=("Material Preview custom object to be shown, if empty will use default preview objects"),
         default="")
+
+    camRotIncl = FloatProperty(
+        update=update_preview,
+        name="camRotIncl", #Theta angle
+        description=("Material Preview camera Inclination"),
+        precision=1, step=1000,
+        min=math.radians(10), max=math.radians(120),
+        subtype="ANGLE", unit="ROTATION",
+        default=1.4904173325)
+
+    camRotAzi = FloatProperty(
+        update=update_preview,
+        name="camRotAzi", #Phi angle
+        description=("Material Preview camera rotation Azimuth"),
+        precision=1, step=1000,
+        #min=math.radians(-360), max=math.radians(360),
+        subtype="ANGLE", unit="ROTATION",
+        default=-1.5718435101)
+
+    camRotZ = FloatProperty(
+        update=update_preview,
+        name="camRotZ",
+        description=("Material Preview camera rotation Z axis"),
+        precision=1, step=1000,
+        #min=math.radians(-360), max=math.radians(360),
+        subtype="ANGLE", unit="ROTATION",
+        default=0.0)
+
+    camDist = FloatProperty(
+        update=update_preview,
+        name="camDist",
+        description=("Material Preview Camera distance to object"),
+        min=0.1, max=22.0, precision=2, step=100,
+        default=12.0)
+
+    class OBJECT_OT_CamRotReset(bpy.types.Operator):
+        """ Reset camera rotation/zoom to initial values. """
+        bl_idname = "preview.camrotreset"
+        bl_label = "reset camera rotation"
+        country = bpy.props.StringProperty()
+     
+        def execute(self, context):
+            bpy.data.scenes[0].yafaray.preview.camRotIncl = 1.4904173325
+            bpy.data.scenes[0].yafaray.preview.camRotAzi = -1.5718435101
+            bpy.data.scenes[0].yafaray.preview.camDist = 12
+            return{'FINISHED'}    
+
+    class OBJECT_OT_DynamicCamRot(bpy.types.Operator):
+        """ Start dynamic camera rotation. Once started, hold left mouse button and drag to rotate preview. Also hold CTRL to zoom. Press ESC or right click to cancel. """
+        bl_idname = "preview.dynamiccamrot"
+        bl_label = "dynamic camera rotation"
+     
+        def __init__(self):
+            #print("Start moving")
+            pass
+     
+        def __del__(self):
+            #print("Moved from (%d %d) to (%d %d)" % 
+            #    (self.init_x, self.init_y, self.x, self.y))
+            pass
+     
+        def execute(self, context):
+            #context.object.location.x = self.x / 100.0
+            #context.object.location.y = self.y / 100.0
+            pass
+
+        def modal(self, context, event):
+            if event.type == 'MOUSEMOVE':  # Apply
+                self.x = event.mouse_x
+                self.y = event.mouse_y
+                if event.value == "PRESS":
+                    if event.ctrl:
+                        bpy.data.scenes[0].yafaray.preview.camDist -= (self.y - event.mouse_prev_y)/10
+                    else:
+                        bpy.data.scenes[0].yafaray.preview.camRotIncl += (self.y - event.mouse_prev_y)/100
+                        bpy.data.scenes[0].yafaray.preview.camRotAzi -= (self.x - event.mouse_prev_x)/100
+
+                self.execute(context)
+
+            #elif event.type == 'LEFTMOUSE':  # Confirm
+                #return {'FINISHED'}
+            elif event.type in ('RIGHTMOUSE', 'ESC'):  # Cancel
+                return {'CANCELLED'}
+     
+            return {'RUNNING_MODAL'}
+     
+        def invoke(self, context, event):
+            self.x = event.mouse_x
+            self.y = event.mouse_y
+            self.init_x = self.x
+            self.init_y = self.y
+            self.execute(context)
+     
+            print(context.window_manager.modal_handler_add(self))
+            return {'RUNNING_MODAL'}
 
 
 def register():
