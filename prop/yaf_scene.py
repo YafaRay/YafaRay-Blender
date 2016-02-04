@@ -551,6 +551,13 @@ class YafaRayMaterialPreviewControlProperties(bpy.types.PropertyGroup):
         description=("Material Preview Camera distance to object"),
         min=0.1, max=22.0, precision=2, step=100,
         default=12.0)
+        
+    camDynRotRunning = BoolProperty(
+        #update=update_preview,
+        name="camDynRotRunning",
+        description="Shows when the Dynamic Camera Rotation is running",
+        default=False)
+        
 
     class OBJECT_OT_CamRotReset(bpy.types.Operator):
         """ Reset camera rotation/zoom to initial values. """
@@ -570,14 +577,11 @@ class YafaRayMaterialPreviewControlProperties(bpy.types.PropertyGroup):
         bl_label = "dynamic camera rotation"
      
         def __init__(self):
-            #print("Start moving")
-            pass
+            bpy.data.scenes[0].yafaray.preview.camDynRotRunning = True
      
         def __del__(self):
-            #print("Moved from (%d %d) to (%d %d)" % 
-            #    (self.init_x, self.init_y, self.x, self.y))
-            pass
-     
+            bpy.data.scenes[0].yafaray.preview.camDynRotRunning = False
+            
         def execute(self, context):
             #context.object.location.x = self.x / 100.0
             #context.object.location.y = self.y / 100.0
