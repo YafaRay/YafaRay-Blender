@@ -19,6 +19,7 @@
 # <pep8 compliant>
 
 import os
+from mathutils import Vector
 import mathutils
 import bpy
 from math import degrees, pi, sin, cos
