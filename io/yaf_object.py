@@ -167,13 +167,15 @@ class yafObject(object):
 
             if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable:
 
-                    incl = bpy.data.scenes[0].yafaray.preview.camRotIncl
-                    azi = bpy.data.scenes[0].yafaray.preview.camRotAzi
-                    rotZ = bpy.data.scenes[0].yafaray.preview.camRotZ
+                    #incl = bpy.data.scenes[0].yafaray.preview.camRotIncl
+                    #azi = bpy.data.scenes[0].yafaray.preview.camRotAzi
+                    rot = bpy.data.scenes[0].yafaray.preview.camRot
                     dist = bpy.data.scenes[0].yafaray.preview.camDist
 
-                    pos = (dist*math.sin(incl)*math.cos(azi), dist*math.sin(incl)*math.sin(azi), dist*math.cos(incl))
-                    up = (math.sin(rotZ), 0, math.cos(rotZ))
+                    #pos = (dist*math.sin(incl)*math.cos(azi), dist*math.sin(incl)*math.sin(azi), dist*math.cos(incl))
+                    #up = (math.sin(rotZ), 0, math.cos(rotZ))
+                    pos = (-dist*rot[0], -dist*rot[2], -dist*rot[1])
+                    up = (0,0,1)
                     to = (0,0,0)
 
             yi.paramsSetPoint("from", pos[0], pos[1], pos[2])

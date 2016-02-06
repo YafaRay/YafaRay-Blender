@@ -479,10 +479,20 @@ class YafaRayMaterialPreviewControlProperties(bpy.types.PropertyGroup):
         min=0.0, max=10.0, precision=2, step=10,
         default=0.5)
 
-    lightColor = FloatVectorProperty(
+    keyLightColor = FloatVectorProperty(
         update=update_preview,
-        name="lightColor",
-        description=("Material Preview color for lights"),
+        name="keyLightColor",
+        description=("Material Preview color for key light"),
+        subtype='COLOR',
+        step=1, precision=2,
+        min=0.0, max=1.0,
+        soft_min=0.0, soft_max=1.0,
+        default=(1.0, 1.0, 1.0))
+
+    fillLightColor = FloatVectorProperty(
+        update=update_preview,
+        name="fillLightColor",
+        description=("Material Preview color for fill lights"),
         subtype='COLOR',
         step=1, precision=2,
         min=0.0, max=1.0,
@@ -518,33 +528,6 @@ class YafaRayMaterialPreviewControlProperties(bpy.types.PropertyGroup):
         description=("Material Preview custom object to be shown, if empty will use default preview objects"),
         default="")
 
-    camRotIncl = FloatProperty(
-        update=update_preview,
-        name="camRotIncl", #Theta angle
-        description=("Material Preview camera Inclination"),
-        precision=1, step=1000,
-        min=math.radians(10), max=math.radians(120),
-        subtype="ANGLE", unit="ROTATION",
-        default=1.4904173325)
-
-    camRotAzi = FloatProperty(
-        update=update_preview,
-        name="camRotAzi", #Phi angle
-        description=("Material Preview camera rotation Azimuth"),
-        precision=1, step=1000,
-        #min=math.radians(-360), max=math.radians(360),
-        subtype="ANGLE", unit="ROTATION",
-        default=-1.5718435101)
-
-    camRotZ = FloatProperty(
-        update=update_preview,
-        name="camRotZ",
-        description=("Material Preview camera rotation Z axis"),
-        precision=1, step=1000,
-        #min=math.radians(-360), max=math.radians(360),
-        subtype="ANGLE", unit="ROTATION",
-        default=0.0)
-
     camDist = FloatProperty(
         update=update_preview,
         name="camDist",
@@ -552,70 +535,46 @@ class YafaRayMaterialPreviewControlProperties(bpy.types.PropertyGroup):
         min=0.1, max=22.0, precision=2, step=100,
         default=12.0)
         
-    camDynRotRunning = BoolProperty(
-        #update=update_preview,
-        name="camDynRotRunning",
-        description="Shows when the Dynamic Camera Rotation is running",
-        default=False)
-        
+    camRot = FloatVectorProperty(
+        update=update_preview,
+        name="camRot",
+        description=("Material Preview camera rotation"),
+        subtype='DIRECTION',
+        #step=10, precision=3,
+        #min=-1.0, max=1.0,
+        default=(0.0, 0.0, 1.0)
+        )        
 
     class OBJECT_OT_CamRotReset(bpy.types.Operator):
         """ Reset camera rotation/zoom to initial values. """
         bl_idname = "preview.camrotreset"
-        bl_label = "reset camera rotation"
+        bl_label = "reset camera rotation/distance values to defaults"
         country = bpy.props.StringProperty()
      
         def execute(self, context):
-            bpy.data.scenes[0].yafaray.preview.camRotIncl = 1.4904173325
-            bpy.data.scenes[0].yafaray.preview.camRotAzi = -1.5718435101
+            bpy.data.scenes[0].yafaray.preview.camRot = (0,0,1)
             bpy.data.scenes[0].yafaray.preview.camDist = 12
             return{'FINISHED'}    
 
-    class OBJECT_OT_DynamicCamRot(bpy.types.Operator):
-        """ Start dynamic camera rotation. Once started, hold left mouse button and drag to rotate preview. Also hold CTRL to zoom. Press ESC or right click to cancel. """
-        bl_idname = "preview.dynamiccamrot"
-        bl_label = "dynamic camera rotation"
+    class OBJECT_OT_CamZoomIn(bpy.types.Operator):
+        """ Camera zoom in (reduces distance between camera and object) """
+        bl_idname = "preview.camzoomin"
+        bl_label = "reset camera rotation/distance values to defaults"
+        country = bpy.props.StringProperty()
      
-        def __init__(self):
-            bpy.data.scenes[0].yafaray.preview.camDynRotRunning = True
-     
-        def __del__(self):
-            bpy.data.scenes[0].yafaray.preview.camDynRotRunning = False
-            
         def execute(self, context):
-            #context.object.location.x = self.x / 100.0
-            #context.object.location.y = self.y / 100.0
-            pass
+            bpy.data.scenes[0].yafaray.preview.camDist -= 0.5;
+            return{'FINISHED'}    
 
-        def modal(self, context, event):
-            if event.type == 'MOUSEMOVE':  # Apply
-                self.x = event.mouse_x
-                self.y = event.mouse_y
-                if event.value == "PRESS":
-                    if event.ctrl:
-                        bpy.data.scenes[0].yafaray.preview.camDist -= (self.y - event.mouse_prev_y)/10
-                    else:
-                        bpy.data.scenes[0].yafaray.preview.camRotIncl += (self.y - event.mouse_prev_y)/100
-                        bpy.data.scenes[0].yafaray.preview.camRotAzi -= (self.x - event.mouse_prev_x)/100
-
-                self.execute(context)
-
-            #elif event.type == 'LEFTMOUSE':  # Confirm
-                #return {'FINISHED'}
-            elif event.type in ('RIGHTMOUSE', 'ESC'):  # Cancel
-                return {'CANCELLED'}
+    class OBJECT_OT_CamZoomOut(bpy.types.Operator):
+        """ Camera zoom out (increases distance between camera and object) """
+        bl_idname = "preview.camzoomout"
+        bl_label = "reset camera rotation/distance values to defaults"
+        country = bpy.props.StringProperty()
      
-            return {'RUNNING_MODAL'}
-     
-        def invoke(self, context, event):
-            self.x = event.mouse_x
-            self.y = event.mouse_y
-            self.init_x = self.x
-            self.init_y = self.y
-            self.execute(context)
-     
-            print(context.window_manager.modal_handler_add(self))
-            return {'RUNNING_MODAL'}
+        def execute(self, context):
+            bpy.data.scenes[0].yafaray.preview.camDist += 0.5;
+            return{'FINISHED'}    
 
 
 def register():
