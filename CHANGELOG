@@ -4,6 +4,33 @@ Note: this CHANGELOG file only shows the YafaRay-E releases and changes, not the
 
 For more information about releases and changes see: https://github.com/DavidBluecame/Blender-Exporter/releases
 
+Yafaray-E v2.1.1 (2016-02-06) for Blender 2.76b:
+------------------------------------------------
+Note: there has been important changes and bug fixes in this version. They have solved some long-standing issues but perhaps they could cause new issues and unexpected results, so we have to keep an eye on them.
+
+* IMPORTANT: Fix for incorrect IBL lighting in World Background Texture when set to Angular. See: http://www.yafaray.org/node/714
+
+* IMPORTANT: Adjustment to the automatic intersection/shadow bias calculation formula to avoid black artifacts in the scenes with fine details. However, now we can get again some black dots in some scenes again. For now, no good solution at hand (any good solution would require fundamental changes to the engine and probably slow down the renders in a significant amount). However, I hope to have found a better balance now. See: http://blenderartists.org/forum/showthread.php?389385-YafaRay-E-(Experimental)-v2-0-2-builds-Windows-Linux-and-Mac-OSX-for-Blender-2-76b&p=3004974&viewfull=1#post3004974
+
+* IMPORTANT: Fix for black dots (alpha=0) sometimes when using Mitchell/Lanzcos filters. It's not clear what is the best way of solving this problem. This fix is the one that makes more sense but could cause new issues, we have to keep an eye on this. See: http://www.yafaray.org/node/712
+
+* Fixed Black artifacts in World Background Textures. See: http://www.yafaray.org/node/714
+
+* Fixed regression error in v2.1.0 when using Area Lights. See: http://www.yafaray.org/node/713
+
+* Fixed World Preview not updating correctly. This is probably caused by Blender itself, I had to use the same workaround I used in the past to fix the material preview updating problem
+
+* Fixed python error when selecting an image texture before with no image opened yet.
+
+* "Final" changes to the Material Preview Advanced Controls:
+    - Added Dynamic Camera Rotation & Zoom.
+    - Changes to ensure the preview object is centered and rotation keeps it always in the centre.
+    - Changes to keep the scale/proportions of custom preview objects
+    - Added AA Passes control for progressively refining the material rendering
+    - Splitted the Light power and Light Color controls in two: Key Light power control and Fill Lights power control
+    - Removed PosX,PosZ controls as considered unnecessary and complicating the interface.
+    - Removed Texture scale/offset controls as they could cause confusion with the actual texture scale/offset parameters
+
 
 Yafaray-E v2.1.0 (2016-01-31) for Blender 2.76b:
 ------------------------------------------------
