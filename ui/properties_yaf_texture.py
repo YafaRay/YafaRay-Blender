@@ -327,24 +327,25 @@ class YAF_TEXTURE_PT_image(YAF_TextureTypePanel, Panel):
         tex = context.texture
         layout.template_image(tex, "image", tex.image_user)
 
-        if tex.image.colorspace_settings.name == "sRGB" or tex.image.colorspace_settings.name == "Linear" or tex.image.colorspace_settings.name == "Non-Color":
-            pass
-        
-        elif tex.image.colorspace_settings.name == "XYZ":
-            row = layout.row(align=True)
-            row.label(text="YafaRay 'XYZ' support is experimental and may not give the expected results", icon="ERROR")
-        
-        elif tex.image.colorspace_settings.name == "Linear ACES":
-            row = layout.row(align=True)
-            row.label(text="YafaRay doesn't support '" + tex.image.colorspace_settings.name + "', assuming linear RGB", icon="ERROR")
-        
-        elif tex.image.colorspace_settings.name == "Raw":
-            row = layout.row(align=True)
-            row.prop(tex, "yaf_gamma_input", text="Texture gamma input correction")
+        if hasattr(tex.image,"colorspace_settings"):
+            if tex.image.colorspace_settings.name == "sRGB" or tex.image.colorspace_settings.name == "Linear" or tex.image.colorspace_settings.name == "Non-Color":
+                pass
+            
+            elif tex.image.colorspace_settings.name == "XYZ":
+                row = layout.row(align=True)
+                row.label(text="YafaRay 'XYZ' support is experimental and may not give the expected results", icon="ERROR")
+            
+            elif tex.image.colorspace_settings.name == "Linear ACES":
+                row = layout.row(align=True)
+                row.label(text="YafaRay doesn't support '" + tex.image.colorspace_settings.name + "', assuming linear RGB", icon="ERROR")
+            
+            elif tex.image.colorspace_settings.name == "Raw":
+                row = layout.row(align=True)
+                row.prop(tex, "yaf_gamma_input", text="Texture gamma input correction")
 
-        else:
-            row = layout.row(align=True)
-            row.label(text="YafaRay doesn't support '" + tex.image.colorspace_settings.name + "', assuming sRGB", icon="ERROR")
+            else:
+                row = layout.row(align=True)
+                row.label(text="YafaRay doesn't support '" + tex.image.colorspace_settings.name + "', assuming sRGB", icon="ERROR")
             
         row = layout.row(align=True)
         row.label(text="Note: for bump/normal maps, textures are always considered Linear", icon="INFO")
