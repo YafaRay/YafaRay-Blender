@@ -9,6 +9,14 @@ YafaRay-E (Experimental) is an unofficial testing/unstable branch for fixes and 
 
 *WARNING*: YafaRay-E contains EXPERIMENTAL CHANGES AND FEATURES, so it's recommended not to use it for production scenes. This application is provided as is, and no guarantee is given that this code will preform in the desired way.
 
+IMPORTANT: current LIMITATIONS of YafaRay:
+* YafaRay only supports *one* version of YafaRay installed in the system. This limitation also affects installations of multiple "forks" of YafaRay, even if they have different names.
+If you have a black window when rendering:
+    - Make sure that YafaRay is correctly installed in the appropiate place
+    - Make sure there are no other YafaRay versions/forks installed. 
+
+* YafaRay only supports *one* scene in the .blend file. If you have more than one scene, it could cause unexpected results and problems in the new Material Preview Controls.
+
 Please post bugreports and feature requests here:
 http://www.yafaray.org/development/bugtracker/yafaray
 
