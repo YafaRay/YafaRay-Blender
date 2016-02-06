@@ -20,6 +20,8 @@ Note: there has been important changes and bug fixes in this version. They have 
 
 * Fixed World Preview not updating correctly. This is probably caused by Blender itself, I had to use the same workaround I used in the past to fix the material preview updating problem
 
+* Fixed crash when using textures with Normal or Window coordinates (which are view dependent) along with Caustic Photons. However, we have to consider that Photons are supposed to be view-independent, but when using textures with Window or Normal coordinates (which are view dependant), then the Photons WILL also be view dependant as well! So, using textures with "tricks" like Normal or Windows coordinates can cause low frequency noise in animations with Photons. This would not be a problem, but the price for using such "tricks" in renders.
+
 * Fixed python error when selecting an image texture before with no image opened yet.
 
 * "Final" changes to the Material Preview Advanced Controls:
