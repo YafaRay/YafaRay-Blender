@@ -114,6 +114,13 @@ class YAF_PT_render(RenderButtonsPanel, Panel):
             col.prop(scene, "intg_search")
             col.prop(scene, "intg_pm_ire")
 
+        elif scene.intg_light_method == "Bidirectional":
+            col = layout.column()
+            col.label("The Bidirectional integrator is DEPRECATED.", icon="ERROR")
+            col.label("It might give unexpected and perhaps even incorrect render results.")
+            col.label("This integrator is no longer supported, will not receive any fixes/updates")
+            col.label("in the short/medium term and might be removed in future versions.")
+            col.label("Use at your own risk.")
 
 if __name__ == "__main__":  # only for live edit.
     import bpy
