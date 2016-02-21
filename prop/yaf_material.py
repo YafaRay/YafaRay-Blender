@@ -310,7 +310,7 @@ def register():
         default=True)
 
     Material.additionaldepth = IntProperty(
-        name="Additional Ray Depth",
+        update=update_preview, name="Additional Ray Depth",
         description="Additional per-material Ray depth to be added to the general Ray Depth setting",
         min=0, max=20,
         default=0)

@@ -432,7 +432,7 @@ class YAF_PT_blend_(MaterialTypePanel, Panel):
         blend_two_draw(layout, yaf_mat)
 
 
-class YAF_PT_Advanced(MaterialButtonsPanel, Panel):
+class YAF_PT_ZAdvanced(MaterialButtonsPanel, Panel):
     bl_label = "Advanced settings"
     COMPAT_ENGINES = {'YAFA_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
