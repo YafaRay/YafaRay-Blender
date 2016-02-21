@@ -27,6 +27,9 @@ from bpy.props import (EnumProperty,
 
 Lamp = bpy.types.Lamp
 
+def update_preview(self, context):
+    context.lamp.type = context.lamp.type
+
 
 def call_lighttype_update(self, context):
     lamp = context.lamp
@@ -41,12 +44,14 @@ def set_shadow_method(self, context):
         lamp.shadow_method = 'BUFFER_SHADOW'
     else:
         lamp.shadow_method = 'RAY_SHADOW'
-
+    context.lamp.type = context.lamp.type
+    
 
 def sync_with_distance(self, context):
     lamp = context.lamp
     if lamp.yaf_sphere_radius != lamp.distance:
         lamp.distance = lamp.yaf_sphere_radius
+    context.lamp.type = context.lamp.type
 
 
 def register():
@@ -64,7 +69,7 @@ def register():
         default="point", update=call_lighttype_update)
 
     Lamp.yaf_energy = FloatProperty(
-        name="Power",
+        update=update_preview, name="Power",
         description="Intensity multiplier for color",
         min=0.0, max=10000.0,
         default=1.0)
@@ -77,55 +82,55 @@ def register():
         default=1.0, update=sync_with_distance)
 
     Lamp.directional = BoolProperty(
-        name="Directional",
+        update=update_preview, name="Directional",
         description="Directional sunlight type, like 'spot' (for concentrate photons at area)",
         default=False)
 
     Lamp.create_geometry = BoolProperty(
-        name="Create and show geometry",
+        update=update_preview, name="Create and show geometry",
         description="Creates a visible geometry in the dimensions of the light during the render",
         default=False)
 
     Lamp.infinite = BoolProperty(
-        name="Infinite",
+        update=update_preview, name="Infinite",
         description="Determines if light is infinite or filling a semi-infinite cylinder",
         default=True)
 
     Lamp.spot_soft_shadows = BoolProperty(
-        name="Soft shadows",
+        update=update_preview, name="Soft shadows",
         description="Use soft shadows",
         default=False)
 
     Lamp.shadow_fuzzyness = FloatProperty(
-        name="Shadow fuzzyness",
+        update=update_preview, name="Shadow fuzzyness",
         description="Fuzzyness of the soft shadows (0 - hard shadow, 1 - fuzzy shadow)",
         min=0.0, max=1.0,
         default=1.0)
 
     Lamp.photon_only = BoolProperty(
-        name="Photon only",
+        update=update_preview, name="Photon only",
         description="This spot will only throw photons not direct light",
         default=False)
 
     Lamp.angle = FloatProperty(
-        name="Angle",
+        update=update_preview, name="Angle",
         description="Angle of the cone in degrees (shadow softness)",
         min=0.0, max=80.0,
         default=0.5)
 
     Lamp.ies_soft_shadows = BoolProperty(
-        name="IES Soft shadows",
+        update=update_preview, name="IES Soft shadows",
         description="Use soft shadows for IES light type",
         default=False)
 
     Lamp.ies_file = StringProperty(
-        name="IES File",
+        update=update_preview, name="IES File",
         description="File to be used as the light projection",
         subtype='FILE_PATH',
         default="")
 
     Lamp.yaf_samples = IntProperty(
-        name="Samples",
+        update=update_preview, name="Samples",
         description="Number of samples to be taken for direct lighting",
         min=0, max=512,
         default=16)
@@ -136,12 +141,12 @@ def register():
         default=False, update=set_shadow_method)
 
     Lamp.light_enabled = BoolProperty(
-        name="Light enabled",
+        update=update_preview, name="Light enabled",
         description="Enable/Disable light",
         default=True)
         
     Lamp.cast_shadows = BoolProperty(
-        name="Cast shadows",
+        update=update_preview, name="Cast shadows",
         description="Enable casting shadows. This is the normal and expected behavior. Disable it only for special cases!",
         default=True)
 
