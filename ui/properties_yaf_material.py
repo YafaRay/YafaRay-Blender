@@ -451,6 +451,10 @@ class YAF_PT_advanced(MaterialButtonsPanel, Panel):
         col = split.column()
         layout.row().prop(yaf_mat, "receive_shadows")
 
+        split = layout.split()
+        col = split.column()
+        layout.row().prop(yaf_mat, "additionaldepth")
+
 
 if __name__ == "__main__":  # only for live edit.
     import bpy

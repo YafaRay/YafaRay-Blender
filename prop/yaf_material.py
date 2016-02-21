@@ -20,6 +20,7 @@
 
 import bpy
 from bpy.props import (FloatProperty,
+                       IntProperty,                       
                        BoolProperty,
                        EnumProperty,
                        FloatVectorProperty,
@@ -308,6 +309,12 @@ def register():
         description="If this parameter is set to false, the material will not receive shadows from other objects",
         default=True)
 
+    Material.additionaldepth = IntProperty(
+        name="Additional Ray Depth",
+        description="Additional per-material Ray depth to be added to the general Ray Depth setting",
+        min=0, max=20,
+        default=0)
+
 def unregister():
     del Material.mat_type
     del Material.diffuse_reflect
@@ -345,3 +352,4 @@ def unregister():
     del Material.material2name
     del Material.visibility
     del Material.receive_shadows
+    del Material.additionaldepth

@@ -234,6 +234,7 @@ class yafMaterial:
         yi.paramsSetBool("fake_shadows", mat.fake_shadows)
         yi.paramsSetString("visibility", mat.visibility)
         yi.paramsSetBool("receive_shadows", mat.receive_shadows)
+        yi.paramsSetInt("additionaldepth", mat.additionaldepth)
 
         mcolRoot = ''
         # fcolRoot = '' /* UNUSED */
@@ -317,6 +318,7 @@ class yafMaterial:
         yi.paramsSetFloat("specular_reflect", bSpecr)
         yi.paramsSetString("visibility", mat.visibility)
         yi.paramsSetBool("receive_shadows", mat.receive_shadows)
+        yi.paramsSetInt("additionaldepth", mat.additionaldepth)
 
         diffRoot = ''
         # mcolRoot = ''  /* UNUSED */
@@ -552,6 +554,7 @@ class yafMaterial:
         yi.paramsSetFloat("IOR", mat.IOR_reflection)  # added IOR for reflection
         yi.paramsSetString("visibility", mat.visibility)
         yi.paramsSetBool("receive_shadows", mat.receive_shadows)
+        yi.paramsSetInt("additionaldepth", mat.additionaldepth)
 
         if scene.gs_clay_render and not mat.clay_exclude:
              if scene.gs_clay_oren_nayar:
@@ -603,6 +606,7 @@ class yafMaterial:
 
         yi.paramsSetString("visibility", mat.visibility)
         yi.paramsSetBool("receive_shadows", mat.receive_shadows)
+        yi.paramsSetInt("additionaldepth", mat.additionaldepth)
 
         return yi.createMaterial(self.namehash(mat))
 
