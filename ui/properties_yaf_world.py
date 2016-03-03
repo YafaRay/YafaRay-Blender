@@ -246,6 +246,20 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
             col.prop(world, "bg_ibl_samples")
 
 
+class YAFWORLD_PT_advanced(WorldButtonsPanel, Panel):
+    bl_label = "Advanced settings"
+    bl_options = {'DEFAULT_CLOSED'}
+    COMPAT_ENGINES = {'YAFA_RENDER'}
+    
+    def draw(self, context):
+        layout = self.layout
+        world = context.world
+
+        split = layout.split()
+        col = split.column()
+        layout.row().prop(world, "bg_cast_shadows")
+
+
 from . import properties_yaf_volume_integrator
 
 

@@ -237,7 +237,12 @@ def register():
         update=update_preview, name="Gamma encoding",
         description="Apply gamma encoding to the sky",
         default=True)
-
+        
+    World.bg_cast_shadows = BoolProperty(
+        update=update_preview, name="Cast shadows",
+        description="Enable casting shadows. This is the normal and expected behavior. Disable it only for special cases!",
+        default=True)
+        
     ########### YafaRays volume integrator properties #############
     World.v_int_type = EnumProperty(
         update=update_preview, name="Volume integrator",
@@ -323,6 +328,7 @@ def unregister():
     World.bg_power
     World.bg_clamp_rgb
     World.bg_gamma_enc
+    World.bg_cast_shadows
 
     World.v_int_type
     World.v_int_step_size

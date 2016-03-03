@@ -190,7 +190,9 @@ class yafWorld:
             yi.paramsSetInt("ibl_samples", iblSamples)
             yi.paramsSetFloat("power", bgPower)
             yi.paramsSetString("type", "constant")
-
+            
+                    
+        yi.paramsSetBool("cast_shadows", world.bg_cast_shadows)
         yi.createBackground("world_background")
 
         return True
