@@ -193,6 +193,7 @@ class yafWorld:
             
                     
         yi.paramsSetBool("cast_shadows", world.bg_cast_shadows)
+        yi.paramsSetBool("cast_shadows_sun", world.bg_cast_shadows_sun)
         yi.createBackground("world_background")
 
         return True

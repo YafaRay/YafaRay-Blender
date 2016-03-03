@@ -239,8 +239,13 @@ def register():
         default=True)
         
     World.bg_cast_shadows = BoolProperty(
-        update=update_preview, name="Cast shadows",
-        description="Enable casting shadows. This is the normal and expected behavior. Disable it only for special cases!",
+        update=update_preview, name="Background cast shadows",
+        description="Enable casting shadows from the Background environmental lighting. This is the normal and expected behavior. Disable it only for special cases!",
+        default=True)
+        
+    World.bg_cast_shadows_sun = BoolProperty(
+        update=update_preview, name="Sun cast shadows",
+        description="Enable casting shadows from the Background Sun lighting. This is the normal and expected behavior. Disable it only for special cases!",
         default=True)
         
     ########### YafaRays volume integrator properties #############
@@ -329,6 +334,7 @@ def unregister():
     World.bg_clamp_rgb
     World.bg_gamma_enc
     World.bg_cast_shadows
+    World.bg_cast_shadows_sun
 
     World.v_int_type
     World.v_int_step_size

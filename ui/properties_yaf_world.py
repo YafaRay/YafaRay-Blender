@@ -257,7 +257,10 @@ class YAFWORLD_PT_advanced(WorldButtonsPanel, Panel):
 
         split = layout.split()
         col = split.column()
-        layout.row().prop(world, "bg_cast_shadows")
+        col.prop(world, "bg_cast_shadows")
+        if world.bg_type == "Sunsky1" or world.bg_type == "Sunsky2": 
+            col = split.column()
+            col.prop(world, "bg_cast_shadows_sun")
 
 
 from . import properties_yaf_volume_integrator
