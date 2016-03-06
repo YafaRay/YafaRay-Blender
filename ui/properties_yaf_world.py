@@ -67,6 +67,12 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
             col = split.column()
             col.prop(world, "bg_use_ibl")
             col.label(text=" ")
+            
+            if world.bg_use_ibl:
+                row = layout.row()
+                row.prop(world, "bg_with_diffuse")
+                row.prop(world, "bg_with_caustic")
+
 
         elif world.bg_type == "Texture":
 
@@ -156,6 +162,7 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
             col.prop(world, "bg_add_sun")
             if world.bg_add_sun:
                 col.prop(world, "bg_sun_power")
+
             else:
                 col.label(text=" ")
 
@@ -163,6 +170,12 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
             col.prop(world, "bg_background_light")
 
             layout.column().prop(world, "bg_light_samples")
+
+            if world.bg_add_sun or world.bg_background_light:
+                row = layout.row()
+                row.prop(world, "bg_with_diffuse")
+                row.prop(world, "bg_with_caustic")
+
 
         ## DarkTide Sunsky
         elif world.bg_type == "Sunsky2":
@@ -244,6 +257,10 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
             # for all options that uses IBL
             col = split.column()
             col.prop(world, "bg_ibl_samples")
+            row = layout.row()
+            row.prop(world, "bg_with_diffuse")
+            row.prop(world, "bg_with_caustic")
+
 
 
 class YAFWORLD_PT_advanced(WorldButtonsPanel, Panel):

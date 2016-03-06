@@ -150,6 +150,16 @@ def register():
         description="Enable casting shadows. This is the normal and expected behavior. Disable it only for special cases!",
         default=True)
 
+    Lamp.caustic_photons = BoolProperty(
+        update=update_preview, name="Caustic photons",
+        description="Allow light to shoot caustic photons",
+        default=True)
+
+    Lamp.diffuse_photons = BoolProperty(
+        update=update_preview, name="Diffuse photons",
+        description="Allow light to shoot diffuse photons",
+        default=True)
+
 def unregister():
     del Lamp.lamp_type
     del Lamp.yaf_energy
@@ -167,3 +177,5 @@ def unregister():
     del Lamp.yaf_show_dist_clip
     del Lamp.light_enabled
     del Lamp.cast_shadows
+    del Lamp.caustic_photons
+    del Lamp.diffuse_photons

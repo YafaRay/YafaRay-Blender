@@ -173,7 +173,12 @@ class YAF_PT_lamp_advanced(DataButtonsPanel, Panel):
 
         split = layout.split()
         col = split.column()
-        layout.row().prop(lamp, "cast_shadows")
+        col.row().prop(lamp, "cast_shadows")
+        split = layout.split()
+        col = split.column()
+        col.row().prop(lamp, "caustic_photons")
+        #col = split.column()
+        #col.row().prop(lamp, "diffuse_photons")
 
 
 if __name__ == "__main__":  # only for live edit.

@@ -36,8 +36,6 @@ class yafWorld:
             useIBL = world.bg_use_ibl
             iblSamples = world.bg_ibl_samples
             bgPower = world.bg_power
-            with_caustic = world.bg_with_caustic
-            with_diffuse = world.bg_with_diffuse
             c = world.bg_single_color
         else:
             bg_type = "Single Color"
@@ -117,8 +115,6 @@ class yafWorld:
                     yi.paramsSetBool("ibl", useIBL)
                     # 'with_caustic' and 'with_diffuse' settings gets checked in textureback.cc,
                     # so if IBL enabled when they are used...
-                    yi.paramsSetBool("with_caustic", with_caustic)
-                    yi.paramsSetBool("with_diffuse", with_diffuse)
                     yi.paramsSetInt("ibl_samples", iblSamples)
                     yi.paramsSetFloat("power", bgPower)
                     yi.paramsSetFloat("rotation", world.bg_rotation)
@@ -172,8 +168,6 @@ class yafWorld:
                 yi.paramsSetFloat("sun_power", world.bg_sun_power)
             yi.paramsSetBool("background_light", world.bg_background_light)
             if world.bg_background_light:
-                yi.paramsSetBool("with_caustic", world.bg_with_caustic)
-                yi.paramsSetBool("with_diffuse", world.bg_with_diffuse)
                 yi.paramsSetFloat("power", world.bg_power)
             yi.paramsSetInt("light_samples", world.bg_light_samples)
             yi.paramsSetFloat("bright", world.bg_dsbright)
@@ -195,6 +189,8 @@ class yafWorld:
         if world is not None:
             yi.paramsSetBool("cast_shadows", world.bg_cast_shadows)
             yi.paramsSetBool("cast_shadows_sun", world.bg_cast_shadows_sun)
+            yi.paramsSetBool("with_caustic", world.bg_with_caustic)
+            yi.paramsSetBool("with_diffuse", world.bg_with_diffuse)
             
         yi.createBackground("world_background")
 
