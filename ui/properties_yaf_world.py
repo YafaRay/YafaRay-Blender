@@ -257,10 +257,11 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
             # for all options that uses IBL
             col = split.column()
             col.prop(world, "bg_ibl_samples")
-            row = layout.row()
-            row.prop(world, "bg_with_diffuse")
-            row.prop(world, "bg_with_caustic")
 
+            if world.bg_add_sun or world.bg_background_light:
+                row = layout.row()
+                row.prop(world, "bg_with_diffuse")
+                row.prop(world, "bg_with_caustic")
 
 
 class YAFWORLD_PT_advanced(WorldButtonsPanel, Panel):

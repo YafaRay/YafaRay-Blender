@@ -262,7 +262,7 @@ class yafLight:
         yi.paramsSetBool("light_enabled", lamp.light_enabled)
         yi.paramsSetBool("cast_shadows", lamp.cast_shadows)
         yi.paramsSetBool("shoot_caustics", lamp.caustic_photons)
-        #yi.paramsSetBool("shoot_diffuse", lamp.diffuse_photons)    #This seems to be causing some artifacts, leaving it for now (so it's true by default)
+        yi.paramsSetBool("shoot_diffuse", lamp.diffuse_photons)
         yi.createLight(name)
 
         return True
