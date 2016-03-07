@@ -212,7 +212,7 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
                 col.prop(world, "bg_sun_power")
             else:
                 col.label(text=" ")
-            if world.bg_background_light:
+            if world.bg_add_sun or world.bg_background_light:
                 col.prop(world, "bg_with_diffuse")
             else:
                 col.label(text=" ")
@@ -223,7 +223,7 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
                 col.prop(world, "bg_power")
             else:
                 col.label(text=" ")
-            if world.bg_background_light:
+            if world.bg_add_sun or world.bg_background_light:
                 col.prop(world, "bg_with_caustic")
             else:
                 col.label(text=" ")
@@ -235,7 +235,6 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
             col.prop(world, "bg_dsbright")
 
             layout.column().prop(world, "bg_light_samples")
-
             layout.column().prop(world, "bg_color_space")
 
         elif world.bg_type == "Single Color":
@@ -253,15 +252,16 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
             col.prop(world, "bg_use_ibl")
             col.label(text=" ")
 
+            if world.bg_use_ibl and self.ibl:
+                row = layout.row()
+                row.prop(world, "bg_with_diffuse")
+                row.prop(world, "bg_with_caustic")
+
         if world.bg_use_ibl and self.ibl:
             # for all options that uses IBL
             col = split.column()
             col.prop(world, "bg_ibl_samples")
 
-            if world.bg_add_sun or world.bg_background_light:
-                row = layout.row()
-                row.prop(world, "bg_with_diffuse")
-                row.prop(world, "bg_with_caustic")
 
 
 class YAFWORLD_PT_advanced(WorldButtonsPanel, Panel):
