@@ -70,8 +70,6 @@ class YAF_PT_lamp(DataButtonsPanel, Panel):
                 box.prop(lamp, "yaf_samples")
                 box.prop(lamp, "shadow_fuzzyness")
 
-            layout.prop(lamp, "photon_only")
-
         elif lamp.lamp_type == "sun":
             layout.prop(lamp, "color")
             layout.prop(lamp, "yaf_energy", text="Power")
@@ -174,6 +172,9 @@ class YAF_PT_lamp_advanced(DataButtonsPanel, Panel):
         split = layout.split()
         col = split.column()
         col.row().prop(lamp, "cast_shadows")
+        col = split.column()
+        col.row().prop(lamp, "photon_only")
+
         split = layout.split()
         col = split.column()
         col.row().prop(lamp, "caustic_photons")

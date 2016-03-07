@@ -167,7 +167,6 @@ class yafLight:
             yi.paramsSetPoint("to", to[0], to[1], to[2])
             yi.paramsSetBool("soft_shadows", lamp.spot_soft_shadows)
             yi.paramsSetFloat("shadowFuzzyness", lamp.shadow_fuzzyness)
-            yi.paramsSetBool("photon_only", lamp.photon_only)
             yi.paramsSetInt("samples", lamp.yaf_samples)
             yi.paramsSetBool("light_enabled", lamp.light_enabled)
             yi.paramsSetBool("cast_shadows", lamp.cast_shadows)
@@ -263,6 +262,7 @@ class yafLight:
         yi.paramsSetBool("cast_shadows", lamp.cast_shadows)
         yi.paramsSetBool("shoot_caustics", lamp.caustic_photons)
         yi.paramsSetBool("shoot_diffuse", lamp.diffuse_photons)
+        yi.paramsSetBool("photon_only", lamp.photon_only)
         yi.createLight(name)
 
         return True
