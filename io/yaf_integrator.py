@@ -63,6 +63,9 @@ class yafIntegrator:
 
         elif light_type == "Photon Mapping":
             yi.paramsSetString("type", "photonmapping")
+            yi.paramsSetBool("enable_caustics", scene.intg_enable_caustics)
+            yi.paramsSetBool("enable_diffuse", scene.intg_enable_diffuse)
+            
             yi.paramsSetInt("bounces", scene.intg_bounces)
             yi.paramsSetInt("photons", scene.intg_photons)
             yi.paramsSetInt("cPhotons", scene.intg_cPhotons)

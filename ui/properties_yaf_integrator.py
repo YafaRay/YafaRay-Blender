@@ -60,26 +60,29 @@ class YAF_PT_render(RenderButtonsPanel, Panel):
             row = layout.row()
 
             col = row.column(align=True)
-            col.label(" Diffuse Photons:", icon='MOD_PHYSICS')
-            col.prop(scene, "intg_photons")
-            col.prop(scene, "intg_diffuse_radius")
-            col.prop(scene, "intg_search")
+            col.prop(scene, "intg_enable_diffuse", icon='MOD_PHYSICS', toggle=True)
+            if scene.intg_enable_diffuse:
+                col.prop(scene, "intg_photons")
+                col.prop(scene, "intg_diffuse_radius")
+                col.prop(scene, "intg_search")
 
             col = row.column(align=True)
-            col.label(" Caustic Photons:", icon='MOD_PARTICLES')
-            col.prop(scene, "intg_cPhotons")
-            col.prop(scene, "intg_caustic_radius")
-            col.prop(scene, "intg_caustic_mix")
+            col.prop(scene, "intg_enable_caustics", icon='MOD_PARTICLES', toggle=True)
+            if scene.intg_enable_caustics:
+                col.prop(scene, "intg_cPhotons")
+                col.prop(scene, "intg_caustic_radius")
+                col.prop(scene, "intg_caustic_mix")
 
-            row = layout.row()
-            row.prop(scene, "intg_final_gather", toggle=True, icon='FORCE_FORCE')
+            if scene.intg_enable_diffuse:
+                row = layout.row()
+                row.prop(scene, "intg_final_gather", toggle=True, icon='FORCE_FORCE')
 
-            if scene.intg_final_gather:
-                col = layout.row()
-                col.prop(scene, "intg_fg_bounces")
-                col.prop(scene, "intg_fg_samples")
-                col = layout.row()
-                col.prop(scene, "intg_show_map", toggle=True)
+                if scene.intg_final_gather:
+                    col = layout.row()
+                    col.prop(scene, "intg_fg_bounces")
+                    col.prop(scene, "intg_fg_samples")
+                    col = layout.row()
+                    col.prop(scene, "intg_show_map", toggle=True)
 
         elif scene.intg_light_method == "Pathtracing":
             col = layout.row()

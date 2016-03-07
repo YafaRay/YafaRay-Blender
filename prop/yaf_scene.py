@@ -832,6 +832,16 @@ def register():
         min=0.0, max=1.0,
         default=(0.9, 0.9, 0.9))
 
+    Scene.intg_enable_caustics = BoolProperty(
+        name="Caustic Photons",
+        description="Enable caustic photons processing",
+        default=True)
+
+    Scene.intg_enable_diffuse = BoolProperty(
+        name="Diffuse Photons",
+        description="Enable diffuse photons processing",
+        default=True)
+
     Scene.intg_bounces = IntProperty(
         name="Depth",
         description="",
@@ -1033,6 +1043,8 @@ def unregister():
     Scene.intg_AO_samples
     Scene.intg_AO_distance
     Scene.intg_AO_color
+    Scene.intg_enable_caustics
+    Scene.intg_enable_diffuse
     Scene.intg_bounces
     Scene.intg_diffuse_radius
     Scene.intg_cPhotons
