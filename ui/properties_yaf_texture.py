@@ -394,12 +394,22 @@ class YAF_TEXTURE_PT_image_mapping(YAF_TextureTypePanel, Panel):
         split = layout.split()
 
         if tex.extension == 'REPEAT':
-            row = layout.row(align=True)
-            row.prop(tex, "repeat_x", text="X Repeat")
-            row.prop(tex, "repeat_y", text="Y Repeat")
+            col = split.column(align=True)
+            col.label(text="Repeat:")
+            col.prop(tex, "repeat_x", text="X")
+            col.prop(tex, "repeat_y", text="Y")
 
+            col = split.column(align=True)
+            col.label(text="Mirror:")
+            row = col.row(align=True)
+            row.prop(tex, "use_mirror_x", text="X")
+            row.active = (tex.repeat_x > 1)
+            row = col.row(align=True)
+            row.prop(tex, "use_mirror_y", text="Y")
+            row.active = (tex.repeat_y > 1)
+            
             layout.separator()
-
+            
         elif tex.extension == 'CHECKER':
             col = split.column(align=True)
             row = col.row()

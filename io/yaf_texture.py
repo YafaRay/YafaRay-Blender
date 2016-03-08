@@ -375,6 +375,10 @@ class yafTexture:
             yi.paramsSetFloat("cropmax_y", tex.crop_max_y)
 
             yi.paramsSetBool("rot90", tex.use_flip_axis)
+            
+            yi.paramsSetBool("mirror_x", tex.use_mirror_x)
+            yi.paramsSetBool("mirror_y", tex.use_mirror_y)
+            
             textureConfigured = True
 
         if textureConfigured:
