@@ -22,7 +22,7 @@ import bpy
 import time
 import math
 import mathutils
-import yafrayinterface
+import yafrayinterface2
 
 
 def multiplyMatrix4x4Vector4(matrix, vector):
@@ -202,7 +202,7 @@ class yafObject(object):
 
     def get4x4Matrix(self, matrix):
 
-        ret = yafrayinterface.matrix4x4_t()
+        ret = yafrayinterface2.matrix4x4_t()
 
         for i in range(4):
             for j in range(4):
