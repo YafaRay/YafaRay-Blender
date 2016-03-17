@@ -656,10 +656,10 @@ def register():
     # added clay color property
     Scene.gs_clay_col = FloatVectorProperty(
         name="Clay color",
-        description="Color of clay render material",
+        description="Color of clay render material - default value Middle Gray (sRGB 50% reflectance)", #as defined at https://en.wikipedia.org/wiki/Middle_gray
         subtype='COLOR',
         min=0.0, max=1.0,
-        default=(0.5, 0.5, 0.5))
+        default=(0.216, 0.216, 0.216))
 
     Scene.gs_mask_render = BoolProperty(
         name="Render mask",
