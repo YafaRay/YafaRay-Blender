@@ -63,7 +63,11 @@ class YAF_AddPresetBase():
                 return {'FINISHED'}
 
             filename = clean_name(self.name)
-            target_path = os.path.join(sys.path[0], "yafaray", "presets", self.preset_subdir)
+
+            home_dir = os.path.expanduser("~")
+            target_path = os.path.join(home_dir, "yafaray_e2_user_data", "presets", self.preset_subdir)
+            if not os.path.exists(target_path[0]):
+                os.makedirs(target_path[0])
 
             if not target_path:
                 self.report({'WARNING'}, "Failed to create presets path")
@@ -103,7 +107,12 @@ class YAF_AddPresetBase():
 
         else:
             preset_active = preset_menu_class.bl_label
-            target_path = os.path.join(sys.path[0], "yafaray", "presets", self.preset_subdir)
+
+            home_dir = os.path.expanduser("~")
+            target_path = os.path.join(home_dir, "yafaray_e2_user_data", "presets", self.preset_subdir)
+            if not os.path.exists(target_path[0]):
+                os.makedirs(target_path[0])
+
             filepath = yaf_preset_find(preset_active, target_path)
 
             if not filepath:
@@ -157,7 +166,19 @@ class YAFARAY_OT_presets_renderset(YAF_AddPresetBase, Operator):
         "scene.gs_tile_order",
         "scene.gs_auto_threads",
         "scene.gs_clay_render",
+        "scene.gs_clay_render_keep_transparency",
+        "scene.gs_clay_render_keep_normals",
+        "scene.gs_clay_oren_nayar",
+        "scene.gs_clay_sigma",
+        "scene.gs_clay_col",
+        "scene.gs_mask_render",
         "scene.gs_draw_params",
+        "scene.bg_transp",
+        "scene.bg_transp_refract",
+        "scene.adv_auto_shadow_bias_enabled",
+        "scene.adv_shadow_bias_value",
+        "scene.adv_auto_min_raydist_enabled",
+        "scene.adv_min_raydist_value",
         "scene.gs_custom_string",
         "scene.gs_premult",
         "scene.gs_transp_shad",
@@ -165,6 +186,7 @@ class YAFARAY_OT_presets_renderset(YAF_AddPresetBase, Operator):
         "scene.gs_show_sam_pix",
         "scene.gs_z_channel",
         "scene.gs_type_render",
+        "scene.gs_tex_optimization",
         "scene.intg_light_method",
         "scene.intg_use_caustics",
         "scene.intg_photons",
@@ -175,6 +197,8 @@ class YAFARAY_OT_presets_renderset(YAF_AddPresetBase, Operator):
         "scene.intg_AO_samples",
         "scene.intg_AO_distance",
         "scene.intg_AO_color",
+        "scene.intg_enable_caustics",
+        "scene.intg_enable_diffuse",
         "scene.intg_bounces",
         "scene.intg_diffuse_radius",
         "scene.intg_cPhotons",
@@ -197,7 +221,52 @@ class YAFARAY_OT_presets_renderset(YAF_AddPresetBase, Operator):
         "scene.AA_passes",
         "scene.AA_threshold",
         "scene.AA_pixelwidth",
-        "scene.AA_filter_type"
+        "scene.AA_filter_type",
+        "scene.yafaray.noise_control.resampled_floor",
+        "scene.yafaray.noise_control.sample_multiplier_factor",
+        "scene.yafaray.noise_control.light_sample_multiplier_factor",
+        "scene.yafaray.noise_control.indirect_sample_multiplier_factor",
+        "scene.yafaray.noise_control.detect_color_noise",
+        "scene.yafaray.noise_control.dark_threshold_factor",
+        "scene.yafaray.noise_control.variance_edge_size",
+        "scene.yafaray.noise_control.variance_pixels",
+        "scene.yafaray.noise_control.clamp_samples",
+        "scene.yafaray.noise_control.clamp_indirect",
+        "scene.yafaray.passes.pass_enable",
+        "scene.yafaray.passes.pass_mask_obj_index",
+        "scene.yafaray.passes.pass_mask_mat_index",
+        "scene.yafaray.passes.pass_mask_invert",
+        "scene.yafaray.passes.pass_mask_only",
+        "scene.yafaray.passes.pass_Combined",
+        "scene.yafaray.passes.pass_Depth",
+        "scene.yafaray.passes.pass_Vector",
+        "scene.yafaray.passes.pass_Normal",
+        "scene.yafaray.passes.pass_UV",
+        "scene.yafaray.passes.pass_Color",
+        "scene.yafaray.passes.pass_Emit",
+        "scene.yafaray.passes.pass_Mist",
+        "scene.yafaray.passes.pass_Diffuse",
+        "scene.yafaray.passes.pass_Spec",
+        "scene.yafaray.passes.pass_AO",
+        "scene.yafaray.passes.pass_Env",
+        "scene.yafaray.passes.pass_Indirect",
+        "scene.yafaray.passes.pass_Shadow",
+        "scene.yafaray.passes.pass_Reflect",
+        "scene.yafaray.passes.pass_Refract",
+        "scene.yafaray.passes.pass_IndexOB",
+        "scene.yafaray.passes.pass_IndexMA",
+        "scene.yafaray.passes.pass_DiffDir",
+        "scene.yafaray.passes.pass_DiffInd",
+        "scene.yafaray.passes.pass_DiffCol",
+        "scene.yafaray.passes.pass_GlossDir",
+        "scene.yafaray.passes.pass_GlossInd",
+        "scene.yafaray.passes.pass_GlossCol",
+        "scene.yafaray.passes.pass_TransDir",
+        "scene.yafaray.passes.pass_TransInd",
+        "scene.yafaray.passes.pass_TransCol",
+        "scene.yafaray.passes.pass_SubsurfaceDir",
+        "scene.yafaray.passes.pass_SubsurfaceInd",
+        "scene.yafaray.passes.pass_SubsurfaceCol"
     ]
 
     preset_subdir = "render"
@@ -245,5 +314,9 @@ class Yafaray_Menu(StructRNA, _GenericUI, metaclass=RNAMeta):  # Yafaray's own P
          - preset_operator
          - preset_subdir
         """
-        search_path = [os.path.join(sys.path[0], "yafaray", "presets", self.preset_subdir)]
+        home_dir = os.path.expanduser("~")
+        search_path = [os.path.join(home_dir, "yafaray_e2_user_data", "presets", self.preset_subdir)]
+        if not os.path.exists(search_path[0]):
+            os.makedirs(search_path[0])
+       
         self.path_menu(search_path, self.preset_operator)
