@@ -65,7 +65,7 @@ class YAF_AddPresetBase():
             filename = clean_name(self.name)
 
             home_dir = os.path.expanduser("~")
-            target_path = os.path.join(home_dir, "yafaray_e2_user_data", "presets", self.preset_subdir)
+            target_path = os.path.join(home_dir, "yafaray_userdata", "presets", self.preset_subdir)
             if not os.path.exists(target_path[0]):
                 os.makedirs(target_path[0])
 
@@ -109,7 +109,7 @@ class YAF_AddPresetBase():
             preset_active = preset_menu_class.bl_label
 
             home_dir = os.path.expanduser("~")
-            target_path = os.path.join(home_dir, "yafaray_e2_user_data", "presets", self.preset_subdir)
+            target_path = os.path.join(home_dir, "yafaray_userdata", "presets", self.preset_subdir)
             if not os.path.exists(target_path[0]):
                 os.makedirs(target_path[0])
 
@@ -315,7 +315,7 @@ class Yafaray_Menu(StructRNA, _GenericUI, metaclass=RNAMeta):  # Yafaray's own P
          - preset_subdir
         """
         home_dir = os.path.expanduser("~")
-        search_path = [os.path.join(home_dir, "yafaray_e2_user_data", "presets", self.preset_subdir)]
+        search_path = [os.path.join(home_dir, "yafaray_userdata", "presets", self.preset_subdir)]
         if not os.path.exists(search_path[0]):
             os.makedirs(search_path[0])
        
