@@ -22,12 +22,12 @@ import bpy
 from bpy.types import Panel
 from bl_ui.properties_render import RenderButtonsPanel
 
-RenderButtonsPanel.COMPAT_ENGINES = {'YAFA_RENDER'}
+RenderButtonsPanel.COMPAT_ENGINES = {'YAFA_E2_RENDER'}
 
 
 class YAFRENDER_PT_render(RenderButtonsPanel, Panel):
     bl_label = "Render"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
 
     def draw(self, context):
 
@@ -42,7 +42,7 @@ class YAFRENDER_PT_render(RenderButtonsPanel, Panel):
 
 class YAFRENDER_PT_dimensions(RenderButtonsPanel, Panel):
     bl_label = "Dimensions"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
@@ -85,7 +85,7 @@ from . import properties_yaf_AA_settings
 
 class YAFRENDER_PT_output(RenderButtonsPanel, Panel):
     bl_label = "Output"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -142,7 +142,7 @@ class YAFRENDER_PT_output(RenderButtonsPanel, Panel):
 
 class YAFRENDER_PT_post_processing(RenderButtonsPanel, Panel):
     bl_label = "Post Processing"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
@@ -162,7 +162,7 @@ class YAFRENDER_PT_post_processing(RenderButtonsPanel, Panel):
 
 class YAFRENDER_PT_convert(RenderButtonsPanel, Panel):
     bl_label = "Convert old YafaRay Settings"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -171,7 +171,7 @@ class YAFRENDER_PT_convert(RenderButtonsPanel, Panel):
 
 class YAFRENDER_PT_advanced(RenderButtonsPanel, Panel):
     bl_label = "Advanced Settings - only for experts"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):

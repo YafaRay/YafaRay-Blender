@@ -18,7 +18,7 @@
 
 # <pep8 compliant>
 
-import yafrayinterface2
+import yafaray_e2_interface
 from . import yaf_export
 from . import yaf_world
 from . import yaf_integrator

@@ -23,7 +23,7 @@ from bl_ui.properties_data_lamp import DataButtonsPanel
 
 # Inherit Lamp data block
 from bl_ui.properties_data_lamp import DATA_PT_context_lamp
-DATA_PT_context_lamp.COMPAT_ENGINES.add('YAFA_RENDER')
+DATA_PT_context_lamp.COMPAT_ENGINES.add('YAFA_E2_RENDER')
 del DATA_PT_context_lamp    
 
 class YAF_PT_preview(Panel):
@@ -31,7 +31,7 @@ class YAF_PT_preview(Panel):
     bl_region_type = 'WINDOW'
     bl_context = "data"
     bl_label = "Preview"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
 
     @classmethod
     def poll(cls, context):
@@ -44,7 +44,7 @@ class YAF_PT_preview(Panel):
 
 class YAF_PT_lamp(DataButtonsPanel, Panel):
     bl_label = "Lamp"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -105,7 +105,7 @@ class YAF_PT_lamp(DataButtonsPanel, Panel):
 # povman test
 class YAF_PT_area(DataButtonsPanel, Panel):
     bl_label = "Area Shape"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
 
     @classmethod
     def poll(cls, context):
@@ -131,7 +131,7 @@ class YAF_PT_area(DataButtonsPanel, Panel):
 
 class YAF_PT_spot(DataButtonsPanel, Panel):
     bl_label = "Spot Shape"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
 
     @classmethod
     def poll(cls, context):
@@ -163,7 +163,7 @@ class YAF_PT_spot(DataButtonsPanel, Panel):
 class YAF_PT_lamp_advanced(DataButtonsPanel, Panel):
     bl_label = "Advanced settings"
     bl_options = {'DEFAULT_CLOSED'}
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
     
     def draw(self, context):
         layout = self.layout

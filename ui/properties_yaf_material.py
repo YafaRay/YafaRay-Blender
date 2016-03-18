@@ -19,13 +19,13 @@
 # <pep8 compliant>
 
 import bpy
-from yafaray.ui.ior_values import ior_list
+from ..ui.ior_values import ior_list
 from bpy.types import Panel, Menu
 from bl_ui.properties_material import (MaterialButtonsPanel,
                                        active_node_mat,
                                        check_material)
 
-MaterialButtonsPanel.COMPAT_ENGINES = {'YAFA_RENDER'}
+MaterialButtonsPanel.COMPAT_ENGINES = {'YAFA_E2_RENDER'}
 
 
 def blend_one_draw(layout, mat):
@@ -45,7 +45,7 @@ def blend_two_draw(layout, mat):
 
 
 class MaterialTypePanel(MaterialButtonsPanel):
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
 
     @classmethod
     def poll(cls, context):
@@ -57,7 +57,7 @@ class MaterialTypePanel(MaterialButtonsPanel):
 class YAF_PT_context_material(MaterialButtonsPanel, Panel):
     bl_label = ""
     bl_options = {'HIDE_HEADER'}
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
 
     @classmethod
     def poll(cls, context):
@@ -116,14 +116,14 @@ class YAF_PT_context_material(MaterialButtonsPanel, Panel):
 
 class YAF_MATERIAL_PT_preview(MaterialButtonsPanel, Panel):
     bl_label = "Preview"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
 
     def draw(self, context):
         self.layout.template_preview(context.material)
 
 class YAF_PT_preview_controls(MaterialButtonsPanel, Panel):
     bl_label = "Preview Controls"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
     #bl_options = {'DEFAULT_CLOSED'}
 
     def draw_header(self, context):
@@ -220,7 +220,7 @@ for ior_group, ior_n in ior_list:
 
 class YAF_MT_presets_ior_list(Menu):
     bl_label = "Glass"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
 
     def draw(self, context):
         sl = self.layout
@@ -230,7 +230,7 @@ class YAF_MT_presets_ior_list(Menu):
 
 class YAF_PT_shinydiffuse_diffuse(MaterialTypePanel, Panel):
     bl_label = "Diffuse reflection"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
     material_type = 'shinydiffusemat'
 
     def draw(self, context):
@@ -265,7 +265,7 @@ class YAF_PT_shinydiffuse_diffuse(MaterialTypePanel, Panel):
 
 class YAF_PT_shinydiffuse_specular(MaterialTypePanel, Panel):
     bl_label = "Specular reflection"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
     material_type = 'shinydiffusemat'
 
     def draw(self, context):
@@ -287,7 +287,7 @@ class YAF_PT_shinydiffuse_specular(MaterialTypePanel, Panel):
 
 class YAF_PT_glossy_diffuse(MaterialTypePanel, Panel):
     bl_label = "Diffuse reflection"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
     material_type = 'glossy', 'coated_glossy'
 
     def draw(self, context):
@@ -310,7 +310,7 @@ class YAF_PT_glossy_diffuse(MaterialTypePanel, Panel):
 
 class YAF_PT_glossy_specular(MaterialTypePanel, Panel):
     bl_label = "Specular reflection"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
     material_type = 'glossy', 'coated_glossy'
 
     def draw(self, context):
@@ -351,7 +351,7 @@ class YAF_PT_glossy_specular(MaterialTypePanel, Panel):
 
 class YAF_PT_glass_real(MaterialTypePanel, Panel):
     bl_label = "Real glass settings"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
     material_type = 'glass', 'rough_glass'
 
     def draw(self, context):
@@ -383,7 +383,7 @@ class YAF_PT_glass_real(MaterialTypePanel, Panel):
 
 class YAF_PT_glass_fake(MaterialTypePanel, Panel):
     bl_label = "Fake glass settings"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
     material_type = 'glass', 'rough_glass'
 
     def draw(self, context):
@@ -401,7 +401,7 @@ class YAF_PT_glass_fake(MaterialTypePanel, Panel):
 
 class YAF_PT_blend_(MaterialTypePanel, Panel):
     bl_label = "Blend material settings"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
     material_type = 'blend'
 
     def draw(self, context):
@@ -434,7 +434,7 @@ class YAF_PT_blend_(MaterialTypePanel, Panel):
 
 class YAF_PT_ZAdvanced(MaterialButtonsPanel, Panel):
     bl_label = "Advanced settings"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
     
     def draw(self, context):

@@ -22,12 +22,12 @@ import bpy
 from bpy.types import Panel
 from bl_ui.properties_render_layer import RenderLayerButtonsPanel
 
-RenderLayerButtonsPanel.COMPAT_ENGINES = {'YAFA_RENDER'}
+RenderLayerButtonsPanel.COMPAT_ENGINES = {'YAFA_E2_RENDER'}
 
 
 class YAFRENDER_PT_layers(RenderLayerButtonsPanel, Panel):
     bl_label = "Layers"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
 #    bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
@@ -64,7 +64,7 @@ class YAFRENDER_PT_layers(RenderLayerButtonsPanel, Panel):
 
 class YAFRENDER_PT_layer_passes(RenderLayerButtonsPanel, Panel):
     bl_label = "Render Passes"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
 
     def draw_header(self, context):
         scene = context.scene
@@ -274,7 +274,7 @@ class YAFRENDER_PT_layer_passes(RenderLayerButtonsPanel, Panel):
 
 class YAFRENDER_PT_views(RenderLayerButtonsPanel, Panel):
     bl_label = "Views"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
     
     def draw_header(self, context):
         rd = context.scene.render

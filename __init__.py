@@ -24,13 +24,13 @@ import ctypes
 
 PLUGIN_PATH = os.path.join(__path__[0], 'bin', 'plugins')
 BIN_PATH = os.path.join(__path__[0], 'bin')
-YAF_ID_NAME = "YAFA_RENDER"
+YAF_ID_NAME = "YAFA_E2_RENDER"
 
 sys.path.append(BIN_PATH)
 
 bl_info = {
-    "name": "YafaRay Exporter",
-    "description": "YafaRay integration for blender",
+    "name": "YafaRay-E v2 Exporter",
+    "description": "YafaRay-E integration for blender",
     "author": "Shuvro Sarker, Kim Skoglund (Kerbox), Pedro Alcaide (povmaniaco),"
               "Paulo Gomes (tuga3d), Michele Castigliego (subcomandante),"
               "Bert Buchholz, Rodrigo Placencia (DarkTide),"
@@ -49,31 +49,31 @@ if sys.platform == 'win32':
     if sys.maxsize == 2**63 - 1:    # Windows 64bit system
         for file in os.listdir(BIN_PATH):
             # load dll's from a MSVC installation
-            if file in {'yafaraycore2.dll'}:
-                dllArray = ['zlib1', 'iconv', 'zlib', 'libpng15', 'libxml2', 'yafaraycore2', 'yafarayplugin2']
+            if file in {'yafaray_e2_core.dll'}:
+                dllArray = ['zlib1', 'iconv', 'zlib', 'libpng15', 'libxml2', 'yafaray_e2_core', 'yafaray_e2_plugin']
                 break
             # load dll's from a MinGW64 installation
             else:
-                dllArray = ['libwinpthread-1', 'libgcc_s_seh-1', 'libstdc++-6', 'libiconv-2', 'libzlib1', 'libxml2-2', 'libHalf', 'libIex', 'libImath', 'libIlmThread', 'libIlmImf', 'libjpeg-8', 'libpng16', 'libtiff-5', 'libbz2-1', 'libfreetype-6', 'libyafaraycore2', 'libyafarayplugin2']
+                dllArray = ['libwinpthread-1', 'libgcc_s_seh-1', 'libstdc++-6', 'libiconv-2', 'libzlib1', 'libxml2-2', 'libHalf', 'libIex', 'libImath', 'libIlmThread', 'libIlmImf', 'libjpeg-8', 'libpng16', 'libtiff-5', 'libbz2-1', 'libfreetype-6', 'libyafaray_e2_core', 'libyafaray_e2_plugin']
 
     else:    # Windows 32bit system
         for file in os.listdir(BIN_PATH):
             # load dll's from a MSVC installation
-            if file in {'yafaraycore2.dll'}:
-                dllArray = ['zlib1', 'iconv', 'zlib', 'libpng15', 'libxml2', 'yafaraycore2', 'yafarayplugin2']
+            if file in {'yafaray_e2_core.dll'}:
+                dllArray = ['zlib1', 'iconv', 'zlib', 'libpng15', 'libxml2', 'yafaray_e2_core', 'yafaray_e2_plugin']
                 break
             # load dll's from a MinGW32 installation
             else:
-                dllArray = ['libwinpthread-1', 'libgcc_s_sjlj-1', 'libstdc++-6', 'libiconv-2', 'libzlib1', 'libxml2-2', 'libHalf', 'libIex', 'libImath', 'libIlmThread', 'libIlmImf', 'libjpeg-8', 'libpng16', 'libtiff-5', 'libbz2-1', 'libfreetype-6', 'libyafaraycore2', 'libyafarayplugin2']
+                dllArray = ['libwinpthread-1', 'libgcc_s_sjlj-1', 'libstdc++-6', 'libiconv-2', 'libzlib1', 'libxml2-2', 'libHalf', 'libIex', 'libImath', 'libIlmThread', 'libIlmImf', 'libjpeg-8', 'libpng16', 'libtiff-5', 'libbz2-1', 'libfreetype-6', 'libyafaray_e2_core', 'libyafaray_e2_plugin']
 
 elif sys.platform == 'darwin':
-    dllArray = ['libyafaraycore2.dylib', 'libyafarayplugin2.dylib']
+    dllArray = ['libyafaray_e2_core.dylib', 'libyafaray_e2_plugin.dylib']
 else:
     if sys.maxsize == 2**63 - 1:    # Linux 64bit system
-        dllArray = ['libHalf.so.6.0.0', 'libIex.so.6.0.0', 'libImath.so.6.0.0', 'libIlmThread.so.6.0.0', 'libIlmImf.so.6.0.0', 'libpython3.4m.so.1.0', 'libjpeg.so.62.0.0', 'libz.so.1.2.3.4', 'libpng12.so.0.44.0', 'libtiff.so.4.3.3', 'libfreetype.so.6.6.0', 'libyafaraycore2.so', 'libyafarayplugin2.so']
+        dllArray = ['libHalf.so.6.0.0', 'libIex.so.6.0.0', 'libImath.so.6.0.0', 'libIlmThread.so.6.0.0', 'libIlmImf.so.6.0.0', 'libpython3.4m.so.1.0', 'libjpeg.so.62.0.0', 'libz.so.1.2.3.4', 'libpng12.so.0.44.0', 'libtiff.so.4.3.3', 'libfreetype.so.6.6.0', 'libyafaray_e2_core.so', 'libyafaray_e2_plugin.so']
 
     else:   # Linux 32bit system
-        dllArray = ['libHalf.so.6.0.0', 'libIex.so.6.0.0', 'libImath.so.6.0.0', 'libIlmThread.so.6.0.0', 'libIlmImf.so.6.0.0', 'libpython3.4m.so.1.0', 'libjpeg.so.62.0.0', 'libz.so.1.2.3.4', 'libpng12.so.0.44.0', 'libtiff.so.4.3.3', 'libfreetype.so.6.6.0', 'libyafaraycore2.so', 'libyafarayplugin2.so']
+        dllArray = ['libHalf.so.6.0.0', 'libIex.so.6.0.0', 'libImath.so.6.0.0', 'libIlmThread.so.6.0.0', 'libIlmImf.so.6.0.0', 'libpython3.4m.so.1.0', 'libjpeg.so.62.0.0', 'libz.so.1.2.3.4', 'libpng12.so.0.44.0', 'libtiff.so.4.3.3', 'libfreetype.so.6.6.0', 'libyafaray_e2_core.so', 'libyafaray_e2_plugin.so']
 
 for dll in dllArray:
     try:

@@ -22,12 +22,12 @@ import bpy
 from bpy.types import Panel
 from bl_ui.properties_render import RenderButtonsPanel
 
-RenderButtonsPanel.COMPAT_ENGINES = {'YAFA_RENDER'}
+RenderButtonsPanel.COMPAT_ENGINES = {'YAFA_E2_RENDER'}
 
 
 class YAF_PT_render(RenderButtonsPanel, Panel):
     bl_label = "Integrator"
-    COMPAT_ENGINES = {'YAFA_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
 
     def draw(self, context):
         layout = self.layout
