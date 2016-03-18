@@ -21,12 +21,12 @@
 from bpy.types import Panel
 
 
-class YAF_PT_object_light(Panel):
+class YAF_e2_PT_object_light(Panel):
     bl_label = "YafaRay Object Properties"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "object"
-    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
+    COMPAT_ENGINES = {'YAFA_e2_RENDER'}
 
     @classmethod
     def poll(cls, context):

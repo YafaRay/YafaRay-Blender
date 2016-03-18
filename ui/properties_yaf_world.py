@@ -21,22 +21,21 @@
 from bpy.types import Panel
 from bl_ui.properties_world import WorldButtonsPanel
 
-WorldButtonsPanel.COMPAT_ENGINES = {'YAFA_E2_RENDER'}
 
 # Inherit World data block
 from bl_ui.properties_world import WORLD_PT_context_world
-WORLD_PT_context_world.COMPAT_ENGINES.add('YAFA_E2_RENDER')
+WORLD_PT_context_world.COMPAT_ENGINES.add('YAFA_e2_RENDER')
 del WORLD_PT_context_world
 
 # Inherit World Preview Panel
 from bl_ui.properties_world import WORLD_PT_preview
-WORLD_PT_preview.COMPAT_ENGINES.add('YAFA_E2_RENDER')
+WORLD_PT_preview.COMPAT_ENGINES.add('YAFA_e2_RENDER')
 del WORLD_PT_preview
 
 
-class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
+class YAF_e2_PT_world(WorldButtonsPanel, Panel):
     bl_label = "Background Settings"
-    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
+    COMPAT_ENGINES = {'YAFA_e2_RENDER'}
     ibl = True
 
     def draw(self, context):
@@ -264,10 +263,10 @@ class YAFWORLD_PT_world(WorldButtonsPanel, Panel):
 
 
 
-class YAFWORLD_PT_advanced(WorldButtonsPanel, Panel):
+class YAF_e2_PT_advanced(WorldButtonsPanel, Panel):
     bl_label = "Advanced settings"
     bl_options = {'DEFAULT_CLOSED'}
-    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
+    COMPAT_ENGINES = {'YAFA_e2_RENDER'}
     
     def draw(self, context):
         layout = self.layout

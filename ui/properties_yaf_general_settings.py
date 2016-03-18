@@ -23,21 +23,19 @@ from ..ot import yafaray_presets
 from bl_ui.properties_render import RenderButtonsPanel
 from bpy.types import Panel, Menu
 
-RenderButtonsPanel.COMPAT_ENGINES = {'YAFA_E2_RENDER'}
 
-
-class YAFARAY_MT_presets_render(Menu):
+class YAF_e2_MT_presets_render(Menu):
     bl_label = "Yafaray Render Presets"
-    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
+    COMPAT_ENGINES = {'YAFA_e2_RENDER'}
     
     preset_subdir = "render"
     preset_operator = "script.execute_preset"
     draw = yafaray_presets.Yafaray_Menu.draw_preset
 
 
-class YAF_PT_general_settings(RenderButtonsPanel, Panel):
+class YAF_e2_PT_general_settings(RenderButtonsPanel, Panel):
     bl_label = "General Settings"
-    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
+    COMPAT_ENGINES = {'YAFA_e2_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -45,7 +43,7 @@ class YAF_PT_general_settings(RenderButtonsPanel, Panel):
         render = scene.render
 
         row = layout.row(align=True)
-        row.menu("YAFARAY_MT_presets_render", text=bpy.types.YAFARAY_MT_presets_render.bl_label)
+        row.menu("YAF_e2_MT_presets_render", text=bpy.types.YAF_e2_MT_presets_render.bl_label)
         row.operator("yafaray.preset_add", text="", icon='ZOOMIN')
         row.operator("yafaray.preset_add", text="", icon='ZOOMOUT').remove_active = True
 
@@ -101,9 +99,9 @@ class YAF_PT_general_settings(RenderButtonsPanel, Panel):
         col.prop(scene, "gs_custom_string")
 
 
-class YAFARAY_MT_clay_render(RenderButtonsPanel, Panel):
+class YAF_e2_MT_clay_render(RenderButtonsPanel, Panel):
     bl_label = "Clay Render Settings"
-    COMPAT_ENGINES = {'YAFA_E2_RENDER'}
+    COMPAT_ENGINES = {'YAFA_e2_RENDER'}
 
     def draw(self, context):
         layout = self.layout
