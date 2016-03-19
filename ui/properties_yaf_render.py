@@ -97,6 +97,8 @@ class YAF_e2_PT_output(RenderButtonsPanel, Panel):
         row.prop(sc, "img_add_blend_name")
         col = row.column()
         col.prop(sc, "img_add_datetime")
+        row = layout.row()
+        row.prop(sc, "img_autosave_preset")
 
         split = layout.split(percentage=0.6)
         col = split.column()

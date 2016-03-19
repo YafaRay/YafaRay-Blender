@@ -147,6 +147,34 @@ class YAF_AddPresetBase():
         else:
             return self.execute(context)
 
+    def export_to_file(self, filepath):
+        filepath += ".preset.py"
+
+        file_preset = open(filepath, 'w')
+        file_preset.write("import bpy\n")
+
+        if hasattr(self, "preset_defines"):
+            for rna_path in self.preset_defines:
+                exec(rna_path)
+                file_preset.write("%s\n" % rna_path)
+            file_preset.write("\n")
+
+        for rna_path in self.preset_values:
+            value = eval(rna_path)
+            if type(value) == float:  # formatting of the floating point values
+                value = round(value, 4)
+            if str(value).startswith('Color'):  # formatting of the Color Vectors (r,g,b)
+                r, g, b = round(value.r, 3), round(value.g, 3), round(value.b, 3)
+                file_preset.write("%s = %r, %r, %r\n" % (rna_path, r, g, b))
+            else:
+                try:  # convert thin wrapped sequences to simple lists to repr()
+                    value = value[:]
+                except:
+                    pass
+                file_preset.write("%s = %r\n" % (rna_path, value))
+
+        file_preset.close()
+
 
 class YAFARAY_OT_presets_renderset(YAF_AddPresetBase, Operator):
     '''Add a Yafaray Render Preset in user home folder->yafaray_user_data/presets/render'''

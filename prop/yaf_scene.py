@@ -781,6 +781,11 @@ def register():
         description="Include current date/time in the image filename",
         default=False)
 
+    Scene.img_autosave_preset = BoolProperty(
+        name="Autosave Render Preset",
+        description="Automatically generate a preset file with the Render Settings used for the image",
+        default=False)
+
     ########### YafaRays integrator properties #############
     Scene.intg_light_method = EnumProperty(
         name="Lighting Method",
@@ -1050,6 +1055,7 @@ def unregister():
     Scene.img_multilayer
     Scene.img_add_blend_name
     Scene.img_add_datetime
+    Scene.img_autosave_preset
 
     Scene.intg_light_method
     Scene.intg_use_caustics
