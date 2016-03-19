@@ -55,7 +55,10 @@ class YAF_e2_PT_general_settings(RenderButtonsPanel, Panel):
         col.prop(scene, "gs_type_render")
         sub = col.column()
         sub.enabled = scene.gs_type_render == "into_blender"
-        sub.prop(scene, "gs_tile_order")
+        sub.prop(scene, "gs_secondary_file_output")
+        row = sub.row()
+        row.prop(scene, "gs_tile_order")
+
 
         col = split.column()
         sub = col.column()

@@ -737,6 +737,11 @@ def register():
         ),
         default='into_blender')
 
+    Scene.gs_secondary_file_output = BoolProperty(
+        name="Secondary file output",
+        description="Enable saving YafaRay render results at the same time as importing into Blender",
+        default=False)
+
     Scene.gs_tex_optimization = EnumProperty(
         name="Textures optimization",
         description="Textures optimization to reduce RAM usage, can be overriden by per-texture setting",
@@ -1028,6 +1033,7 @@ def unregister():
     Scene.gs_show_sam_pix
     Scene.gs_verbose
     Scene.gs_type_render
+    Scene.gs_secondary_file_output
     Scene.gs_tex_optimization
 
     Scene.img_output
