@@ -45,7 +45,7 @@ class YAF_e2_PT_general_settings(RenderButtonsPanel, Panel):
         row = layout.row(align=True)
         row.menu("YAF_e2_MT_presets_render", text=bpy.types.YAF_e2_MT_presets_render.bl_label)
         row.operator("yafaray.preset_add", text="", icon='ZOOMIN')
-        row.operator("yafaray.preset_add", text="", icon='ZOOMOUT').remove_active = True
+        #row.operator("yafaray.preset_add", text="", icon='ZOOMOUT').remove_active = True  #Does not work as expected, possibly better that the user deletes the presets manually himself to avoid deleting the wrong one by mistake anyway?
 
         layout.separator()
 

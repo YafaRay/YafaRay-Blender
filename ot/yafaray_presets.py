@@ -149,7 +149,8 @@ class YAF_AddPresetBase():
 
 
 class YAFARAY_OT_presets_renderset(YAF_AddPresetBase, Operator):
-    '''Add a Yafaray Render Preset'''
+    '''Add a Yafaray Render Preset in user home folder->yafaray_user_data/presets/render'''
+    '''To delete or modify presets, modify the .py files directly in that folder'''
     bl_idname = "yafaray.preset_add"
     bl_label = "Yafaray Render Presets"
     preset_menu = "YAFARAY_MT_presets_render"
@@ -160,10 +161,12 @@ class YAFARAY_OT_presets_renderset(YAF_AddPresetBase, Operator):
         "scene.gs_ray_depth",
         "scene.gs_shadow_depth",
         "scene.gs_threads",
+        "scene.display_settings.display_device",
         "scene.gs_gamma",
         "scene.gs_gamma_input",
         "scene.gs_tile_size",
         "scene.gs_tile_order",
+        "scene.gs_tex_optimization",
         "scene.gs_auto_threads",
         "scene.gs_clay_render",
         "scene.gs_clay_render_keep_transparency",
@@ -232,6 +235,35 @@ class YAFARAY_OT_presets_renderset(YAF_AddPresetBase, Operator):
         "scene.yafaray.noise_control.variance_pixels",
         "scene.yafaray.noise_control.clamp_samples",
         "scene.yafaray.noise_control.clamp_indirect",
+        "scene.render.layers[0].use_pass_z",
+        "scene.render.layers[0].use_pass_vector",
+        "scene.render.layers[0].use_pass_normal",
+        "scene.render.layers[0].use_pass_uv",
+        "scene.render.layers[0].use_pass_color",
+        "scene.render.layers[0].use_pass_emit",
+        "scene.render.layers[0].use_pass_mist",
+        "scene.render.layers[0].use_pass_diffuse",
+        "scene.render.layers[0].use_pass_specular",
+        "scene.render.layers[0].use_pass_ambient_occlusion",
+        "scene.render.layers[0].use_pass_environment",
+        "scene.render.layers[0].use_pass_indirect",
+        "scene.render.layers[0].use_pass_shadow",
+        "scene.render.layers[0].use_pass_reflection",
+        "scene.render.layers[0].use_pass_refraction",
+        "scene.render.layers[0].use_pass_object_index",
+        "scene.render.layers[0].use_pass_material_index",
+        "scene.render.layers[0].use_pass_diffuse_direct",
+        "scene.render.layers[0].use_pass_diffuse_indirect",
+        "scene.render.layers[0].use_pass_diffuse_color",
+        "scene.render.layers[0].use_pass_glossy_direct",
+        "scene.render.layers[0].use_pass_glossy_indirect",
+        "scene.render.layers[0].use_pass_glossy_color",
+        "scene.render.layers[0].use_pass_transmission_direct",
+        "scene.render.layers[0].use_pass_transmission_indirect",
+        "scene.render.layers[0].use_pass_transmission_color",
+        "scene.render.layers[0].use_pass_subsurface_direct",
+        "scene.render.layers[0].use_pass_subsurface_indirect",
+        "scene.render.layers[0].use_pass_subsurface_color",
         "scene.yafaray.passes.pass_enable",
         "scene.yafaray.passes.pass_mask_obj_index",
         "scene.yafaray.passes.pass_mask_mat_index",
