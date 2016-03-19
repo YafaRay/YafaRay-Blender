@@ -109,6 +109,8 @@ def exportRenderSettings(yi, scene):
 
     output_device_color_space = "LinearRGB"
     output_device_gamma = 1.0
+    output2_device_color_space = "sRGB"
+    output2_device_gamma = 1.0
 
     if scene.gs_type_render == "file" or scene.gs_type_render == "xml":
         output_device_color_space = "sRGB"
@@ -135,9 +137,25 @@ def exportRenderSettings(yi, scene):
         elif scene.display_settings.display_device == "None":
             output_device_color_space = "Raw_Manual_Gamma"
             output_device_gamma = scene.gs_gamma  #We only use the selected gamma if the output device is set to "None"
-        
+
+        #Optional Secondary file output color space
+        if scene.img_output == "OPEN_EXR" or scene.img_output == "HDR":  #If the output file is a HDR/EXR file, we force the render output to Linear
+            output2_device_color_space = "LinearRGB"
+            
+        elif scene.display_settings.display_device == "sRGB":
+            output2_device_color_space = "sRGB"
+            
+        elif scene.display_settings.display_device == "XYZ":
+            output2_device_color_space = "XYZ"
+            
+        elif scene.display_settings.display_device == "None":
+            output2_device_color_space = "Raw_Manual_Gamma"
+            output2_device_gamma = scene.gs_gamma  #We only use the selected gamma if the output device is set to "None"
+
     yi.paramsSetString("color_space", output_device_color_space)
     yi.paramsSetFloat("gamma", output_device_gamma)
+    yi.paramsSetString("color_space2", output2_device_color_space)
+    yi.paramsSetFloat("gamma2", output2_device_gamma)
 
     exportAA(yi, scene)
 
@@ -161,6 +179,7 @@ def exportRenderSettings(yi, scene):
         yi.paramsSetBool("premult", scene.gs_premult)
     else:
         yi.paramsSetBool("premult", True)   #We force alpha premultiply when rendering into Blender as it expects premultiplied input
+        yi.paramsSetBool("premult2", scene.gs_premult)   #In case we use a secondary file output, we set the premultiply according to the Blender setting
 
     yi.paramsSetInt("tile_size", scene.gs_tile_size)
     yi.paramsSetString("tiles_order", scene.gs_tile_order)
