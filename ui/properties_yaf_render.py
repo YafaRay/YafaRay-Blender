@@ -93,6 +93,10 @@ class YAF_e2_PT_output(RenderButtonsPanel, Panel):
         image_settings = rd.image_settings
 
         layout.prop(rd, "filepath", text="")
+        row = layout.row()
+        row.prop(sc, "img_add_blend_name")
+        col = row.column()
+        col.prop(sc, "img_add_datetime")
 
         split = layout.split(percentage=0.6)
         col = split.column()

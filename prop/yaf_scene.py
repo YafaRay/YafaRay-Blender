@@ -771,6 +771,16 @@ def register():
         description="Enable MultiLayer image export, only available in certain formats as EXR",
         default=False)
 
+    Scene.img_add_blend_name = BoolProperty(
+        name="Include .blend name",
+        description="Include .blend name in the image filename",
+        default=False)
+        
+    Scene.img_add_datetime = BoolProperty(
+        name="Include date/time",
+        description="Include current date/time in the image filename",
+        default=False)
+
     ########### YafaRays integrator properties #############
     Scene.intg_light_method = EnumProperty(
         name="Lighting Method",
@@ -1038,6 +1048,8 @@ def unregister():
 
     Scene.img_output
     Scene.img_multilayer
+    Scene.img_add_blend_name
+    Scene.img_add_datetime
 
     Scene.intg_light_method
     Scene.intg_use_caustics

@@ -26,6 +26,7 @@ import threading
 import time
 import yafaray_e2_interface
 import traceback
+import datetime
 from .. import PLUGIN_PATH
 from .. import YAF_ID_NAME
 from .yaf_object import yafObject
@@ -285,7 +286,17 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         filetype = switchFileType.get(filetype, 'png')
         # write image or XML-File with filename from framenumber
         frame_numb_str = "{:0" + str(len(str(self.scene.frame_end))) + "d}"
-        output = os.path.join(output_path, frame_numb_str.format(self.scene.frame_current))
+        
+        filebasename = ""
+        if self.scene.img_add_blend_name:
+            filebasename += os.path.splitext(os.path.basename(bpy.data.filepath))[0]+" - "
+            
+        filebasename += frame_numb_str.format(self.scene.frame_current)
+
+        if self.scene.img_add_datetime:
+            filebasename += " ("+datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+")"
+        
+        output = os.path.join(output_path, filebasename)
         # try to create dir if it not exists...
         if not os.path.exists(output_path):
             try:
