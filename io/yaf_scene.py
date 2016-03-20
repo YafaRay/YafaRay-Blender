@@ -185,7 +185,9 @@ def exportRenderSettings(yi, scene):
     yi.paramsSetString("tiles_order", scene.gs_tile_order)
 
     yi.paramsSetBool("drawParams", False)   #(DEPRECATED): use file output or secondary file output with Params enabled
-    yi.paramsSetString("customString", scene.gs_custom_string)
+    
+    yi.paramsSetString("params_badge_comments", scene.yafaray.params_badge.comments)
+    yi.paramsSetString("params_badge_customIcon", scene.yafaray.params_badge.customIcon)
 
     if scene.gs_auto_threads:
         yi.paramsSetInt("threads", -1)

@@ -47,6 +47,18 @@ def call_update_fileformat(self, context):
 
 class YafaRayProperties(bpy.types.PropertyGroup):
     pass
+
+class YafaRayParamsBadgeProperties(bpy.types.PropertyGroup):
+    comments = StringProperty(
+        name="Comments",
+        description=("Comments to be added to the params badge (previously known as custom string)"),
+        default="")
+
+    customIcon = StringProperty(
+        name="Custom PNG icon path",
+        description=("Path to custom PNG icon (recommended 70x45, black background). If blank the default YafaRay icon will be shown"),
+        default="")
+
     
 class YafaRayNoiseControlProperties(bpy.types.PropertyGroup):
     resampled_floor = FloatProperty(
@@ -667,7 +679,7 @@ def register():
         default=False)
 
     Scene.gs_draw_params = BoolProperty(
-        name="Draw parameters",
+        name="Draw parameters (deprecated)",
         description="(DEPRECATED): use file output or secondary file output with Params enabled",
         default=False)
 
@@ -701,8 +713,8 @@ def register():
         description="Min Ray Dist (default 0.00005). Change ONLY if artifacts or light leaks due to bad ray intersections. Increasing this value can led to artifacts and incorrect renders",
         min=0.00000001, max=10000, default=0.00005)
 
-    Scene.gs_custom_string = StringProperty(
-        name="Custom string",
+    Scene.gs_custom_string = StringProperty(        #Deprecated, use now the params_badge.paramBadgeComments instead
+        name="Custom string (deprecated)",
         description="Custom string will be added to the info bar, "
                     "use it for CPU, RAM etc",
         default="")
@@ -1021,6 +1033,9 @@ def register():
     bpy.utils.register_class(YafaRayNoiseControlProperties)
     YafaRayProperties.noise_control = PointerProperty(type=YafaRayNoiseControlProperties)
 
+    bpy.utils.register_class(YafaRayParamsBadgeProperties)
+    YafaRayProperties.params_badge = PointerProperty(type=YafaRayParamsBadgeProperties)
+
     bpy.utils.register_class(YafaRayMaterialPreviewControlProperties)
     YafaRayProperties.preview = PointerProperty(type=YafaRayMaterialPreviewControlProperties)
 
@@ -1100,6 +1115,7 @@ def unregister():
     Scene.AA_pixelwidth
     Scene.AA_filter_type
 
+    bpy.utils.unregister_class(YafaRayParamsBadgeProperties)
     bpy.utils.unregister_class(YafaRayNoiseControlProperties)
     bpy.utils.unregister_class(YafaRayRenderPassesProperties)
     bpy.utils.unregister_class(YafaRayMaterialPreviewControlProperties)

@@ -99,9 +99,21 @@ class YAF_e2_PT_general_settings(RenderButtonsPanel, Panel):
         sub.enabled = scene.bg_transp
         sub.prop(scene, "bg_transp_refract", toggle=True)
 
-        col = layout.column()
-        col.enabled = scene.gs_draw_params
-        col.prop(scene, "gs_custom_string")
+
+class YAF_e2_MT_params_badge(RenderButtonsPanel, Panel):
+    bl_label = "Parameters Badge settings"
+    COMPAT_ENGINES = {'YAFA_e2_RENDER'}
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        render = scene.render
+
+        row = layout.row(align=True)
+        row = layout.row()
+        row.prop(scene.yafaray.params_badge, "comments")
+        row = layout.row()
+        row.prop(scene.yafaray.params_badge, "customIcon")
 
 
 class YAF_e2_MT_clay_render(RenderButtonsPanel, Panel):
