@@ -186,6 +186,16 @@ class YAFARAY_OT_presets_renderset(YAF_AddPresetBase, Operator):
         "scene = bpy.context.scene"
     ]
     preset_values = [
+        "scene.render.resolution_x",
+        "scene.render.resolution_y",
+        "scene.render.resolution_percentage",
+        "scene.render.border_max_x",
+        "scene.render.border_max_y",
+        "scene.render.border_min_x",
+        "scene.render.border_min_y",
+        "scene.render.use_border",
+        "scene.render.use_crop_to_border",
+
         "scene.gs_ray_depth",
         "scene.gs_shadow_depth",
         "scene.gs_threads",
@@ -203,7 +213,6 @@ class YAFARAY_OT_presets_renderset(YAF_AddPresetBase, Operator):
         "scene.gs_clay_sigma",
         "scene.gs_clay_col",
         "scene.gs_mask_render",
-        "scene.gs_draw_params",
         "scene.bg_transp",
         "scene.bg_transp_refract",
         "scene.adv_auto_shadow_bias_enabled",
