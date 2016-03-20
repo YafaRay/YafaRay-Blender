@@ -786,6 +786,11 @@ def register():
         description="Automatically generate a preset file with the Render Settings used for the image",
         default=False)
 
+    Scene.img_draw_params = BoolProperty(
+        name="Draw params (outside image)",
+        description="Draw parameters badge in the image files, below the render area",
+        default=False)
+
     ########### YafaRays integrator properties #############
     Scene.intg_light_method = EnumProperty(
         name="Lighting Method",
@@ -1056,6 +1061,7 @@ def unregister():
     Scene.img_add_blend_name
     Scene.img_add_datetime
     Scene.img_autosave_preset
+    Scene.img_draw_params
 
     Scene.intg_light_method
     Scene.intg_use_caustics
