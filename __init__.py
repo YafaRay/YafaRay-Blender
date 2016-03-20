@@ -113,6 +113,7 @@ def load_handler(dummy):
                 if not mat.is_property_set("material2name") or not mat.material2name:
                     mat.material2name = mat.material2
     # convert image output file type setting from blender to yafaray's file type setting on file load, so that both are the same...
+    bpy.context.scene.gs_draw_params = False
     if bpy.context.scene.render.image_settings.file_format is not bpy.context.scene.img_output:
         bpy.context.scene.img_output = bpy.context.scene.render.image_settings.file_format
 

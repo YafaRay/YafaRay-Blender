@@ -789,7 +789,7 @@ def register():
     Scene.img_draw_params = BoolProperty(
         name="Draw params (outside image)",
         description="Draw parameters badge in the image files, below the render area",
-        default=False)
+        default=True)
 
     ########### YafaRays integrator properties #############
     Scene.intg_light_method = EnumProperty(
