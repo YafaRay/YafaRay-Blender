@@ -110,6 +110,11 @@ class YAF_e2_MT_params_badge(RenderButtonsPanel, Panel):
         render = scene.render
 
         row = layout.row(align=True)
+        row.prop(scene.yafaray.params_badge, "title")
+        row = layout.row()
+        row.prop(scene.yafaray.params_badge, "author")
+        row = layout.row()
+        row.prop(scene.yafaray.params_badge, "contact")
         row = layout.row()
         row.prop(scene.yafaray.params_badge, "comments")
         row = layout.row()

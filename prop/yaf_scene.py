@@ -49,6 +49,21 @@ class YafaRayProperties(bpy.types.PropertyGroup):
     pass
 
 class YafaRayParamsBadgeProperties(bpy.types.PropertyGroup):
+    title = StringProperty(
+        name="Title",
+        description=("Title to be shown in the params badge"),
+        default="")
+
+    author = StringProperty(
+        name="Author",
+        description=("Author to be shown in the params badge"),
+        default="")
+
+    contact = StringProperty(
+        name="Contact info",
+        description=("Contact information (phone, e-mail, etc) to be shown in the params badge"),
+        default="")
+
     comments = StringProperty(
         name="Comments",
         description=("Comments to be added to the params badge (previously known as custom string)"),

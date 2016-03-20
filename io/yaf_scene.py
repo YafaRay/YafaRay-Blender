@@ -186,6 +186,9 @@ def exportRenderSettings(yi, scene):
 
     yi.paramsSetBool("drawParams", False)   #(DEPRECATED): use file output or secondary file output with Params enabled
     
+    yi.paramsSetString("params_badge_title", scene.yafaray.params_badge.title)
+    yi.paramsSetString("params_badge_author", scene.yafaray.params_badge.author)
+    yi.paramsSetString("params_badge_contact", scene.yafaray.params_badge.contact)
     yi.paramsSetString("params_badge_comments", scene.yafaray.params_badge.comments)
     yi.paramsSetString("params_badge_customIcon", scene.yafaray.params_badge.customIcon)
 
