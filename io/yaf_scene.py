@@ -184,7 +184,7 @@ def exportRenderSettings(yi, scene):
     yi.paramsSetInt("tile_size", scene.gs_tile_size)
     yi.paramsSetString("tiles_order", scene.gs_tile_order)
 
-    yi.paramsSetBool("drawParams", scene.gs_draw_params)
+    yi.paramsSetBool("drawParams", False)   #(DEPRECATED): use file output or secondary file output with Params enabled
     yi.paramsSetString("customString", scene.gs_custom_string)
 
     if scene.gs_auto_threads:

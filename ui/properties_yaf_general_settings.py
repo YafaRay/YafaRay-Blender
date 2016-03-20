@@ -81,7 +81,9 @@ class YAF_e2_PT_general_settings(RenderButtonsPanel, Panel):
         split = layout.split()
         col = split.column()
         col.prop(scene, "gs_transp_shad", toggle=True)
-        col.prop(scene, "gs_draw_params", toggle=True)
+        col2 = col.column()
+        col2.enabled = False
+        col2.prop(scene, "gs_draw_params", toggle=True)
         col.prop(scene, "gs_verbose", toggle=True)
 
         col = split.column()

@@ -668,7 +668,7 @@ def register():
 
     Scene.gs_draw_params = BoolProperty(
         name="Draw parameters",
-        description="Write the render parameters below the image",
+        description="(DEPRECATED): use file output or secondary file output with Params enabled",
         default=False)
 
     Scene.bg_transp = BoolProperty(
