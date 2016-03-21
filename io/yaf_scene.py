@@ -19,6 +19,7 @@
 # <pep8 compliant>
 
 import bpy
+import os
 
 def computeSceneSize(render):
     sizeX = int(render.resolution_x * render.resolution_percentage * 0.01)
@@ -190,7 +191,7 @@ def exportRenderSettings(yi, scene):
     yi.paramsSetString("params_badge_author", scene.yafaray.params_badge.author)
     yi.paramsSetString("params_badge_contact", scene.yafaray.params_badge.contact)
     yi.paramsSetString("params_badge_comments", scene.yafaray.params_badge.comments)
-    yi.paramsSetString("params_badge_customIcon", scene.yafaray.params_badge.customIcon)
+    yi.paramsSetString("params_badge_customIcon", os.path.abspath(bpy.path.abspath(scene.yafaray.params_badge.customIcon)))
 
     if scene.gs_auto_threads:
         yi.paramsSetInt("threads", -1)
