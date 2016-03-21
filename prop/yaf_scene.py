@@ -72,6 +72,7 @@ class YafaRayParamsBadgeProperties(bpy.types.PropertyGroup):
     customIcon = StringProperty(
         name="Custom PNG icon path",
         description=("Path to custom PNG icon (recommended 70x45, black background). If blank the default YafaRay icon will be shown"),
+        subtype="FILE_PATH",
         default="")
 
     
@@ -694,9 +695,9 @@ def register():
         default=False)
 
     Scene.gs_draw_params = BoolProperty(
-        name="Draw parameters (deprecated)",
-        description="(DEPRECATED): use file output or secondary file output with Params enabled",
-        default=False)
+        name="Draw parameters",
+        description="Draw parameters badge. Now it ONLY appears in exported image files, NOT in Blender.",
+        default=True)
 
     Scene.bg_transp = BoolProperty(
         name="Transp.background",
@@ -812,11 +813,6 @@ def register():
         name="Autosave Render Preset",
         description="Automatically generate a preset file with the Render Settings used for the image",
         default=False)
-
-    Scene.img_draw_params = BoolProperty(
-        name="Draw params (outside image)",
-        description="Draw parameters badge in the image files, below the render area",
-        default=True)
 
     ########### YafaRays integrator properties #############
     Scene.intg_light_method = EnumProperty(
@@ -1091,7 +1087,6 @@ def unregister():
     Scene.img_add_blend_name
     Scene.img_add_datetime
     Scene.img_autosave_preset
-    Scene.img_draw_params
 
     Scene.intg_light_method
     Scene.intg_use_caustics

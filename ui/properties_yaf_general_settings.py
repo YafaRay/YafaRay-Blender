@@ -81,9 +81,7 @@ class YAF_e2_PT_general_settings(RenderButtonsPanel, Panel):
         split = layout.split()
         col = split.column()
         col.prop(scene, "gs_transp_shad", toggle=True)
-        col2 = col.column()
-        col2.enabled = False
-        col2.prop(scene, "gs_draw_params", toggle=True)
+        col = col.column()
         col.prop(scene, "gs_verbose", toggle=True)
 
         col = split.column()
@@ -101,24 +99,31 @@ class YAF_e2_PT_general_settings(RenderButtonsPanel, Panel):
 
 
 class YAF_e2_MT_params_badge(RenderButtonsPanel, Panel):
-    bl_label = "Parameters Badge settings"
+    bl_label = "Draw Parameters Badge"
     COMPAT_ENGINES = {'YAFA_e2_RENDER'}
+
+    def draw_header(self, context):
+        scene = context.scene
+        self.layout.prop(scene, "gs_draw_params", text="")
 
     def draw(self, context):
         layout = self.layout
         scene = context.scene
         render = scene.render
 
-        row = layout.row(align=True)
-        row.prop(scene.yafaray.params_badge, "title")
-        row = layout.row()
-        row.prop(scene.yafaray.params_badge, "author")
-        row = layout.row()
-        row.prop(scene.yafaray.params_badge, "contact")
-        row = layout.row()
-        row.prop(scene.yafaray.params_badge, "comments")
-        row = layout.row()
-        row.prop(scene.yafaray.params_badge, "customIcon")
+        if scene.gs_draw_params:
+                row = layout.row(align=True)
+                row.label("The Parameters Badge no longer appears into Blender, only in exported image files", icon='INFO')
+                row = layout.row()
+                row.prop(scene.yafaray.params_badge, "title")
+                row = layout.row()
+                row.prop(scene.yafaray.params_badge, "author")
+                row = layout.row()
+                row.prop(scene.yafaray.params_badge, "contact")
+                row = layout.row()
+                row.prop(scene.yafaray.params_badge, "comments")
+                row = layout.row()
+                row.prop(scene.yafaray.params_badge, "customIcon")
 
 
 class YAF_e2_MT_clay_render(RenderButtonsPanel, Panel):

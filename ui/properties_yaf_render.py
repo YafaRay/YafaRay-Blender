@@ -99,8 +99,6 @@ class YAF_e2_PT_output(RenderButtonsPanel, Panel):
         col.prop(sc, "img_add_datetime")
         row = layout.row()
         row.prop(sc, "img_autosave_preset")
-        col = row.column()
-        col.prop(sc, "img_draw_params")
 
         split = layout.split(percentage=0.6)
         col = split.column()

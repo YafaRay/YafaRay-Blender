@@ -115,9 +115,6 @@ def load_handler(dummy):
     # convert image output file type setting from blender to yafaray's file type setting on file load, so that both are the same...
     if bpy.context.scene.render.image_settings.file_format is not bpy.context.scene.img_output:
         bpy.context.scene.img_output = bpy.context.scene.render.image_settings.file_format
-
-    #disable the deprecated "draw params" parameter, now the file output "draw params" to be used.
-    bpy.context.scene.gs_draw_params = False
     
 
 def register():

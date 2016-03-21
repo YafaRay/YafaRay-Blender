@@ -345,7 +345,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.yi.paramsSetBool("alpha_channel", render.image_settings.color_mode == "RGBA")
             self.yi.paramsSetInt("width", self.resX)
             self.yi.paramsSetInt("height", self.resY)
-            self.yi.paramsSetBool("img_draw_params_outside", (scene.img_draw_params or scene.gs_draw_params) ) #If the main "draw params" is selected, always make sure the image file output draws the params outside the rendered area.
+            self.yi.paramsSetBool("img_draw_params_outside", scene.gs_draw_params)
             self.ih = self.yi.createImageHandler("outFile")
             self.co = yafaray_e2_interface.imageOutput_t(self.ih, str(self.outputFile), 0, 0)
             if scene.img_autosave_preset:
@@ -393,7 +393,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.yi.paramsSetBool("alpha_channel", render.image_settings.color_mode == "RGBA")
                 self.yi.paramsSetInt("width", self.resX)
                 self.yi.paramsSetInt("height", self.resY)
-                self.yi.paramsSetBool("img_draw_params_outside", (scene.img_draw_params or scene.gs_draw_params) ) #If the main "draw params" is selected, always make sure the image file output draws the params outside the rendered area.
+                self.yi.paramsSetBool("img_draw_params_outside", scene.gs_draw_params)
                 self.ih = self.yi.createImageHandler("outFile")
                 self.co = yafaray_e2_interface.imageOutput_t(self.ih, str(self.outputFile), 0, 0)
                 self.yi.setOutput2(self.co)
