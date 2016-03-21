@@ -184,7 +184,7 @@ def exportRenderSettings(yi, scene):
     yi.paramsSetInt("tile_size", scene.gs_tile_size)
     yi.paramsSetString("tiles_order", scene.gs_tile_order)
 
-    yi.paramsSetBool("drawParams", False)   #(DEPRECATED): use file output or secondary file output with Params enabled
+    yi.paramsSetBool("drawParams", scene.gs_draw_params)
     
     yi.paramsSetString("params_badge_title", scene.yafaray.params_badge.title)
     yi.paramsSetString("params_badge_author", scene.yafaray.params_badge.author)

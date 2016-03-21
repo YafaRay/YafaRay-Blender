@@ -213,6 +213,7 @@ class YAFARAY_OT_presets_renderset(YAF_AddPresetBase, Operator):
         "scene.gs_clay_sigma",
         "scene.gs_clay_col",
         "scene.gs_mask_render",
+        "scene.gs_draw_params",
         "scene.bg_transp",
         "scene.bg_transp_refract",
         "scene.adv_auto_shadow_bias_enabled",

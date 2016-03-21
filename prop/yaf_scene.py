@@ -71,7 +71,7 @@ class YafaRayParamsBadgeProperties(bpy.types.PropertyGroup):
 
     customIcon = StringProperty(
         name="Custom PNG icon path",
-        description=("Path to custom PNG icon (recommended 70x45, black background). If blank the default YafaRay icon will be shown"),
+        description=("Path to custom icon (recommended around 70x45, black background). If blank or wrong, the default YafaRay icon will be shown"),
         subtype="FILE_PATH",
         default="")
 
