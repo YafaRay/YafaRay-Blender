@@ -63,9 +63,9 @@ def getRenderCoords(scene):
         maxX = render.border_max_x * sizeX
         maxY = render.border_max_y * sizeY
         bStartX = int(minX)
-        bStartY = int(sizeY - maxY)
-        bsizeX = int(maxX - minX)
-        bsizeY = int(maxY - minY)
+        bStartY = int(sizeY) - int(maxY)
+        bsizeX = int(maxX) - int(minX)
+        bsizeY = int(maxY) - int(minY)
 
     # Sanne: add lens shift
     bStartX += shiftX
