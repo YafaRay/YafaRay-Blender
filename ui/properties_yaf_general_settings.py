@@ -56,6 +56,12 @@ class YAF_e2_PT_general_settings(RenderButtonsPanel, Panel):
         sub = col.column()
         sub.enabled = scene.gs_type_render == "into_blender"
         sub.prop(scene, "gs_secondary_file_output")
+        if scene.gs_type_render == "into_blender" and not scene.gs_secondary_file_output and scene.gs_draw_params:
+                row = layout.row()
+                row.label("Params badge no longer appears in Blender.", icon='ERROR')
+                row = layout.row()
+                row.label("Enable Secondary File Output so it appears in the exported image files", icon='ERROR')
+
         row = sub.row()
         row.prop(scene, "gs_tile_order")
 
@@ -113,8 +119,13 @@ class YAF_e2_MT_params_badge(RenderButtonsPanel, Panel):
 
         if scene.gs_draw_params:
                 row = layout.row(align=True)
-                row.label("The Parameters Badge no longer appears into Blender, only in exported image files", icon='INFO')
-                row = layout.row()
+
+                if scene.gs_type_render == "into_blender" and not scene.gs_secondary_file_output:
+                        row.label("Params badge no longer appears in Blender.", icon='ERROR')
+                        row = layout.row()
+                        row.label("Enable Secondary File Output so it appears in the exported image files", icon='ERROR')
+                        row = layout.row()
+
                 row.prop(scene.yafaray.params_badge, "title")
                 row = layout.row()
                 row.prop(scene.yafaray.params_badge, "author")
