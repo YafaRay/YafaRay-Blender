@@ -191,7 +191,8 @@ def exportRenderSettings(yi, scene):
     yi.paramsSetString("logging_author", scene.yafaray.logging.author)
     yi.paramsSetString("logging_contact", scene.yafaray.logging.contact)
     yi.paramsSetString("logging_comments", scene.yafaray.logging.comments)
-    yi.paramsSetString("logging_customIcon", os.path.abspath(bpy.path.abspath(scene.yafaray.logging.customIcon)))
+    if scene.yafaray.logging.customIcon != "":
+        yi.paramsSetString("logging_customIcon", os.path.abspath(bpy.path.abspath(scene.yafaray.logging.customIcon)))
 
     if scene.gs_auto_threads:
         yi.paramsSetInt("threads", -1)
