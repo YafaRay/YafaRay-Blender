@@ -122,6 +122,12 @@ class YAFA_E3_MT_logging(RenderButtonsPanel, Panel):
         col = split.column()
         col.prop(scene.yafaray.logging, "saveHTML")
 
+        split = layout.split()
+        col = split.column()
+        col.prop(scene.yafaray.logging, "consoleVerbosity")
+        col = split.column()
+        col.prop(scene.yafaray.logging, "logVerbosity")
+
         if scene.gs_draw_params or scene.yafaray.logging.saveLog or scene.yafaray.logging.saveHTML:
                 if scene.gs_type_render == "into_blender" and not scene.gs_secondary_file_output:
                         row = layout.row()

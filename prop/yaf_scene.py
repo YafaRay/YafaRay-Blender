@@ -59,6 +59,30 @@ class YafaRayLoggingProperties(bpy.types.PropertyGroup):
         description="Save HTML information/log file with the exported image files",
         default=False)
 
+    verbosityLevels=sorted((
+            ('mute', "Mute (silent)", "Prints nothing", 0),
+            ('error', "Error", "Prints only errors", 1),
+            ('warning', "Warning", "Prints also warnings", 2),
+            ('params', "Params", "Prints also render param messages", 3),
+            ('info', "Info", "Prints also basic info messages", 4),
+            ('verbose', "Verbose", "Prints additional info messages", 5),
+            ('debug', "Debug", "Prints debug messages (if any)", 6),
+        ), key=lambda index: index[3])
+
+    consoleVerbosity = EnumProperty(
+        name="Console Verbosity",
+        description="Select the desired verbosity level for console log output",
+        items=(verbosityLevels
+        ),
+        default="info")
+
+    logVerbosity = EnumProperty(
+        name="Log/HTML Verbosity",
+        description="Select the desired verbosity level for log and HTML output",
+        items=(verbosityLevels
+        ),
+        default="verbose")
+
     title = StringProperty(
         name="Title",
         description=("Title to be shown in the logs and/or params badge"),
