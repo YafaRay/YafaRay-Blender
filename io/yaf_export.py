@@ -248,15 +248,6 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         ymat = self.yi.createMaterial("defaultMat")
         self.materialMap["default"] = ymat
 
-        # Obsolete: create a shiny diffuse material for "Clay Render" option in general settings
-        #self.yi.paramsClearAll()
-        #self.yi.paramsSetString("type", "shinydiffusemat")
-        #cCol = self.scene.gs_clay_col
-        #self.yi.paramsSetColor("color", cCol[0], cCol[1], cCol[2])
-        #self.yi.printVerbose("Exporter: Creating Material \"clayMat\"")
-        #cmat = self.yi.createMaterial("clayMat")
-        #self.materialMap["clay"] = cmat
-
         for obj in self.scene.objects:
             for mat_slot in obj.material_slots:
                 if mat_slot.material not in self.materials:

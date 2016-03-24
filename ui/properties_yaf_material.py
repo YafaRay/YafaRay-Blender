@@ -416,16 +416,6 @@ class YAFA_E3_PT_blend_(YAFA_E3_e2_MaterialTypePanel, Panel):
         box = layout.box()
         box.label(text="Choose the two materials you wish to blend.")
 
-        #old blend material Enum properties - deprecated
-        #split = box.split()
-        #col = split.column()
-        #col.label(text="Material one:")
-        #col.prop(yaf_mat, "material1", text="")
-
-        #col = split.column()
-        #col.label(text="Material two:")
-        #col.prop(yaf_mat, "material2", text="")
-
         blend_one_draw(layout, yaf_mat)
         blend_two_draw(layout, yaf_mat)
 

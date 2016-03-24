@@ -220,7 +220,6 @@ class YAFARAY_OT_presets_renderset(YAF_AddPresetBase, Operator):
         "scene.adv_shadow_bias_value",
         "scene.adv_auto_min_raydist_enabled",
         "scene.adv_min_raydist_value",
-        "scene.gs_custom_string",
         "scene.gs_premult",
         "scene.gs_transp_shad",
         "scene.gs_show_sam_pix",

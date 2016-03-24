@@ -729,12 +729,6 @@ def register():
         description="Min Ray Dist (default 0.00005). Change ONLY if artifacts or light leaks due to bad ray intersections. Increasing this value can led to artifacts and incorrect renders",
         min=0.00000001, max=10000, default=0.00005)
 
-    Scene.gs_custom_string = StringProperty(        #Deprecated, use now the params_badge.paramBadgeComments instead
-        name="Custom string (deprecated)",
-        description="Custom string will be added to the info bar, "
-                    "use it for CPU, RAM etc",
-        default="")
-
     Scene.gs_premult = BoolProperty(
         name="Premultiply",
         description="Premultipy Alpha channel for renders with transparent background",
