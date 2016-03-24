@@ -53,13 +53,16 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.yi = yi
 
         if self.is_preview:
-            self.yi.setVerbosityMute()
+            self.yi.setConsoleVerbosityLevel("mute")
+            self.yi.setLogVerbosityLevel("mute")
             self.scene.bg_transp = False #to correct alpha problems in preview roughglass
             self.scene.bg_transp_refract = False #to correct alpha problems in preview roughglass
         elif self.scene.gs_verbose:
-            self.yi.setVerbosityInfo()
+            self.yi.setConsoleVerbosityLevel("info")
+            self.yi.setLogVerbosityLevel("verbose")
         else:
-            self.yi.setVerbosityMute()
+            self.yi.setConsoleVerbosityLevel("mute")
+            self.yi.setLogVerbosityLevel("mute")
 
         self.yi.loadPlugins(PLUGIN_PATH)
         self.yaf_object = yafObject(self.yi, self.materialMap, self.is_preview)
