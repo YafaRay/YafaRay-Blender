@@ -104,7 +104,7 @@ class YAFA_E3_PT_general_settings(RenderButtonsPanel, Panel):
         sub.prop(scene, "bg_transp_refract", toggle=True)
 
 
-class YAFA_E3_MT_params_badge(RenderButtonsPanel, Panel):
+class YAFA_E3_MT_logging(RenderButtonsPanel, Panel):
     bl_label = "Draw Parameters Badge"
     COMPAT_ENGINES = {'YAFA_E3_RENDER'}
 
@@ -126,15 +126,15 @@ class YAFA_E3_MT_params_badge(RenderButtonsPanel, Panel):
                         row.label("Enable Secondary File Output so it appears in the exported image files", icon='ERROR')
                         row = layout.row()
 
-                row.prop(scene.yafaray.params_badge, "title")
+                row.prop(scene.yafaray.logging, "title")
                 row = layout.row()
-                row.prop(scene.yafaray.params_badge, "author")
+                row.prop(scene.yafaray.logging, "author")
                 row = layout.row()
-                row.prop(scene.yafaray.params_badge, "contact")
+                row.prop(scene.yafaray.logging, "contact")
                 row = layout.row()
-                row.prop(scene.yafaray.params_badge, "comments")
+                row.prop(scene.yafaray.logging, "comments")
                 row = layout.row()
-                row.prop(scene.yafaray.params_badge, "customIcon")
+                row.prop(scene.yafaray.logging, "customIcon")
 
 
 class YAFA_E3_MT_clay_render(RenderButtonsPanel, Panel):

@@ -48,30 +48,32 @@ def call_update_fileformat(self, context):
 class YafaRayProperties(bpy.types.PropertyGroup):
     pass
 
-class YafaRayParamsBadgeProperties(bpy.types.PropertyGroup):
+class YafaRayLoggingProperties(bpy.types.PropertyGroup):
     title = StringProperty(
         name="Title",
-        description=("Title to be shown in the params badge"),
+        description=("Title to be shown in the logs and/or params badge"),
         default="")
 
     author = StringProperty(
         name="Author",
-        description=("Author to be shown in the params badge"),
+        description=("Author to be shown in the logs and/or params badge"),
         default="")
 
     contact = StringProperty(
         name="Contact info",
-        description=("Contact information (phone, e-mail, etc) to be shown in the params badge"),
+        description=("Contact information (phone, e-mail, etc) to be shown in the logs and/or params badge"),
         default="")
 
     comments = StringProperty(
         name="Comments",
-        description=("Comments to be added to the params badge (previously known as custom string)"),
+        description=("Comments to be added to the logs and/or params badge"),
         default="")
 
     customIcon = StringProperty(
         name="Custom PNG icon path",
-        description=("Path to custom icon (recommended around 70x45, black background). If blank or wrong, the default YafaRay icon will be shown"),
+        description=("Path to custom icon for logs and/or params badge."
+                     "(recommended around 70x45, black background)."
+                     "If blank or wrong, the default YafaRay icon will be shown"),
         subtype="FILE_PATH",
         default="")
 
@@ -1038,8 +1040,8 @@ def register():
     bpy.utils.register_class(YafaRayNoiseControlProperties)
     YafaRayProperties.noise_control = PointerProperty(type=YafaRayNoiseControlProperties)
 
-    bpy.utils.register_class(YafaRayParamsBadgeProperties)
-    YafaRayProperties.params_badge = PointerProperty(type=YafaRayParamsBadgeProperties)
+    bpy.utils.register_class(YafaRayLoggingProperties)
+    YafaRayProperties.logging = PointerProperty(type=YafaRayLoggingProperties)
 
     bpy.utils.register_class(YafaRayMaterialPreviewControlProperties)
     YafaRayProperties.preview = PointerProperty(type=YafaRayMaterialPreviewControlProperties)
@@ -1119,7 +1121,7 @@ def unregister():
     Scene.AA_pixelwidth
     Scene.AA_filter_type
 
-    bpy.utils.unregister_class(YafaRayParamsBadgeProperties)
+    bpy.utils.unregister_class(YafaRayLoggingProperties)
     bpy.utils.unregister_class(YafaRayNoiseControlProperties)
     bpy.utils.unregister_class(YafaRayRenderPassesProperties)
     bpy.utils.unregister_class(YafaRayMaterialPreviewControlProperties)

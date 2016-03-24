@@ -187,11 +187,11 @@ def exportRenderSettings(yi, scene):
 
     yi.paramsSetBool("drawParams", scene.gs_draw_params)
     
-    yi.paramsSetString("params_badge_title", scene.yafaray.params_badge.title)
-    yi.paramsSetString("params_badge_author", scene.yafaray.params_badge.author)
-    yi.paramsSetString("params_badge_contact", scene.yafaray.params_badge.contact)
-    yi.paramsSetString("params_badge_comments", scene.yafaray.params_badge.comments)
-    yi.paramsSetString("params_badge_customIcon", os.path.abspath(bpy.path.abspath(scene.yafaray.params_badge.customIcon)))
+    yi.paramsSetString("logging_title", scene.yafaray.logging.title)
+    yi.paramsSetString("logging_author", scene.yafaray.logging.author)
+    yi.paramsSetString("logging_contact", scene.yafaray.logging.contact)
+    yi.paramsSetString("logging_comments", scene.yafaray.logging.comments)
+    yi.paramsSetString("logging_customIcon", os.path.abspath(bpy.path.abspath(scene.yafaray.logging.customIcon)))
 
     if scene.gs_auto_threads:
         yi.paramsSetInt("threads", -1)
