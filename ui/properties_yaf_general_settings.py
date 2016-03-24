@@ -56,11 +56,12 @@ class YAFA_E3_PT_general_settings(RenderButtonsPanel, Panel):
         sub = col.column()
         sub.enabled = scene.gs_type_render == "into_blender"
         sub.prop(scene, "gs_secondary_file_output")
-        if scene.gs_type_render == "into_blender" and not scene.gs_secondary_file_output and scene.gs_draw_params:
+        if (scene.gs_draw_params or scene.yafaray.logging.saveLog or scene.yafaray.logging.saveHTML) and scene.gs_type_render == "into_blender" and not scene.gs_secondary_file_output:
                 row = layout.row()
-                row.label("Params badge no longer appears in Blender.", icon='ERROR')
+                row.label("Params badge and saving log/html files only works when exporting to image file.", icon='ERROR')
                 row = layout.row()
-                row.label("Enable Secondary File Output so it appears in the exported image files", icon='ERROR')
+                row.label("To get the badge/logs, render to image or render into Blender+enable Secondary File Output.", icon='ERROR')
+                row = layout.row()
 
         row = sub.row()
         row.prop(scene, "gs_tile_order")
@@ -105,27 +106,30 @@ class YAFA_E3_PT_general_settings(RenderButtonsPanel, Panel):
 
 
 class YAFA_E3_MT_logging(RenderButtonsPanel, Panel):
-    bl_label = "Draw Parameters Badge"
+    bl_label = "Logging / Params Badge Settings"
     COMPAT_ENGINES = {'YAFA_E3_RENDER'}
-
-    def draw_header(self, context):
-        scene = context.scene
-        self.layout.prop(scene, "gs_draw_params", text="")
 
     def draw(self, context):
         layout = self.layout
         scene = context.scene
         render = scene.render
 
-        if scene.gs_draw_params:
-                row = layout.row(align=True)
+        split = layout.split()
+        col = split.column()
+        col.prop(scene, "gs_draw_params")
+        col = split.column()
+        col.prop(scene.yafaray.logging, "saveLog")
+        col = split.column()
+        col.prop(scene.yafaray.logging, "saveHTML")
 
+        if scene.gs_draw_params or scene.yafaray.logging.saveLog or scene.yafaray.logging.saveHTML:
                 if scene.gs_type_render == "into_blender" and not scene.gs_secondary_file_output:
-                        row.label("Params badge no longer appears in Blender.", icon='ERROR')
                         row = layout.row()
-                        row.label("Enable Secondary File Output so it appears in the exported image files", icon='ERROR')
+                        row.label("Params badge and saving log/html files only works when exporting to image file.", icon='ERROR')
                         row = layout.row()
+                        row.label("To get the badge/logs, render to image or render into Blender+enable Secondary File Output.", icon='ERROR')
 
+                row = layout.row()
                 row.prop(scene.yafaray.logging, "title")
                 row = layout.row()
                 row.prop(scene.yafaray.logging, "author")

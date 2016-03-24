@@ -49,6 +49,16 @@ class YafaRayProperties(bpy.types.PropertyGroup):
     pass
 
 class YafaRayLoggingProperties(bpy.types.PropertyGroup):
+    saveLog = BoolProperty(
+        name="Save log file",
+        description="Save text log file with the exported image files",
+        default=False)
+
+    saveHTML = BoolProperty(
+        name="Save HTML file",
+        description="Save HTML information/log file with the exported image files",
+        default=False)
+
     title = StringProperty(
         name="Title",
         description=("Title to be shown in the logs and/or params badge"),
