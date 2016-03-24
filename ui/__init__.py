@@ -34,9 +34,9 @@ for member in dir(properties_object):  # add all "object" panels from blender
     subclass = getattr(properties_object, member)
     try:
         if hasattr(subclass, 'COMPAT_ENGINES'):
-            subclass.COMPAT_ENGINES.add('YAFA_e2_RENDER')
+            subclass.COMPAT_ENGINES.add('YAFA_E3_RENDER')
         else:
-            subclass.COMPAT_ENGINES = {'YAFA_e2_RENDER'}
+            subclass.COMPAT_ENGINES = {'YAFA_E3_RENDER'}
     except:
         pass
 del properties_object
@@ -46,9 +46,9 @@ for member in dir(properties_particle):  # add all "particle" panels from blende
     subclass = getattr(properties_particle, member)
     try:
         if hasattr(subclass, 'COMPAT_ENGINES'):
-            subclass.COMPAT_ENGINES.add('YAFA_e2_RENDER')
+            subclass.COMPAT_ENGINES.add('YAFA_E3_RENDER')
         else:
-            subclass.COMPAT_ENGINES = {'YAFA_e2_RENDER'}
+            subclass.COMPAT_ENGINES = {'YAFA_E3_RENDER'}
     except:
         pass
 del properties_particle
@@ -58,9 +58,9 @@ for member in dir(properties_data_mesh):  # add all "object data" panels from bl
     subclass = getattr(properties_data_mesh, member)
     try:
         if hasattr(subclass, 'COMPAT_ENGINES'):
-            subclass.COMPAT_ENGINES.add('YAFA_e2_RENDER')
+            subclass.COMPAT_ENGINES.add('YAFA_E3_RENDER')
         else:
-            subclass.COMPAT_ENGINES = {'YAFA_e2_RENDER'}
+            subclass.COMPAT_ENGINES = {'YAFA_E3_RENDER'}
     except:
         pass
 del properties_data_mesh
@@ -70,9 +70,9 @@ for member in dir(properties_data_speaker):  # add all "speaker (SOC 2011, peppe
     subclass = getattr(properties_data_speaker, member)
     try:
         if hasattr(subclass, 'COMPAT_ENGINES'):
-            subclass.COMPAT_ENGINES.add('YAFA_e2_RENDER')
+            subclass.COMPAT_ENGINES.add('YAFA_E3_RENDER')
         else:
-            subclass.COMPAT_ENGINES = {'YAFA_e2_RENDER'}
+            subclass.COMPAT_ENGINES = {'YAFA_E3_RENDER'}
     except:
         pass
 del properties_data_speaker
@@ -86,9 +86,9 @@ for member in dir(properties_scene):
             subclass = getattr(properties_scene, member)
             try:
                 if hasattr(subclass, 'COMPAT_ENGINES'):
-                    subclass.COMPAT_ENGINES.add('YAFA_e2_RENDER')
+                    subclass.COMPAT_ENGINES.add('YAFA_E3_RENDER')
                 else:
-                    subclass.COMPAT_ENGINES = {'YAFA_e2_RENDER'}
+                    subclass.COMPAT_ENGINES = {'YAFA_E3_RENDER'}
             except:
                 pass
 

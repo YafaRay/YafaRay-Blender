@@ -23,15 +23,15 @@ from bl_ui.properties_data_lamp import DataButtonsPanel
 
 # Inherit Lamp data block
 from bl_ui.properties_data_lamp import DATA_PT_context_lamp
-DATA_PT_context_lamp.COMPAT_ENGINES.add('YAFA_e2_RENDER')
+DATA_PT_context_lamp.COMPAT_ENGINES.add('YAFA_E3_RENDER')
 del DATA_PT_context_lamp    
 
-class YAF_e2_PT_preview(Panel):
+class YAFA_E3_PT_preview(Panel):
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "data"
     bl_label = "Preview"
-    COMPAT_ENGINES = {'YAFA_e2_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
 
     @classmethod
     def poll(cls, context):
@@ -42,9 +42,9 @@ class YAF_e2_PT_preview(Panel):
         self.layout.template_preview(context.lamp)
 
 
-class YAF_e2_PT_lamp(DataButtonsPanel, Panel):
+class YAFA_E3_PT_lamp(DataButtonsPanel, Panel):
     bl_label = "Lamp"
-    COMPAT_ENGINES = {'YAFA_e2_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -103,9 +103,9 @@ class YAF_e2_PT_lamp(DataButtonsPanel, Panel):
                 layout.box().prop(lamp, "yaf_samples")
 
 # povman test
-class YAF_e2_PT_area(DataButtonsPanel, Panel):
+class YAFA_E3_PT_area(DataButtonsPanel, Panel):
     bl_label = "Area Shape"
-    COMPAT_ENGINES = {'YAFA_e2_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
 
     @classmethod
     def poll(cls, context):
@@ -129,9 +129,9 @@ class YAF_e2_PT_area(DataButtonsPanel, Panel):
             sub.prop(lamp, "size_y", text="Size Y")
 # end
 
-class YAF_e2_PT_spot(DataButtonsPanel, Panel):
+class YAFA_E3_PT_spot(DataButtonsPanel, Panel):
     bl_label = "Spot Shape"
-    COMPAT_ENGINES = {'YAFA_e2_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
 
     @classmethod
     def poll(cls, context):
@@ -160,10 +160,10 @@ class YAF_e2_PT_spot(DataButtonsPanel, Panel):
             col.label(text="")
             col.prop(lamp, "shadow_buffer_clip_end", text=" Clip End")
 
-class YAF_e2_PT_lamp_advanced(DataButtonsPanel, Panel):
+class YAFA_E3_PT_lamp_advanced(DataButtonsPanel, Panel):
     bl_label = "Advanced settings"
     bl_options = {'DEFAULT_CLOSED'}
-    COMPAT_ENGINES = {'YAFA_e2_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
     
     def draw(self, context):
         layout = self.layout

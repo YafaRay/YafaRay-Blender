@@ -23,9 +23,9 @@ from bpy.types import Panel
 from bl_ui.properties_render import RenderButtonsPanel
 
 
-class YAF_e2_PT_render(RenderButtonsPanel, Panel):
+class YAFA_E3_PT_render(RenderButtonsPanel, Panel):
     bl_label = "Integrator"
-    COMPAT_ENGINES = {'YAFA_e2_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
 
     def draw(self, context):
         layout = self.layout

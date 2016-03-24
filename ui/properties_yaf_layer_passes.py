@@ -23,9 +23,9 @@ from bpy.types import Panel
 from bl_ui.properties_render_layer import RenderLayerButtonsPanel
 
 
-class YAF_e2_PT_layers(RenderLayerButtonsPanel, Panel):
+class YAFA_E3_PT_layers(RenderLayerButtonsPanel, Panel):
     bl_label = "Layers"
-    COMPAT_ENGINES = {'YAFA_e2_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
 #    bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
@@ -60,9 +60,9 @@ class YAF_e2_PT_layers(RenderLayerButtonsPanel, Panel):
         # TODO: Implement render layers
         #col.prop(rl, "layers", text="Layer")
 
-class YAF_e2_PT_layer_passes(RenderLayerButtonsPanel, Panel):
+class YAFA_E3_PT_layer_passes(RenderLayerButtonsPanel, Panel):
     bl_label = "Render Passes"
-    COMPAT_ENGINES = {'YAFA_e2_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
 
     def draw_header(self, context):
         scene = context.scene
@@ -270,9 +270,9 @@ class YAF_e2_PT_layer_passes(RenderLayerButtonsPanel, Panel):
                 sub.prop(scene.yafaray.passes, "pass_mask_only")                        
 
 
-class YAF_e2_PT_views(RenderLayerButtonsPanel, Panel):
+class YAFA_E3_PT_views(RenderLayerButtonsPanel, Panel):
     bl_label = "Views"
-    COMPAT_ENGINES = {'YAFA_e2_RENDER'}
+    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
     
     def draw_header(self, context):
         rd = context.scene.render
