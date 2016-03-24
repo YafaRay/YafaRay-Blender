@@ -120,7 +120,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         return obj_visible
 
     def exportObjects(self):
-        self.yi.printInfo("Exporter: Processing Lamps...")
+        self.yi.printVerbose("Exporter: Processing Lamps...")
 
         # export only visible lamps
         for obj in [o for o in self.scene.objects if not o.hide_render and o.is_visible(self.scene) and o.type == 'LAMP']:
@@ -137,7 +137,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                     continue
                 self.yaf_lamp.createLight(self.yi, obj, obj.matrix_world)
 
-        self.yi.printInfo("Exporter: Processing Geometry...")
+        self.yi.printVerbose("Exporter: Processing Geometry...")
 
         # export only visible objects
         baseIds = {}
@@ -147,7 +147,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         and self.object_on_visible_layer(o) and (o.type in {'MESH', 'SURFACE', 'CURVE', 'FONT', 'EMPTY'})]:
             # Exporting dupliObjects as instances, also check for dupliObject type 'EMPTY' and don't export them as geometry
             if obj.is_duplicator:
-                self.yi.printInfo("Processing duplis for: {0}".format(obj.name))
+                self.yi.printVerbose("Processing duplis for: {0}".format(obj.name))
                 obj.dupli_list_create(self.scene)
 
                 for obj_dupli in [od for od in obj.dupli_list if not od.object.type == 'EMPTY']:
@@ -182,7 +182,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
             # Exporting objects with shared mesh data blocks as instances
             elif obj.data.users > 1 and self.scene.render.use_instances:
-                self.yi.printInfo("Processing shared mesh data node object: {0}".format(obj.name))
+                self.yi.printVerbose("Processing shared mesh data node object: {0}".format(obj.name))
                 if obj.data.name not in baseIds:
                     baseIds[obj.data.name] = self.yaf_object.writeInstanceBase(obj)
 
@@ -233,7 +233,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.yaf_material.writeMaterial(mat, self.scene)
 
     def exportMaterials(self):
-        self.yi.printInfo("Exporter: Processing Materials...")
+        self.yi.printVerbose("Exporter: Processing Materials...")
         self.materials = set()
 
         # create a default shiny diffuse material -> it will be assigned, if object has no material(s)
@@ -244,7 +244,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         else:
             cCol = (0.8, 0.8, 0.8)
         self.yi.paramsSetColor("color", cCol[0], cCol[1], cCol[2])
-        self.yi.printInfo("Exporter: Creating Material \"defaultMat\"")
+        self.yi.printVerbose("Exporter: Creating Material \"defaultMat\"")
         ymat = self.yi.createMaterial("defaultMat")
         self.materialMap["default"] = ymat
 
@@ -253,7 +253,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         #self.yi.paramsSetString("type", "shinydiffusemat")
         #cCol = self.scene.gs_clay_col
         #self.yi.paramsSetColor("color", cCol[0], cCol[1], cCol[2])
-        #self.yi.printInfo("Exporter: Creating Material \"clayMat\"")
+        #self.yi.printVerbose("Exporter: Creating Material \"clayMat\"")
         #cmat = self.yi.createMaterial("clayMat")
         #self.materialMap["clay"] = cmat
 
@@ -413,7 +413,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.scene = scene
 
         if scene.gs_type_render == "file":
-            self.yi.printInfo("Exporter: Rendering to file {0}".format(self.outputFile))
+            self.yi.printVerbose("Exporter: Rendering to file {0}".format(self.outputFile))
             self.update_stats("YafaRay Rendering:", "Rendering to {0}".format(self.outputFile))
             self.yi.render(self.co)
             result = self.begin_result(0, 0, self.resX, self.resY)
@@ -425,7 +425,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.end_result(result)
 
         elif scene.gs_type_render == "xml":
-            self.yi.printInfo("Exporter: Writing XML to file {0}".format(self.outputFile))
+            self.yi.printVerbose("Exporter: Writing XML to file {0}".format(self.outputFile))
             self.yi.render(self.co)
 
         else:

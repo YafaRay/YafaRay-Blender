@@ -570,7 +570,7 @@ class yafMaterial:
         yi = self.yi
         yi.paramsClearAll()
 
-        yi.printInfo("Exporter: Blend material with: [" + mat.material1name + "] [" + mat.material2name + "]")
+        yi.printVerbose("Exporter: Blend material with: [" + mat.material1name + "] [" + mat.material2name + "]")
         yi.paramsSetString("type", "blend_mat")
         yi.paramsSetString("material1", self.namehash(bpy.data.materials[mat.material1name]))
         yi.paramsSetString("material2", self.namehash(bpy.data.materials[mat.material2name]))
@@ -624,7 +624,7 @@ class yafMaterial:
 
     def writeMaterial(self, mat, scene, preview=False):
         self.preview = preview
-        self.yi.printInfo("Exporter: Creating Material: \"" + self.namehash(mat) + "\"")
+        self.yi.printVerbose("Exporter: Creating Material: \"" + self.namehash(mat) + "\"")
         ymat = None
         if mat.name == "y_null":
             ymat = self.writeNullMat(mat, scene)

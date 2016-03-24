@@ -46,7 +46,7 @@ class yafObject(object):
     def createCameras(self):
 
         yi = self.yi
-        yi.printInfo("Exporting Cameras")
+        yi.printVerbose("Exporting Cameras")
     
         render = self.scene.render
         
@@ -241,7 +241,7 @@ class yafObject(object):
         # Generate unique object ID
         ID = self.yi.getNextFreeID()
 
-        self.yi.printInfo("Exporting Base Mesh: {0} with ID: {1:d}".format(obj.name, ID))
+        self.yi.printVerbose("Exporting Base Mesh: {0} with ID: {1:d}".format(obj.name, ID))
 
         obType = 512  # Create this geometry object as a base object for instances
 
@@ -254,7 +254,7 @@ class yafObject(object):
 
     def writeInstance(self, oID, obj2WorldMatrix, name):
 
-        self.yi.printInfo("Exporting Instance of {0} [ID = {1:d}]".format(name, oID))
+        self.yi.printVerbose("Exporting Instance of {0} [ID = {1:d}]".format(name, oID))
 
         mat4 = obj2WorldMatrix.to_4x4()
         # mat4.transpose() --> not needed anymore: matrix indexing changed with Blender rev.42816
@@ -267,7 +267,7 @@ class yafObject(object):
 
     def writeMesh(self, obj, matrix):
 
-        self.yi.printInfo("Exporting Mesh: {0}".format(obj.name))
+        self.yi.printVerbose("Exporting Mesh: {0}".format(obj.name))
 
         # Generate unique object ID
         ID = self.yi.getNextFreeID()
@@ -297,7 +297,7 @@ class yafObject(object):
 
     def writeBGPortal(self, obj, matrix):
 
-        self.yi.printInfo("Exporting Background Portal Light: {0}".format(obj.name))
+        self.yi.printVerbose("Exporting Background Portal Light: {0}".format(obj.name))
 
         # Generate unique object ID
         ID = self.yi.getNextFreeID()
@@ -319,7 +319,7 @@ class yafObject(object):
 
     def writeMeshLight(self, obj, matrix):
 
-        self.yi.printInfo("Exporting Meshlight: {0}".format(obj.name))
+        self.yi.printVerbose("Exporting Meshlight: {0}".format(obj.name))
 
         # Generate unique object ID
         ID = self.yi.getNextFreeID()
@@ -354,7 +354,7 @@ class yafObject(object):
 
     def writeVolumeObject(self, obj, matrix):
 
-        self.yi.printInfo("Exporting Volume Region: {0}".format(obj.name))
+        self.yi.printVerbose("Exporting Volume Region: {0}".format(obj.name))
 
         yi = self.yi
         # me = obj.data  /* UNUSED */
@@ -567,7 +567,7 @@ class yafObject(object):
         for pSys in object.particle_systems:
             for mod in [m for m in object.modifiers if (m is not None) and (m.type == 'PARTICLE_SYSTEM')]:
                 if (pSys.settings.render_type == 'PATH') and mod.show_render and (pSys.name == mod.particle_system.name):
-                    yi.printInfo("Exporter: Creating Hair Particle System {!r}".format(pSys.name))
+                    yi.printVerbose("Exporter: Creating Hair Particle System {!r}".format(pSys.name))
                     tstart = time.time()
                     # TODO: clay particles uses at least materials thikness?
                     if object.active_material is not None:
@@ -607,7 +607,7 @@ class yafObject(object):
                     # TODO: keep object smooth
                     #yi.smoothMesh(0, 60.0)
                         yi.endGeometry()
-                    yi.printInfo("Exporter: Particle creation time: {0:.3f}".format(time.time() - tstart))
+                    yi.printVerbose("Exporter: Particle creation time: {0:.3f}".format(time.time() - tstart))
 
                     if pSys.settings.use_render_emitter:
                         renderEmitter = True

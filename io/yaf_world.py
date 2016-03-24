@@ -44,13 +44,13 @@ class yafWorld:
             iblSamples = 16
             bgPower = 1
 
-        self.yi.printInfo("Exporting World, type: {0}".format(bg_type))
+        self.yi.printVerbose("Exporting World, type: {0}".format(bg_type))
         yi.paramsClearAll()
 
         if bg_type == 'Texture':
             if world.active_texture is not None:
                 worldTex = world.active_texture
-                self.yi.printInfo("World Texture, name: {0}".format(worldTex.name))
+                self.yi.printVerbose("World Texture, name: {0}".format(worldTex.name))
             else:
                 worldTex = None
 

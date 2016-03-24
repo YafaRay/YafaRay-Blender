@@ -98,7 +98,7 @@ def exportAA(yi, scene):
 
 
 def exportRenderSettings(yi, scene):
-    yi.printInfo("Exporting Render Settings")
+    yi.printVerbose("Exporting Render Settings")
 
     render = scene.render
 
@@ -207,7 +207,7 @@ def exportRenderSettings(yi, scene):
 
 
 def exportRenderPassesSettings(yi, scene):
-    yi.printInfo("Exporting Render Passes settings")
+    yi.printVerbose("Exporting Render Passes settings")
 
     yi.paramsSetBool("pass_enable", scene.yafaray.passes.pass_enable)
     
