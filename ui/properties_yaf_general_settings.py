@@ -58,7 +58,7 @@ class YAFA_E3_PT_general_settings(RenderButtonsPanel, Panel):
         sub.enabled = scene.gs_type_render == "into_blender"
         sub.prop(scene, "gs_secondary_file_output")
         
-        if (scene.gs_draw_params or (scene.yafaray.logging.saveLog and scene.yafaray.logging.logVerbosity != "mute") or scene.yafaray.logging.saveHTML) and scene.gs_type_render == "into_blender" and not scene.gs_secondary_file_output:
+        if (scene.gs_draw_params or scene.yafaray.logging.saveLog or scene.yafaray.logging.saveHTML) and scene.gs_type_render == "into_blender" and not scene.gs_secondary_file_output:
                 row = layout.row()
                 row.label("Params badge and saving log/html files only works when exporting to image file.", icon='ERROR')
                 row = layout.row()
@@ -116,19 +116,17 @@ class YAFA_E3_MT_logging(RenderButtonsPanel, Panel):
         col = split.column()
         col.prop(scene.yafaray.logging, "consoleVerbosity")
         col = split.column()
-        col.prop(scene, "gs_draw_params")
-        col = split.column()
-        col.prop(scene.yafaray.logging, "saveHTML")
+        col.prop(scene.yafaray.logging, "logVerbosity")
 
         split = layout.split()
         col = split.column()
-        col.prop(scene.yafaray.logging, "logVerbosity")
+        col.prop(scene, "gs_draw_params")
+        col = split.column()
+        col.prop(scene.yafaray.logging, "saveLog")
+        col = split.column()
+        col.prop(scene.yafaray.logging, "saveHTML")
 
-        if scene.yafaray.logging.logVerbosity != "mute":
-                col = split.column()
-                col.prop(scene.yafaray.logging, "saveLog")
-
-        if scene.gs_draw_params or (scene.yafaray.logging.saveLog and scene.yafaray.logging.logVerbosity != "mute") or scene.yafaray.logging.saveHTML:
+        if scene.gs_draw_params or scene.yafaray.logging.saveLog or scene.yafaray.logging.saveHTML:
                 if scene.gs_type_render == "into_blender" and not scene.gs_secondary_file_output:
                         row = layout.row()
                         row.label("Params badge and saving log/html files only works when exporting to image file.", icon='ERROR')

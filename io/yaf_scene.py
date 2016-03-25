@@ -186,10 +186,7 @@ def exportRenderSettings(yi, scene):
     yi.paramsSetString("tiles_order", scene.gs_tile_order)
 
     yi.paramsSetBool("drawParams", scene.gs_draw_params)
-    if scene.yafaray.logging.logVerbosity != "mute":
-        yi.paramsSetBool("logging_saveLog", scene.yafaray.logging.saveLog)
-    else:
-        yi.paramsSetBool("logging_saveLog", False)
+    yi.paramsSetBool("logging_saveLog", scene.yafaray.logging.saveLog)
     yi.paramsSetBool("logging_saveHTML", scene.yafaray.logging.saveHTML)
     yi.paramsSetString("logging_title", scene.yafaray.logging.title)
     yi.paramsSetString("logging_author", scene.yafaray.logging.author)
