@@ -53,11 +53,13 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.yi = yi
 
         if self.is_preview:
+            self.yi.setDrawParams(False)
             self.yi.setConsoleVerbosityLevel("mute")
             self.yi.setLogVerbosityLevel("mute")
             self.scene.bg_transp = False #to correct alpha problems in preview roughglass
             self.scene.bg_transp_refract = False #to correct alpha problems in preview roughglass
         else:
+            self.yi.setDrawParams(self.scene.gs_draw_params)
             self.yi.setConsoleVerbosityLevel(self.scene.yafaray.logging.consoleVerbosity)
             self.yi.setLogVerbosityLevel(self.scene.yafaray.logging.logVerbosity)
 
@@ -336,7 +338,6 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.yi.paramsSetBool("alpha_channel", render.image_settings.color_mode == "RGBA")
             self.yi.paramsSetInt("width", self.resX)
             self.yi.paramsSetInt("height", self.resY)
-            self.yi.paramsSetBool("img_draw_params", scene.gs_draw_params)
             self.ih = self.yi.createImageHandler("outFile")
             self.co = yafaray_e3_interface.imageOutput_t(self.ih, str(self.outputFile), 0, 0)
             if scene.yafaray.logging.savePreset:
@@ -384,7 +385,6 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.yi.paramsSetBool("alpha_channel", render.image_settings.color_mode == "RGBA")
                 self.yi.paramsSetInt("width", self.resX)
                 self.yi.paramsSetInt("height", self.resY)
-                self.yi.paramsSetBool("img_draw_params", scene.gs_draw_params)
                 self.ih = self.yi.createImageHandler("outFile")
                 self.co = yafaray_e3_interface.imageOutput_t(self.ih, str(self.outputFile), 0, 0)
                 self.yi.setOutput2(self.co)
