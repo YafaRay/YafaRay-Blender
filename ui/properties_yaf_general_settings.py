@@ -53,31 +53,26 @@ class YAFA_E3_PT_general_settings(RenderButtonsPanel, Panel):
         col = split.column()
         col.prop(scene, "gs_ray_depth")
         col.prop(scene, "gs_type_render")
+
         sub = col.column()
         sub.enabled = scene.gs_type_render == "into_blender"
         sub.prop(scene, "gs_secondary_file_output")
-        if (scene.gs_draw_params or scene.yafaray.logging.saveLog or scene.yafaray.logging.saveHTML) and scene.gs_type_render == "into_blender" and not scene.gs_secondary_file_output:
+        
+        if (scene.gs_draw_params or (scene.yafaray.logging.saveLog and scene.yafaray.logging.logVerbosity != "mute") or scene.yafaray.logging.saveHTML) and scene.gs_type_render == "into_blender" and not scene.gs_secondary_file_output:
                 row = layout.row()
                 row.label("Params badge and saving log/html files only works when exporting to image file.", icon='ERROR')
                 row = layout.row()
                 row.label("To get the badge/logs, render to image or render into Blender+enable Secondary File Output.", icon='ERROR')
                 row = layout.row()
 
-        row = sub.row()
-        row.prop(scene, "gs_tile_order")
-
-
         col = split.column()
         sub = col.column()
         sub.enabled = scene.gs_transp_shad
         sub.prop(scene, "gs_shadow_depth")
-        #col.prop(scene, "gs_gamma_input")      #No longer needed
-        sub = col.column()
-        sub.enabled = scene.gs_auto_threads == False
-        sub.prop(scene, "gs_threads")
         sub = col.column()
         sub.enabled = scene.gs_type_render == "into_blender"
         sub.prop(scene, "gs_tile_size")
+        sub.prop(scene, "gs_tile_order")
 
         layout.separator()
 
@@ -87,12 +82,15 @@ class YAFA_E3_PT_general_settings(RenderButtonsPanel, Panel):
 
         split = layout.split()
         col = split.column()
+        col.prop(scene, "gs_auto_threads", toggle=True)
         col.prop(scene, "gs_transp_shad", toggle=True)
-        col = col.column()
-        col.prop(scene, "gs_verbose", toggle=True)
 
         col = split.column()
-        col.prop(scene, "gs_auto_threads", toggle=True)
+        sub = col.column()
+        if not scene.gs_auto_threads:
+                sub.prop(scene, "gs_threads")
+        else:
+                sub.label("")
         col.prop(scene, "gs_show_sam_pix", toggle=True)
         col.prop(render, "use_instances", text="Use instances", toggle=True)
 
@@ -116,19 +114,21 @@ class YAFA_E3_MT_logging(RenderButtonsPanel, Panel):
 
         split = layout.split()
         col = split.column()
-        col.prop(scene, "gs_draw_params")
+        col.prop(scene.yafaray.logging, "consoleVerbosity")
         col = split.column()
-        col.prop(scene.yafaray.logging, "saveLog")
+        col.prop(scene, "gs_draw_params")
         col = split.column()
         col.prop(scene.yafaray.logging, "saveHTML")
 
         split = layout.split()
         col = split.column()
-        col.prop(scene.yafaray.logging, "consoleVerbosity")
-        col = split.column()
         col.prop(scene.yafaray.logging, "logVerbosity")
 
-        if scene.gs_draw_params or scene.yafaray.logging.saveLog or scene.yafaray.logging.saveHTML:
+        if scene.yafaray.logging.logVerbosity != "mute":
+                col = split.column()
+                col.prop(scene.yafaray.logging, "saveLog")
+
+        if scene.gs_draw_params or (scene.yafaray.logging.saveLog and scene.yafaray.logging.logVerbosity != "mute") or scene.yafaray.logging.saveHTML:
                 if scene.gs_type_render == "into_blender" and not scene.gs_secondary_file_output:
                         row = layout.row()
                         row.label("Params badge and saving log/html files only works when exporting to image file.", icon='ERROR')

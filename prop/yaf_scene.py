@@ -780,11 +780,6 @@ def register():
         description="Masks pixels marked for resampling during adaptive passes",
         default=True)
     
-    Scene.gs_verbose = BoolProperty(
-        name="Log info to console",
-        description="Print YafaRay engine log messages in console window",
-        default=True)
-
     Scene.gs_type_render = EnumProperty(
         name="Render",
         description="Choose the render output method",
@@ -1107,7 +1102,6 @@ def unregister():
     Scene.gs_premult
     Scene.gs_transp_shad
     Scene.gs_show_sam_pix
-    Scene.gs_verbose
     Scene.gs_type_render
     Scene.gs_secondary_file_output
     Scene.gs_tex_optimization
