@@ -53,13 +53,13 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.yi = yi
 
         if self.is_preview:
-            self.yi.setDrawParams(False)
+            self.yi.setParamsBadgePosition("none")
             self.yi.setConsoleVerbosityLevel("mute")
             self.yi.setLogVerbosityLevel("mute")
             self.scene.bg_transp = False #to correct alpha problems in preview roughglass
             self.scene.bg_transp_refract = False #to correct alpha problems in preview roughglass
         else:
-            self.yi.setDrawParams(self.scene.gs_draw_params)
+            self.yi.setParamsBadgePosition(self.scene.yafaray.logging.paramsBadgePosition)
             self.yi.setConsoleVerbosityLevel(self.scene.yafaray.logging.consoleVerbosity)
             self.yi.setLogVerbosityLevel(self.scene.yafaray.logging.logVerbosity)
 

@@ -49,6 +49,16 @@ class YafaRayProperties(bpy.types.PropertyGroup):
     pass
 
 class YafaRayLoggingProperties(bpy.types.PropertyGroup):
+    paramsBadgePosition = EnumProperty(
+        name="Params Badge position",
+        description="Choose the position of the params badge in the exported image file. Inside Blender it may appear incorrect or not at all",
+        items=(
+            ('top', "Top", "Params badge will appear at the top of the exported image file"),
+            ('bottom', "Bottom", "Params badge will appear at the bottom of the exported image file. It may appear cropped in Blender."),
+            ('none', "None", "Params badge will not appear")
+        ),
+        default='top')
+
     saveLog = BoolProperty(
         name="Save log file",
         description="Save text log file with the exported image files",
@@ -734,11 +744,6 @@ def register():
         name="Render mask",
         description="Renders an object mask pass with different colors",
         default=False)
-
-    Scene.gs_draw_params = BoolProperty(
-        name="Draw parameters",
-        description="Draw parameters badge. Now it ONLY appears in exported image files, NOT in Blender.",
-        default=True)
 
     Scene.bg_transp = BoolProperty(
         name="Transp.background",

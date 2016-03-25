@@ -185,9 +185,9 @@ def exportRenderSettings(yi, scene):
     yi.paramsSetInt("tile_size", scene.gs_tile_size)
     yi.paramsSetString("tiles_order", scene.gs_tile_order)
 
-    yi.paramsSetBool("drawParams", scene.gs_draw_params)
     yi.paramsSetBool("logging_saveLog", scene.yafaray.logging.saveLog)
     yi.paramsSetBool("logging_saveHTML", scene.yafaray.logging.saveHTML)
+    yi.paramsSetString("logging_paramsBadgePosition", scene.yafaray.logging.paramsBadgePosition)
     yi.paramsSetString("logging_title", scene.yafaray.logging.title)
     yi.paramsSetString("logging_author", scene.yafaray.logging.author)
     yi.paramsSetString("logging_contact", scene.yafaray.logging.contact)
