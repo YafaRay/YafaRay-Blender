@@ -59,6 +59,11 @@ class YafaRayLoggingProperties(bpy.types.PropertyGroup):
         description="Save HTML information/log file with the exported image files",
         default=False)
 
+    savePreset = BoolProperty(
+        name="Save Preset file",
+        description="Save a preset file, with the Render Settings, with the exported image files",
+        default=False)
+
     verbosityLevels=sorted((
             ('mute', "Mute (silent)", "Prints nothing", 0),
             ('error', "Error", "Prints only errors", 1),
@@ -832,11 +837,6 @@ def register():
     Scene.img_add_datetime = BoolProperty(
         name="Include date/time",
         description="Include current date/time in the image filename",
-        default=False)
-
-    Scene.img_autosave_preset = BoolProperty(
-        name="Autosave Render Preset",
-        description="Automatically generate a preset file with the Render Settings used for the image",
         default=False)
 
     ########### YafaRays integrator properties #############

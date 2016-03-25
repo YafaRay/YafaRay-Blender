@@ -339,7 +339,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.yi.paramsSetBool("img_draw_params", scene.gs_draw_params)
             self.ih = self.yi.createImageHandler("outFile")
             self.co = yafaray_e3_interface.imageOutput_t(self.ih, str(self.outputFile), 0, 0)
-            if scene.img_autosave_preset:
+            if scene.yafaray.logging.savePreset:
                 yafaray_presets.YAF_AddPresetBase.export_to_file(yafaray_presets.YAFARAY_OT_presets_renderset, self.outputFile)
 
         elif scene.gs_type_render == "xml":
@@ -388,7 +388,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.ih = self.yi.createImageHandler("outFile")
                 self.co = yafaray_e3_interface.imageOutput_t(self.ih, str(self.outputFile), 0, 0)
                 self.yi.setOutput2(self.co)
-                if scene.img_autosave_preset:
+                if scene.yafaray.logging.savePreset:
                     yafaray_presets.YAF_AddPresetBase.export_to_file(yafaray_presets.YAFARAY_OT_presets_renderset, self.outputFile)
 
         self.exportScene()

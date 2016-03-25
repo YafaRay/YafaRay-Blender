@@ -58,9 +58,9 @@ class YAFA_E3_PT_general_settings(RenderButtonsPanel, Panel):
         sub.enabled = scene.gs_type_render == "into_blender"
         sub.prop(scene, "gs_secondary_file_output")
         
-        if (scene.gs_draw_params or scene.yafaray.logging.saveLog or scene.yafaray.logging.saveHTML) and scene.gs_type_render == "into_blender" and not scene.gs_secondary_file_output:
+        if (scene.gs_draw_params or scene.yafaray.logging.saveLog or scene.yafaray.logging.saveHTML or scene.yafaray.logging.savePreset) and scene.gs_type_render == "into_blender" and not scene.gs_secondary_file_output:
                 row = layout.row()
-                row.label("Params badge and saving log/html files only works when exporting to image file.", icon='ERROR')
+                row.label("Params badge and saving log/html/preset files only works when exporting to image file.", icon='ERROR')
                 row = layout.row()
                 row.label("To get the badge/logs, render to image or render into Blender+enable Secondary File Output.", icon='ERROR')
                 row = layout.row()
@@ -125,11 +125,13 @@ class YAFA_E3_MT_logging(RenderButtonsPanel, Panel):
         col.prop(scene.yafaray.logging, "saveLog")
         col = split.column()
         col.prop(scene.yafaray.logging, "saveHTML")
+        col = split.column()
+        col.prop(scene.yafaray.logging, "savePreset")
 
-        if scene.gs_draw_params or scene.yafaray.logging.saveLog or scene.yafaray.logging.saveHTML:
+        if scene.gs_draw_params or scene.yafaray.logging.saveLog or scene.yafaray.logging.saveHTML or scene.yafaray.logging.savePreset:
                 if scene.gs_type_render == "into_blender" and not scene.gs_secondary_file_output:
                         row = layout.row()
-                        row.label("Params badge and saving log/html files only works when exporting to image file.", icon='ERROR')
+                        row.label("Params badge and saving log/html/preset files only works when exporting to image file.", icon='ERROR')
                         row = layout.row()
                         row.label("To get the badge/logs, render to image or render into Blender+enable Secondary File Output.", icon='ERROR')
 
