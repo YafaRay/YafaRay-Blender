@@ -1115,7 +1115,6 @@ def unregister():
     Scene.img_multilayer
     Scene.img_add_blend_name
     Scene.img_add_datetime
-    Scene.img_autosave_preset
 
     Scene.intg_light_method
     Scene.intg_use_caustics
