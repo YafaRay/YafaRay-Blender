@@ -96,7 +96,7 @@ class YafaRayLoggingProperties(bpy.types.PropertyGroup):
         description="Select the desired verbosity level for log and HTML output",
         items=(verbosityLevels
         ),
-        default="verbose")
+        default="info")
 
     title = StringProperty(
         name="Title",
