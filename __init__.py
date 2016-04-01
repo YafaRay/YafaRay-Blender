@@ -54,7 +54,7 @@ if sys.platform == 'win32':
                 break
             # load dll's from a MinGW64 installation
             else:
-                dllArray = ['libwinpthread-1', 'libgcc_s_seh-1', 'libstdc++-6', 'libiconv-2', 'libzlib1', 'libxml2-2', 'libHalf', 'libIex', 'libImath', 'libIlmThread', 'libIlmImf', 'libjpeg-8', 'libpng16', 'libtiff-5', 'libbz2-1', 'libfreetype-6', 'libyafaray_e3_core', 'libyafaray_e3_plugin']
+                dllArray = ['libwinpthread-1', 'libgcc_s_seh-1', 'libstdc++-6', 'libiconv-2', 'libzlib1', 'libxml2-2', 'libHalf', 'libIex', 'libImath', 'libIlmThread', 'libIlmImf', 'libjpeg-8', 'libpng16', 'libtiff-5', 'libbz2-1', 'libfreetype-6', 'libboost_system-mt', 'libboost_filesystem-mt', 'libyafaray_e3_core', 'libyafaray_e3_plugin']
 
     else:    # Windows 32bit system
         for file in os.listdir(BIN_PATH):
@@ -64,16 +64,16 @@ if sys.platform == 'win32':
                 break
             # load dll's from a MinGW32 installation
             else:
-                dllArray = ['libwinpthread-1', 'libgcc_s_sjlj-1', 'libstdc++-6', 'libiconv-2', 'libzlib1', 'libxml2-2', 'libHalf', 'libIex', 'libImath', 'libIlmThread', 'libIlmImf', 'libjpeg-8', 'libpng16', 'libtiff-5', 'libbz2-1', 'libfreetype-6', 'libyafaray_e3_core', 'libyafaray_e3_plugin']
+                dllArray = ['libwinpthread-1', 'libgcc_s_sjlj-1', 'libstdc++-6', 'libiconv-2', 'libzlib1', 'libxml2-2', 'libHalf', 'libIex', 'libImath', 'libIlmThread', 'libIlmImf', 'libjpeg-8', 'libpng16', 'libtiff-5', 'libbz2-1', 'libfreetype-6', 'libboost_system-mt', 'libboost_filesystem-mt', 'libyafaray_e3_core', 'libyafaray_e3_plugin']
 
 elif sys.platform == 'darwin':
     dllArray = ['libyafaray_e3_core.dylib', 'libyafaray_e3_plugin.dylib']
 else:
     if sys.maxsize == 2**63 - 1:    # Linux 64bit system
-        dllArray = ['libHalf.so.6.0.0', 'libIex.so.6.0.0', 'libImath.so.6.0.0', 'libIlmThread.so.6.0.0', 'libIlmImf.so.6.0.0', 'libpython3.4m.so.1.0', 'libjpeg.so.62.0.0', 'libz.so.1.2.3.4', 'libpng12.so.0.44.0', 'libtiff.so.4.3.3', 'libfreetype.so.6.6.0', 'libyafaray_e3_core.so', 'libyafaray_e3_plugin.so']
+        dllArray = ['libHalf.so.6.0.0', 'libIex.so.6.0.0', 'libImath.so.6.0.0', 'libIlmThread.so.6.0.0', 'libIlmImf.so.6.0.0', 'libpython3.4m.so.1.0', 'libjpeg.so.62.0.0', 'libz.so.1.2.3.4', 'libpng12.so.0.44.0', 'libtiff.so.4.3.3', 'libfreetype.so.6.6.0', 'libboost_system-mt', 'libboost_filesystem-mt', 'libyafaray_e3_core.so', 'libyafaray_e3_plugin.so']
 
     else:   # Linux 32bit system
-        dllArray = ['libHalf.so.6.0.0', 'libIex.so.6.0.0', 'libImath.so.6.0.0', 'libIlmThread.so.6.0.0', 'libIlmImf.so.6.0.0', 'libpython3.4m.so.1.0', 'libjpeg.so.62.0.0', 'libz.so.1.2.3.4', 'libpng12.so.0.44.0', 'libtiff.so.4.3.3', 'libfreetype.so.6.6.0', 'libyafaray_e3_core.so', 'libyafaray_e3_plugin.so']
+        dllArray = ['libHalf.so.6.0.0', 'libIex.so.6.0.0', 'libImath.so.6.0.0', 'libIlmThread.so.6.0.0', 'libIlmImf.so.6.0.0', 'libpython3.4m.so.1.0', 'libjpeg.so.62.0.0', 'libz.so.1.2.3.4', 'libpng12.so.0.44.0', 'libtiff.so.4.3.3', 'libfreetype.so.6.6.0', 'libboost_system-mt', 'libboost_filesystem-mt', 'libyafaray_e3_core.so', 'libyafaray_e3_plugin.so']
 
 for dll in dllArray:
     try:
