@@ -185,16 +185,6 @@ def exportRenderSettings(yi, scene):
     yi.paramsSetInt("tile_size", scene.gs_tile_size)
     yi.paramsSetString("tiles_order", scene.gs_tile_order)
 
-    yi.paramsSetBool("logging_saveLog", scene.yafaray.logging.saveLog)
-    yi.paramsSetBool("logging_saveHTML", scene.yafaray.logging.saveHTML)
-    yi.paramsSetString("logging_paramsBadgePosition", scene.yafaray.logging.paramsBadgePosition)
-    yi.paramsSetString("logging_title", scene.yafaray.logging.title)
-    yi.paramsSetString("logging_author", scene.yafaray.logging.author)
-    yi.paramsSetString("logging_contact", scene.yafaray.logging.contact)
-    yi.paramsSetString("logging_comments", scene.yafaray.logging.comments)
-    if scene.yafaray.logging.customIcon != "":
-        yi.paramsSetString("logging_customIcon", os.path.abspath(bpy.path.abspath(scene.yafaray.logging.customIcon)))
-
     if scene.gs_auto_threads:
         yi.paramsSetInt("threads", -1)
     else:
@@ -206,6 +196,21 @@ def exportRenderSettings(yi, scene):
     yi.paramsSetFloat("adv_shadow_bias_value", scene.adv_shadow_bias_value)
     yi.paramsSetBool("adv_auto_min_raydist_enabled", scene.adv_auto_min_raydist_enabled)
     yi.paramsSetFloat("adv_min_raydist_value", scene.adv_min_raydist_value)
+
+
+def setLoggingAndBadgeSettings(yi, scene):
+    yi.printVerbose("Exporting Logging and Badge settings")
+    yi.paramsSetBool("logging_drawRenderSettings", scene.yafaray.logging.drawRenderSettings)
+    yi.paramsSetBool("logging_drawAANoiseSettings", scene.yafaray.logging.drawAANoiseSettings)
+    yi.paramsSetBool("logging_saveLog", scene.yafaray.logging.saveLog)
+    yi.paramsSetBool("logging_saveHTML", scene.yafaray.logging.saveHTML)
+    yi.paramsSetString("logging_paramsBadgePosition", scene.yafaray.logging.paramsBadgePosition)
+    yi.paramsSetString("logging_title", scene.yafaray.logging.title)
+    yi.paramsSetString("logging_author", scene.yafaray.logging.author)
+    yi.paramsSetString("logging_contact", scene.yafaray.logging.contact)
+    yi.paramsSetString("logging_comments", scene.yafaray.logging.comments)
+    if scene.yafaray.logging.customIcon != "":
+        yi.paramsSetString("logging_customIcon", os.path.abspath(bpy.path.abspath(scene.yafaray.logging.customIcon)))
 
 
 def exportRenderPassesSettings(yi, scene):

@@ -118,9 +118,13 @@ class YAFA_E3_MT_logging(RenderButtonsPanel, Panel):
         scene = context.scene
         render = scene.render
 
-        split = layout.split()
+        split = layout.split(percentage=0.43)
         col = split.column()
         col.prop(scene.yafaray.logging, "paramsBadgePosition")
+        col = split.column()
+        col.prop(scene.yafaray.logging, "drawRenderSettings")
+        col = split.column()
+        col.prop(scene.yafaray.logging, "drawAANoiseSettings")
 
         split = layout.split()
         col = split.column()

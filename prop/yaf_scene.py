@@ -98,6 +98,16 @@ class YafaRayLoggingProperties(bpy.types.PropertyGroup):
         ),
         default="info")
 
+    drawRenderSettings = BoolProperty(
+        name="Draw Render Settings",
+        description="Draw Render Settings in the params badge",
+        default=True)
+        
+    drawAANoiseSettings = BoolProperty(
+        name="Draw AA/Noise Settings",
+        description="Draw AA and Noise Control Settings in the params badge",
+        default=True)
+
     title = StringProperty(
         name="Title",
         description=("Title to be shown in the logs and/or params badge"),
