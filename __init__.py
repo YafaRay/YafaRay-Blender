@@ -34,9 +34,9 @@ bl_info = {
     "author": "Shuvro Sarker, Kim Skoglund (Kerbox), Pedro Alcaide (povmaniaco),"
               "Paulo Gomes (tuga3d), Michele Castigliego (subcomandante),"
               "Bert Buchholz, Rodrigo Placencia (DarkTide),"
-              "Alexander Smirnov (Exvion), Olaf Arnold (olaf)",
-    "version": (0, 1, 5, 'Stable'),
-    "blender": (2, 6, 3),
+              "Alexander Smirnov (Exvion), Olaf Arnold (olaf), David Bluecame",
+    "version": ('Experimental', 2, 1, 1),
+    "blender": (2, 7, 6),
     "location": "Info Header > Engine dropdown menu",
     "wiki_url": "http://www.yafaray.org/community/forum",
     "tracker_url": "http://www.yafaray.org/development/bugtracker/yafaray",
@@ -46,20 +46,34 @@ bl_info = {
 # Preload needed libraries
 # Loading order of the dlls is sensible please do not alter it
 if sys.platform == 'win32':
-    for file in os.listdir(BIN_PATH):
-        # load dll's from a MSVC installation
-        if file in {'yafaraycore.dll'}:
-            dllArray = ['zlib1', 'iconv', 'zlib', 'libpng15', 'libxml2', 'yafaraycore', 'yafarayplugin']
-            break
-        # load dll's from a MinGW installation
-        else:
-            dllArray = ['zlib1', 'libxml2-2', 'libgcc_s_sjlj-1', 'Half', 'Iex', 'IlmThread', 'IlmImf', 'libjpeg-8', \
-                       'libpng14', 'libtiff-3', 'libfreetype-6', 'libyafaraycore', 'libyafarayplugin']
+    if sys.maxsize == 2**63 - 1:    # Windows 64bit system
+        for file in os.listdir(BIN_PATH):
+            # load dll's from a MSVC installation
+            if file in {'yafaraycore.dll'}:
+                dllArray = ['zlib1', 'iconv', 'zlib', 'libpng15', 'libxml2', 'yafaraycore', 'yafarayplugin']
+                break
+            # load dll's from a MinGW64 installation
+            else:
+                dllArray = ['libwinpthread-1', 'libgcc_s_seh-1', 'libstdc++-6', 'libiconv-2', 'libzlib1', 'libxml2-2', 'libHalf', 'libIex', 'libImath', 'libIlmThread', 'libIlmImf', 'libjpeg-8', 'libpng16', 'libtiff-5', 'libbz2-1', 'libfreetype-6', 'libyafaraycore', 'libyafarayplugin']
+
+    else:    # Windows 32bit system
+        for file in os.listdir(BIN_PATH):
+            # load dll's from a MSVC installation
+            if file in {'yafaraycore.dll'}:
+                dllArray = ['zlib1', 'iconv', 'zlib', 'libpng15', 'libxml2', 'yafaraycore', 'yafarayplugin']
+                break
+            # load dll's from a MinGW32 installation
+            else:
+                dllArray = ['libwinpthread-1', 'libgcc_s_sjlj-1', 'libstdc++-6', 'libiconv-2', 'libzlib1', 'libxml2-2', 'libHalf', 'libIex', 'libImath', 'libIlmThread', 'libIlmImf', 'libjpeg-8', 'libpng16', 'libtiff-5', 'libbz2-1', 'libfreetype-6', 'libyafaraycore', 'libyafarayplugin']
 
 elif sys.platform == 'darwin':
     dllArray = ['libyafaraycore.dylib', 'libyafarayplugin.dylib']
 else:
-    dllArray = ['libyafaraycore.so', 'libyafarayplugin.so']
+    if sys.maxsize == 2**63 - 1:    # Linux 64bit system
+        dllArray = ['libHalf.so.6.0.0', 'libIex.so.6.0.0', 'libImath.so.6.0.0', 'libIlmThread.so.6.0.0', 'libIlmImf.so.6.0.0', 'libpython3.4m.so.1.0', 'libjpeg.so.62.0.0', 'libz.so.1.2.3.4', 'libpng12.so.0.44.0', 'libtiff.so.4.3.3', 'libfreetype.so.6.6.0', 'libyafaraycore.so', 'libyafarayplugin.so']
+
+    else:   # Linux 32bit system
+        dllArray = ['libHalf.so.6.0.0', 'libIex.so.6.0.0', 'libImath.so.6.0.0', 'libIlmThread.so.6.0.0', 'libIlmImf.so.6.0.0', 'libpython3.4m.so.1.0', 'libjpeg.so.62.0.0', 'libz.so.1.2.3.4', 'libpng12.so.0.44.0', 'libtiff.so.4.3.3', 'libfreetype.so.6.6.0', 'libyafaraycore.so', 'libyafarayplugin.so']
 
 for dll in dllArray:
     try:
@@ -90,6 +104,14 @@ def load_handler(dummy):
             # converts old files, where propertie yaf_tex_type wasn't defined
             print("Load Handler: Convert Yafaray texture \"{0}\" with texture type: \"{1}\" to \"{2}\"".format(tex.name, tex.yaf_tex_type, tex.type))
             tex.yaf_tex_type = tex.type
+    for mat in bpy.data.materials:
+        if mat is not None:
+            # from old scenes, convert old blend material Enum properties into the new string properties
+            if mat.mat_type == "blend":
+                if not mat.is_property_set("material1name") or not mat.material1name:
+                    mat.material1name = mat.material1
+                if not mat.is_property_set("material2name") or not mat.material2name:
+                    mat.material2name = mat.material2
     # convert image output file type setting from blender to yafaray's file type setting on file load, so that both are the same...
     if bpy.context.scene.render.image_settings.file_format is not bpy.context.scene.img_output:
         bpy.context.scene.img_output = bpy.context.scene.render.image_settings.file_format

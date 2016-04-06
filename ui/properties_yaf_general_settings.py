@@ -28,6 +28,8 @@ RenderButtonsPanel.COMPAT_ENGINES = {'YAFA_RENDER'}
 
 class YAFARAY_MT_presets_render(Menu):
     bl_label = "Yafaray Render Presets"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
+    
     preset_subdir = "render"
     preset_operator = "script.execute_preset"
     draw = yafaray_presets.Yafaray_Menu.draw_preset
@@ -35,6 +37,7 @@ class YAFARAY_MT_presets_render(Menu):
 
 class YAF_PT_general_settings(RenderButtonsPanel, Panel):
     bl_label = "General Settings"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -51,7 +54,6 @@ class YAF_PT_general_settings(RenderButtonsPanel, Panel):
         split = layout.split(percentage=0.58)
         col = split.column()
         col.prop(scene, "gs_ray_depth")
-        col.prop(scene, "gs_gamma")
         col.prop(scene, "gs_type_render")
         sub = col.column()
         sub.enabled = scene.gs_type_render == "into_blender"
@@ -61,7 +63,7 @@ class YAF_PT_general_settings(RenderButtonsPanel, Panel):
         sub = col.column()
         sub.enabled = scene.gs_transp_shad
         sub.prop(scene, "gs_shadow_depth")
-        col.prop(scene, "gs_gamma_input")
+        #col.prop(scene, "gs_gamma_input")      #No longer needed
         sub = col.column()
         sub.enabled = scene.gs_auto_threads == False
         sub.prop(scene, "gs_threads")
@@ -73,19 +75,18 @@ class YAF_PT_general_settings(RenderButtonsPanel, Panel):
 
         split = layout.split()
         col = split.column()
-        col.prop(scene, "gs_clay_render", toggle=True)
-        col.prop(scene, "gs_z_channel", toggle=True)
+        col.prop(scene, "gs_tex_optimization")
+
+        split = layout.split()
+        col = split.column()
         col.prop(scene, "gs_transp_shad", toggle=True)
         col.prop(scene, "gs_draw_params", toggle=True)
-        col.prop(scene, "gs_clamp_rgb", toggle=True)
+        col.prop(scene, "gs_verbose", toggle=True)
 
         col = split.column()
-        if scene.gs_clay_render:
-            col.prop(scene, "gs_clay_col", text="")
         col.prop(scene, "gs_auto_threads", toggle=True)
         col.prop(scene, "gs_show_sam_pix", toggle=True)
         col.prop(render, "use_instances", text="Use instances", toggle=True)
-        col.prop(scene, "gs_verbose", toggle=True)
 
         split = layout.split(percentage=0.5)
         col = split.column()
@@ -98,6 +99,36 @@ class YAF_PT_general_settings(RenderButtonsPanel, Panel):
         col = layout.column()
         col.enabled = scene.gs_draw_params
         col.prop(scene, "gs_custom_string")
+
+
+class YAFARAY_MT_clay_render(RenderButtonsPanel, Panel):
+    bl_label = "Clay Render Settings"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        render = scene.render
+
+        row = layout.row(align=True)
+        split = layout.split(percentage=0.5)
+        col = split.column()
+        col.prop(scene, "gs_clay_render", toggle=True)
+        if scene.gs_clay_render:
+            col = split.column()
+            col.prop(scene, "gs_clay_col", text="")
+            layout.separator()
+            split = layout.split()
+            col = split.column()
+            col.prop(scene, "gs_clay_oren_nayar")
+            if scene.gs_clay_oren_nayar:
+                col = split.column()
+                col.prop(scene, "gs_clay_sigma")            
+            col = layout.column()
+            col.prop(scene, "gs_clay_render_keep_transparency")
+            #col = split.column()
+            col.prop(scene, "gs_clay_render_keep_normals")
+
 
 
 if __name__ == "__main__":  # only for live edit.

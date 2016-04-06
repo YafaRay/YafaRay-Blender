@@ -23,7 +23,8 @@ from bpy.props import (FloatVectorProperty,
                        FloatProperty,
                        IntProperty,
                        BoolProperty,
-                       EnumProperty)
+                       EnumProperty,
+                       StringProperty)
 
 Object = bpy.types.Object
 

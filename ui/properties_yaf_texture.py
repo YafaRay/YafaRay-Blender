@@ -135,6 +135,74 @@ class YAF_TEXTURE_PT_preview(YAF_TextureButtonsPanel, Panel):
         if context.space_data.texture_context == 'BRUSH':
             layout.prop(tex, "use_preview_alpha")
 
+class YAF_PT_preview_texture_controls(YAF_TextureButtonsPanel, Panel):
+    bl_label = "Preview Controls"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
+    #bl_options = {'DEFAULT_CLOSED'}
+
+    def draw_header(self, context):
+        scene = context.scene
+        self.layout.prop(context.scene.yafaray.preview, "enable", text="")
+    
+    def draw(self, context):
+        if context.scene.yafaray.preview.enable:
+            layout = self.layout
+            yaf_mat = active_node_mat(context.material)
+            split = layout.split() 
+            col = split.column()
+            col.label("Preview dynamic rotation/zoom")
+            split = layout.split() 
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "camRot", text="")
+            col = split.column()
+            row = col.row()
+            row.operator("preview.camzoomout", text='Zoom Out', icon='ZOOM_OUT')
+            col2 = row.column()
+            col2.operator("preview.camzoomin", text='Zoom In', icon='ZOOM_IN')
+            row = col.row()
+            row.label("")
+            row = col.row()
+            row.operator("preview.camrotreset", text='Reset dynamic rotation/zoom')
+            split = layout.split() 
+            col = split.column()
+            col.label("Preview object control")
+            split = layout.split()
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "objScale", text="Scale")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "rotZ", text="Z Rotation")
+            col = split.column()
+            col.prop_search(context.scene.yafaray.preview, "previewObject", bpy.data, "objects", text="")
+            split = layout.split() 
+            col = split.column()
+            col.label("Preview lights control")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "lightRotZ", text="lights Z Rotation")
+            split = layout.split()
+            col = split.column()
+            col.label("Key light:")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "keyLightPowerFactor", text="Power factor")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "keyLightColor", text="")
+            split = layout.split() 
+            col = split.column()
+            col.label("Fill lights:")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "fillLightPowerFactor", text="Power factor")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "fillLightColor", text="")
+            split = layout.split() 
+            col = split.column()
+            col.label("Preview scene control")
+            split = layout.split()
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "previewRayDepth", text="Ray Depth")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "previewAApasses", text="AA samples")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "previewBackground", text="")
+
 
 class YAF_TextureSlotPanel(YAF_TextureButtonsPanel):
     COMPAT_ENGINES = {'YAFA_RENDER'}
@@ -259,6 +327,29 @@ class YAF_TEXTURE_PT_image(YAF_TextureTypePanel, Panel):
         tex = context.texture
         layout.template_image(tex, "image", tex.image_user)
 
+        if hasattr(tex.image,"colorspace_settings"):
+            if tex.image.colorspace_settings.name == "sRGB" or tex.image.colorspace_settings.name == "Linear" or tex.image.colorspace_settings.name == "Non-Color":
+                pass
+            
+            elif tex.image.colorspace_settings.name == "XYZ":
+                row = layout.row(align=True)
+                row.label(text="YafaRay 'XYZ' support is experimental and may not give the expected results", icon="ERROR")
+            
+            elif tex.image.colorspace_settings.name == "Linear ACES":
+                row = layout.row(align=True)
+                row.label(text="YafaRay doesn't support '" + tex.image.colorspace_settings.name + "', assuming linear RGB", icon="ERROR")
+            
+            elif tex.image.colorspace_settings.name == "Raw":
+                row = layout.row(align=True)
+                row.prop(tex, "yaf_gamma_input", text="Texture gamma input correction")
+
+            else:
+                row = layout.row(align=True)
+                row.label(text="YafaRay doesn't support '" + tex.image.colorspace_settings.name + "', assuming sRGB", icon="ERROR")
+            
+        row = layout.row(align=True)
+        row.label(text="Note: for bump/normal maps, textures are always considered Linear", icon="INFO")
+        
 
 class YAF_TEXTURE_PT_image_sampling(YAF_TextureTypePanel, Panel):
     bl_label = "Image Sampling"
@@ -281,10 +372,10 @@ class YAF_TEXTURE_PT_image_sampling(YAF_TextureTypePanel, Panel):
             row.prop(tex, "use_calculate_alpha", text="Calculate Alpha")
             layout.prop(tex, "use_flip_axis", text="Flip X/Y Axis")
             layout.prop(tex, "yaf_tex_interpolate")
-            
         else:
             row.prop(tex, "use_interpolation", text="Use image background interpolation")
             #row.prop(tex, "use_calculate_alpha", text="Calculate Alpha")
+        layout.prop(tex, "yaf_tex_optimization")
 
 
 class YAF_TEXTURE_PT_image_mapping(YAF_TextureTypePanel, Panel):
@@ -571,6 +662,7 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, Panel):
         shaderNodes = dict()
         shaderNodes["Bump"] = ["use_map_normal", "normal_factor", "Bump"]
         shaderNodes["MirrorAmount"] = ["use_map_raymir", "raymir_factor", "Mirror Amount"]
+        shaderNodes["SigmaOren"] = ["use_map_hardness", "hardness_factor", "Sigma Amount for Oren Nayar"]
         shaderNodes["MirrorColor"] = ["use_map_mirror", "mirror_factor", "Mirror Color"]
         shaderNodes["DiffuseColor"] = ["use_map_color_diffuse", "diffuse_color_factor", "Diffuse Color"]
         shaderNodes["GlossyColor"] = ["use_map_color_spec", "specular_color_factor", "Glossy Color"]
@@ -578,13 +670,18 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, Panel):
         shaderNodes["Transparency"] = ["use_map_alpha", "alpha_factor", "Transparency"]
         shaderNodes["Translucency"] = ["use_map_translucency", "translucency_factor", "Translucency"]
         shaderNodes["BlendAmount"] = ["use_map_diffuse", "diffuse_factor", "Blending Amount"]
-
+        shaderNodes["DiffuseReflection"] = ["use_map_diffuse", "diffuse_factor", "Diffuse reflection Amount"]
+        shaderNodes["FilterColor"] = ["use_map_color_reflection", "reflection_color_factor", "Filter Color Amount"]
+        shaderNodes["IORAmount"] = ["use_map_warp", "warp_factor", "IOR Amount (added to material IOR)"]
+        shaderNodes["RoughnessAmount"] = ["use_map_hardness", "hardness_factor", "Roughness amount"]
+        shaderNodes["ExponentAmount"] = ["use_map_ambient", "ambient_factor", "Glossy Exponent amount"]
+                
         materialShaderNodes = dict()
-        materialShaderNodes["glass"] = ["Bump", "MirrorColor"]
-        materialShaderNodes["rough_glass"] = ["Bump", "MirrorColor"]
-        materialShaderNodes["glossy"] = ["DiffuseColor", "GlossyColor", "GlossyAmount", "Bump"]
-        materialShaderNodes["coated_glossy"] = ["DiffuseColor", "GlossyColor", "GlossyAmount", "Bump"]
-        materialShaderNodes["shinydiffusemat"] = ["DiffuseColor", "MirrorAmount", "MirrorColor", "Transparency", "Translucency", "Bump"]
+        materialShaderNodes["glass"] = ["FilterColor", "MirrorColor", "IORAmount", "Bump"]
+        materialShaderNodes["rough_glass"] = ["RoughnessAmount", "FilterColor", "MirrorColor", "IORAmount", "Bump"]
+        materialShaderNodes["glossy"] = ["DiffuseColor", "DiffuseReflection", "SigmaOren", "GlossyColor", "GlossyAmount", "ExponentAmount", "Bump"]
+        materialShaderNodes["coated_glossy"] = ["DiffuseColor", "DiffuseReflection", "SigmaOren", "GlossyColor", "GlossyAmount", "ExponentAmount", "MirrorAmount", "MirrorColor", "IORAmount", "Bump"]
+        materialShaderNodes["shinydiffusemat"] = ["DiffuseColor", "DiffuseReflection", "SigmaOren", "MirrorAmount", "MirrorColor", "IORAmount", "Transparency", "Translucency", "Bump"]
         materialShaderNodes["blend"] = ["BlendAmount"]
 
         if isinstance(idblock, Material):

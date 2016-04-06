@@ -19,6 +19,7 @@
 # <pep8 compliant>
 
 #TODO: Use Blender enumerators if any
+import copy
 import bpy
 import os
 import threading
@@ -73,18 +74,29 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.exportMaterials()
         self.yaf_object.setScene(self.scene)
         self.exportObjects()
-        self.yaf_object.createCamera()
-        self.yaf_world.exportWorld(self.scene)
+        self.yaf_object.createCameras()
+        
+        if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable and bpy.data.scenes[0].yafaray.preview.previewBackground == "world":
+            self.yaf_world.exportWorld(bpy.data.scenes[0])
+        else:
+            self.yaf_world.exportWorld(self.scene)
 
     def exportTexture(self, obj):
         # First export the textures of the materials type 'blend'
         for mat_slot in [m for m in obj.material_slots if m.material is not None]:
             if mat_slot.material.mat_type == 'blend':
+                blendmat_error = False
                 try:
-                    mat1 = bpy.data.materials[mat_slot.material.material1]
-                    mat2 = bpy.data.materials[mat_slot.material.material2]
+                    mat1 = bpy.data.materials[mat_slot.material.material1name]
                 except:
-                    self.yi.printWarning("Exporter: Problem with blend material {0}. Could not find one of the two blended materials".format(mat_slot.material.name))
+                    self.yi.printWarning("Exporter: Problem with blend material:\"{0}\". Could not find the first material:\"{1}\"".format(mat_slot.material.name,mat_slot.material.material1name))
+                    blendmat_error = True
+                try:
+                    mat2 = bpy.data.materials[mat_slot.material.material2name]
+                except:
+                    self.yi.printWarning("Exporter: Problem with blend material:\"{0}\". Could not find the second material:\"{1}\"".format(mat_slot.material.name,mat_slot.material.material2name))
+                    blendmat_error = True
+                if blendmat_error:
                     continue
                 for bm in [mat1, mat2]:
                     for blendtex in [bt for bt in bm.texture_slots if (bt and bt.texture and bt.use)]:
@@ -181,31 +193,43 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.yaf_object.writeObject(obj)
 
     def handleBlendMat(self, mat):
+            blendmat_error = False
             try:
-                mat1 = bpy.data.materials[mat.material1]
-                mat2 = bpy.data.materials[mat.material2]
+                mat1 = bpy.data.materials[mat.material1name]
             except:
-                self.yi.printWarning("Exporter: Problem with blend material {0}. Could not find one of the two blended materials".format(mat.name))
-                return
+                self.yi.printWarning("Exporter: Problem with blend material:\"{0}\". Could not find the first material:\"{1}\"".format(mat.name,mat.material1name))
+                blendmat_error = True
+            try:
+                mat2 = bpy.data.materials[mat.material2name]
+            except:
+                self.yi.printWarning("Exporter: Problem with blend material:\"{0}\". Could not find the second material:\"{1}\"".format(mat.name,mat.material2name))
+                blendmat_error = True
+            if blendmat_error:
+                return blendmat_error
             if mat1.name == mat2.name:
-                self.yi.printWarning("Exporter: Problem with blend material {0}. {1} and {2} to blend are the same materials".format(mat.name, mat1.name, mat2.name))
-                return
+                self.yi.printWarning("Exporter: Problem with blend material \"{0}\". \"{1}\" and \"{2}\" to blend are the same materials".format(mat.name, mat1.name, mat2.name))
 
             if mat1.mat_type == 'blend':
-                self.handleBlendMat(mat1)
+                blendmat_error = self.handleBlendMat(mat1)
+                if blendmat_error:
+                    return
+                    
             elif mat1 not in self.materials:
                 self.materials.add(mat1)
-                self.yaf_material.writeMaterial(mat1)
+                self.yaf_material.writeMaterial(mat1, self.scene)
 
             if mat2.mat_type == 'blend':
-                self.handleBlendMat(mat2)
+                blendmat_error = self.handleBlendMat(mat2)
+                if blendmat_error:
+                    return
+                    
             elif mat2 not in self.materials:
                 self.materials.add(mat2)
-                self.yaf_material.writeMaterial(mat2)
+                self.yaf_material.writeMaterial(mat2, self.scene)
 
             if mat not in self.materials:
                 self.materials.add(mat)
-                self.yaf_material.writeMaterial(mat)
+                self.yaf_material.writeMaterial(mat, self.scene)
 
     def exportMaterials(self):
         self.yi.printInfo("Exporter: Processing Materials...")
@@ -214,19 +238,23 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         # create a default shiny diffuse material -> it will be assigned, if object has no material(s)
         self.yi.paramsClearAll()
         self.yi.paramsSetString("type", "shinydiffusemat")
-        self.yi.paramsSetColor("color", 0.8, 0.8, 0.8)
+        if self.scene.gs_clay_render:    
+            cCol = self.scene.gs_clay_col
+        else:
+            cCol = (0.8, 0.8, 0.8)
+        self.yi.paramsSetColor("color", cCol[0], cCol[1], cCol[2])
         self.yi.printInfo("Exporter: Creating Material \"defaultMat\"")
         ymat = self.yi.createMaterial("defaultMat")
         self.materialMap["default"] = ymat
 
-        # create a shiny diffuse material for "Clay Render" option in general settings
-        self.yi.paramsClearAll()
-        self.yi.paramsSetString("type", "shinydiffusemat")
-        cCol = self.scene.gs_clay_col
-        self.yi.paramsSetColor("color", cCol[0], cCol[1], cCol[2])
-        self.yi.printInfo("Exporter: Creating Material \"clayMat\"")
-        cmat = self.yi.createMaterial("clayMat")
-        self.materialMap["clay"] = cmat
+        # Obsolete: create a shiny diffuse material for "Clay Render" option in general settings
+        #self.yi.paramsClearAll()
+        #self.yi.paramsSetString("type", "shinydiffusemat")
+        #cCol = self.scene.gs_clay_col
+        #self.yi.paramsSetColor("color", cCol[0], cCol[1], cCol[2])
+        #self.yi.printInfo("Exporter: Creating Material \"clayMat\"")
+        #cmat = self.yi.createMaterial("clayMat")
+        #self.materialMap["clay"] = cmat
 
         for obj in self.scene.objects:
             for mat_slot in obj.material_slots:
@@ -241,7 +269,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.handleBlendMat(material)
             else:
                 self.materials.add(material)
-                self.yaf_material.writeMaterial(material, self.is_preview)
+                self.yaf_material.writeMaterial(material, self.scene, self.is_preview)
 
     def decideOutputFileName(self, output_path, filetype):
 
@@ -295,12 +323,15 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         if scene.gs_type_render == "file":
             self.setInterface(yafrayinterface.yafrayInterface_t())
-            self.yi.setInputGamma(scene.gs_gamma_input, True)
+            self.yi.startScene()
+            yaf_scene.exportRenderPassesSettings(self.yi, self.scene)
+            self.yi.setupRenderPasses()
+            self.yi.setInputColorSpace("LinearRGB", 1.0)    #When rendering into Blender, color picker floating point data is already linear (linearized by Blender)
             self.outputFile, self.output, self.file_type = self.decideOutputFileName(fp, scene.img_output)
             self.yi.paramsClearAll()
             self.yi.paramsSetString("type", self.file_type)
+            self.yi.paramsSetBool("img_multilayer", scene.img_multilayer)
             self.yi.paramsSetBool("alpha_channel", render.image_settings.color_mode == "RGBA")
-            self.yi.paramsSetBool("z_channel", scene.gs_z_channel)
             self.yi.paramsSetInt("width", self.resX)
             self.yi.paramsSetInt("height", self.resY)
             self.ih = self.yi.createImageHandler("outFile")
@@ -308,17 +339,38 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         elif scene.gs_type_render == "xml":
             self.setInterface(yafrayinterface.xmlInterface_t())
-            self.yi.setInputGamma(scene.gs_gamma_input, True)
             self.outputFile, self.output, self.file_type = self.decideOutputFileName(fp, 'XML')
+            self.yi.setOutfile(self.outputFile)
+            self.yi.startScene()
+            yaf_scene.exportRenderPassesSettings(self.yi, self.scene)
+            self.yi.setupRenderPasses()
+                        
+            input_color_values_color_space = "sRGB"
+            input_color_values_gamma = 1.0
+
+            if scene.display_settings.display_device == "sRGB":
+                input_color_values_color_space = "sRGB"
+                
+            elif scene.display_settings.display_device == "XYZ":
+                input_color_values_color_space = "XYZ"
+                
+            elif scene.display_settings.display_device == "None":
+                input_color_values_color_space = "Raw_Manual_Gamma"
+                input_color_values_gamma = scene.gs_gamma  #We only use the selected gamma if the output device is set to "None"
+            
+            self.yi.setInputColorSpace("LinearRGB", 1.0)    #Values from Blender, color picker floating point data are already linear (linearized by Blender)
+            self.yi.setXMLColorSpace(input_color_values_color_space, input_color_values_gamma)  #To set the XML interface to write the XML values with the correction included for the selected color space (and gamma if applicable)
+            
             self.yi.paramsClearAll()
             self.co = yafrayinterface.imageOutput_t()
-            self.yi.setOutfile(self.outputFile)
 
         else:
             self.setInterface(yafrayinterface.yafrayInterface_t())
-            self.yi.setInputGamma(scene.gs_gamma_input, True)
+            self.yi.startScene()
+            yaf_scene.exportRenderPassesSettings(self.yi, self.scene)
+            self.yi.setupRenderPasses()
+            self.yi.setInputColorSpace("LinearRGB", 1.0)    #When rendering into Blender, color picker floating point data is already linear (linearized by Blender)
 
-        self.yi.startScene()
         self.exportScene()
         self.yaf_integrator.exportIntegrator(self.scene)
         self.yaf_integrator.exportVolumeIntegrator(self.scene)
@@ -329,19 +381,17 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
     # callback to render scene
     def render(self, scene):
         self.bl_use_postprocess = False
+        self.scene = scene
 
         if scene.gs_type_render == "file":
             self.yi.printInfo("Exporter: Rendering to file {0}".format(self.outputFile))
             self.update_stats("YafaRay Rendering:", "Rendering to {0}".format(self.outputFile))
             self.yi.render(self.co)
             result = self.begin_result(0, 0, self.resX, self.resY)
-            lay = result.layers[0] if bpy.app.version < (2, 74, 4 ) else result.layers[0].passes[0]
+            lay = result.layers[0] #if bpy.app.version < (2, 74, 4 ) else result.layers[0].passes[0] #FIXME?
 
-            # exr format has z-buffer included, so no need to load '_zbuffer' - file
-            if scene.gs_z_channel and not scene.img_output == 'OPEN_EXR':
-                lay.load_from_file("{0}_zbuffer.{1}".format(self.output, self.file_type))
-            else:
-                lay.load_from_file(self.outputFile)
+            lay.load_from_file(self.outputFile)
+            #lay.passes["Depth"].load_from_file("{0} (Depth).{1}".format(self.output, self.file_type)) #FIXME? Unfortunately I cannot find a way to load the exported images back to the appropiate passes in Blender. Blender probably needs to improve their API to allow per-pass loading of files. Also, Blender does not allow opening multi layer EXR files with this function.
 
             self.end_result(result)
 
@@ -362,37 +412,79 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                     self.update_progress(self.prog)
 
             def drawAreaCallback(*args):
-                x, y, w, h, tile = args
+                x, y, w, h, view_number, tiles = args
                 res = self.begin_result(x, y, w, h)
+
                 try:
                     l = res.layers[0]
                     if bpy.app.version < (2, 74, 4 ):
-                        l.rect, l.passes[0].rect = tile
+                        l.rect, l.passes[0].rect = tiles
                     else:
-                        if self.is_preview:
-                            l.passes[0].rect = tile[0]
+                        if scene.render.use_multiview:
+                            #due to Blender limitations while drawing the tiles, I cannot use the view names properly and I have to repeat the currently drawing tile into all views so it shows correctly. Maybe there is a better way?
+                            for view_number,view in enumerate(scene.render.views):
+                                if view.use and not (scene.render.views_format == "STEREO_3D" and view.name != "left" and view.name != "right"):
+                                    view_suffix = '.'+scene.render.views[view_number].name
+                                
+                                    for tile in tiles:
+                                        view_name, tile_name, tile_bitmap = tile
+                                        try:
+                                            l.passes[tile_name+view_suffix].rect = tile_bitmap
+                                        except:
+                                            print("Exporter: Exception while rendering in drawAreaCallback function:")
+                                            traceback.print_exc()
+                                        
                         else:
-                            l.passes[0].rect, l.passes[1].rect = tile
-                    
+                            for tile in tiles:
+                                view_name, tile_name, tile_bitmap = tile
+                                try:
+                                    l.passes[tile_name].rect = tile_bitmap
+                                except:
+                                    print("Exporter: Exception while rendering in drawAreaCallback function:")
+                                    traceback.print_exc()
+
                     self.end_result(res)
 
                 except:
                     print("Exporter: Exception while rendering in drawAreaCallback function:")
                     traceback.print_exc()
 
-
             def flushCallback(*args):
-                w, h, tile = args
+                w, h, view_number, tiles = args
                 res = self.begin_result(0, 0, w, h)
+
                 try:
                     l = res.layers[0]
                     if bpy.app.version < (2, 74, 4 ):
-                        l.rect, l.passes[0].rect = tile
+                        l.rect, l.passes[0].rect = tiles
                     else:
-                        if self.is_preview:
-                            l.passes[0].rect = tile[0]
-                        else:
-                            l.passes[0].rect, l.passes[1].rect = tile
+                        for tile in tiles:
+                            view_name, tile_name, tile_bitmap = tile
+                            if scene.render.use_multiview:
+                                if view_name == "":  #In case we use Render 3D vierpowrt with Views enabled, it will copy the result to all views
+                                    for view_number,view in enumerate(scene.render.views):
+                                        if view.use and not (scene.render.views_format == "STEREO_3D" and view.name != "left" and view.name != "right"):
+                                            full_tile_name = tile_name + "." + view.name
+                                            try:
+                                                l.passes[full_tile_name].rect = tile_bitmap
+                                            except:
+                                                print("Exporter: Exception while rendering in flushCallback function:")
+                                                traceback.print_exc()
+                                else:
+                                    if scene.render.views[view_name].use and not (scene.render.views_format == "STEREO_3D" and view_name != "left" and view_name != "right"):
+                                        full_tile_name = tile_name + "." + view_name
+                                        try:
+                                            l.passes[full_tile_name].rect = tile_bitmap
+                                        except:
+                                            print("Exporter: Exception while rendering in flushCallback function:")
+                                            traceback.print_exc()
+                            else:
+                                full_tile_name = tile_name
+                                try:
+                                    l.passes[full_tile_name].rect = tile_bitmap
+                                except:
+                                    print("Exporter: Exception while rendering in flushCallback function:")
+                                    traceback.print_exc()
 
                     self.end_result(res)
 

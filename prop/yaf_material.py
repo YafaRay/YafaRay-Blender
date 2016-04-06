@@ -27,14 +27,14 @@ from bpy.props import (FloatProperty,
 
 Material = bpy.types.Material
 
-
+# This code is irrelevant after the change in the blend material to convert it from EnumProperty to StringProperty. I'm keeping this as a reference in case a better solution can be found for the blend material component materials references
 def items_mat1(self, context):
     a = []
     for mat in [m for m in bpy.data.materials if m.name not in self.name]:
         a.append((mat.name, mat.name, "First blend material"))
     return(a)
 
-
+# This code is irrelevant after the change in the blend material to convert it from EnumProperty to StringProperty. I'm keeping this as a reference in case a better solution can be found for the blend material component materials references
 def items_mat2(self, context):
     a = []
     for mat in [m for m in bpy.data.materials if m.name not in self.name]:
@@ -42,7 +42,7 @@ def items_mat2(self, context):
     return(a)
 
 def update_preview(self, context):
-    bpy.data.materials[0].preview_render_type = bpy.data.materials[0].preview_render_type
+    context.material.preview_render_type = context.material.preview_render_type
 
 
 def register():
@@ -239,6 +239,11 @@ def register():
         description="Let light straight through for shadow calculation. Not to be used with dispersion",
         default=False)
 
+    Material.clay_exclude = BoolProperty(
+        update=update_preview, name="Exclude from Clay render",
+        description="Exclude from Clay render mode: this material will be rendered normally even in Clay render mode",
+        default=False)
+
     Material.blend_value = FloatProperty(
         update=update_preview, name="Blend value",
         description="The mixing balance: 0 -> only material 1, 1.0 -> only material 2",
@@ -265,6 +270,7 @@ def register():
         description="",
         default=False)
 
+    #Deprecated blend material component Enum references, only to keep compatibility with old scenes
     Material.material1 = EnumProperty(
         update=update_preview, name="Material one",
         description="First blend material",
@@ -275,6 +281,32 @@ def register():
         description="Second blend material",
         items=items_mat2)
 
+    #New blend material component String references, when opening old scenes it should copy the old Enum Property materials to the new String Properties
+    Material.material1name = StringProperty(
+        update=update_preview, name="Material one",
+        description="First blend material")
+        #,        get=get_blend_mat1_old_scenes)
+
+    Material.material2name = StringProperty(
+        update=update_preview, name="Material two",
+        description="Second blend material")
+        #,        get=get_blend_mat2_old_scenes)
+
+    Material.visibility = EnumProperty(
+        update=update_preview, name="Visibility",
+        items=(
+            ('invisible', "Invisible", "Totally invisible"),
+            ('shadow_only', "Shadows only", "Invisible but casting shadows"),
+            ('no_shadows', "No shadows", "Visible but not casting shadows"),
+            ('normal', "Normal", "Normal visibility - visible casting shadows"),
+            
+        ),
+        default='normal')
+        
+    Material.receive_shadows = BoolProperty(
+        update=update_preview, name="Receive Shadows",
+        description="If this parameter is set to false, the material will not receive shadows from other objects",
+        default=True)
 
 def unregister():
     del Material.mat_type
@@ -302,9 +334,14 @@ def unregister():
     del Material.dispersion_power
     del Material.refr_roughness
     del Material.fake_shadows
+    del Material.clay_exclude
     del Material.blend_value
     del Material.sigma
     del Material.rough
     del Material.coated
     del Material.material1
     del Material.material2
+    del Material.material1name
+    del Material.material2name
+    del Material.visibility
+    del Material.receive_shadows

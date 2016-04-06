@@ -20,7 +20,8 @@
 
 import bpy
 from bpy.props import (EnumProperty,
-                       BoolProperty)
+                       BoolProperty,
+                       FloatProperty)
 
 Texture = bpy.types.Texture
 
@@ -61,6 +62,11 @@ def register():
         name="Use alpha image info",
         description="Use alpha values for image mapping",
         default=False)
+        
+    Texture.yaf_gamma_input = FloatProperty(
+        name="Gamma input",
+        description="Gamma correction applied to input texture",
+        min=0, max=5, default=1.0)
 
     Texture.yaf_tex_interpolate = EnumProperty(
         name="Interpolation",
@@ -70,10 +76,22 @@ def register():
             ('none', "No interpolation", "")
         ),
         default='bilinear')
-
+        
+    Texture.yaf_tex_optimization = EnumProperty(
+        name="Optimization",
+        description="Texture optimization to reduce RAM usage",
+        items=(
+            ('compressed', "Compressed", "Lossy color compression, some color/transparency details will be lost, more RAM improvement"),
+            ('optimized', "Optimized", "Lossless optimization, good RAM improvement"),
+            ('none', "None", "No optimization, lossless and faster but high RAM usage"),
+            ('default', "Default", "Use global texture optimization setting from the Render tab")
+        ),
+        default='default')
 
 def unregister():
     Texture.yaf_tex_type
     Texture.yaf_is_normal_map
     Texture.yaf_use_alpha
+    Texture.yaf_gamma_input
     Texture.yaf_tex_interpolate
+    Texture.yaf_tex_optimization

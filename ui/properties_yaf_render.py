@@ -27,6 +27,7 @@ RenderButtonsPanel.COMPAT_ENGINES = {'YAFA_RENDER'}
 
 class YAFRENDER_PT_render(RenderButtonsPanel, Panel):
     bl_label = "Render"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
 
     def draw(self, context):
 
@@ -39,46 +40,9 @@ class YAFRENDER_PT_render(RenderButtonsPanel, Panel):
         layout.row().operator("render.render_view", text="Render 3D View", icon='VIEW3D')
         layout.prop(rd, "display_mode", text="Display")
 
-
-class YAFRENDER_PT_layers(RenderButtonsPanel, Panel):
-    bl_label = "Layers"
-    bl_options = {'DEFAULT_CLOSED'}
-
-    def draw(self, context):
-        layout = self.layout
-
-        scene = context.scene
-        rd = scene.render
-
-        row = layout.row()
-        if bpy.app.version < (2, 65, 3 ):
-            row.template_list(rd, "layers", rd.layers, "active_index", rows=2)
-        else:
-            row.template_list("RENDERLAYER_UL_renderlayers", "", rd, "layers", rd.layers, "active_index", rows=2)
-
-        col = row.column(align=True)
-        col.operator("scene.render_layer_add", icon='ZOOMIN', text="")
-        col.operator("scene.render_layer_remove", icon='ZOOMOUT', text="")
-
-        row = layout.row()
-        rl = rd.layers.active
-        row.prop(rl, "name")
-        row.prop(rd, "use_single_layer", text="", icon_only=True)
-
-        split = layout.split()
-
-        col = split.column()
-        col.prop(scene, "layers", text="Scene")
-        # TODO: Implement material override
-        #col.prop(rl, "material_override", text="Material")
-
-        col = split.column()
-        # TODO: Implement render layers
-        #col.prop(rl, "layers", text="Layer")
-
-
 class YAFRENDER_PT_dimensions(RenderButtonsPanel, Panel):
     bl_label = "Dimensions"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
@@ -121,6 +85,7 @@ from . import properties_yaf_AA_settings
 
 class YAFRENDER_PT_output(RenderButtonsPanel, Panel):
     bl_label = "Output"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -137,9 +102,47 @@ class YAFRENDER_PT_output(RenderButtonsPanel, Panel):
         col = split.column()
         col.row().prop(image_settings, "color_mode", text="Color", expand=True)
 
+        if sc.img_output == "OPEN_EXR":
+            split = layout.split()
+            split.prop(sc, "img_multilayer")
+
+        if sc.img_output == "OPEN_EXR" or sc.img_output == "HDR":  #If the output file is a HDR/EXR file, we force the render output to Linear
+                pass
+        elif sc.gs_type_render == "file" or sc.gs_type_render == "xml":
+                split = layout.split(percentage=0.6)
+                col = split.column()
+                col.prop(sc.display_settings, "display_device")
+                
+                if sc.display_settings.display_device == "None":
+                    col = split.column()
+                    col.prop(sc, "gs_gamma", text = "Gamma")
+
+                if sc.display_settings.display_device == "sRGB":
+                    pass
+                elif sc.display_settings.display_device == "None":
+                    pass
+                elif sc.display_settings.display_device == "XYZ":
+                    row = layout.row(align=True)
+                    row.label(text="YafaRay 'XYZ' support is experimental and may not give the expected results", icon="ERROR")
+                else:
+                    row = layout.row(align=True)
+                    row.label(text="YafaRay doesn't support '" + sc.display_settings.display_device + "', assuming sRGB", icon="ERROR")
+                    
+        if sc.gs_type_render == "file" or sc.gs_type_render == "xml":
+                split = layout.split(percentage=0.6)
+                col = split.column()
+                col.prop(sc, "gs_premult", text = "Premultiply Alpha")
+                if sc.img_output  == "OPEN_EXR" and not sc.gs_premult:
+                    row = layout.row(align=True)
+                    row.label(text="Typically you should enable Premultiply in EXR files", icon="INFO")
+                if sc.img_output  == "PNG" and sc.gs_premult:
+                    row = layout.row(align=True)
+                    row.label(text="Typically you should disable Premultiply in PNG files", icon="INFO")
+
 
 class YAFRENDER_PT_post_processing(RenderButtonsPanel, Panel):
     bl_label = "Post Processing"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
@@ -157,12 +160,38 @@ class YAFRENDER_PT_post_processing(RenderButtonsPanel, Panel):
         col.prop(rd, "dither_intensity", text="Dither", slider=True)
 
 
-class YAF_PT_convert(RenderButtonsPanel, Panel):
+class YAFRENDER_PT_convert(RenderButtonsPanel, Panel):
     bl_label = "Convert old YafaRay Settings"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
 
     def draw(self, context):
         layout = self.layout
         layout.column().operator("data.convert_yafaray_properties", text="Convert data from 2.4x")
+
+
+class YAFRENDER_PT_advanced(RenderButtonsPanel, Panel):
+    bl_label = "Advanced Settings - only for experts"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
+    bl_options = {'DEFAULT_CLOSED'}
+
+    def draw(self, context):
+        scene = context.scene
+        layout = self.layout
+        split = layout.split()
+        col = split.column()
+        col.prop(scene, "adv_auto_shadow_bias_enabled")
+        if not scene.adv_auto_shadow_bias_enabled:
+            col = split.column()
+            sub = col.column()
+            sub.prop(scene, "adv_shadow_bias_value")
+
+        split = layout.split()
+        col = split.column()
+        col.prop(scene, "adv_auto_min_raydist_enabled")
+        if not scene.adv_auto_min_raydist_enabled:
+            col = split.column()
+            sub = col.column()
+            sub.prop(scene, "adv_min_raydist_value")
 
 
 if __name__ == "__main__":  # only for live edit.

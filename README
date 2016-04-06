@@ -1,21 +1,52 @@
-Yafaray 0.1.5 exporter for Blender 2.7:
+DESCRIPTION
+-----------
+YafaRay is a free open-source montecarlo raytracing engine released under the LGPL 2.1 license. Raytracing is a rendering technique for generating realistic images by tracing the path of light through a 3D scene. 
 
-For the latest exporter updates check:
+For more information, see: http://www.yafaray.org
+
+
+YafaRay-E (Experimental) is an unofficial testing/unstable branch for fixes and new features, maintained by David Bluecame. Some of these fixes and features could be eventually accepted into the official/stable YafaRay, while others may end up rejected or implemented in a different way.
+
+*WARNING*: YafaRay-E contains EXPERIMENTAL CHANGES AND FEATURES, so it's recommended not to use it for production scenes. This application is provided as is, and no guarantee is given that this code will preform in the desired way.
+
+IMPORTANT: current LIMITATIONS of YafaRay:
+* YafaRay only supports *one* version of YafaRay installed in the system. This limitation also affects installations of multiple "forks" of YafaRay, even if they have different names.
+If you have a black window when rendering:
+    - Make sure that YafaRay is correctly installed in the appropiate place
+    - Make sure there are no other YafaRay versions/forks installed. 
+
+* YafaRay only supports *one* scene in the .blend file. If you have more than one scene, it could cause unexpected results and problems in the new Material Preview Controls.
+
+Please post bugreports and feature requests here:
+http://www.yafaray.org/development/bugtracker/yafaray
+
+
+RELEASES
+--------
+
+YafaRay-E (Experimental) releases can be found here:
+https://github.com/DavidBluecame/Blender-Exporter/releases
+
+YafaRay-E latest source code:
+* Core code: https://github.com/DavidBluecame/Core
+* Blender Exporter: https://github.com/DavidBluecame/Blender-Exporter
+
+More information about the changes in each YafaRay-E version see the file CHANGELOG
+
+
+
+For the official YafaRay latest exporter updates check:
 
 https://github.com/YafaRay/Blender-Exporter
 
 and for the latest Yafaray builds (including exporter files too) 
-check for builds on graphicall.org:
+check for builds here:
 
-http://www.graphicall.org/yafaray
+* http://www.yafaray.org/download
+* http://www.graphicall.org/yafaray
 
 or look into this forum post for other platform builds:
-
-http://www.yafaray.org/community/forum/viewtopic.php?f=16&t=3520
-
 http://www.yafaray.org/community/forum/viewforum.php?f=12
-
-Download and extract the exporter files and folders to the 'Blender/2.7/scripts/addons/yafaray' directory.
 
 Please post bugreports and feature requests here:
 http://www.yafaray.org/development/bugtracker/yafaray

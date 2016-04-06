@@ -18,6 +18,7 @@
 
 # <pep8 compliant>
 
+import bpy
 
 class yafIntegrator:
     def __init__(self, interface):
@@ -35,11 +36,19 @@ class yafIntegrator:
             yi.paramsSetBool("bg_transp_refract", False)
 
         yi.paramsSetInt("raydepth", scene.gs_ray_depth)
+        if scene.name == "preview" and bpy.data.scenes[0].yafaray.preview.enable:
+            yi.paramsSetInt("raydepth", bpy.data.scenes[0].yafaray.preview.previewRayDepth)
         yi.paramsSetInt("shadowDepth", scene.gs_shadow_depth)
         yi.paramsSetBool("transpShad", scene.gs_transp_shad)
 
         light_type = scene.intg_light_method
         yi.printInfo("Exporting Integrator: {0}".format(light_type))
+
+        yi.paramsSetBool("do_AO", scene.intg_use_AO)
+        yi.paramsSetInt("AO_samples", scene.intg_AO_samples)
+        yi.paramsSetFloat("AO_distance", scene.intg_AO_distance)
+        c = scene.intg_AO_color
+        yi.paramsSetColor("AO_color", c[0], c[1], c[2])
 
         if light_type == "Direct Lighting":
             yi.paramsSetString("type", "directlighting")
@@ -51,14 +60,6 @@ class yafIntegrator:
                 yi.paramsSetInt("caustic_mix", scene.intg_caustic_mix)
                 yi.paramsSetInt("caustic_depth", scene.intg_caustic_depth)
                 yi.paramsSetFloat("caustic_radius", scene.intg_caustic_radius)
-                
-            yi.paramsSetBool("do_AO", scene.intg_use_AO)
-                
-            if scene.intg_use_AO:
-                yi.paramsSetInt("AO_samples", scene.intg_AO_samples)
-                yi.paramsSetFloat("AO_distance", scene.intg_AO_distance)
-                c = scene.intg_AO_color
-                yi.paramsSetColor("AO_color", c[0], c[1], c[2])
 
         elif light_type == "Photon Mapping":
             yi.paramsSetString("type", "photonmapping")

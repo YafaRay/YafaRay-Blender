@@ -28,6 +28,22 @@ from bl_ui.properties_material import (MaterialButtonsPanel,
 MaterialButtonsPanel.COMPAT_ENGINES = {'YAFA_RENDER'}
 
 
+def blend_one_draw(layout, mat):
+    try:
+        layout.prop_search(mat, "material1name", bpy.data, "materials")
+    except:
+        return False
+    
+    return True
+
+def blend_two_draw(layout, mat):
+    try:
+        layout.prop_search(mat, "material2name", bpy.data, "materials")
+    except:
+        return False
+    return True
+
+
 class MaterialTypePanel(MaterialButtonsPanel):
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
@@ -95,13 +111,83 @@ class YAF_PT_context_material(MaterialButtonsPanel, Panel):
         if yaf_mat:
             layout.separator()
             layout.prop(yaf_mat, "mat_type")
+            layout.row().prop(yaf_mat, "clay_exclude")
 
 
 class YAF_MATERIAL_PT_preview(MaterialButtonsPanel, Panel):
     bl_label = "Preview"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
 
     def draw(self, context):
         self.layout.template_preview(context.material)
+
+class YAF_PT_preview_controls(MaterialButtonsPanel, Panel):
+    bl_label = "Preview Controls"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
+    #bl_options = {'DEFAULT_CLOSED'}
+
+    def draw_header(self, context):
+        scene = context.scene
+        self.layout.prop(context.scene.yafaray.preview, "enable", text="")
+    
+    def draw(self, context):
+        if context.scene.yafaray.preview.enable:
+            layout = self.layout
+            yaf_mat = active_node_mat(context.material)
+            split = layout.split() 
+            col = split.column()
+            col.label("Preview dynamic rotation/zoom")
+            split = layout.split() 
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "camRot", text="")
+            col = split.column()
+            row = col.row()
+            row.operator("preview.camzoomout", text='Zoom Out', icon='ZOOM_OUT')
+            col2 = row.column()
+            col2.operator("preview.camzoomin", text='Zoom In', icon='ZOOM_IN')
+            row = col.row()
+            row.label("")
+            row = col.row()
+            row.operator("preview.camrotreset", text='Reset dynamic rotation/zoom')
+            split = layout.split() 
+            col = split.column()
+            col.label("Preview object control")
+            split = layout.split()
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "objScale", text="Scale")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "rotZ", text="Z Rotation")
+            col = split.column()
+            col.prop_search(context.scene.yafaray.preview, "previewObject", bpy.data, "objects", text="")
+            split = layout.split() 
+            col = split.column()
+            col.label("Preview lights control")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "lightRotZ", text="lights Z Rotation")
+            split = layout.split()
+            col = split.column()
+            col.label("Key light:")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "keyLightPowerFactor", text="Power factor")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "keyLightColor", text="")
+            split = layout.split() 
+            col = split.column()
+            col.label("Fill lights:")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "fillLightPowerFactor", text="Power factor")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "fillLightColor", text="")
+            split = layout.split() 
+            col = split.column()
+            col.label("Preview scene control")
+            split = layout.split()
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "previewRayDepth", text="Ray Depth")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "previewAApasses", text="AA samples")
+            col = split.column()
+            col.prop(context.scene.yafaray.preview, "previewBackground", text="")
 
 
 def draw_generator(ior_n):
@@ -134,6 +220,7 @@ for ior_group, ior_n in ior_list:
 
 class YAF_MT_presets_ior_list(Menu):
     bl_label = "Glass"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
 
     def draw(self, context):
         sl = self.layout
@@ -143,6 +230,7 @@ class YAF_MT_presets_ior_list(Menu):
 
 class YAF_PT_shinydiffuse_diffuse(MaterialTypePanel, Panel):
     bl_label = "Diffuse reflection"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
     material_type = 'shinydiffusemat'
 
     def draw(self, context):
@@ -177,6 +265,7 @@ class YAF_PT_shinydiffuse_diffuse(MaterialTypePanel, Panel):
 
 class YAF_PT_shinydiffuse_specular(MaterialTypePanel, Panel):
     bl_label = "Specular reflection"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
     material_type = 'shinydiffusemat'
 
     def draw(self, context):
@@ -198,6 +287,7 @@ class YAF_PT_shinydiffuse_specular(MaterialTypePanel, Panel):
 
 class YAF_PT_glossy_diffuse(MaterialTypePanel, Panel):
     bl_label = "Diffuse reflection"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
     material_type = 'glossy', 'coated_glossy'
 
     def draw(self, context):
@@ -220,6 +310,7 @@ class YAF_PT_glossy_diffuse(MaterialTypePanel, Panel):
 
 class YAF_PT_glossy_specular(MaterialTypePanel, Panel):
     bl_label = "Specular reflection"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
     material_type = 'glossy', 'coated_glossy'
 
     def draw(self, context):
@@ -255,10 +346,12 @@ class YAF_PT_glossy_specular(MaterialTypePanel, Panel):
             col.label(text="Fresnel reflection:")
             col.prop(yaf_mat, "IOR_reflection")
             col.label()
+            layout.row().prop(yaf_mat, "specular_reflect", slider=True)
 
 
 class YAF_PT_glass_real(MaterialTypePanel, Panel):
     bl_label = "Real glass settings"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
     material_type = 'glass', 'rough_glass'
 
     def draw(self, context):
@@ -290,6 +383,7 @@ class YAF_PT_glass_real(MaterialTypePanel, Panel):
 
 class YAF_PT_glass_fake(MaterialTypePanel, Panel):
     bl_label = "Fake glass settings"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
     material_type = 'glass', 'rough_glass'
 
     def draw(self, context):
@@ -307,6 +401,7 @@ class YAF_PT_glass_fake(MaterialTypePanel, Panel):
 
 class YAF_PT_blend_(MaterialTypePanel, Panel):
     bl_label = "Blend material settings"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
     material_type = 'blend'
 
     def draw(self, context):
@@ -322,15 +417,39 @@ class YAF_PT_blend_(MaterialTypePanel, Panel):
 
         box = layout.box()
         box.label(text="Choose the two materials you wish to blend.")
-        split = box.split()
-        col = split.column()
-        col.label(text="Material one:")
-        col.prop(yaf_mat, "material1", text="")
 
-        col = split.column()
-        col.label(text="Material two:")
-        col.prop(yaf_mat, "material2", text="")
+        #old blend material Enum properties - deprecated
+        #split = box.split()
+        #col = split.column()
+        #col.label(text="Material one:")
+        #col.prop(yaf_mat, "material1", text="")
 
+        #col = split.column()
+        #col.label(text="Material two:")
+        #col.prop(yaf_mat, "material2", text="")
+
+        blend_one_draw(layout, yaf_mat)
+        blend_two_draw(layout, yaf_mat)
+
+
+class YAF_PT_advanced(MaterialButtonsPanel, Panel):
+    bl_label = "Advanced settings"
+    COMPAT_ENGINES = {'YAFA_RENDER'}
+    bl_options = {'DEFAULT_CLOSED'}
+    
+    def draw(self, context):
+        layout = self.layout
+        yaf_mat = active_node_mat(context.material)
+
+        layout.prop(yaf_mat, "pass_index")
+
+        split = layout.split()
+        col = split.column()
+        layout.row().prop(yaf_mat, "visibility")
+
+        split = layout.split()
+        col = split.column()
+        layout.row().prop(yaf_mat, "receive_shadows")
 
 
 if __name__ == "__main__":  # only for live edit.
