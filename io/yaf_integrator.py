@@ -54,6 +54,7 @@ class yafIntegrator:
             yi.paramsSetString("type", "directlighting")
 
             yi.paramsSetBool("caustics", scene.intg_use_caustics)
+            yi.paramsSetString("photon_maps_processing", scene.intg_photon_maps_processing)
 
             if scene.intg_use_caustics:
                 yi.paramsSetInt("photons", scene.intg_photons)
@@ -65,6 +66,7 @@ class yafIntegrator:
             yi.paramsSetString("type", "photonmapping")
             yi.paramsSetBool("enable_caustics", scene.intg_enable_caustics)
             yi.paramsSetBool("enable_diffuse", scene.intg_enable_diffuse)
+            yi.paramsSetString("photon_maps_processing", scene.intg_photon_maps_processing)
             
             yi.paramsSetInt("bounces", scene.intg_bounces)
             yi.paramsSetInt("photons", scene.intg_photons)
@@ -87,6 +89,7 @@ class yafIntegrator:
             yi.paramsSetInt("path_samples", scene.intg_path_samples)
             yi.paramsSetInt("bounces", scene.intg_bounces)
             yi.paramsSetBool("no_recursive", scene.intg_no_recursion)
+            yi.paramsSetString("photon_maps_processing", scene.intg_photon_maps_processing)
 
             #-- test for simplify code
             causticTypeStr = scene.intg_caustic_method

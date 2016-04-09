@@ -23,7 +23,7 @@ from bpy.types import Panel
 from bl_ui.properties_render import RenderButtonsPanel
 
 
-class YAFA_E3_PT_render(RenderButtonsPanel, Panel):
+class YAFA_E3_PT_Render(RenderButtonsPanel, Panel):
     bl_label = "Render"
     COMPAT_ENGINES = {'YAFA_E3_RENDER'}
 
@@ -170,7 +170,7 @@ class YAFA_E3_PT_convert(RenderButtonsPanel, Panel):
         layout.column().operator("data.convert_yafaray_properties", text="Convert data from 2.4x")
 
 
-class YAFA_E3_PT_advanced(RenderButtonsPanel, Panel):
+class YAFA_E3_PT_Advanced(RenderButtonsPanel, Panel):
     bl_label = "Advanced Settings - only for experts"
     COMPAT_ENGINES = {'YAFA_E3_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
@@ -193,8 +193,7 @@ class YAFA_E3_PT_advanced(RenderButtonsPanel, Panel):
             col = split.column()
             sub = col.column()
             sub.prop(scene, "adv_min_raydist_value")
-
-
+            
 if __name__ == "__main__":  # only for live edit.
     import bpy
     bpy.utils.register_module(__name__)

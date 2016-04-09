@@ -930,6 +930,15 @@ def register():
         description="Enable diffuse photons processing",
         default=True)
 
+    Scene.intg_photon_maps_processing = EnumProperty(
+        name="Photon Maps processing",
+        items=(
+            ('generate-only', 'Generate only', "Generate the Photon Maps in each render (default and recommended)"),
+            ('generate-save', 'Generate and save', "Generate the Photon Maps and save to a cache file so other renders can re-use the maps"),
+            ('load', 'Load', "Load the Photon Maps from cache files. USE WITH CARE, only for scenes where ONLY the camera changes, like fly-through scenes")
+        ),
+        default='generate-only')
+
     Scene.intg_bounces = IntProperty(
         name="Depth",
         description="",
@@ -1138,6 +1147,7 @@ def unregister():
     Scene.intg_AO_color
     Scene.intg_enable_caustics
     Scene.intg_enable_diffuse
+    Scene.intg_photon_maps_processing
     Scene.intg_bounces
     Scene.intg_diffuse_radius
     Scene.intg_cPhotons

@@ -34,6 +34,10 @@ class YAFA_E3_PT_render(RenderButtonsPanel, Panel):
         layout.prop(scene, "intg_light_method")
 
         if scene.intg_light_method == "Direct Lighting":
+            if scene.intg_use_caustics and scene.intg_photon_maps_processing == "load":
+                row = layout.row()
+                row.label("Photon settings do not have effect when Photon Maps set to Load", icon="INFO")
+            
             row = layout.row()
             col = row.column(align=True)
             col.prop(scene, "intg_use_caustics", toggle=True)
@@ -50,13 +54,21 @@ class YAFA_E3_PT_render(RenderButtonsPanel, Panel):
                 col.prop(scene, "intg_AO_samples")
                 col.prop(scene, "intg_AO_distance")
 
+            if scene.intg_use_caustics:
+                split = layout.split()
+                col = split.column()
+                col.prop(scene, "intg_photon_maps_processing")
+
         elif scene.intg_light_method == "Photon Mapping":
             row = layout.row()
 
             row.prop(scene, "intg_bounces")
 
+            if (scene.intg_enable_diffuse or scene.intg_enable_caustics) and scene.intg_photon_maps_processing == "load":
+                row = layout.row()
+                row.label("Photon settings do not have effect when Photon Maps set to Load", icon="INFO")
+        
             row = layout.row()
-
             col = row.column(align=True)
             col.prop(scene, "intg_enable_diffuse", icon='MOD_PHYSICS', toggle=True)
             if scene.intg_enable_diffuse:
@@ -82,18 +94,30 @@ class YAFA_E3_PT_render(RenderButtonsPanel, Panel):
                     col = layout.row()
                     col.prop(scene, "intg_show_map", toggle=True)
 
+            if scene.intg_enable_diffuse or scene.intg_enable_caustics:
+                split = layout.split()
+                col = split.column()
+                col.prop(scene, "intg_photon_maps_processing")
+                
+
         elif scene.intg_light_method == "Pathtracing":
             col = layout.row()
             col.prop(scene, "intg_caustic_method")
 
+            if scene.intg_caustic_method in {"Path+Photon", "Photon"} and scene.intg_photon_maps_processing == "load":
+                row = layout.row()
+                row.label("Photon settings do not have effect when Photon Maps set to Load", icon="INFO")
+                
             col = layout.row()
-
             if scene.intg_caustic_method in {"Path+Photon", "Photon"}:
                 col.prop(scene, "intg_photons", text="Photons")
                 col.prop(scene, "intg_caustic_mix", text="Caus. Mix")
                 col = layout.row()
                 col.prop(scene, "intg_caustic_depth", text="Caus. Depth")
                 col.prop(scene, "intg_caustic_radius", text="Caus. Radius")
+                split = layout.split()
+                col = split.column()
+                col.prop(scene, "intg_photon_maps_processing")
 
             col = layout.row()
             col.prop(scene, "intg_path_samples")
