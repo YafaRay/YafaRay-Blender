@@ -190,6 +190,11 @@ def exportRenderSettings(yi, scene):
     else:
         yi.paramsSetInt("threads", scene.gs_threads)
 
+    if scene.gs_photon_auto_threads:
+        yi.paramsSetInt("threads_photons", -1)
+    else:
+        yi.paramsSetInt("threads_photons", scene.gs_photon_threads)
+
     yi.paramsSetString("background_name", "world_background")
 
     yi.paramsSetBool("adv_auto_shadow_bias_enabled", scene.adv_auto_shadow_bias_enabled)

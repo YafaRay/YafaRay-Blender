@@ -37,6 +37,17 @@ class YAFA_E3_PT_render(RenderButtonsPanel, Panel):
             if scene.intg_use_caustics and scene.intg_photon_maps_processing == "load":
                 row = layout.row()
                 row.label("Photon settings do not have effect when Photon Maps set to Load", icon="INFO")
+ 
+            if scene.intg_use_caustics:
+                row = layout.row()
+                col = row.column(align=True)
+                col.prop(scene, "gs_photon_auto_threads", toggle=True)
+                if not scene.gs_photon_auto_threads:
+                    col = row.column(align=True)
+                    col.prop(scene, "gs_photon_threads")
+                else:
+                    col = row.column(align=True)
+                    col.label("")
             
             row = layout.row()
             col = row.column(align=True)
@@ -67,7 +78,17 @@ class YAFA_E3_PT_render(RenderButtonsPanel, Panel):
             if (scene.intg_enable_diffuse or scene.intg_enable_caustics) and scene.intg_photon_maps_processing == "load":
                 row = layout.row()
                 row.label("Photon settings do not have effect when Photon Maps set to Load", icon="INFO")
-        
+
+            row = layout.row()
+            col = row.column(align=True)
+            col.prop(scene, "gs_photon_auto_threads", toggle=True)
+            if not scene.gs_photon_auto_threads:
+                col = row.column(align=True)
+                col.prop(scene, "gs_photon_threads")
+            else:
+                col = row.column(align=True)
+                col.label("")
+                        
             row = layout.row()
             col = row.column(align=True)
             col.prop(scene, "intg_enable_diffuse", icon='MOD_PHYSICS', toggle=True)
@@ -110,6 +131,17 @@ class YAFA_E3_PT_render(RenderButtonsPanel, Panel):
                 
             col = layout.row()
             if scene.intg_caustic_method in {"Path+Photon", "Photon"}:
+
+                row = layout.row()
+                col = row.column(align=True)
+                col.prop(scene, "gs_photon_auto_threads", toggle=True)
+                if not scene.gs_photon_auto_threads:
+                    col = row.column(align=True)
+                    col.prop(scene, "gs_photon_threads")
+                else:
+                    col = row.column(align=True)
+                    col.label("")
+
                 col.prop(scene, "intg_photons", text="Photons")
                 col.prop(scene, "intg_caustic_mix", text="Caus. Mix")
                 col = layout.row()

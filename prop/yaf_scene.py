@@ -713,6 +713,16 @@ def register():
         description="Activate thread number auto detection",
         default=True)
 
+    Scene.gs_photon_threads = IntProperty(
+        name="Threads Photon Maps",
+        description="Number of threads for photon mapping (it can make calculations faster or slower depending on hardware and OS)",
+        min=1, default=1)
+
+    Scene.gs_photon_auto_threads = BoolProperty(
+        name="Auto threads Photon Maps",
+        description="Thread number auto detection for photon mapping (it can make calculations faster or slower depending on hardware and OS)",
+        default=False)
+
     Scene.gs_clay_render = BoolProperty(
         name="Render clay",
         description="Override all materials with a white diffuse material",
@@ -1108,6 +1118,8 @@ def unregister():
     Scene.gs_tile_size
     Scene.gs_tile_order
     Scene.gs_auto_threads
+    Scene.gs_photon_threads
+    Scene.gs_photon_auto_threads
     Scene.gs_clay_render
     Scene.gs_clay_render_keep_transparency
     Scene.gs_clay_render_keep_normals
