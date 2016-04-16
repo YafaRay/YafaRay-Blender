@@ -35,7 +35,7 @@ bl_info = {
               "Paulo Gomes (tuga3d), Michele Castigliego (subcomandante),"
               "Bert Buchholz, Rodrigo Placencia (DarkTide),"
               "Alexander Smirnov (Exvion), Olaf Arnold (olaf), David Bluecame",
-    "version": ('Experimental', 2, 1, 1),
+    "version": (2, 1, 1),
     "blender": (2, 7, 6),
     "location": "Info Header > Engine dropdown menu",
     "wiki_url": "http://www.yafaray.org/community/forum",
