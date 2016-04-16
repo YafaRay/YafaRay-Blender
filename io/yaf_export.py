@@ -287,7 +287,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         filebasename += frame_numb_str.format(self.scene.frame_current)
 
         if self.scene.img_add_datetime:
-            filebasename += " ("+datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+")"
+            filebasename += " ("+datetime.datetime.now().strftime("%Y-%m-%dT%H%M%S")+")"
         
         output = os.path.join(output_path, filebasename)
         # try to create dir if it not exists...
