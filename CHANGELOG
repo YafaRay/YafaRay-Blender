@@ -1,7 +1,12 @@
 Important: read the README file for installation instructions and important information about YafaRay
 
 
-Yafaray v2.1.1 (2016-02-06) for Blender 2.76b:
+YafaRay v2.1.1 (2016-04-16) for Blender 2.76b:
+----------------------------------------------
+No changes respect to Experimental v2.1.1, only version changes (removed "Experimental")
+
+
+YafaRay-E (experimental) v2.1.1 (2016-02-06) for Blender 2.76b:
 ----------------------------------------------
 Note: there has been important changes and bug fixes in this version. They have solved some long-standing issues but perhaps they could cause new issues and unexpected results, so we have to keep an eye on them.
 
