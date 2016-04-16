@@ -4,11 +4,6 @@ YafaRay is a free open-source montecarlo raytracing engine released under the LG
 
 For more information, see: http://www.yafaray.org
 
-
-YafaRay-E (Experimental) is an unofficial testing/unstable branch for fixes and new features, maintained by David Bluecame. Some of these fixes and features could be eventually accepted into the official/stable YafaRay, while others may end up rejected or implemented in a different way.
-
-*WARNING*: YafaRay-E contains EXPERIMENTAL CHANGES AND FEATURES, so it's recommended not to use it for production scenes. This application is provided as is, and no guarantee is given that this code will preform in the desired way.
-
 IMPORTANT: current LIMITATIONS of YafaRay:
 * YafaRay only supports *one* version of YafaRay installed in the system. This limitation also affects installations of multiple "forks" of YafaRay, even if they have different names.
 If you have a black window when rendering:
@@ -23,17 +18,6 @@ http://www.yafaray.org/development/bugtracker/yafaray
 
 RELEASES
 --------
-
-YafaRay-E (Experimental) releases can be found here:
-https://github.com/DavidBluecame/Blender-Exporter/releases
-
-YafaRay-E latest source code:
-* Core code: https://github.com/DavidBluecame/Core
-* Blender Exporter: https://github.com/DavidBluecame/Blender-Exporter
-
-More information about the changes in each YafaRay-E version see the file CHANGELOG
-
-
 
 For the official YafaRay latest exporter updates check:
 

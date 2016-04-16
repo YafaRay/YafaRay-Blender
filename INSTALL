@@ -1,4 +1,4 @@
-To install YafaRay-E (Experimental) into Blender:
+To install YafaRay into Blender:
 
 Don't use the Blender from the distro repositories. Download the Blender official builds from:
 https://www.blender.org/download/
@@ -11,7 +11,7 @@ Copy this entire folder "yafaray" to (for example):
 
 After it, start Blender, go to User Preferences, AddOns and try to enable Render:YafaRay. Once (hopefully) enabled you should see it in the list of renderers.
 
-* Important: the YafaRay-E Linux 32bit build requires a processor with SSE/SSE2 instructions. Any non-ancient processor should have them...
+* Important: the YafaRay Linux 32bit build requires a processor with SSE/SSE2 instructions. Any non-ancient processor should have them...
 
 If you have any issues:
 
