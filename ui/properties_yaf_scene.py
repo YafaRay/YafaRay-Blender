@@ -23,9 +23,9 @@ from ..ot import yafaray_presets
 from bl_ui.properties_scene import SceneButtonsPanel
 from bpy.types import Panel, Menu
 
-class YAFA_E3_PT_color_management(SceneButtonsPanel, Panel):
+class YAFA_V3_PT_color_management(SceneButtonsPanel, Panel):
     bl_label = "Color Management"
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     def draw(self, context):
         layout = self.layout

@@ -29,11 +29,11 @@ from bpy.types import (Panel,
                        ParticleSettings)
 
 
-class YAFA_E3_TextureButtonsPanel():
+class YAFA_V3_TextureButtonsPanel():
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "texture"
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     @classmethod
     def poll(cls, context):
@@ -41,10 +41,10 @@ class YAFA_E3_TextureButtonsPanel():
         return tex and (tex.yaf_tex_type not in 'NONE' or tex.use_nodes) and (context.scene.render.engine in cls.COMPAT_ENGINES)
 
 
-class YAFA_E3_TEXTURE_PT_context_texture(YAFA_E3_TextureButtonsPanel, Panel):
+class YAFA_V3_TEXTURE_PT_context_texture(YAFA_V3_TextureButtonsPanel, Panel):
     bl_label = "YafaRay Textures"
     bl_options = {'HIDE_HEADER'}
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     @classmethod
     def poll(cls, context):
@@ -115,9 +115,9 @@ class YAFA_E3_TEXTURE_PT_context_texture(YAFA_E3_TextureButtonsPanel, Panel):
                 split.prop(tex, "yaf_tex_type", text="")
 
 
-class YAFA_E3_TEXTURE_PT_preview(YAFA_E3_TextureButtonsPanel, Panel):
+class YAFA_V3_TEXTURE_PT_preview(YAFA_V3_TextureButtonsPanel, Panel):
     bl_label = "Preview"
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -135,9 +135,9 @@ class YAFA_E3_TEXTURE_PT_preview(YAFA_E3_TextureButtonsPanel, Panel):
         if context.space_data.texture_context == 'BRUSH':
             layout.prop(tex, "use_preview_alpha")
 
-class YAFA_E3_PT_preview_texture_controls(YAFA_E3_TextureButtonsPanel, Panel):
+class YAFA_V3_PT_preview_texture_controls(YAFA_V3_TextureButtonsPanel, Panel):
     bl_label = "Preview Controls"
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
     #bl_options = {'DEFAULT_CLOSED'}
 
     def draw_header(self, context):
@@ -204,8 +204,8 @@ class YAFA_E3_PT_preview_texture_controls(YAFA_E3_TextureButtonsPanel, Panel):
             col.prop(context.scene.yafaray.preview, "previewBackground", text="")
 
 
-class YAFA_E3_TextureSlotPanel(YAFA_E3_TextureButtonsPanel):
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+class YAFA_V3_TextureSlotPanel(YAFA_V3_TextureButtonsPanel):
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     @classmethod
     def poll(cls, context):
@@ -213,11 +213,11 @@ class YAFA_E3_TextureSlotPanel(YAFA_E3_TextureButtonsPanel):
             return False
 
         engine = context.scene.render.engine
-        return YAFA_E3_TextureButtonsPanel.poll(cls, context) and (engine in cls.COMPAT_ENGINES)
+        return YAFA_V3_TextureButtonsPanel.poll(cls, context) and (engine in cls.COMPAT_ENGINES)
 
 
-class YAFA_E3_TextureTypePanel(YAFA_E3_TextureButtonsPanel):
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+class YAFA_V3_TextureTypePanel(YAFA_V3_TextureButtonsPanel):
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     @classmethod
     def poll(cls, context):
@@ -227,10 +227,10 @@ class YAFA_E3_TextureTypePanel(YAFA_E3_TextureButtonsPanel):
 
 
 # --- YafaRay's own Texture Type Panels --- #
-class YAFA_E3_TEXTURE_PT_clouds(YAFA_E3_TextureTypePanel, Panel):
+class YAFA_V3_TEXTURE_PT_clouds(YAFA_V3_TextureTypePanel, Panel):
     bl_label = "Clouds"
     tex_type = 'CLOUDS'
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -249,10 +249,10 @@ class YAFA_E3_TEXTURE_PT_clouds(YAFA_E3_TextureTypePanel, Panel):
         split.prop(tex, "noise_depth", text="Depth")
 
 
-class YAFA_E3_TEXTURE_PT_wood(YAFA_E3_TextureTypePanel, Panel):
+class YAFA_V3_TEXTURE_PT_wood(YAFA_V3_TextureTypePanel, Panel):
     bl_label = "Wood"
     tex_type = 'WOOD'
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -276,10 +276,10 @@ class YAFA_E3_TEXTURE_PT_wood(YAFA_E3_TextureTypePanel, Panel):
         split.prop(tex, "turbulence")
 
 
-class YAFA_E3_TEXTURE_PT_marble(YAFA_E3_TextureTypePanel, Panel):
+class YAFA_V3_TEXTURE_PT_marble(YAFA_V3_TextureTypePanel, Panel):
     bl_label = "Marble"
     tex_type = 'MARBLE'
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -300,10 +300,10 @@ class YAFA_E3_TEXTURE_PT_marble(YAFA_E3_TextureTypePanel, Panel):
         split.prop(tex, "turbulence")
 
 
-class YAFA_E3_TEXTURE_PT_blend(YAFA_E3_TextureTypePanel, Panel):
+class YAFA_V3_TEXTURE_PT_blend(YAFA_V3_TextureTypePanel, Panel):
     bl_label = "Blend"
     tex_type = 'BLEND'
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -316,10 +316,10 @@ class YAFA_E3_TEXTURE_PT_blend(YAFA_E3_TextureTypePanel, Panel):
             layout.label(text=" ")
 
 
-class YAFA_E3_TEXTURE_PT_image(YAFA_E3_TextureTypePanel, Panel):
+class YAFA_V3_TEXTURE_PT_image(YAFA_V3_TextureTypePanel, Panel):
     bl_label = "Map Image"
     tex_type = 'IMAGE'
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -351,11 +351,11 @@ class YAFA_E3_TEXTURE_PT_image(YAFA_E3_TextureTypePanel, Panel):
         row.label(text="Note: for bump/normal maps, textures are always considered Linear", icon="INFO")
         
 
-class YAFA_E3_TEXTURE_PT_image_sampling(YAFA_E3_TextureTypePanel, Panel):
+class YAFA_V3_TEXTURE_PT_image_sampling(YAFA_V3_TextureTypePanel, Panel):
     bl_label = "Image Sampling"
     bl_options = {'DEFAULT_CLOSED'}
     tex_type = 'IMAGE'
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -378,11 +378,11 @@ class YAFA_E3_TEXTURE_PT_image_sampling(YAFA_E3_TextureTypePanel, Panel):
         layout.prop(tex, "yaf_tex_optimization")
 
 
-class YAFA_E3_TEXTURE_PT_image_mapping(YAFA_E3_TextureTypePanel, Panel):
+class YAFA_V3_TEXTURE_PT_image_mapping(YAFA_V3_TextureTypePanel, Panel):
     bl_label = "Image Mapping"
     bl_options = {'DEFAULT_CLOSED'}
     tex_type = 'IMAGE'
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -434,10 +434,10 @@ class YAFA_E3_TEXTURE_PT_image_mapping(YAFA_E3_TextureTypePanel, Panel):
         col.prop(tex, "crop_max_y", text="Y")
 
 
-class YAFA_E3_TEXTURE_PT_musgrave(YAFA_E3_TextureTypePanel, Panel):
+class YAFA_V3_TEXTURE_PT_musgrave(YAFA_V3_TextureTypePanel, Panel):
     bl_label = "Musgrave"
     tex_type = 'MUSGRAVE'
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -470,10 +470,10 @@ class YAFA_E3_TEXTURE_PT_musgrave(YAFA_E3_TextureTypePanel, Panel):
         row.prop(tex, "noise_scale", text="Size")
 
 
-class YAFA_E3_TEXTURE_PT_voronoi(YAFA_E3_TextureTypePanel, Panel):
+class YAFA_V3_TEXTURE_PT_voronoi(YAFA_V3_TextureTypePanel, Panel):
     bl_label = "Voronoi"
     tex_type = 'VORONOI'
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -505,10 +505,10 @@ class YAFA_E3_TEXTURE_PT_voronoi(YAFA_E3_TextureTypePanel, Panel):
         row.prop(tex, "noise_scale", text="Size")
 
 
-class YAFA_E3_TEXTURE_PT_distortednoise(YAFA_E3_TextureTypePanel, Panel):
+class YAFA_V3_TEXTURE_PT_distortednoise(YAFA_V3_TextureTypePanel, Panel):
     bl_label = "Distorted Noise"
     tex_type = 'DISTORTED_NOISE'
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -525,10 +525,10 @@ class YAFA_E3_TEXTURE_PT_distortednoise(YAFA_E3_TextureTypePanel, Panel):
         split.prop(tex, "noise_scale", text="Size")
 
 
-class YAFA_E3_TEXTURE_PT_ocean(YAFA_E3_TextureTypePanel, Panel):
+class YAFA_V3_TEXTURE_PT_ocean(YAFA_V3_TextureTypePanel, Panel):
     bl_label = "Ocean"
     tex_type = 'OCEAN'
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -541,9 +541,9 @@ class YAFA_E3_TEXTURE_PT_ocean(YAFA_E3_TextureTypePanel, Panel):
         col.prop(ot, "output")
 
 
-class YAFA_E3_TEXTURE_PT_mapping(YAFA_E3_TextureSlotPanel, Panel):
+class YAFA_V3_TEXTURE_PT_mapping(YAFA_V3_TextureSlotPanel, Panel):
     bl_label = "YafaRay Mapping (Map Input)"
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     @classmethod
     def poll(cls, context):
@@ -636,9 +636,9 @@ class YAFA_E3_TEXTURE_PT_mapping(YAFA_E3_TextureSlotPanel, Panel):
             row.column().prop(tex, "scale")
 
 
-class YAFA_E3_TEXTURE_PT_influence(YAFA_E3_TextureSlotPanel, Panel):
+class YAFA_V3_TEXTURE_PT_influence(YAFA_V3_TextureSlotPanel, Panel):
     bl_label = "YafaRay Influence (Map To)"
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     @classmethod
     def poll(cls, context):

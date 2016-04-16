@@ -23,9 +23,9 @@ from bpy.types import Panel
 from bl_ui.properties_world import WorldButtonsPanel
 
 
-class YAFA_E3_PT_vol_integrator(WorldButtonsPanel, Panel):
+class YAFA_V3_PT_vol_integrator(WorldButtonsPanel, Panel):
     bl_label = "YafaRay Volume Integrator"
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     def draw(self, context):
         layout = self.layout

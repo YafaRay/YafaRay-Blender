@@ -19,7 +19,7 @@
 # <pep8 compliant>
 
 import bpy
-import yafaray_e3_interface
+import yafaray_v3_interface
 
 
 def proj2int(val):
@@ -169,14 +169,14 @@ class yafMaterial:
 
         if mtex.object:
             texmat = mtex.object.matrix_world.inverted()
-            rtmatrix = yafaray_e3_interface.new_floatArray(4 * 4)
+            rtmatrix = yafaray_v3_interface.new_floatArray(4 * 4)
 
             for x in range(4):
                 for y in range(4):
                     idx = (y + x * 4)
-                    yafaray_e3_interface.floatArray_setitem(rtmatrix, idx, texmat[x][y])
+                    yafaray_v3_interface.floatArray_setitem(rtmatrix, idx, texmat[x][y])
             yi.paramsSetMemMatrix("transform", rtmatrix, False)
-            yafaray_e3_interface.delete_floatArray(rtmatrix)
+            yafaray_v3_interface.delete_floatArray(rtmatrix)
 
         yi.paramsSetInt("proj_x", proj2int(mtex.mapping_x))
         yi.paramsSetInt("proj_y", proj2int(mtex.mapping_y))

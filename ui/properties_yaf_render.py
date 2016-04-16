@@ -23,9 +23,9 @@ from bpy.types import Panel
 from bl_ui.properties_render import RenderButtonsPanel
 
 
-class YAFA_E3_PT_Render(RenderButtonsPanel, Panel):
+class YAFA_V3_PT_Render(RenderButtonsPanel, Panel):
     bl_label = "Render"
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     def draw(self, context):
 
@@ -38,9 +38,9 @@ class YAFA_E3_PT_Render(RenderButtonsPanel, Panel):
         layout.row().operator("render.render_view", text="Render 3D View", icon='VIEW3D')
         layout.prop(rd, "display_mode", text="Display")
 
-class YAFA_E3_PT_dimensions(RenderButtonsPanel, Panel):
+class YAFA_V3_PT_dimensions(RenderButtonsPanel, Panel):
     bl_label = "Dimensions"
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
@@ -81,9 +81,9 @@ from . import properties_yaf_integrator
 from . import properties_yaf_AA_settings
 
 
-class YAFA_E3_PT_output(RenderButtonsPanel, Panel):
+class YAFA_V3_PT_output(RenderButtonsPanel, Panel):
     bl_label = "Output"
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -141,9 +141,9 @@ class YAFA_E3_PT_output(RenderButtonsPanel, Panel):
             row.label(text="Typically you should disable Premultiply in PNG files", icon="INFO")
 
 
-class YAFA_E3_PT_post_processing(RenderButtonsPanel, Panel):
+class YAFA_V3_PT_post_processing(RenderButtonsPanel, Panel):
     bl_label = "Post Processing"
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
@@ -161,18 +161,18 @@ class YAFA_E3_PT_post_processing(RenderButtonsPanel, Panel):
         col.prop(rd, "dither_intensity", text="Dither", slider=True)
 
 
-class YAFA_E3_PT_convert(RenderButtonsPanel, Panel):
+class YAFA_V3_PT_convert(RenderButtonsPanel, Panel):
     bl_label = "Convert old YafaRay Settings"
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     def draw(self, context):
         layout = self.layout
         layout.column().operator("data.convert_yafaray_properties", text="Convert data from 2.4x")
 
 
-class YAFA_E3_PT_Advanced(RenderButtonsPanel, Panel):
+class YAFA_V3_PT_Advanced(RenderButtonsPanel, Panel):
     bl_label = "Advanced Settings - only for experts"
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
