@@ -34,9 +34,9 @@ class YAFA_V3_PT_render(RenderButtonsPanel, Panel):
         layout.prop(scene, "intg_light_method")
 
         if scene.intg_light_method == "Direct Lighting":
-            if scene.intg_use_caustics and scene.intg_photon_maps_processing == "load":
+            if scene.intg_use_caustics and (scene.intg_photon_maps_processing == "load" or scene.intg_photon_maps_processing == "reuse-previous"):
                 row = layout.row()
-                row.label("Photon settings do not have effect when Photon Maps set to Load", icon="INFO")
+                row.label("Photon settings do not have effect when Photon Maps are Loaded or Reused", icon="INFO")
  
             if scene.intg_use_caustics:
                 row = layout.row()
@@ -75,9 +75,9 @@ class YAFA_V3_PT_render(RenderButtonsPanel, Panel):
 
             row.prop(scene, "intg_bounces")
 
-            if (scene.intg_enable_diffuse or scene.intg_enable_caustics) and scene.intg_photon_maps_processing == "load":
+            if (scene.intg_enable_diffuse or scene.intg_enable_caustics) and (scene.intg_photon_maps_processing == "load" or scene.intg_photon_maps_processing == "reuse-previous"):
                 row = layout.row()
-                row.label("Photon settings do not have effect when Photon Maps set to Load", icon="INFO")
+                row.label("Photon settings do not have effect when Photon Maps are Loaded or Reused", icon="INFO")
 
             row = layout.row()
             col = row.column(align=True)
@@ -125,9 +125,9 @@ class YAFA_V3_PT_render(RenderButtonsPanel, Panel):
             col = layout.row()
             col.prop(scene, "intg_caustic_method")
 
-            if scene.intg_caustic_method in {"Path+Photon", "Photon"} and scene.intg_photon_maps_processing == "load":
+            if scene.intg_caustic_method in {"Path+Photon", "Photon"} and (scene.intg_photon_maps_processing == "load" or scene.intg_photon_maps_processing == "reuse-previous"):
                 row = layout.row()
-                row.label("Photon settings do not have effect when Photon Maps set to Load", icon="INFO")
+                row.label("Photon settings do not have effect when Photon Maps are Loaded or Reused", icon="INFO")
                 
             col = layout.row()
             if scene.intg_caustic_method in {"Path+Photon", "Photon"}:
