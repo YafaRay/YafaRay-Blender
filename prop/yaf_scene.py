@@ -943,9 +943,10 @@ def register():
     Scene.intg_photon_maps_processing = EnumProperty(
         name="Photon Maps processing",
         items=(
-            ('generate-only', 'Generate only', "Generate the Photon Maps in each render (default and recommended)"),
-            ('generate-save', 'Generate and save', "Generate the Photon Maps and save to a cache file so other renders can re-use the maps"),
-            ('load', 'Load', "Load the Photon Maps from cache files. USE WITH CARE, only for scenes where ONLY the camera changes, like fly-through scenes")
+            ('generate-only', 'Generate only', "Generate the Photon Maps in each render (default and RECOMMENDED)"),
+            ('generate-save', 'Generate and save', "Generate the Photon Maps and save them to disk (temp folder) so they can be reloaded later"),
+            ('load', 'Load', "Load the Photon Maps from disk (temp folder). USE WITH CARE, only for scenes where ONLY the camera changes, like fly-through scenes"),
+            ('reuse-previous', 'Reuse previous', "Reuse previously generated Photon Maps from memory. USE WITH CARE, only for scenes where ONLY the camera changes, like fly-through scenes")            
         ),
         default='generate-only')
 
