@@ -34,11 +34,13 @@ class YAFA_V3_PT_render(RenderButtonsPanel, Panel):
         layout.prop(scene, "intg_light_method")
 
         if scene.intg_light_method == "Direct Lighting":
-            if scene.intg_use_caustics and (scene.intg_photon_maps_processing == "load" or scene.intg_photon_maps_processing == "reuse-previous"):
-                row = layout.row()
-                row.label("Photon settings do not have effect when Photon Maps are Loaded or Reused", icon="INFO")
- 
             if scene.intg_use_caustics:
+                split = layout.split()
+                col = split.column()
+                col.prop(scene, "intg_photon_maps_processing")
+                if scene.intg_photon_maps_processing == "load" or scene.intg_photon_maps_processing == "reuse-previous":
+                    row = layout.row()
+                    row.label("If the loaded/reused maps do not match exactly the scene, crashes and/or incorrect renders may happen, USE WITH CARE!", icon="ERROR")
                 row = layout.row()
                 col = row.column(align=True)
                 col.prop(scene, "gs_photon_auto_threads", toggle=True)
@@ -65,19 +67,19 @@ class YAFA_V3_PT_render(RenderButtonsPanel, Panel):
                 col.prop(scene, "intg_AO_samples")
                 col.prop(scene, "intg_AO_distance")
 
-            if scene.intg_use_caustics:
-                split = layout.split()
-                col = split.column()
-                col.prop(scene, "intg_photon_maps_processing")
 
         elif scene.intg_light_method == "Photon Mapping":
             row = layout.row()
 
             row.prop(scene, "intg_bounces")
 
-            if (scene.intg_enable_diffuse or scene.intg_enable_caustics) and (scene.intg_photon_maps_processing == "load" or scene.intg_photon_maps_processing == "reuse-previous"):
-                row = layout.row()
-                row.label("Photon settings do not have effect when Photon Maps are Loaded or Reused", icon="INFO")
+            if scene.intg_enable_diffuse or scene.intg_enable_caustics:
+                split = layout.split()
+                col = split.column()
+                col.prop(scene, "intg_photon_maps_processing")
+                if scene.intg_photon_maps_processing == "load" or scene.intg_photon_maps_processing == "reuse-previous":
+                    row = layout.row()
+                    row.label("If the loaded/reused maps do not match exactly the scene, crashes and/or incorrect renders may happen, USE WITH CARE!", icon="ERROR")
 
             row = layout.row()
             col = row.column(align=True)
@@ -114,24 +116,19 @@ class YAFA_V3_PT_render(RenderButtonsPanel, Panel):
                     col.prop(scene, "intg_fg_samples")
                     col = layout.row()
                     col.prop(scene, "intg_show_map", toggle=True)
-
-            if scene.intg_enable_diffuse or scene.intg_enable_caustics:
-                split = layout.split()
-                col = split.column()
-                col.prop(scene, "intg_photon_maps_processing")
                 
 
         elif scene.intg_light_method == "Pathtracing":
             col = layout.row()
             col.prop(scene, "intg_caustic_method")
-
-            if scene.intg_caustic_method in {"Path+Photon", "Photon"} and (scene.intg_photon_maps_processing == "load" or scene.intg_photon_maps_processing == "reuse-previous"):
-                row = layout.row()
-                row.label("Photon settings do not have effect when Photon Maps are Loaded or Reused", icon="INFO")
                 
             col = layout.row()
             if scene.intg_caustic_method in {"Path+Photon", "Photon"}:
 
+                col.prop(scene, "intg_photon_maps_processing")
+                if scene.intg_photon_maps_processing == "load" or scene.intg_photon_maps_processing == "reuse-previous":
+                    row = layout.row()
+                    row.label("If the loaded/reused maps do not match exactly the scene, crashes and/or incorrect renders may happen, USE WITH CARE!", icon="ERROR")
                 row = layout.row()
                 col = row.column(align=True)
                 col.prop(scene, "gs_photon_auto_threads", toggle=True)
@@ -149,7 +146,6 @@ class YAFA_V3_PT_render(RenderButtonsPanel, Panel):
                 col.prop(scene, "intg_caustic_radius", text="Caus. Radius")
                 split = layout.split()
                 col = split.column()
-                col.prop(scene, "intg_photon_maps_processing")
 
             col = layout.row()
             col.prop(scene, "intg_path_samples")
