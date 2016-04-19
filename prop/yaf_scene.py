@@ -879,7 +879,7 @@ def register():
 
     Scene.intg_use_caustics = BoolProperty(
         name="Caustic Photons",
-        description="Enable photon map for caustics only",
+        description="Enable caustic photons processing in Direct Light integrator",
         default=False)
 
     Scene.intg_photons = IntProperty(
@@ -930,14 +930,14 @@ def register():
         min=0.0, max=1.0,
         default=(0.9, 0.9, 0.9))
 
-    Scene.intg_enable_caustics = BoolProperty(
+    Scene.intg_photonmap_enable_caustics = BoolProperty(
         name="Caustic Photons",
-        description="Enable caustic photons processing",
+        description="Enable caustic photons processing in Photon Map integrator",
         default=True)
 
-    Scene.intg_enable_diffuse = BoolProperty(
+    Scene.intg_photonmap_enable_diffuse = BoolProperty(
         name="Diffuse Photons",
-        description="Enable diffuse photons processing",
+        description="Enable diffuse photons processing in Photon Map integrator",
         default=True)
 
     Scene.intg_photon_maps_processing = EnumProperty(
@@ -1158,8 +1158,8 @@ def unregister():
     Scene.intg_AO_samples
     Scene.intg_AO_distance
     Scene.intg_AO_color
-    Scene.intg_enable_caustics
-    Scene.intg_enable_diffuse
+    Scene.intg_photonmap_enable_caustics
+    Scene.intg_photonmap_enable_diffuse
     Scene.intg_photon_maps_processing
     Scene.intg_bounces
     Scene.intg_diffuse_radius

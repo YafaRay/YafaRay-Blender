@@ -73,7 +73,7 @@ class YAFA_V3_PT_render(RenderButtonsPanel, Panel):
 
             row.prop(scene, "intg_bounces")
 
-            if scene.intg_enable_diffuse or scene.intg_enable_caustics:
+            if scene.intg_photonmap_enable_diffuse or scene.intg_photonmap_enable_caustics:
                 split = layout.split()
                 col = split.column()
                 col.prop(scene, "intg_photon_maps_processing")
@@ -93,20 +93,20 @@ class YAFA_V3_PT_render(RenderButtonsPanel, Panel):
                         
             row = layout.row()
             col = row.column(align=True)
-            col.prop(scene, "intg_enable_diffuse", icon='MOD_PHYSICS', toggle=True)
-            if scene.intg_enable_diffuse:
+            col.prop(scene, "intg_photonmap_enable_diffuse", icon='MOD_PHYSICS', toggle=True)
+            if scene.intg_photonmap_enable_diffuse:
                 col.prop(scene, "intg_photons")
                 col.prop(scene, "intg_diffuse_radius")
                 col.prop(scene, "intg_search")
 
             col = row.column(align=True)
-            col.prop(scene, "intg_enable_caustics", icon='MOD_PARTICLES', toggle=True)
-            if scene.intg_enable_caustics:
+            col.prop(scene, "intg_photonmap_enable_caustics", icon='MOD_PARTICLES', toggle=True)
+            if scene.intg_photonmap_enable_caustics:
                 col.prop(scene, "intg_cPhotons")
                 col.prop(scene, "intg_caustic_radius")
                 col.prop(scene, "intg_caustic_mix")
 
-            if scene.intg_enable_diffuse:
+            if scene.intg_photonmap_enable_diffuse:
                 row = layout.row()
                 row.prop(scene, "intg_final_gather", toggle=True, icon='FORCE_FORCE')
 
