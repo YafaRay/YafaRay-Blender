@@ -168,12 +168,22 @@ class YafaRayNoiseControlProperties(bpy.types.PropertyGroup):
         description="Detect noise in RGB components in addidion to pixel brightness",
         default=False)
         
+    dark_detection_type = EnumProperty(
+        name="Dark areas noise detection",
+        items=(
+            ('none', "None", "No special dark areas noise detection (default)"),
+            ('linear', "Linear", "Linearly change AA threshold depending on pixel brightness and Dark factor"),
+            ('curve', "Curve", "Change AA threshold based on a pre-computed curve")
+        ),
+        default="none")
+        
     dark_threshold_factor = FloatProperty(
-        name="Dark areas noise detection factor",
+        name="Dark factor",
         description=("Factor used to reduce the AA threshold in dark areas."
-                     " It will reduce noise in dark areas, but noise in bright areas will take longer"),
+                     " It will reduce noise in dark areas, but noise in bright areas will take longer."
+                     " You probably need to increase the main AA threshold value if you use this parameter" ),
         min=0.0, max=1.0, precision=3,
-        default=0.0)
+        default=0.8)
 
     variance_edge_size = IntProperty(
         name="Variance window",

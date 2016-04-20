@@ -86,6 +86,7 @@ def exportAA(yi, scene):
     yi.paramsSetFloat("AA_light_sample_multiplier_factor", scene.yafaray.noise_control.light_sample_multiplier_factor)
     yi.paramsSetFloat("AA_indirect_sample_multiplier_factor", scene.yafaray.noise_control.indirect_sample_multiplier_factor)
     yi.paramsSetBool("AA_detect_color_noise", scene.yafaray.noise_control.detect_color_noise)
+    yi.paramsSetString("AA_dark_detection_type", scene.yafaray.noise_control.dark_detection_type)
     yi.paramsSetFloat("AA_dark_threshold_factor", scene.yafaray.noise_control.dark_threshold_factor)
     yi.paramsSetInt("AA_variance_edge_size", scene.yafaray.noise_control.variance_edge_size)
     yi.paramsSetInt("AA_variance_pixels", scene.yafaray.noise_control.variance_pixels)
