@@ -122,20 +122,22 @@ def register():
     bpy.utils.register_module(__name__)
     bpy.app.handlers.load_post.append(load_handler)
     # register keys for 'render 3d view', 'render still' and 'render animation'
-    km = bpy.context.window_manager.keyconfigs.addon.keymaps.new(name='Screen')
-    kmi = km.keymap_items.new('render.render_view', 'F12', 'PRESS', False, False, False, True)
-    kmi = km.keymap_items.new('render.render_animation', 'F12', 'PRESS', False, False, True, False)
-    kmi = km.keymap_items.new('render.render_still', 'F12', 'PRESS', False, False, False, False)
+    if bpy.context.window_manager.keyconfigs.addon is not None:
+        km = bpy.context.window_manager.keyconfigs.addon.keymaps.new(name='Screen')
+        kmi = km.keymap_items.new('render.render_view', 'F12', 'PRESS', False, False, False, True)
+        kmi = km.keymap_items.new('render.render_animation', 'F12', 'PRESS', False, False, True, False)
+        kmi = km.keymap_items.new('render.render_still', 'F12', 'PRESS', False, False, False, False)
 
 
 def unregister():
     prop.unregister()
     # unregister keys for 'render 3d view', 'render still' and 'render animation'
-    kma = bpy.context.window_manager.keyconfigs.addon.keymaps['Screen']
-    for kmi in kma.keymap_items:
-        if kmi.idname == 'render.render_view' or kmi.idname == 'render.render_animation' \
-        or kmi.idname == 'render.render_still':
-            kma.keymap_items.remove(kmi)
+    if bpy.context.window_manager.keyconfigs.addon is not None:
+        kma = bpy.context.window_manager.keyconfigs.addon.keymaps['Screen']
+        for kmi in kma.keymap_items:
+            if kmi.idname == 'render.render_view' or kmi.idname == 'render.render_animation' \
+            or kmi.idname == 'render.render_still':
+                kma.keymap_items.remove(kmi)
     bpy.utils.unregister_module(__name__)
     bpy.app.handlers.load_post.remove(load_handler)
 
