@@ -50,7 +50,7 @@ if sys.platform == 'win32':
         for file in os.listdir(BIN_PATH):
             # load dll's from a MSVC installation
             if file in {'yafaray_v3_core.dll'}:
-                dllArray = ['zlib1', 'iconv', 'zlib', 'libpng15', 'libxml2', 'yafaray_v3_core', 'yafaray_v3_plugin']
+                dllArray = ['zlib1', 'libiconv.64.dll', 'zlib.64.dll', 'libpng15', 'libxml2.64.dll', 'yafaray_v3_core', 'yafaray_v3_plugin']
                 break
             # load dll's from a MinGW64 installation
             else:
