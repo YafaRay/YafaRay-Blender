@@ -41,15 +41,6 @@ class YAFA_V3_PT_render(RenderButtonsPanel, Panel):
                 if scene.intg_photon_maps_processing == "load" or scene.intg_photon_maps_processing == "reuse-previous":
                     row = layout.row()
                     row.label("If the loaded/reused maps do not match exactly the scene, crashes and/or incorrect renders may happen, USE WITH CARE!", icon="ERROR")
-                row = layout.row()
-                col = row.column(align=True)
-                col.prop(scene, "gs_photon_auto_threads", toggle=True)
-                if not scene.gs_photon_auto_threads:
-                    col = row.column(align=True)
-                    col.prop(scene, "gs_photon_threads")
-                else:
-                    col = row.column(align=True)
-                    col.label("")
             
             row = layout.row()
             col = row.column(align=True)
@@ -80,16 +71,6 @@ class YAFA_V3_PT_render(RenderButtonsPanel, Panel):
                 if scene.intg_photon_maps_processing == "load" or scene.intg_photon_maps_processing == "reuse-previous":
                     row = layout.row()
                     row.label("If the loaded/reused maps do not match exactly the scene, crashes and/or incorrect renders may happen, USE WITH CARE!", icon="ERROR")
-
-            row = layout.row()
-            col = row.column(align=True)
-            col.prop(scene, "gs_photon_auto_threads", toggle=True)
-            if not scene.gs_photon_auto_threads:
-                col = row.column(align=True)
-                col.prop(scene, "gs_photon_threads")
-            else:
-                col = row.column(align=True)
-                col.label("")
                         
             row = layout.row()
             col = row.column(align=True)
@@ -129,15 +110,6 @@ class YAFA_V3_PT_render(RenderButtonsPanel, Panel):
                 if scene.intg_photon_maps_processing == "load" or scene.intg_photon_maps_processing == "reuse-previous":
                     row = layout.row()
                     row.label("If the loaded/reused maps do not match exactly the scene, crashes and/or incorrect renders may happen, USE WITH CARE!", icon="ERROR")
-                row = layout.row()
-                col = row.column(align=True)
-                col.prop(scene, "gs_photon_auto_threads", toggle=True)
-                if not scene.gs_photon_auto_threads:
-                    col = row.column(align=True)
-                    col.prop(scene, "gs_photon_threads")
-                else:
-                    col = row.column(align=True)
-                    col.label("")
 
                 col.prop(scene, "intg_photons", text="Photons")
                 col.prop(scene, "intg_caustic_mix", text="Caus. Mix")
