@@ -27,6 +27,8 @@ import time
 import yafaray_v3_interface
 import traceback
 import datetime
+import platform
+
 from .. import PLUGIN_PATH
 from .. import YAF_ID_NAME
 from .yaf_object import yafObject
@@ -37,6 +39,8 @@ from . import yaf_scene
 from .yaf_texture import yafTexture
 from .yaf_material import yafMaterial
 from ..ot import yafaray_presets
+from pprint import pprint
+from pprint import pformat
 
 class YafaRayRenderEngine(bpy.types.RenderEngine):
     bl_idname = YAF_ID_NAME
@@ -62,6 +66,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.yi.setParamsBadgePosition(self.scene.yafaray.logging.paramsBadgePosition)
             self.yi.setConsoleVerbosityLevel(self.scene.yafaray.logging.consoleVerbosity)
             self.yi.setLogVerbosityLevel(self.scene.yafaray.logging.logVerbosity)
+            self.yi.printInfo("Exporter: Blender version " + str(bpy.app.version[0]) + "."+ str(bpy.app.version[1]) + "."+ str(bpy.app.version[2]) + "."+ bpy.app.version_char + "  Build information: " + bpy.app.build_platform.decode("utf-8") + ", " + bpy.app.build_type.decode("utf-8") + ", branch: " + bpy.app.build_branch.decode("utf-8") + ", hash: " + bpy.app.build_hash.decode("utf-8"))
+            self.yi.printInfo("Exporter: System information: " + platform.processor() + ", " + platform.platform())
 
         self.yi.loadPlugins(PLUGIN_PATH)
         self.yaf_object = yafObject(self.yi, self.materialMap, self.is_preview)
