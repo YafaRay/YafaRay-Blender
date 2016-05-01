@@ -31,7 +31,7 @@ Major codebase changes in v3.0.0:
 Feature changes/additions in v3.0.0:
 * Multithreaded Photon Map generation, including multithreaded Photon KDTree building: this should greatly improve render speeds when using Direct Light+caustic map, Photon Map, SPPM or Path Tracing+photon. 
 
-* Ability to Save/Load/Reuse photon maps: this should greatly improve render speeds in scenes where only camera moves. See: http://yafaray.org/node/460
+* Ability to Save/Load/Reuse photon maps: this should greatly improve render speeds in scenes where only camera moves. See: http://yafaray.org/node/460. WARNING: When loading/reusing Photon Map files, the User is responsible to ensure they match the scene. If the User loads inadequate photon maps, the render results could be totally wrong. USE WITH CARE.
 
 * YafaRay-v3 can be installed "in parallel" with other major versions of YafaRay and coexist with them. "YafaRay v3" will appear as a DIFFERENT renderer and has to be enabled and selected in each scene as if it were a new renderer. This should help to compare the results and features over different major versions as well as allowing using a "stable" and a more "experimental" versions in parallel at the same time.
 
@@ -46,6 +46,8 @@ Feature changes/additions in v3.0.0:
   - Render log can be exported to a TXT file automatically, which will include the render results and information.
   - Render log can be exported to an HTML report automaticall, which will include a link to the rendered image and the render results and information.
   - The log verbosity can be selected in the Blender Exporter, to select how much information we want to show in the console or TXT/HTML log (more clear logs when selecting "Info", more details when selecting "Verbose" or "Debug")
+  - YafaRay-xml added commandline settings for log file output (txt and/or html) and removed old custom string
+
 
 * Improved Parameters Badge:
   - New non-intrusive badge, that is appended to the image. Requires to use "secondary file output" (the badge will no longer appear in Blender due to Blender API limitations that don't allow using a non-intrusive badge when rendering into Blender). See: http://yafaray.org/node/383
@@ -56,6 +58,7 @@ Feature changes/additions in v3.0.0:
   - Unicode characters can be used now for the badge (accented characters, etc).
   - Badge position can be selected: top or bottom (the icon position changes automatically for nicer presentation)
   - The amount of details shown in the badge can be selected (show render parameters, AA settings, none or both)
+  - Show separately render time and photon generation time, plus added total time (including maps generation).
   
 * New Dark areas detection type: curve  (see http://yafaray.org/node/704)
 
@@ -73,6 +76,18 @@ Feature changes/additions in v3.0.0:
 
 * Ability to automatically save a preset file with each exported image. The preset can be reused if needed by copying it to the users "home" folder, into the "yafaray_userdata/presets/render/" subfolder
 
+* Fixed the Presets storage and retrieval. They will be saved/loaded in the "home" user folder, inside the subfolder "yafaray_userdata/presets/render/" (will be created automatically if it does not exist). Also, more parameters have been included in the presets now and old parameters were removed.
+
+* Parameter to enable/disable World background shadow casting. Option to control separately World background sky/sun shadow casting.
+
+* Bidirectional integrator declared as "Deprecated" and no longer supported, as explained in http://www.yafaray.org/node/720
+
+* Small optimizations for AA resampling, especially when no more pixels are supposed to be resampled
+
+* Add Volumetric rendering to the Blend material
+    When using glass or rough glass in the Blend material, volumetric absorption didn't work. I've added the volumetric rendering to the Blend material so glass/rough glass materials render correctly.
+    However, there is a limitation: if blending two materials with different volumetric options, as I cannot "merge" the volumes, I'm using the volume from the first material for blend amount values [0.0-0.5] and the volume from the second material for blend amount ]0.5-1.0]. This is totally not ideal, but better than before in my opinion.
+
 
 Bug fixes in v3.0.0:
 * Fixed: Soft Spotlight too dark when nearer than 1.0 blender unit from objects. See: http://yafaray.org/node/587
@@ -81,7 +96,19 @@ Bug fixes in v3.0.0:
 
 * Fixed: black spots in some cases. See: http://yafaray.org/node/730
 
-* Fixed: presets storage and retrieval. They will be saved/loaded in the "home" user folder, inside the subfolder "yafaray_userdata/presets/render/" (will be created automatically if it does not exist). Also, more parameters have been included in the presets now.
+* Fixed: bug in border rendering where it was displaced one pixel sometimes. See: http://www.yafaray.org/community/forum/viewtopic.php?f=23&t=5151&start=0
+
+* Clay material default color changed to "real" middle gray. See: http://www.yafaray.org/community/forum/viewtopic.php?f=23&t=5152&start=0#p31497
+
+* Fixed incorrect updating of lamp preview when lamp parameters are modified
+
+* Fix AO Clay pass self shadow problem, reported by RioFranco (Olivier)
+
+* Changes in SWIG code to try to reduce crashes. Not sure if this will solve all problems but I hope this change helps.
+
+* Bidirectional: fix crash when using sky background as only light source
+
+
 
 
 YafaRay v2.1.1 (2016-04-16) for Blender 2.76b:
@@ -119,6 +146,8 @@ Note: there has been important changes and bug fixes in this version. They have 
     - Removed Texture scale/offset controls as they could cause confusion with the actual texture scale/offset parameters
 
 Important note: YafaRay only supports *one* scene in the .blend file. If you have more than one scene, it could cause unexpected results and problems in the new Material Preview Controls.
+
+* Fixed: console colors including blue component were incorect for Windows builds
 
 
 YafaRay-E (experimental) v2.1.0 (2016-01-31) for Blender 2.76b:
