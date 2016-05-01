@@ -70,10 +70,10 @@ elif sys.platform == 'darwin':
     dllArray = ['libyafaray_v3_core.dylib', 'libyafaray_v3_plugin.dylib']
 else:
     if sys.maxsize == 2**63 - 1:    # Linux 64bit system
-        dllArray = ['libHalf.so.6.0.0', 'libIex.so.6.0.0', 'libImath.so.6.0.0', 'libIlmThread.so.6.0.0', 'libIlmImf.so.6.0.0', 'libpython3.5m.so.1.0', 'libjpeg.so.62.0.0', 'libz.so.1.2.3.4', 'libpng12.so.0.44.0', 'libtiff.so.4.3.3', 'libfreetype.so.6.6.0', 'libboost_system-mt', 'libboost_filesystem-mt', 'libboost_serialization-mt', 'libyafaray_v3_core.so', 'libyafaray_v3_plugin.so']
+        dllArray = ['libHalf.so.6.0.0', 'libIex.so.6.0.0', 'libImath.so.6.0.0', 'libIlmThread.so.6.0.0', 'libIlmImf.so.6.0.0', 'libpython3.5m.so.1.0', 'libjpeg.so.62.0.0', 'libz.so.1.2.3.4', 'libpng12.so.0.44.0', 'libtiff.so.4.3.3', 'libfreetype.so.6.6.0', 'libboost_system.so.1.58.0', 'libboost_filesystem.so.1.58.0', 'libboost_serialization.so.1.58.0', 'libyafaray_v3_core.so', 'libyafaray_v3_plugin.so']
 
     else:   # Linux 32bit system
-        dllArray = ['libHalf.so.6.0.0', 'libIex.so.6.0.0', 'libImath.so.6.0.0', 'libIlmThread.so.6.0.0', 'libIlmImf.so.6.0.0', 'libpython3.5m.so.1.0', 'libjpeg.so.62.0.0', 'libz.so.1.2.3.4', 'libpng12.so.0.44.0', 'libtiff.so.4.3.3', 'libfreetype.so.6.6.0', 'libboost_system-mt', 'libboost_filesystem-mt', 'libboost_serialization-mt', 'libyafaray_v3_core.so', 'libyafaray_v3_plugin.so']
+        dllArray = ['libHalf.so.6.0.0', 'libIex.so.6.0.0', 'libImath.so.6.0.0', 'libIlmThread.so.6.0.0', 'libIlmImf.so.6.0.0', 'libpython3.5m.so.1.0', 'libjpeg.so.62.0.0', 'libz.so.1.2.3.4', 'libpng12.so.0.44.0', 'libtiff.so.4.3.3', 'libfreetype.so.6.6.0', 'libboost_system.so.1.58.0', 'libboost_filesystem.so.1.58.0', 'libboost_serialization.so.1.58.0', 'libyafaray_v3_core.so', 'libyafaray_v3_plugin.so']
 
 for dll in dllArray:
     try:
