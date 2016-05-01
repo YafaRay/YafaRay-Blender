@@ -1,5 +1,88 @@
 Important: read the README file for installation instructions and important information about YafaRay
 
+YafaRay v3.0.0-ALPHA1 (only for developers testing) (2016-05-01) for Blender 2.77a:
+----------------------------------------------
+** IMPORTANT **
+----------------------------------------------
+The new YafaRay-v3 will *NOT* replace the existing YafaRay versions, and it can be installed *in addition* to them.
+So, YafaRay-v3 *must* be enabled in Blender user preferences, and in your current YafaRay scenes you have to switch to the renderer "YafaRay-v3" to use the new version.
+
+Also, support has been DROPPED for Windows XP and MacOSX v10.6
+----------------------------------------------
+
+YafaRay-v3 has gone through deep changes to the code. Even if there are no apparent big changes, the underlying code has undergone a lot of modifications. So, this is an ALPHA/unstable version, only for developers testing
+
+Major codebase changes in v3.0.0:
+* Dropped support for Windows XP and MacOSX v10.6. Sorry, but the code changes required this.
+
+* Updated for Blender 2.77 (using Python 3.5).
+
+* Codebase updated from old standard C++98 to the new C++11. This will allow better and easier code maintenance as well as access to newer C++ features to improve YafaRay even more in the future.
+
+* Entire old MultiThreading system replaced by new standard C++11 threads system.
+
+* Windows-MinGW C++11 MultiThreading system using now the library https://github.com/meganz/mingw-std-threads  This should significantly improve render speed in Windows in many scenes by reducing the multithreading overhead.
+
+* Added several Boost libraries to allow saving/loading photon map files and improve unicode/multiplatform compatibility. 
+
+* Changes to allow compilation in Visual Studio 2013 (although YafaRay is slower when compiled with VS2013 for some reason)
+
+
+Feature changes/additions in v3.0.0:
+* Multithreaded Photon Map generation, including multithreaded Photon KDTree building: this should greatly improve render speeds when using Direct Light+caustic map, Photon Map, SPPM or Path Tracing+photon. 
+
+* Ability to Save/Load/Reuse photon maps: this should greatly improve render speeds in scenes where only camera moves. See: http://yafaray.org/node/460
+
+* YafaRay-v3 can be installed "in parallel" with other major versions of YafaRay and coexist with them. "YafaRay v3" will appear as a DIFFERENT renderer and has to be enabled and selected in each scene as if it were a new renderer. This should help to compare the results and features over different major versions as well as allowing using a "stable" and a more "experimental" versions in parallel at the same time.
+
+* Filepaths with Unicode characters (accents, etc) can be used now for loading textures, etc. See: http://yafaray.org/node/703
+
+* Secondary File Output: now it will be possible to render into render *and* export to image files at the same time!
+
+* New Logging system
+  - Title, author, comments can be entered now in the Blender Exporter and will appear in the logs and badge.
+  - YafaRay compilation information (platform, compiler), Blender information and some System Information will appear automatically in the log for easier support of user problems.
+  - Console log will show the time of the day, and the duration of the previous event in the log.
+  - Render log can be exported to a TXT file automatically, which will include the render results and information.
+  - Render log can be exported to an HTML report automaticall, which will include a link to the rendered image and the render results and information.
+  - The log verbosity can be selected in the Blender Exporter, to select how much information we want to show in the console or TXT/HTML log (more clear logs when selecting "Info", more details when selecting "Verbose" or "Debug")
+
+* Improved Parameters Badge:
+  - New non-intrusive badge, that is appended to the image. Requires to use "secondary file output" (the badge will no longer appear in Blender due to Blender API limitations that don't allow using a non-intrusive badge when rendering into Blender). See: http://yafaray.org/node/383
+  - Title, author, etc, can be entered in the Exporter to appear in the badge
+  - More information, more detailed and clear in the badge. See: http://yafaray.org/node/162 http://yafaray.org/node/224
+  - New YafaRay icon for the badge, low contrast grayscale.
+  - Custom icon can be selected to replace the YafaRay icon in the badge.
+  - Unicode characters can be used now for the badge (accented characters, etc).
+  - Badge position can be selected: top or bottom (the icon position changes automatically for nicer presentation)
+  - The amount of details shown in the badge can be selected (show render parameters, AA settings, none or both)
+  
+* New Dark areas detection type: curve  (see http://yafaray.org/node/704)
+
+* New more optimized rendering tile structure, to avoid having to wait for the last 1 or 2 tiles to finish rendering before the next pass/frame starts. Now, the last tiles will be automatically subdivided to reduce the waiting times. See: http://yafaray.org/node/709
+
+* Ability to enable/disable Caustic and/or Diffuse Photons generation in the Photon Map integrator.
+
+* New mirrorX, mirrorY feature for Textures. See: http://yafaray.org/node/227
+
+* More fine-grained Photon Control for light sources. See: http://yafaray.org/node/475
+
+* Ability to automatically save the exported images and logs including the .blend filename and/or current date/time. See: http://yafaray.org/node/331
+
+* Ability to set a per-material raytracing depth, for example to speed up scenes with glass. See: http://yafaray.org/node/494
+
+* Ability to automatically save a preset file with each exported image. The preset can be reused if needed by copying it to the users "home" folder, into the 
+
+
+Bug fixes in v3.0.0:
+* Fixed: Soft Spotlight too dark when nearer than 1.0 blender unit from objects. See: http://yafaray.org/node/587
+
+* Fixed: Rough Glass not working in Blend materials. See: http://yafaray.org/node/365
+
+* Fixed: black spots in some cases. See: http://yafaray.org/node/730
+
+
+
 
 YafaRay v2.1.1 (2016-04-16) for Blender 2.76b:
 ----------------------------------------------
