@@ -71,7 +71,7 @@ Feature changes/additions in v3.0.0:
 
 * Ability to set a per-material raytracing depth, for example to speed up scenes with glass. See: http://yafaray.org/node/494
 
-* Ability to automatically save a preset file with each exported image. The preset can be reused if needed by copying it to the users "home" folder, into the 
+* Ability to automatically save a preset file with each exported image. The preset can be reused if needed by copying it to the users "home" folder, into the "yafaray_userdata/presets/render/" subfolder
 
 
 Bug fixes in v3.0.0:
@@ -81,7 +81,7 @@ Bug fixes in v3.0.0:
 
 * Fixed: black spots in some cases. See: http://yafaray.org/node/730
 
-
+* Fixed: presets storage and retrieval. They will be saved/loaded in the "home" user folder, inside the subfolder "yafaray_userdata/presets/render/" (will be created automatically if it does not exist). Also, more parameters have been included in the presets now.
 
 
 YafaRay v2.1.1 (2016-04-16) for Blender 2.76b:

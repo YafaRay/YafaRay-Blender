@@ -66,8 +66,8 @@ class YAF_AddPresetBase():
 
             home_dir = os.path.expanduser("~")
             target_path = os.path.join(home_dir, "yafaray_userdata", "presets", self.preset_subdir)
-            if not os.path.exists(target_path[0]):
-                os.makedirs(target_path[0])
+            if not os.path.exists(target_path):
+                os.makedirs(target_path)
 
             if not target_path:
                 self.report({'WARNING'}, "Failed to create presets path")
@@ -110,8 +110,8 @@ class YAF_AddPresetBase():
 
             home_dir = os.path.expanduser("~")
             target_path = os.path.join(home_dir, "yafaray_userdata", "presets", self.preset_subdir)
-            if not os.path.exists(target_path[0]):
-                os.makedirs(target_path[0])
+            if not os.path.exists(target_path):
+                os.makedirs(target_path)
 
             filepath = yaf_preset_find(preset_active, target_path)
 
@@ -181,7 +181,7 @@ class YAFARAY_OT_presets_renderset(YAF_AddPresetBase, Operator):
     '''To delete or modify presets, modify the .py files directly in that folder'''
     bl_idname = "yafaray.preset_add"
     bl_label = "Yafaray Render Presets"
-    preset_menu = "YAFARAY_MT_presets_render"
+    preset_menu = "YAFA_V3_MT_presets_render"
     preset_defines = [
         "scene = bpy.context.scene"
     ]
