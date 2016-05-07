@@ -57,12 +57,12 @@ class YafaRayLoggingProperties(bpy.types.PropertyGroup):
             ('bottom', "Bottom", "Params badge will appear at the bottom of the exported image file. It may appear cropped in Blender."),
             ('none', "None", "Params badge will not appear")
         ),
-        default='top')
+        default='none')
 
     saveLog = BoolProperty(
         name="Save log file",
         description="Save text log file with the exported image files",
-        default=True)
+        default=False)
 
     saveHTML = BoolProperty(
         name="Save HTML file",
