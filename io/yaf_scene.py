@@ -177,11 +177,23 @@ def exportRenderSettings(yi, scene):
     if scene.name == "preview" and bpy.data.scenes[0].yafaray.preview.enable:
         yi.paramsSetBool("show_sam_pix", False)
 
+    enable_premult = True
+    if scene.gs_premult == "auto":
+        if scene.img_output == "PNG" or scene.img_output == "JPEG":
+            enable_premult = False
+        else:
+            enable_premult = True
+    elif scene.gs_premult == "yes":
+        enable_premult = True
+    else:
+        enable_premult = False
+
     if scene.gs_type_render == "file" or scene.gs_type_render == "xml":
-        yi.paramsSetBool("premult", scene.gs_premult)
+        yi.paramsSetBool("premult", enable_premult)
+
     else:
         yi.paramsSetBool("premult", True)   #We force alpha premultiply when rendering into Blender as it expects premultiplied input
-        yi.paramsSetBool("premult2", scene.gs_premult)   #In case we use a secondary file output, we set the premultiply according to the Blender setting
+        yi.paramsSetBool("premult2", enable_premult)   #In case we use a secondary file output, we set the premultiply according to the Blender setting
 
     yi.paramsSetInt("tile_size", scene.gs_tile_size)
     yi.paramsSetString("tiles_order", scene.gs_tile_order)

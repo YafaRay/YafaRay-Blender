@@ -133,12 +133,15 @@ class YAFA_V3_PT_output(RenderButtonsPanel, Panel):
         split = layout.split(percentage=0.6)
         col = split.column()
         col.prop(sc, "gs_premult", text = "Premultiply Alpha")
-        if sc.img_output  == "OPEN_EXR" and not sc.gs_premult:
+        if sc.img_output  == "OPEN_EXR" and sc.gs_premult == "no":
             row = layout.row(align=True)
             row.label(text="Typically you should enable Premultiply in EXR files", icon="INFO")
-        if sc.img_output  == "PNG" and sc.gs_premult:
+        if sc.img_output  == "PNG" and sc.gs_premult == "yes":
             row = layout.row(align=True)
             row.label(text="Typically you should disable Premultiply in PNG files", icon="INFO")
+        if sc.img_output  != "PNG" and sc.img_output  != "OPEN_EXR" and sc.img_output  != "JPEG" and sc.gs_premult == "auto":
+            row = layout.row(align=True)
+            row.label(text="Can't guess premultiply for " + sc.img_output + " , enabling by default but better select Yes or No", icon="INFO")
 
 
 class YAFA_V3_PT_post_processing(RenderButtonsPanel, Panel):

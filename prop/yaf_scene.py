@@ -796,10 +796,15 @@ def register():
         description="Min Ray Dist (default 0.00005). Change ONLY if artifacts or light leaks due to bad ray intersections. Increasing this value can led to artifacts and incorrect renders",
         min=0.00000001, max=10000, default=0.00005)
 
-    Scene.gs_premult = BoolProperty(
+    Scene.gs_premult = EnumProperty(
         name="Premultiply",
         description="Premultipy Alpha channel for renders with transparent background",
-        default=True)
+        items=(
+            ('yes', "Yes", "Apply Alpha channel Premultiply"),
+            ('no', "No", "Don't apply Alpha channel Premultiply"),
+            ('auto', "Auto", "Automatically try to guess if Alpha channel Premultiply is needed depending on the file type (recommended)")
+        ),
+        default='auto')
 
     Scene.gs_transp_shad = BoolProperty(
         name="Transparent shadows",
