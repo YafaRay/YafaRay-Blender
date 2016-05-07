@@ -62,17 +62,17 @@ class YafaRayLoggingProperties(bpy.types.PropertyGroup):
     saveLog = BoolProperty(
         name="Save log file",
         description="Save text log file with the exported image files",
-        default=False)
+        default=True)
 
     saveHTML = BoolProperty(
         name="Save HTML file",
         description="Save HTML information/log file with the exported image files",
-        default=False)
+        default=True)
 
     savePreset = BoolProperty(
         name="Save Preset file",
         description="Save a preset file, with the Render Settings, with the exported image files",
-        default=False)
+        default=True)
 
     verbosityLevels=sorted((
             ('mute', "Mute (silent)", "Prints nothing", 0),
@@ -829,7 +829,7 @@ def register():
     Scene.gs_secondary_file_output = BoolProperty(
         name="Secondary file output",
         description="Enable saving YafaRay render results at the same time as importing into Blender",
-        default=False)
+        default=True)
 
     Scene.gs_tex_optimization = EnumProperty(
         name="Textures optimization",
@@ -860,10 +860,15 @@ def register():
         description="Enable MultiLayer image export, only available in certain formats as EXR",
         default=False)
 
+    Scene.img_save_with_blend_file = BoolProperty(
+        name="Save with .blend file",
+        description="Save image/logs in a folder with same name as the .blend file plus suffix ""_render""",
+        default=True)
+
     Scene.img_add_blend_name = BoolProperty(
         name="Include .blend name",
         description="Include .blend name in the image filename",
-        default=False)
+        default=True)
         
     Scene.img_add_datetime = BoolProperty(
         name="Include date/time",
@@ -1149,6 +1154,7 @@ def unregister():
 
     Scene.img_output
     Scene.img_multilayer
+    Scene.img_save_with_blend_file
     Scene.img_add_blend_name
     Scene.img_add_datetime
 

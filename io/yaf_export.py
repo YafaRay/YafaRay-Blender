@@ -318,7 +318,10 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.scene = scene
         render = scene.render
 
-        fp = bpy.path.abspath(render.filepath)
+        if scene.img_save_with_blend_file:
+            fp = bpy.path.abspath("//"+os.path.splitext(os.path.basename(bpy.data.filepath))[0]+"_render")
+        else:
+            fp = bpy.path.abspath(render.filepath)
         fp = os.path.realpath(fp)
         fp = os.path.normpath(fp)
 

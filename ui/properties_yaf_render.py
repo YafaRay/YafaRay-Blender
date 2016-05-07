@@ -92,12 +92,16 @@ class YAFA_V3_PT_output(RenderButtonsPanel, Panel):
         sc = context.scene
         image_settings = rd.image_settings
 
-        layout.prop(rd, "filepath", text="")
+        layout.prop(sc, "img_save_with_blend_file")
+        if not sc.img_save_with_blend_file:
+            row = layout.row()
+            layout.prop(rd, "filepath", text="")
         row = layout.row()
-        row.prop(sc, "img_add_blend_name")
+        col = row.column()
+        col.prop(sc, "img_add_blend_name")
         col = row.column()
         col.prop(sc, "img_add_datetime")
-
+        
         split = layout.split(percentage=0.6)
         col = split.column()
         col.prop(sc, "img_output", text="", icon='IMAGE_DATA')
