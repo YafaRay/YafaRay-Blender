@@ -39,6 +39,8 @@ Feature changes/additions in v3.0.0:
 
 * Secondary File Output: now it will be possible to render into render *and* export to image files at the same time!
 
+* It's now possible to save the images automatically to the same place where the .blend file resides, into a folder with same name as the blend file and suffix "_render"
+
 * New Logging system
   - Title, author, comments can be entered now in the Blender Exporter and will appear in the logs and badge.
   - YafaRay compilation information (platform, compiler), Blender information and some System Information will appear automatically in the log for easier support of user problems.
