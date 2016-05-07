@@ -128,7 +128,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         return obj_visible
 
     def exportObjects(self):
-        self.yi.printVerbose("Exporter: Processing Lamps...")
+        self.yi.printInfo("Exporter: Processing Lamps...")
 
         # export only visible lamps
         for obj in [o for o in self.scene.objects if not o.hide_render and o.is_visible(self.scene) and o.type == 'LAMP']:
@@ -145,7 +145,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                     continue
                 self.yaf_lamp.createLight(self.yi, obj, obj.matrix_world)
 
-        self.yi.printVerbose("Exporter: Processing Geometry...")
+        self.yi.printInfo("Exporter: Processing Geometry...")
 
         # export only visible objects
         baseIds = {}
@@ -241,7 +241,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.yaf_material.writeMaterial(mat, self.scene)
 
     def exportMaterials(self):
-        self.yi.printVerbose("Exporter: Processing Materials...")
+        self.yi.printInfo("Exporter: Processing Materials...")
         self.materials = set()
 
         # create a default shiny diffuse material -> it will be assigned, if object has no material(s)
@@ -252,7 +252,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         else:
             cCol = (0.8, 0.8, 0.8)
         self.yi.paramsSetColor("color", cCol[0], cCol[1], cCol[2])
-        self.yi.printVerbose("Exporter: Creating Material \"defaultMat\"")
+        self.yi.printInfo("Exporter: Creating Material \"defaultMat\"")
         ymat = self.yi.createMaterial("defaultMat")
         self.materialMap["default"] = ymat
 
@@ -416,7 +416,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.scene = scene
 
         if scene.gs_type_render == "file":
-            self.yi.printVerbose("Exporter: Rendering to file {0}".format(self.outputFile))
+            self.yi.printInfo("Exporter: Rendering to file {0}".format(self.outputFile))
             self.update_stats("YafaRay Rendering:", "Rendering to {0}".format(self.outputFile))
             self.yi.render(self.co)
             result = self.begin_result(0, 0, self.resX, self.resY)
@@ -428,7 +428,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.end_result(result)
 
         elif scene.gs_type_render == "xml":
-            self.yi.printVerbose("Exporter: Writing XML to file {0}".format(self.outputFile))
+            self.yi.printInfo("Exporter: Writing XML to file {0}".format(self.outputFile))
             self.yi.render(self.co)
 
         else:
