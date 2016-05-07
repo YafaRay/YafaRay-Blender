@@ -1,6 +1,6 @@
 Important: read the README file for installation instructions and important information about YafaRay
 
-YafaRay v3.0.0-ALPHA1 (only for developers testing) (2016-05-01) for Blender 2.77a:
+YafaRay v3.0.0-ALPHA2 (only for developers testing) (2016-05-07) for Blender 2.77a:
 ----------------------------------------------
 ** IMPORTANT **
 ----------------------------------------------
@@ -59,6 +59,8 @@ Feature changes/additions in v3.0.0:
   - Badge position can be selected: top or bottom (the icon position changes automatically for nicer presentation)
   - The amount of details shown in the badge can be selected (show render parameters, AA settings, none or both)
   - Show separately render time and photon generation time, plus added total time (including maps generation).
+  
+* Added new Render Tile "Centre" (now by default) so the renders start in the centre of the image and expand from there. This should allow a faster view of the to-be render, as typically most objects of interest are in the centre of the image.
   
 * New Dark areas detection type: curve  (see http://yafaray.org/node/704)
 

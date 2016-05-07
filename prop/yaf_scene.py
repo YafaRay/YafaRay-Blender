@@ -713,10 +713,11 @@ def register():
         name="Tile order",
         description="Selects tiles order type",
         items=(
-            ('linear', "Linear", ""),
-            ('random', "Random", "")
+            ('linear', "Linear", "Render tiles appear in succesive lines until all render is complete."),
+            ('random', "Random", "Render tiles appear at random locations until all render is complete."),
+            ('centre', "Centre", "Render tiles appear around the centre of the image expanding until all render is complete.")
         ),
-        default='random')
+        default='centre')
 
     Scene.gs_auto_threads = BoolProperty(
         name="Auto threads",
