@@ -175,7 +175,7 @@ class YafaRayNoiseControlProperties(bpy.types.PropertyGroup):
             ('linear', "Linear", "Linearly change AA threshold depending on pixel brightness and Dark factor"),
             ('curve', "Curve", "Change AA threshold based on a pre-computed curve")
         ),
-        default="none")
+        default="linear")
         
     dark_threshold_factor = FloatProperty(
         name="Dark factor",
@@ -183,7 +183,7 @@ class YafaRayNoiseControlProperties(bpy.types.PropertyGroup):
                      " It will reduce noise in dark areas, but noise in bright areas will take longer."
                      " You probably need to increase the main AA threshold value if you use this parameter" ),
         min=0.0, max=1.0, precision=3,
-        default=0.8)
+        default=0.0)
 
     variance_edge_size = IntProperty(
         name="Variance window",

@@ -54,7 +54,22 @@ class YAFA_V3_PT_AA_settings(RenderButtonsPanel, Panel):
         #
         spp.prop(scene, "AA_passes")
         sub.prop(scene, "AA_inc_samples")
-        sub.prop(scene, "AA_threshold")
+
+        row = layout.row()
+        row.enabled = False
+
+        if scene.AA_passes > 1 and scene.intg_light_method != "SPPM":
+            row.enabled = True
+        
+        row.prop(scene.yafaray.noise_control, "dark_detection_type")
+        col = row.column()
+        if scene.yafaray.noise_control.dark_detection_type == "curve":
+            col.label("")
+        elif scene.yafaray.noise_control.dark_detection_type == "linear":
+            col.prop(scene, "AA_threshold")
+            col.prop(scene.yafaray.noise_control, "dark_threshold_factor")                
+        else:
+            col.prop(scene, "AA_threshold")
 
         row = layout.row()
         row.enabled = False
@@ -71,15 +86,9 @@ class YAFA_V3_PT_AA_settings(RenderButtonsPanel, Panel):
             row.enabled = True
 
         col = row.column()
-        col.prop(scene.yafaray.noise_control, "dark_detection_type")
         col.prop(scene.yafaray.noise_control, "sample_multiplier_factor")
         col.prop(scene.yafaray.noise_control, "light_sample_multiplier_factor")
         col.prop(scene.yafaray.noise_control, "indirect_sample_multiplier_factor")
-        col = row.column()
-        if scene.yafaray.noise_control.dark_detection_type == "linear":
-                col.prop(scene.yafaray.noise_control, "dark_threshold_factor")
-        else:
-                col.label("")
         col.prop(scene.yafaray.noise_control, "resampled_floor")
         col.prop(scene.yafaray.noise_control, "variance_edge_size")
         col.prop(scene.yafaray.noise_control, "variance_pixels")
