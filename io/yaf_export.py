@@ -341,6 +341,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.yi.startScene()
             yaf_scene.exportRenderPassesSettings(self.yi, self.scene)
             self.yi.setupRenderPasses()
+            self.yi.setInteractive(False)
             yaf_scene.setLoggingAndBadgeSettings(self.yi, self.scene)
             self.yi.setLoggingAndBadgeSettings()
             self.yi.setInputColorSpace("LinearRGB", 1.0)    #When rendering into Blender, color picker floating point data is already linear (linearized by Blender)
@@ -363,6 +364,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.yi.startScene()
             yaf_scene.exportRenderPassesSettings(self.yi, self.scene)
             self.yi.setupRenderPasses()
+            self.yi.setInteractive(False)
             yaf_scene.setLoggingAndBadgeSettings(self.yi, self.scene)
             self.yi.setLoggingAndBadgeSettings()
                         
@@ -390,11 +392,12 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.yi.startScene()
             yaf_scene.exportRenderPassesSettings(self.yi, self.scene)
             self.yi.setupRenderPasses()
+            self.yi.setInteractive(True)
             yaf_scene.setLoggingAndBadgeSettings(self.yi, self.scene)
             self.yi.setLoggingAndBadgeSettings()
             self.yi.setInputColorSpace("LinearRGB", 1.0)    #When rendering into Blender, color picker floating point data is already linear (linearized by Blender)
 
-            if scene.gs_secondary_file_output:
+            if scene.gs_secondary_file_output and not self.is_preview:
                 self.outputFile, self.output, self.file_type = self.decideOutputFileName(fp, scene.img_output)
                 self.yi.paramsClearAll()
                 self.yi.paramsSetString("type", self.file_type)

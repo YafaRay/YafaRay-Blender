@@ -840,6 +840,21 @@ def register():
             ('none', "None", "No optimization, lossless and faster but high RAM usage")
         ),
         default='optimized')
+
+    Scene.gs_partial_save_timer = FloatProperty(
+        name="Partial save timer",
+        description="Time interval to autosave partially rendered images (short intervals increase render time!). 0.0 disables the partial save function",
+        min=0.0, max=1000.0, default=60.0)
+
+    Scene.gs_partial_save_each_pass = EnumProperty(
+        name="Autosave images",
+        description="Select option for Image Autosave",
+        items=(
+            ('end_pass', "End of each pass", "Autosaves the image at the end of each pass"),
+            ('interval', "Time interval", "Autosaves the image every time interval elapses"),
+            ('none', "Disabled", "Image autosave will be disabled")
+        ),
+        default="end_pass")
         
     ######### YafaRays own image output property ############
     Scene.img_output = EnumProperty(
@@ -1151,6 +1166,8 @@ def unregister():
     Scene.gs_type_render
     Scene.gs_secondary_file_output
     Scene.gs_tex_optimization
+    Scene.gs_partial_save_timer
+    Scene.gs_partial_save_each_pass
 
     Scene.img_output
     Scene.img_multilayer

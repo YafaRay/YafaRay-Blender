@@ -206,6 +206,13 @@ def exportRenderSettings(yi, scene):
         yi.paramsSetInt("threads_photons", scene.gs_threads)
 
     yi.paramsSetString("background_name", "world_background")
+    
+    if scene.gs_partial_save_each_pass == "end_pass":
+        yi.paramsSetBool("partial_save_each_pass", True)
+        yi.paramsSetFloat("partial_save_timer", 0.0)
+    elif scene.gs_partial_save_each_pass == "interval":
+        yi.paramsSetBool("partial_save_each_pass", False)
+        yi.paramsSetFloat("partial_save_timer", scene.gs_partial_save_timer)
 
     yi.paramsSetBool("adv_auto_shadow_bias_enabled", scene.adv_auto_shadow_bias_enabled)
     yi.paramsSetFloat("adv_shadow_bias_value", scene.adv_shadow_bias_value)

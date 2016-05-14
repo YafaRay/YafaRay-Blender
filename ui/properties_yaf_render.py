@@ -101,6 +101,12 @@ class YAFA_V3_PT_output(RenderButtonsPanel, Panel):
         col.prop(sc, "img_add_blend_name")
         col = row.column()
         col.prop(sc, "img_add_datetime")
+        row = layout.row()
+        col = row.column()
+        col.prop(sc, "gs_partial_save_each_pass")
+        if sc.gs_partial_save_each_pass == "interval":
+            col = row.column()
+            col.prop(sc, "gs_partial_save_timer")
         
         split = layout.split(percentage=0.6)
         col = split.column()
