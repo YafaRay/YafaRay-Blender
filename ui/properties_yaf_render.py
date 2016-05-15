@@ -107,6 +107,12 @@ class YAFA_V3_PT_output(RenderButtonsPanel, Panel):
         if sc.gs_partial_save_each_pass == "interval":
             col = row.column()
             col.prop(sc, "gs_partial_save_timer")
+        row = layout.row()
+        col = row.column()
+        col.prop(sc, "gs_film_save_load")
+        if sc.gs_film_save_load == "load-save":
+            row = layout.row()
+            row.label("If the loaded image Film does not match exactly the scene, crashes and/or incorrect renders may happen, USE WITH CARE!", icon="ERROR")
         
         split = layout.split(percentage=0.6)
         col = split.column()

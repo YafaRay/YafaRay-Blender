@@ -855,6 +855,16 @@ def register():
             ('none', "Disabled", "Image autosave will be disabled")
         ),
         default="end_pass")
+
+    Scene.gs_film_save_load = EnumProperty(
+        name="Image Film save/load",
+        description="Option to autosave / load the imageFilm, may be useful to continue interrupted renders",
+        items=(
+            ('load-save', "Load and Autosave", "Load image film file at start (useful to continue interrupted renders, but USE WITH CARE!) and autosaves it with the images"),
+            ('save', "Autosave", "Autosaves the image film with the images"),
+            ('none', "Disabled", "Image autosave will be disabled")
+        ),
+        default="save")
         
     ######### YafaRays own image output property ############
     Scene.img_output = EnumProperty(
@@ -1168,6 +1178,7 @@ def unregister():
     Scene.gs_tex_optimization
     Scene.gs_partial_save_timer
     Scene.gs_partial_save_each_pass
+    Scene.gs_film_save_load
 
     Scene.img_output
     Scene.img_multilayer

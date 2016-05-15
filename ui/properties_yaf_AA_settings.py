@@ -89,6 +89,7 @@ class YAFA_V3_PT_AA_settings(RenderButtonsPanel, Panel):
         col.prop(scene.yafaray.noise_control, "sample_multiplier_factor")
         col.prop(scene.yafaray.noise_control, "light_sample_multiplier_factor")
         col.prop(scene.yafaray.noise_control, "indirect_sample_multiplier_factor")
+        col = row.column()
         col.prop(scene.yafaray.noise_control, "resampled_floor")
         col.prop(scene.yafaray.noise_control, "variance_edge_size")
         col.prop(scene.yafaray.noise_control, "variance_pixels")

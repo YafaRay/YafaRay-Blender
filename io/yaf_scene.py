@@ -213,6 +213,16 @@ def exportRenderSettings(yi, scene):
     elif scene.gs_partial_save_each_pass == "interval":
         yi.paramsSetBool("partial_save_each_pass", False)
         yi.paramsSetFloat("partial_save_timer", scene.gs_partial_save_timer)
+    
+    if scene.gs_film_save_load == "save":
+        yi.paramsSetBool("film_autosave", True)
+        yi.paramsSetBool("film_load", False)
+    elif scene.gs_film_save_load == "load-save":
+        yi.paramsSetBool("film_autosave", True)
+        yi.paramsSetBool("film_load", True)
+    else:
+        yi.paramsSetBool("film_autosave", False)
+        yi.paramsSetBool("film_load", False)
 
     yi.paramsSetBool("adv_auto_shadow_bias_enabled", scene.adv_auto_shadow_bias_enabled)
     yi.paramsSetFloat("adv_shadow_bias_value", scene.adv_shadow_bias_value)
