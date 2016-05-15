@@ -1,11 +1,13 @@
 Important: read the README file for installation instructions and important information about YafaRay
 
-YafaRay v3.0.0-ALPHA2 (only for developers testing) (2016-05-07) for Blender 2.77a:
+YafaRay v3.0.0-ALPHA3 (only for developers testing) (2016-05-15) for Blender 2.77a:
 ----------------------------------------------
 ** IMPORTANT **
 ----------------------------------------------
 The new YafaRay-v3 will *NOT* replace the existing YafaRay versions, and it can be installed *in addition* to them.
 So, YafaRay-v3 *must* be enabled in Blender user preferences, and in your current YafaRay scenes you have to switch to the renderer "YafaRay-v3" to use the new version.
+
+If you want to keep old versions and the new v3 together, make sure you enable in Blender first the old and then the new v3 in that order. If you have problems, disable both, restart Blender and enable them in that order.
 
 Also, support has been DROPPED for Windows XP and MacOSX v10.6
 ----------------------------------------------
@@ -31,7 +33,11 @@ Major codebase changes in v3.0.0:
 Feature changes/additions in v3.0.0:
 * Multithreaded Photon Map generation, including multithreaded Photon KDTree building: this should greatly improve render speeds when using Direct Light+caustic map, Photon Map, SPPM or Path Tracing+photon. 
 
-* Ability to Save/Load/Reuse photon maps: this should greatly improve render speeds in scenes where only camera moves. See: http://yafaray.org/node/460. WARNING: When loading/reusing Photon Map files, the User is responsible to ensure they match the scene. If the User loads inadequate photon maps, the render results could be totally wrong. USE WITH CARE.
+* Ability to Save/Load/Reuse photon maps: this should greatly improve render speeds in scenes where only camera moves. See: http://yafaray.org/node/460. WARNING: When loading/reusing Photon Map files, the User is responsible to ensure they match the scene. If the User loads inadequate photon maps, the render results could be totally wrong or even have crashes. USE WITH CARE.
+
+* Ability to AutoSave image files, either at the end of each pass or using a user-configurable time interval. This should help if there is a crash or sudden power off, as some images could be obtained from before the incident.
+
+* Ability to AutoSave/Load the main ImageFilm. This might help to CONTINUE interrupted renders or to add additional samples to a render that has already finished. WARNING: When loading ImageFilm files, the User is responsible to ensure they match the scene. If the ImageFilm does not match the scene and render passes exactly, the render results could be totally wrong or even have crashes. USE WITH CARE.
 
 * YafaRay-v3 can be installed "in parallel" with other major versions of YafaRay and coexist with them. "YafaRay v3" will appear as a DIFFERENT renderer and has to be enabled and selected in each scene as if it were a new renderer. This should help to compare the results and features over different major versions as well as allowing using a "stable" and a more "experimental" versions in parallel at the same time.
 
@@ -40,6 +46,12 @@ Feature changes/additions in v3.0.0:
 * Secondary File Output: now it will be possible to render into render *and* export to image files at the same time!
 
 * It's now possible to save the images automatically to the same place where the .blend file resides, into a folder with same name as the blend file and suffix "_render"
+
+* Now the user can use CTRL+C in the console to interrupt a render in progress. This now works in all modes (render into Blender, render to Image files or using yafaray-xml). The interruption due to CTRL+C will now be handled correctly, ensuring the image files and badge are properly saved.
+
+* yafaray-xml: no longer needed to specify the Library path nor the Plugins path. The old Windows Registry requirement has been removed and it's not necessary anymore. Now, yafaray-xml will load the libraries from the same folder where the yafaray-xml executable resides and it will load the plugins from the subfolder "plugins" respect to the folder where the yafaray-xml executable resides
+
+* Removed option -pst in yafaray-xml, now it has to be enabled via parameter in the xml file
 
 * New Logging system
   - Title, author, comments can be entered now in the Blender Exporter and will appear in the logs and badge.
@@ -112,7 +124,7 @@ Bug fixes in v3.0.0:
 
 * Bidirectional: fix crash when using sky background as only light source
 
-
+* SPPM progress bar and tags fixed
 
 
 YafaRay v2.1.1 (2016-04-16) for Blender 2.76b:
