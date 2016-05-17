@@ -130,10 +130,12 @@ class YAFA_V3_PT_render(RenderButtonsPanel, Panel):
             layout.row().prop(scene, "intg_show_perturbed_normals")
 
         elif scene.intg_light_method == "SPPM":
-            col = layout.column()
+            row = layout.row()
+            col = row.column()
             col.prop(scene, "intg_photons", text="Photons")
             col.prop(scene, "intg_pass_num")
             col.prop(scene, "intg_bounces", text="Bounces")
+            col = row.column()
             col.prop(scene, "intg_times")
             col.prop(scene, "intg_diffuse_radius")
             col.prop(scene, "intg_search")
