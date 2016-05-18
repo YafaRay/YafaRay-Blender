@@ -228,6 +228,8 @@ def exportRenderSettings(yi, scene):
     yi.paramsSetFloat("adv_shadow_bias_value", scene.adv_shadow_bias_value)
     yi.paramsSetBool("adv_auto_min_raydist_enabled", scene.adv_auto_min_raydist_enabled)
     yi.paramsSetFloat("adv_min_raydist_value", scene.adv_min_raydist_value)
+    yi.paramsSetFloat("adv_min_raydist_value", scene.adv_min_raydist_value)
+    yi.paramsSetInt("adv_base_sampling_offset", scene.adv_base_sampling_offset)
 
 
 def setLoggingAndBadgeSettings(yi, scene):

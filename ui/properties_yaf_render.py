@@ -197,6 +197,11 @@ class YAFA_V3_PT_Advanced(RenderButtonsPanel, Panel):
     def draw(self, context):
         scene = context.scene
         layout = self.layout
+        
+        split = layout.split()
+        col = split.column()
+        col.prop(scene, "adv_base_sampling_offset")
+ 
         split = layout.split()
         col = split.column()
         col.prop(scene, "adv_auto_shadow_bias_enabled")

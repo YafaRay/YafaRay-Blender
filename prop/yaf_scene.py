@@ -796,6 +796,12 @@ def register():
         description="Min Ray Dist (default 0.00005). Change ONLY if artifacts or light leaks due to bad ray intersections. Increasing this value can led to artifacts and incorrect renders",
         min=0.00000001, max=10000, default=0.00005)
 
+    Scene.adv_base_sampling_offset = IntProperty(
+        name="Base Sampling Offset",
+        description="For multi-computer film generation, set a different sampling offset in each computer so they don't \"repeat\" the same samples. Separate them enough (at least the number of samples each computer is supposed to calculate)",
+        min=0, max=2000000000,
+        default=0)
+
     Scene.gs_premult = EnumProperty(
         name="Premultiply",
         description="Premultipy Alpha channel for renders with transparent background",
@@ -1169,6 +1175,8 @@ def unregister():
     Scene.adv_shadow_bias_value
     Scene.adv_auto_min_raydist_enabled
     Scene.adv_min_raydist_value
+    Scene.adv_base_sampling_offset
+    
     Scene.gs_custom_string
     Scene.gs_premult
     Scene.gs_transp_shad
