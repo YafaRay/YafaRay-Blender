@@ -980,8 +980,8 @@ def register():
         name="Photon Maps processing",
         items=(
             ('generate-only', 'Generate only', "Generate the Photon Maps in each render (default and RECOMMENDED)"),
-            ('generate-save', 'Generate and save', "Generate the Photon Maps and save them to disk (temp folder) so they can be reloaded later"),
-            ('load', 'Load', "Load the Photon Maps from disk (temp folder). USE WITH CARE, only for scenes where ONLY the camera changes, like fly-through scenes"),
+            ('generate-save', 'Generate and save', "Generate the Photon Maps and save them to files so they can be reloaded later"),
+            ('load', 'Load', "Load the Photon Maps from files. USE WITH CARE, only for scenes where ONLY the camera changes, like fly-through scenes"),
             ('reuse-previous', 'Reuse previous', "Reuse previously generated Photon Maps from memory. USE WITH CARE, only for scenes where ONLY the camera changes, like fly-through scenes")            
         ),
         default='generate-only')
