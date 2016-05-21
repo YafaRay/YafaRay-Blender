@@ -35,7 +35,7 @@ bl_info = {
               "Paulo Gomes (tuga3d), Michele Castigliego (subcomandante),"
               "Bert Buchholz, Rodrigo Placencia (DarkTide),"
               "Alexander Smirnov (Exvion), Olaf Arnold (olaf), David Bluecame",
-    "version": (3, 0, 0, "ALPHA5"),
+    "version": (3, 0, 0, "ALPHA6"),
     "blender": (2, 7, 7),
     "location": "Info Header > Engine dropdown menu",
     "wiki_url": "http://www.yafaray.org/community/forum",
@@ -54,7 +54,7 @@ if sys.platform == 'win32':
                 break
             # load dll's from a MinGW64 installation
             else:
-                dllArray = ['libwinpthread-1', 'libgcc_s_seh-1', 'libstdc++-6', 'libiconv-2', 'libzlib1', 'libxml2-2', 'libHalf', 'libIex', 'libImath', 'libIlmThread', 'libIlmImf', 'libjpeg-8', 'libpng16', 'libtiff-5', 'libbz2-1', 'libfreetype-6', 'libboost_system-mt', 'libboost_filesystem-mt', 'libboost_serialization-mt', 'libyafaray_v3_core', 'libyafaray_v3_plugin']
+                dllArray = ['libwinpthread-1', 'libgcc_s_seh-1', 'libstdc++-6', 'libiconv-2', 'libzlib1', 'libxml2-2', 'libHalf', 'libIex', 'libImath', 'libIlmThread', 'libIlmImf', 'libjpeg-8', 'libpng16', 'libtiff-5', 'libbz2-1', 'libfreetype-6', 'libboost_system-mt', 'libboost_filesystem-mt', 'libboost_serialization-mt', 'libboost_regex-mt', 'libyafaray_v3_core', 'libyafaray_v3_plugin']
 
     else:    # Windows 32bit system
         for file in os.listdir(BIN_PATH):
@@ -64,16 +64,16 @@ if sys.platform == 'win32':
                 break
             # load dll's from a MinGW32 installation
             else:
-                dllArray = ['libwinpthread-1', 'libgcc_s_sjlj-1', 'libstdc++-6', 'libiconv-2', 'libzlib1', 'libxml2-2', 'libHalf', 'libIex', 'libImath', 'libIlmThread', 'libIlmImf', 'libjpeg-8', 'libpng16', 'libtiff-5', 'libbz2-1', 'libfreetype-6', 'libboost_system-mt', 'libboost_filesystem-mt', 'libboost_serialization-mt', 'libyafaray_v3_core', 'libyafaray_v3_plugin']
+                dllArray = ['libwinpthread-1', 'libgcc_s_sjlj-1', 'libstdc++-6', 'libiconv-2', 'libzlib1', 'libxml2-2', 'libHalf', 'libIex', 'libImath', 'libIlmThread', 'libIlmImf', 'libjpeg-8', 'libpng16', 'libtiff-5', 'libbz2-1', 'libfreetype-6', 'libboost_system-mt', 'libboost_filesystem-mt', 'libboost_serialization-mt', 'libboost_regex-mt', 'libyafaray_v3_core', 'libyafaray_v3_plugin']
 
 elif sys.platform == 'darwin':
     dllArray = ['libyafaray_v3_core.dylib', 'libyafaray_v3_plugin.dylib']
 else:
     if sys.maxsize == 2**63 - 1:    # Linux 64bit system
-        dllArray = ['libHalf.so', 'libIex.so', 'libImath.so', 'libIlmThread.so', 'libIlmImf.so', 'libpython3.5m.so', 'libjpeg.so', 'libz.so', 'libpng12.so', 'libjbig.so', 'libtiff.so', 'libfreetype.so', 'libboost_system.so', 'libboost_filesystem.so', 'libboost_serialization.so', 'libyafaray_v3_core.so', 'libyafaray_v3_plugin.so']
+        dllArray = ['libHalf.so', 'libIex.so', 'libImath.so', 'libIlmThread.so', 'libIlmImf.so', 'libpython3.5m.so', 'libjpeg.so', 'libz.so', 'libpng12.so', 'libjbig.so', 'libtiff.so', 'libfreetype.so', 'libboost_system.so', 'libboost_filesystem.so', 'libboost_serialization.so', 'libboost_regex.so', 'libyafaray_v3_core.so', 'libyafaray_v3_plugin.so']
 
     else:   # Linux 32bit system
-        dllArray = ['libHalf.so', 'libIex.so', 'libImath.so', 'libIlmThread.so', 'libIlmImf.so', 'libpython3.5m.so', 'libjpeg.so', 'libz.so', 'libpng12.so', 'libjbig.so', 'libtiff.so', 'libfreetype.so', 'libboost_system.so', 'libboost_filesystem.so', 'libboost_serialization.so', 'libyafaray_v3_core.so', 'libyafaray_v3_plugin.so']
+        dllArray = ['libHalf.so', 'libIex.so', 'libImath.so', 'libIlmThread.so', 'libIlmImf.so', 'libpython3.5m.so', 'libjpeg.so', 'libz.so', 'libpng12.so', 'libjbig.so', 'libtiff.so', 'libfreetype.so', 'libboost_system.so', 'libboost_filesystem.so', 'libboost_serialization.so', 'libboost_regex.so', 'libyafaray_v3_core.so', 'libyafaray_v3_plugin.so']
 
 for dll in dllArray:
     try:
