@@ -94,7 +94,8 @@ else:
     from . import io
     from . import ui
     from . import ot
-
+    from bpy.types import AddonPreferences
+    from bpy.props import IntProperty
 
 @persistent
 def load_handler(dummy):
@@ -115,9 +116,26 @@ def load_handler(dummy):
     # convert image output file type setting from blender to yafaray's file type setting on file load, so that both are the same...
     if bpy.context.scene.render.image_settings.file_format is not bpy.context.scene.img_output:
         bpy.context.scene.img_output = bpy.context.scene.render.image_settings.file_format
-    
+
+class YafaRay_v3_Preferences(AddonPreferences):
+    bl_idname = __name__
+
+    yafaray_computer_node = IntProperty(
+        name="YafaRay computer node",
+        description='Computer node number in multi-computer render environments / render farms',
+        default=0, min=0, max=1000
+    )
+
+    def draw(self, context):
+        layout = self.layout
+        split = layout.split()
+        col = split.column()
+        col.prop(self, "yafaray_computer_node")
+        col = col.column()
+        col.label("Click Save User Settings below to store the changes permanently in YafaRay!", icon="INFO")
 
 def register():
+    bpy.utils.register_class(YafaRay_v3_Preferences)
     prop.register()
     bpy.utils.register_module(__name__)
     bpy.app.handlers.load_post.append(load_handler)
@@ -140,6 +158,8 @@ def unregister():
                 kma.keymap_items.remove(kmi)
     bpy.utils.unregister_module(__name__)
     bpy.app.handlers.load_post.remove(load_handler)
+    bpy.utils.unregister_class(YafaRay_v3_Preferences)
+
 
 
 if __name__ == '__main__':
