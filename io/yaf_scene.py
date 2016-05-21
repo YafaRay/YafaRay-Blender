@@ -229,7 +229,8 @@ def exportRenderSettings(yi, scene):
     yi.paramsSetBool("adv_auto_min_raydist_enabled", scene.adv_auto_min_raydist_enabled)
     yi.paramsSetFloat("adv_min_raydist_value", scene.adv_min_raydist_value)
     yi.paramsSetFloat("adv_min_raydist_value", scene.adv_min_raydist_value)
-    yi.paramsSetInt("adv_base_sampling_offset", scene.adv_base_sampling_offset + (bpy.context.user_preferences.addons["yafaray_v3"].preferences.yafaray_computer_node * 100000))
+    yi.paramsSetInt("adv_base_sampling_offset", scene.adv_base_sampling_offset)
+    yi.paramsSetInt("adv_computer_node", bpy.context.user_preferences.addons["yafaray_v3"].preferences.yafaray_computer_node)
 
 
 def setLoggingAndBadgeSettings(yi, scene):
