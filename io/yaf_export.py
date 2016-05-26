@@ -546,7 +546,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 time.sleep(0.2)
 
             if t.isAlive():
-                self.update_stats("", "Aborting...")
+                self.update_stats("", "Aborting, please wait for all pending tasks to complete (progress in console log)...")
                 self.yi.abort()
                 t.join()
 

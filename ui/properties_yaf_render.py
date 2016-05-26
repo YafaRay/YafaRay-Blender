@@ -110,6 +110,9 @@ class YAFA_V3_PT_output(RenderButtonsPanel, Panel):
         row = layout.row()
         col = row.column()
         col.prop(sc, "gs_film_save_load")
+        col = row.column()
+        col.prop(sc, "gs_film_save_binary_format")
+        
         if sc.gs_film_save_load == "load-save":
             row = layout.row()
             row.label("If the loaded image Film does not match exactly the scene, crashes and/or incorrect renders may happen, USE WITH CARE!", icon="ERROR")

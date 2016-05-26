@@ -224,6 +224,8 @@ def exportRenderSettings(yi, scene):
         yi.paramsSetBool("film_autosave", False)
         yi.paramsSetBool("film_load", False)
 
+    yi.paramsSetBool("film_save_binary_format", scene.gs_film_save_binary_format)
+
     yi.paramsSetBool("adv_auto_shadow_bias_enabled", scene.adv_auto_shadow_bias_enabled)
     yi.paramsSetFloat("adv_shadow_bias_value", scene.adv_shadow_bias_value)
     yi.paramsSetBool("adv_auto_min_raydist_enabled", scene.adv_auto_min_raydist_enabled)

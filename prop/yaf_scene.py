@@ -864,13 +864,18 @@ def register():
 
     Scene.gs_film_save_load = EnumProperty(
         name="Image Film save/load",
-        description="Option to autosave / load the imageFilm, may be useful to continue interrupted renders",
+        description="Option to autosave / load the imageFilm, may be useful to continue interrupted renders. The ImageFilm file can be BIG and SLOW, especially when enabling many render passes.",
         items=(
-            ('load-save', "Load and Autosave", "Load image film file at start (useful to continue interrupted renders, but USE WITH CARE!) and autosaves it with the images"),
-            ('save', "Autosave", "Autosaves the image film with the images"),
+            ('load-save', "Load and Autosave", "Load all ImageFilm *.film files at start (autodetecting binary/text format automatically). This is useful to continue interrupted renders or for multicomputer rendering, but USE WITH CARE! Also it will autosave the ImageFilm (in the selected binary or text format) with the images"),
+            ('save', "Autosave", "Autosaves the ImageFilm (in the selected binary or text format) with the images"),
             ('none', "Disabled", "Image autosave will be disabled")
         ),
         default="save")
+
+    Scene.gs_film_save_binary_format = BoolProperty(
+        name="Save Film binary format",
+        description="If enabled, it will save the ImageFilm file in binary format (smaller and faster, but NOT portable among systems). By default this is enabled. This setting does not affect the Film loading, which autodetects the film format automatically.",
+        default=True)
         
     ######### YafaRays own image output property ############
     Scene.img_output = EnumProperty(
@@ -1187,6 +1192,7 @@ def unregister():
     Scene.gs_partial_save_timer
     Scene.gs_partial_save_each_pass
     Scene.gs_film_save_load
+    Scene.gs_film_save_binary_format
 
     Scene.img_output
     Scene.img_multilayer
