@@ -849,8 +849,8 @@ def register():
 
     Scene.gs_partial_save_timer = FloatProperty(
         name="Partial save timer",
-        description="Time interval to autosave partially rendered images (short intervals increase render time!). 0.0 disables the partial save function",
-        min=0.0, max=1000.0, default=60.0)
+        description="Time interval (in seconds) to autosave partially rendered images (short intervals increase render time, especially when autosaving images and/or imageFilm files!). 0.0 disables the partial save function",
+        min=0.0, default=300.0)
 
     Scene.gs_partial_save_each_pass = EnumProperty(
         name="Autosave images",
