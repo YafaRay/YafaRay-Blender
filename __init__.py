@@ -43,43 +43,11 @@ bl_info = {
     "category": "Render"
     }
 
-# Preload needed libraries
-# Loading order of the dlls is sensible please do not alter it
-if sys.platform == 'win32':
-    if sys.maxsize == 2**63 - 1:    # Windows 64bit system
-        for file in os.listdir(BIN_PATH):
-            # load dll's from a MSVC installation
-            if file in {'yafaray_v3_core.dll'}:
-                dllArray = ['zlib1', 'libiconv.64.dll', 'zlib.64.dll', 'libpng15', 'libxml2.64.dll', 'yafaray_v3_core', 'yafaray_v3_plugin']
-                break
-            # load dll's from a MinGW64 installation
-            else:
-                dllArray = ['libwinpthread-1', 'libgcc_s_seh-1', 'libstdc++-6', 'libiconv-2', 'libzlib1', 'libxml2-2', 'libHalf', 'libIex', 'libImath', 'libIlmThread', 'libIlmImf', 'libjpeg-8', 'libpng16', 'libtiff-5', 'libbz2-1', 'libfreetype-6', 'libboost_system-mt', 'libboost_filesystem-mt', 'libboost_serialization-mt', 'libyafaray_v3_core', 'libyafaray_v3_plugin']
+# Set Library Search options
+if sys.platform == 'win32':   #I think this is the easiest and most flexible way to set the search options for Windows DLL
+    os.environ['PATH'] = os.path.dirname(__file__) + '\\bin;' + os.path.dirname(__file__) + '\\bin\\dependencies;' + os.environ['PATH']
+# For Linux and MacOSX, set the RPATH in all the .so and .dylib libraries to relative paths respect to their location 
 
-    else:    # Windows 32bit system
-        for file in os.listdir(BIN_PATH):
-            # load dll's from a MSVC installation
-            if file in {'yafaray_v3_core.dll'}:
-                dllArray = ['zlib1', 'iconv', 'zlib', 'libpng15', 'libxml2', 'yafaray_v3_core', 'yafaray_v3_plugin']
-                break
-            # load dll's from a MinGW32 installation
-            else:
-                dllArray = ['libwinpthread-1', 'libgcc_s_sjlj-1', 'libstdc++-6', 'libiconv-2', 'libzlib1', 'libxml2-2', 'libHalf', 'libIex', 'libImath', 'libIlmThread', 'libIlmImf', 'libjpeg-8', 'libpng16', 'libtiff-5', 'libbz2-1', 'libfreetype-6', 'libboost_system-mt', 'libboost_filesystem-mt', 'libboost_serialization-mt', 'libyafaray_v3_core', 'libyafaray_v3_plugin']
-
-elif sys.platform == 'darwin':
-    dllArray = ['libyafaray_v3_core.dylib', 'libyafaray_v3_plugin.dylib']
-else:
-    if sys.maxsize == 2**63 - 1:    # Linux 64bit system
-        dllArray = ['libHalf.so', 'libIex.so', 'libImath.so', 'libIlmThread.so', 'libIlmImf.so', 'libpython3.5m.so', 'libjpeg.so', 'libz.so', 'libpng12.so', 'libjbig.so', 'libtiff.so', 'libfreetype.so', 'libboost_system.so', 'libboost_filesystem.so', 'libboost_serialization.so', 'libyafaray_v3_core.so', 'libyafaray_v3_plugin.so']
-
-    else:   # Linux 32bit system
-        dllArray = ['libHalf.so', 'libIex.so', 'libImath.so', 'libIlmThread.so', 'libIlmImf.so', 'libpython3.5m.so', 'libjpeg.so', 'libz.so', 'libpng12.so', 'libjbig.so', 'libtiff.so', 'libfreetype.so', 'libboost_system.so', 'libboost_filesystem.so', 'libboost_serialization.so', 'libyafaray_v3_core.so', 'libyafaray_v3_plugin.so']
-
-for dll in dllArray:
-    try:
-        ctypes.cdll.LoadLibrary(os.path.join(BIN_PATH, dll))
-    except Exception as e:
-        print("ERROR: Failed to load library {0}, {1}".format(dll, repr(e)))
 
 if "bpy" in locals():
     import imp
