@@ -31,6 +31,7 @@ import platform
 
 from .. import PLUGIN_PATH
 from .. import YAF_ID_NAME
+from .. import YAFARAY_EXPORTER_VERSION
 from .yaf_object import yafObject
 from .yaf_light  import yafLight
 from .yaf_world  import yafWorld
@@ -66,6 +67,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.yi.setParamsBadgePosition(self.scene.yafaray.logging.paramsBadgePosition)
             self.yi.setConsoleVerbosityLevel(self.scene.yafaray.logging.consoleVerbosity)
             self.yi.setLogVerbosityLevel(self.scene.yafaray.logging.logVerbosity)
+            self.yi.printInfo("YafaRay Blender-Exporter (" + YAFARAY_EXPORTER_VERSION + ")")
             self.yi.printInfo("Exporter: Blender version " + str(bpy.app.version[0]) + "."+ str(bpy.app.version[1]) + "."+ str(bpy.app.version[2]) + "."+ bpy.app.version_char + "  Build information: " + bpy.app.build_platform.decode("utf-8") + ", " + bpy.app.build_type.decode("utf-8") + ", branch: " + bpy.app.build_branch.decode("utf-8") + ", hash: " + bpy.app.build_hash.decode("utf-8"))
             self.yi.printInfo("Exporter: System information: " + platform.processor() + ", " + platform.platform())
 

@@ -26,6 +26,11 @@ PLUGIN_PATH = os.path.join(__path__[0], 'bin', 'plugins')
 BIN_PATH = os.path.join(__path__[0], 'bin')
 YAF_ID_NAME = "YAFA_V3_RENDER"
 
+# Version to be automatically populated during the build process, getting the version from git tags
+# for example:
+# sed -i "s/(devel)/$(git --git-dir=/yafaray/src/Blender-Exporter/.git --work-tree=/yafaray/src/Blender-Exporter describe --dirty --always --tags --long)/g" "/yafaray/linux/build/yafaray_v3/__init__.py"
+YAFARAY_EXPORTER_VERSION = "(devel)"
+
 sys.path.append(BIN_PATH)
 
 bl_info = {
