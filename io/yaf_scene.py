@@ -207,24 +207,15 @@ def exportRenderSettings(yi, scene):
 
     yi.paramsSetString("background_name", "world_background")
     
-    if scene.gs_partial_save_each_pass == "end_pass":
-        yi.paramsSetBool("partial_save_each_pass", True)
-        yi.paramsSetFloat("partial_save_timer", 0.0)
-    elif scene.gs_partial_save_each_pass == "interval":
-        yi.paramsSetBool("partial_save_each_pass", False)
-        yi.paramsSetFloat("partial_save_timer", scene.gs_partial_save_timer)
-    
-    if scene.gs_film_save_load == "save":
-        yi.paramsSetBool("film_autosave", True)
-        yi.paramsSetBool("film_load", False)
-    elif scene.gs_film_save_load == "load-save":
-        yi.paramsSetBool("film_autosave", True)
-        yi.paramsSetBool("film_load", True)
-    else:
-        yi.paramsSetBool("film_autosave", False)
-        yi.paramsSetBool("film_load", False)
+    yi.paramsSetString("gs_images_autosave_interval_type", gs_images_autosave_interval_type)
+    yi.paramsSetInt("gs_images_autosave_interval_passes", gs_images_autosave_interval_passes)
+    yi.paramsSetInt("gs_images_autosave_interval_seconds", gs_images_autosave_interval_seconds)
 
+    yi.paramsSetString("gs_film_save_load", gs_film_save_load)
     yi.paramsSetBool("film_save_binary_format", scene.gs_film_save_binary_format)
+    yi.paramsSetString("gs_film_autosave_interval_type", gs_film_autosave_interval_type)
+    yi.paramsSetInt("gs_film_autosave_interval_passes", gs_film_autosave_interval_passes)
+    yi.paramsSetInt("gs_film_autosave_interval_seconds", gs_film_autosave_interval_seconds)
 
     yi.paramsSetBool("adv_auto_shadow_bias_enabled", scene.adv_auto_shadow_bias_enabled)
     yi.paramsSetFloat("adv_shadow_bias_value", scene.adv_shadow_bias_value)

@@ -103,19 +103,14 @@ class YAFA_V3_PT_output(RenderButtonsPanel, Panel):
         col.prop(sc, "img_add_datetime")
         row = layout.row()
         col = row.column()
-        col.prop(sc, "gs_partial_save_each_pass")
-        if sc.gs_partial_save_each_pass == "interval":
-            col = row.column()
-            col.prop(sc, "gs_partial_save_timer")
-        row = layout.row()
+        col.prop(sc, "gs_images_autosave_interval_type")
         col = row.column()
-        col.prop(sc, "gs_film_save_load")
-        col = row.column()
-        col.prop(sc, "gs_film_save_binary_format")
-        
-        if sc.gs_film_save_load == "load-save":
-            row = layout.row()
-            row.label("If the loaded image Film does not match exactly the scene, crashes and/or incorrect renders may happen, USE WITH CARE!", icon="ERROR")
+        if sc.gs_images_autosave_interval_type == "pass-interval":
+            col.prop(sc, "gs_images_autosave_interval_passes")
+        elif sc.gs_images_autosave_interval_type == "time-interval":
+            col.prop(sc, "gs_images_autosave_interval_seconds")
+        else:
+            col.label("")
         
         split = layout.split(percentage=0.6)
         col = split.column()
@@ -161,6 +156,27 @@ class YAFA_V3_PT_output(RenderButtonsPanel, Panel):
         if sc.img_output  != "PNG" and sc.img_output  != "OPEN_EXR" and sc.img_output  != "JPEG" and sc.gs_premult == "auto":
             row = layout.row(align=True)
             row.label(text="Can't guess premultiply for " + sc.img_output + " , enabling by default but better select Yes or No", icon="INFO")
+
+        row = layout.row()
+        col = row.column()
+        col.prop(sc, "gs_film_save_load")
+        if sc.gs_film_save_load == "save" or sc.gs_film_save_load == "load-save":
+            row = layout.row()
+            col = row.column()            
+            col.prop(sc, "gs_film_save_binary_format")
+            col = row.column()
+            col.prop(sc, "gs_film_autosave_interval_type")
+            col = row.column()
+            if sc.gs_film_autosave_interval_type == "pass-interval":
+                col.prop(sc, "gs_film_autosave_interval_passes")
+            elif sc.gs_film_autosave_interval_type == "time-interval":
+                col.prop(sc, "gs_film_autosave_interval_seconds")
+            else:
+                col.label("")
+        
+        if sc.gs_film_save_load == "load-save":
+            row = layout.row()
+            row.label("If the loaded image Film does not match exactly the scene, crashes and/or incorrect renders may happen, USE WITH CARE!", icon="ERROR")
 
 
 class YAFA_V3_PT_post_processing(RenderButtonsPanel, Panel):

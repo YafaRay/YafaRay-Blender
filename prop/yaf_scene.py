@@ -847,33 +847,58 @@ def register():
         ),
         default='optimized')
 
-    Scene.gs_partial_save_timer = FloatProperty(
-        name="Partial save timer",
-        description="Time interval (in seconds) to autosave partially rendered images (short intervals increase render time, especially when autosaving images and/or imageFilm files!). 0.0 disables the partial save function",
-        min=0.0, default=300.0)
+    Scene.gs_images_autosave_interval_seconds = IntProperty(
+        name="Interval (s)",
+        description="Images AutoSave Interval (in seconds) to autosave partially rendered images. WARNING: short intervals can increase significantly render time.",
+        min=5, default=300)
 
-    Scene.gs_partial_save_each_pass = EnumProperty(
-        name="Autosave images",
-        description="Select option for Image Autosave",
+    Scene.gs_images_autosave_interval_passes = IntProperty(
+        name="Interval (passes)",
+        description="Images AutoSave Interval (every X passes) to autosave partially rendered images.",
+        min=1, default=1)
+
+    Scene.gs_images_autosave_interval_type = EnumProperty(
+        name="Autosave interval",
+        description="Images AutoSave: type of interval",
         items=(
-            ('end_pass', "End of each pass", "Autosaves the image at the end of each pass"),
-            ('interval', "Time interval", "Autosaves the image every time interval elapses"),
+            ('pass-interval', "Passes interval", "Autosaves the image every X render AA passes"),
+            ('time-interval', "Time interval", "Autosaves the image every X seconds"),
             ('none', "Disabled", "Image autosave will be disabled")
         ),
-        default="end_pass")
+        default="none")
 
     Scene.gs_film_save_load = EnumProperty(
-        name="Image Film save/load",
+        name="Internal ImageFilm save/load",
         description="Option to autosave / load the imageFilm, may be useful to continue interrupted renders. The ImageFilm file can be BIG and SLOW, especially when enabling many render passes.",
         items=(
-            ('load-save', "Load and Autosave", "Load all ImageFilm *.film files at start (autodetecting binary/text format automatically). This is useful to continue interrupted renders or for multicomputer rendering, but USE WITH CARE! Also it will autosave the ImageFilm (in the selected binary or text format) with the images"),
+            ('load-save', "Load and Autosave", "Loads the ImageFilm files at start (autodetecting binary/text format automatically). USE WITH CARE! It will also autosave the ImageFilm (in the selected binary or text format) with the images"),
             ('save', "Autosave", "Autosaves the ImageFilm (in the selected binary or text format) with the images"),
             ('none', "Disabled", "Image autosave will be disabled")
         ),
         default="save")
 
+    Scene.gs_film_autosave_interval_seconds = IntProperty(
+        name="Interval (s)",
+        description="Internal ImageFilm AutoSave Interval (in seconds). WARNING: short intervals can increase significantly render time.",
+        min=30, default=300)
+
+    Scene.gs_film_autosave_interval_passes = IntProperty(
+        name="Interval (passes)",
+        description="Internal ImageFilm AutoSave Interval (every X passes).",
+        min=1, default=1)
+
+    Scene.gs_film_autosave_interval_type = EnumProperty(
+        name="Autosave interval",
+        description="Internal ImageFilm AutoSave: type of interval",
+        items=(
+            ('pass-interval', "Passes interval", "Autosaves the image every X render AA passes"),
+            ('time-interval', "Time interval", "Autosaves the image every X seconds"),
+            ('none', "Disabled", "Image autosave will be disabled")
+        ),
+        default="pass-interval")
+
     Scene.gs_film_save_binary_format = BoolProperty(
-        name="Save Film binary format",
+        name="ImageFilm binary format",
         description="If enabled, it will save the ImageFilm file in binary format (smaller and faster, but NOT portable among systems). By default this is enabled. This setting does not affect the Film loading, which autodetects the film format automatically.",
         default=True)
         
@@ -1189,9 +1214,13 @@ def unregister():
     Scene.gs_type_render
     Scene.gs_secondary_file_output
     Scene.gs_tex_optimization
-    Scene.gs_partial_save_timer
-    Scene.gs_partial_save_each_pass
+    Scene.gs_images_autosave_interval_seconds
+    Scene.gs_images_autosave_interval_passes
+    Scene.gs_images_autosave_interval_type
     Scene.gs_film_save_load
+    Scene.gs_film_autosave_interval_seconds
+    Scene.gs_film_autosave_interval_passes
+    Scene.gs_film_autosave_interval_type
     Scene.gs_film_save_binary_format
 
     Scene.img_output
