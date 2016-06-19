@@ -880,7 +880,7 @@ def register():
     Scene.gs_film_autosave_interval_seconds = FloatProperty(
         name="Interval (s)",
         description="Internal ImageFilm AutoSave Interval (in seconds). WARNING: short intervals can increase significantly render time.",
-        min=30.0, default=300.0, precision=1)
+        min=5.0, default=300.0, precision=1)
 
     Scene.gs_film_autosave_interval_passes = IntProperty(
         name="Interval (passes)",
