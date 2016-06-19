@@ -869,13 +869,13 @@ def register():
 
     Scene.gs_film_save_load = EnumProperty(
         name="Internal ImageFilm save/load",
-        description="Option to autosave / load the imageFilm, may be useful to continue interrupted renders. The ImageFilm file can be BIG and SLOW, especially when enabling many render passes.",
+        description="Option to save / load the imageFilm, may be useful to continue interrupted renders. The ImageFilm file can be BIG and SLOW, especially when enabling many render passes.",
         items=(
-            ('load-save', "Load and Autosave", "Loads the ImageFilm files at start (autodetecting binary/text format automatically). USE WITH CARE! It will also autosave the ImageFilm (in the selected binary or text format) with the images"),
-            ('save', "Autosave", "Autosaves the ImageFilm (in the selected binary or text format) with the images"),
+            ('load-save', "Load and Save", "Loads the internal ImageFilm files at start (autodetecting binary/text format automatically). USE WITH CARE! It will also save the ImageFilm (in the selected binary or text format) with the images"),
+            ('save', "Save", "Saves the internal ImageFilm (in the selected binary or text format) with the images"),
             ('none', "Disabled", "Image autosave will be disabled")
         ),
-        default="save")
+        default="none")
 
     Scene.gs_film_autosave_interval_seconds = FloatProperty(
         name="Interval (s)",
@@ -895,7 +895,7 @@ def register():
             ('time-interval', "Time interval", "Autosaves the image every X seconds"),
             ('none', "Disabled", "Image autosave will be disabled")
         ),
-        default="pass-interval")
+        default="none")
 
     Scene.gs_film_save_binary_format = BoolProperty(
         name="ImageFilm binary format",
