@@ -161,7 +161,7 @@ class YAFA_V3_PT_output(RenderButtonsPanel, Panel):
                 row = layout.row(align=True)
                 row.label(text="Can't guess premultiply for " + sc.img_output + " , enabling by default but better select Yes or No", icon="INFO")
 
-            if sc.img_output == "PNG" or sc.img_output  == "JPEG":
+            if sc.img_output != "OPEN_EXR" and sc.img_output != "HDR":
                 split = layout.split()
                 col = split.column()
                 col.prop(sc, "img_denoise")
