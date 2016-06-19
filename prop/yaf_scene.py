@@ -847,10 +847,10 @@ def register():
         ),
         default='optimized')
 
-    Scene.gs_images_autosave_interval_seconds = IntProperty(
+    Scene.gs_images_autosave_interval_seconds = FloatProperty(
         name="Interval (s)",
         description="Images AutoSave Interval (in seconds) to autosave partially rendered images. WARNING: short intervals can increase significantly render time.",
-        min=5, default=300)
+        min=5.0, default=300.0, precision=1)
 
     Scene.gs_images_autosave_interval_passes = IntProperty(
         name="Interval (passes)",
@@ -877,10 +877,10 @@ def register():
         ),
         default="save")
 
-    Scene.gs_film_autosave_interval_seconds = IntProperty(
+    Scene.gs_film_autosave_interval_seconds = FloatProperty(
         name="Interval (s)",
         description="Internal ImageFilm AutoSave Interval (in seconds). WARNING: short intervals can increase significantly render time.",
-        min=30, default=300)
+        min=30.0, default=300.0, precision=1)
 
     Scene.gs_film_autosave_interval_passes = IntProperty(
         name="Interval (passes)",
