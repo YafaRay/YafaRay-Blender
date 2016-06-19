@@ -921,6 +921,21 @@ def register():
         description="Enable MultiLayer image export, only available in certain formats as EXR",
         default=False)
 
+    Scene.img_denoise = BoolProperty(
+        name="Denoise",
+        description="Enable Denoise for image export, only available LDR 8-bit formats as JPG, PNG, etc",
+        default=False)
+
+    Scene.img_denoiseHLum = IntProperty(
+        name="Denoise hLum",
+        description="Denoise h (luminance) property. Increase it to reduce brightness noise (but also reduces image details!)",
+        min=3, max=20, default=5)
+
+    Scene.img_denoiseHCol = IntProperty(
+        name="Denoise hCol",
+        description="Denoise h (crominance) property. Increase it to reduce color noise (but also reduces image details!)",
+        min=3, max=20, default=5)
+
     Scene.img_save_with_blend_file = BoolProperty(
         name="Save with .blend file",
         description="Save image/logs in a folder with same name as the .blend file plus suffix ""_render""",

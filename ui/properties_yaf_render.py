@@ -161,6 +161,19 @@ class YAFA_V3_PT_output(RenderButtonsPanel, Panel):
                 row = layout.row(align=True)
                 row.label(text="Can't guess premultiply for " + sc.img_output + " , enabling by default but better select Yes or No", icon="INFO")
 
+            if sc.img_output == "PNG" or sc.img_output  == "JPEG":
+                split = layout.split()
+                col = split.column()
+                col.prop(sc, "img_denoise")
+                if sc.img_denoise:
+                    col = split.column()
+                    col.prop(sc, "img_denoiseHLum")
+                    col = split.column()
+                    col.prop(sc, "img_denoiseHCol")
+                    split = layout.split()
+                    col = split.column()
+                    col.label("Denoise will not appear in Blender, only in saved image files", icon="INFO")
+
             row = layout.row()
             col = row.column()
             col.prop(sc, "gs_film_save_load")
