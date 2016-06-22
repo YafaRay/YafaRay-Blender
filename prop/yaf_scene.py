@@ -928,13 +928,18 @@ def register():
 
     Scene.img_denoiseHLum = IntProperty(
         name="Denoise hLum",
-        description="Denoise h (luminance) property. Increase it to reduce brightness noise (but may blur the image!)",
+        description="Denoise h (luminance) property. Increase it to reduce brightness noise (but could blur the image!)",
         min=1, max=40, default=5)
 
     Scene.img_denoiseHCol = IntProperty(
         name="Denoise hCol",
-        description="Denoise h (crominance) property. Increase it to reduce color noise (but may blur the image!)",
+        description="Denoise h (chrominance) property. Increase it to reduce color noise (but could blur the colors in the image!)",
         min=1, max=40, default=5)
+
+    Scene.img_denoiseMix = FloatProperty(
+        name="Denoise Mix",
+        description="Proportion of denoised and original image. Recommended approx 0.8 (80% denoised + 20% original) to avoid banding artifacts in fully denoised images",
+        min=0.0, max=1.0, default=0.8, precision=2)
 
     Scene.img_save_with_blend_file = BoolProperty(
         name="Save with .blend file",
@@ -1240,6 +1245,10 @@ def unregister():
 
     Scene.img_output
     Scene.img_multilayer
+    Scene.img_denoise
+    Scene.img_denoiseHLum
+    Scene.img_denoiseHCol
+    Scene.img_denoiseMix
     Scene.img_save_with_blend_file
     Scene.img_add_blend_name
     Scene.img_add_datetime

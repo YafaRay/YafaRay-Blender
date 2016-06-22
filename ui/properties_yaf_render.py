@@ -167,9 +167,11 @@ class YAFA_V3_PT_output(RenderButtonsPanel, Panel):
                 col.prop(sc, "img_denoise")
                 if sc.img_denoise:
                     col = split.column()
-                    col.prop(sc, "img_denoiseHLum")
+                    col.prop(sc, "img_denoiseMix", text="Mix")
                     col = split.column()
-                    col.prop(sc, "img_denoiseHCol")
+                    col.prop(sc, "img_denoiseHLum", text="h(lum)")
+                    col = split.column()
+                    col.prop(sc, "img_denoiseHCol", text="h(chrom)")
                     split = layout.split()
                     col = split.column()
                     col.label("Denoise will not appear in Blender, only in saved image files", icon="INFO")
