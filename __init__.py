@@ -134,8 +134,6 @@ def unregister():
                 kma.keymap_items.remove(kmi)
     bpy.utils.unregister_module(__name__)
     bpy.app.handlers.load_post.remove(load_handler)
-    bpy.utils.unregister_class(YafaRay_Preferences)
-
 
 
 if __name__ == '__main__':

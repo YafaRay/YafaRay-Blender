@@ -1226,7 +1226,6 @@ def unregister():
     Scene.adv_min_raydist_value
     Scene.adv_base_sampling_offset
     
-    Scene.gs_custom_string
     Scene.gs_premult
     Scene.gs_transp_shad
     Scene.gs_show_sam_pix
