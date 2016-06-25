@@ -1218,7 +1218,6 @@ def unregister():
     Scene.gs_clay_sigma
     Scene.gs_clay_col
     Scene.gs_mask_render
-    Scene.gs_draw_params
     Scene.bg_transp
     Scene.bg_transp_refract
     Scene.adv_auto_shadow_bias_enabled

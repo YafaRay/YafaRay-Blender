@@ -42,7 +42,7 @@ def blend_two_draw(layout, mat):
     return True
 
 
-class YAFA_V3_e2_MaterialTypePanel(MaterialButtonsPanel):
+class YAFA_V3_MaterialTypePanel(MaterialButtonsPanel):
     COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     @classmethod
@@ -226,7 +226,7 @@ class YAFA_V3_MT_presets_ior_list(Menu):
             sl.menu(sm.bl_idname)
 
 
-class YAFA_V3_PT_shinydiffuse_diffuse(YAFA_V3_e2_MaterialTypePanel, Panel):
+class YAFA_V3_PT_shinydiffuse_diffuse(YAFA_V3_MaterialTypePanel, Panel):
     bl_label = "Diffuse reflection"
     COMPAT_ENGINES = {'YAFA_V3_RENDER'}
     material_type = 'shinydiffusemat'
@@ -261,7 +261,7 @@ class YAFA_V3_PT_shinydiffuse_diffuse(YAFA_V3_e2_MaterialTypePanel, Panel):
         box.row().prop(yaf_mat, "transmit_filter", slider=True)
 
 
-class YAFA_V3_PT_shinydiffuse_specular(YAFA_V3_e2_MaterialTypePanel, Panel):
+class YAFA_V3_PT_shinydiffuse_specular(YAFA_V3_MaterialTypePanel, Panel):
     bl_label = "Specular reflection"
     COMPAT_ENGINES = {'YAFA_V3_RENDER'}
     material_type = 'shinydiffusemat'
@@ -283,7 +283,7 @@ class YAFA_V3_PT_shinydiffuse_specular(YAFA_V3_e2_MaterialTypePanel, Panel):
         layout.row().prop(yaf_mat, "specular_reflect", slider=True)
 
 
-class YAFA_V3_PT_glossy_diffuse(YAFA_V3_e2_MaterialTypePanel, Panel):
+class YAFA_V3_PT_glossy_diffuse(YAFA_V3_MaterialTypePanel, Panel):
     bl_label = "Diffuse reflection"
     COMPAT_ENGINES = {'YAFA_V3_RENDER'}
     material_type = 'glossy', 'coated_glossy'
@@ -306,7 +306,7 @@ class YAFA_V3_PT_glossy_diffuse(YAFA_V3_e2_MaterialTypePanel, Panel):
         layout.row().prop(yaf_mat, "diffuse_reflect", slider=True)
 
 
-class YAFA_V3_PT_glossy_specular(YAFA_V3_e2_MaterialTypePanel, Panel):
+class YAFA_V3_PT_glossy_specular(YAFA_V3_MaterialTypePanel, Panel):
     bl_label = "Specular reflection"
     COMPAT_ENGINES = {'YAFA_V3_RENDER'}
     material_type = 'glossy', 'coated_glossy'
@@ -347,7 +347,7 @@ class YAFA_V3_PT_glossy_specular(YAFA_V3_e2_MaterialTypePanel, Panel):
             layout.row().prop(yaf_mat, "specular_reflect", slider=True)
 
 
-class YAFA_V3_PT_glass_real(YAFA_V3_e2_MaterialTypePanel, Panel):
+class YAFA_V3_PT_glass_real(YAFA_V3_MaterialTypePanel, Panel):
     bl_label = "Real glass settings"
     COMPAT_ENGINES = {'YAFA_V3_RENDER'}
     material_type = 'glass', 'rough_glass'
@@ -379,7 +379,7 @@ class YAFA_V3_PT_glass_real(YAFA_V3_e2_MaterialTypePanel, Panel):
             box.row().prop(yaf_mat, "refr_roughness", slider=True)
 
 
-class YAFA_V3_PT_glass_fake(YAFA_V3_e2_MaterialTypePanel, Panel):
+class YAFA_V3_PT_glass_fake(YAFA_V3_MaterialTypePanel, Panel):
     bl_label = "Fake glass settings"
     COMPAT_ENGINES = {'YAFA_V3_RENDER'}
     material_type = 'glass', 'rough_glass'
@@ -397,7 +397,7 @@ class YAFA_V3_PT_glass_fake(YAFA_V3_e2_MaterialTypePanel, Panel):
         layout.row().prop(yaf_mat, "fake_shadows")
 
 
-class YAFA_V3_PT_blend_(YAFA_V3_e2_MaterialTypePanel, Panel):
+class YAFA_V3_PT_blend_(YAFA_V3_MaterialTypePanel, Panel):
     bl_label = "Blend material settings"
     COMPAT_ENGINES = {'YAFA_V3_RENDER'}
     material_type = 'blend'
