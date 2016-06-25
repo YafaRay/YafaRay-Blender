@@ -1,15 +1,22 @@
 Important: read the README file for installation instructions and important information about YafaRay
 
-YafaRay v3.0.0-ALPHA8 (only for developers testing) (2016-06-19) for Blender 2.77a:
+YafaRay v3.0.0-ALPHA9 (only for developers testing) (2016-06-25) for Blender 2.77a:
 ----------------------------------------------
 ** IMPORTANT **
 ----------------------------------------------
 The new YafaRay-v3 will *NOT* replace the existing YafaRay versions, and it can be installed *in addition* to them.
 So, YafaRay-v3 *must* be enabled in Blender user preferences, and in your current YafaRay scenes you have to switch to the renderer "YafaRay-v3" to use the new version.
 
-If you want to keep old versions and the new v3 together, make sure you enable in Blender first the old and then the new v3 in that order. If you have problems, disable both, restart Blender and enable them in that order.
+If you have several YafaRay versions together, *make sure* that you enable in Blender *first* the old and *later* the new v3 in that order. If you have problems, disable both, restart Blender and enable them in that order.
 
-Also, support has been DROPPED for Windows XP and MacOSX v10.6
+YafaRay v3 has only limited support for multiple YafaRay versions and forks installed at the same time. Having several versions could cause in some cases:
+* Black renders
+* Random crashes
+* Inability to enable the YafaRay v3 plugin or all kinds of strange problems
+
+If you have any of these problems, remove any other yafaray folders (or derived forks) from the Blender addons folder and try again. This typically solves most of the problems stated above.
+
+In v3, support has been DROPPED for Windows XP and MacOSX v10.6
 ----------------------------------------------
 
 YafaRay-v3 has gone through deep changes to the code. Even if there are no apparent big changes, the underlying code has undergone a lot of modifications. So, this is an ALPHA/unstable version, only for developers testing
@@ -43,13 +50,16 @@ Feature changes/additions in v3.0.0:
 
 Each computer will generate a different Film. If one of the nodes is set to "Load" the film, it will look for ALL the Film files in the same folder (with the same base file name and frame number) and combine them together to create a combined image with all samples from all individual film files.
 
-* Added OpenCV library and added DeNoise options for the exported image files: JPG, PNG, TGA, TIF. This feature is not available for HDR/EXR formats.
+* Added OpenCV library and added DeNoise options for the exported image files: JPG, PNG, TGA, TIF. This feature is not available for HDR/EXR formats. Three parameters are exposed for the users:
+  - h(luminance): the higher this is, the more noise reduction you get, but the image can become blurred
+  - h(chrominance): the higher, the more color noise reduction, but the colors can become blurred
+  - Mix: this is intended to add (on purpose) part of the noise from the original image into the final denoised image. This is to avoid "banding" artifacts in smooth and noiseless surfaces. Setting for example 0.8 means that 80% of the final result will come from the "denoised" image and 20% will come from the original (noisy) image.
 
-* YafaRay-v3 can be installed "in parallel" with other major versions of YafaRay and coexist with them. "YafaRay v3" will appear as a DIFFERENT renderer and has to be enabled and selected in each scene as if it were a new renderer. This should help to compare the results and features over different major versions as well as allowing using a "stable" and a more "experimental" versions in parallel at the same time.
+* YafaRay-v3 can be installed "in parallel" with other major versions of YafaRay and coexist with them. "YafaRay v3" will appear as a DIFFERENT renderer and has to be enabled and selected in each scene as if it were a new renderer. This should help to compare the results and features over different major versions as well as allowing using a "stable" and a more "experimental" versions in parallel at the same time. However, support for this is very limited and depends on many factors such as class name clashes, order of registration, dll and library dependency collisions, etc. If having issues, please remove any other yafaray versions and forks and try again.
 
-* Filepaths with Unicode characters (accents, etc) can be used now for loading textures, etc. See: http://yafaray.org/node/703
+* Initial support for filepaths with Unicode characters (accents, etc) can be used now for loading textures, etc. See: http://yafaray.org/node/703    This support is still limited and could fail in some cases.
 
-* Secondary File Output: now it will be possible to render into render *and* export to image files at the same time!
+* Secondary File Output: now it will be possible to render into render *and* export to image files at the same time! There are several functions that depend on this now, such as the render parameters badge, which will no longer appear in the Blender render, only in the exported images.
 
 * It's now possible to save the images automatically to the same place where the .blend file resides, into a folder with same name as the blend file and suffix "_render"
 

@@ -5,9 +5,16 @@ To install YafaRay v3 into Blender:
 The new YafaRay-v3 will *NOT* replace the existing YafaRay versions, and it can be installed *in addition* to them.
 So, YafaRay-v3 *must* be enabled in Blender user preferences, and in your current YafaRay scenes you have to switch to the renderer "YafaRay-v3" to use the new version.
 
-If you want to keep old versions and the new v3 together, make sure you enable in Blender first the old and then the new v3 in that order. If you have problems, disable both, restart Blender and enable them in that order.
+If you have several YafaRay versions together, *make sure* that you enable in Blender *first* the old and *later* the new v3 in that order. If you have problems, disable both, restart Blender and enable them in that order.
 
-Also, support has been DROPPED for Windows XP and MacOSX v10.6
+YafaRay v3 has only limited support for multiple YafaRay versions and forks installed at the same time. Having several versions could cause in some cases:
+* Black renders
+* Random crashes
+* Inability to enable the YafaRay v3 plugin or all kinds of strange problems
+
+If you have any of these problems, remove any other yafaray folders (or derived forks) from the Blender addons folder and try again. This typically solves most of the problems stated above.
+
+In v3, support has been DROPPED for Windows XP and MacOSX v10.6
 ----------------------------------------------
 
 Don't use the Blender from the distro repositories. Download the Blender official builds from:
@@ -30,4 +37,5 @@ If you have any issues:
 * Check that you have copied the "yafaray_v3" folder into the correct Blender addons folder.
 * Check that you have downloaded the appropiate YafaRay build for your Operating System and Blender build (32/64 bit)
 * Check that you are using the official Blender build from www.blender.org and it's a version supported by YafaRay (see CHANGELOG)
+* In extreme cases (black renders, crashes, etc) remove all older YafaRay versions and other YafaRay derived forks, and try again.
 * If you still have problems, please ask for help in the yafaRay.org forums or post a bug report in http://www.yafaray.org/development/bugtracker/yafaray  
