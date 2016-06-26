@@ -28,7 +28,7 @@ YAF_ID_NAME = "YAFA_V3_RENDER"
 
 # Version to be automatically populated during the build process, getting the version from git tags
 # for example:
-# sed -i "s/(devel)/$(git --git-dir=/yafaray/src/Blender-Exporter/.git --work-tree=/yafaray/src/Blender-Exporter describe --dirty --always --tags --long)/g" "/yafaray/linux/build/yafaray_v3/__init__.py"
+# sed -i "s/(devel)/$(git --git-dir=/yafaray/src/Blender-Exporter/.git --work-tree=/yafaray/src/Blender-Exporter describe --dirty --always --tags)/g" "/yafaray/linux/build/yafaray_v3/__init__.py"
 YAFARAY_EXPORTER_VERSION = "(devel)"
 
 sys.path.append(BIN_PATH)
@@ -42,7 +42,7 @@ bl_info = {
               "Alexander Smirnov (Exvion), Olaf Arnold (olaf), David Bluecame",
     # Version to be automatically populated during the build process, getting the version from git tags
     # for example:
-    # sed -i "s/(devel)/$(git --git-dir=/yafaray/src/Blender-Exporter/.git --work-tree=/yafaray/src/Blender-Exporter describe --dirty --always --tags --long)/g" "/yafaray/linux/build/yafaray_v3/__init__.py"
+    # sed -i "s/(devel)/$(git --git-dir=/yafaray/src/Blender-Exporter/.git --work-tree=/yafaray/src/Blender-Exporter describe --dirty --always --tags)/g" "/yafaray/linux/build/yafaray_v3/__init__.py"
     "version": ("(devel)", ""),
     "blender": (2, 7, 7),
     "location": "Info Header > Engine dropdown menu",
@@ -53,7 +53,7 @@ bl_info = {
 
 # Set Library Search options
 if sys.platform == 'win32':   #I think this is the easiest and most flexible way to set the search options for Windows DLL
-    os.environ['PATH'] = os.path.dirname(__file__) + '\\bin;' + os.path.dirname(__file__) + '\\bin\\dependencies;' + os.environ['PATH']
+    os.environ['PATH'] = os.path.dirname(__file__) + '\\bin;' + os.environ['PATH']
 # For Linux and MacOSX, set the RPATH in all the .so and .dylib libraries to relative paths respect to their location 
 
 
