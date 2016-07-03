@@ -88,9 +88,9 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.yaf_object.createCameras()
         
         if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable and bpy.data.scenes[0].yafaray.preview.previewBackground == "world":
-            self.yaf_world.exportWorld(bpy.data.scenes[0])
+            self.yaf_world.exportWorld(bpy.data.scenes[0], self.is_preview)
         else:
-            self.yaf_world.exportWorld(self.scene)
+            self.yaf_world.exportWorld(self.scene, self.is_preview)
 
     def exportTexture(self, obj):
         # First export the textures of the materials type 'blend'

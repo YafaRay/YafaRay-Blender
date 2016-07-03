@@ -120,6 +120,8 @@ class YAFA_V3_PT_world(WorldButtonsPanel, Panel):
             split = layout.split(percentage=0.33)
             col = split.column()
             col.prop(world, "bg_use_ibl")
+            col = split.column()
+            col.prop(world, "bg_smartibl_blur")
 
             if world.bg_use_ibl:
                 row = layout.row()

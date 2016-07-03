@@ -26,7 +26,7 @@ class yafWorld:
     def __init__(self, interface):
         self.yi = interface
 
-    def exportWorld(self, scene):
+    def exportWorld(self, scene, is_preview):
         yi = self.yi
 
         world = scene.world
@@ -113,6 +113,10 @@ class yafWorld:
                     yi.paramsSetString("type", "textureback")
                     yi.paramsSetString("texture", "world_texture")
                     yi.paramsSetBool("ibl", useIBL)
+                    if is_preview:
+                        yi.paramsSetFloat("smartibl_blur", 0.0) #To avoid causing Blender UI freezing while waiting for the blur process to complete in the material/world previews
+                    else:
+                        yi.paramsSetFloat("smartibl_blur", world.bg_smartibl_blur)
                     # 'with_caustic' and 'with_diffuse' settings gets checked in textureback.cc,
                     # so if IBL enabled when they are used...
                     yi.paramsSetInt("ibl_samples", iblSamples)
