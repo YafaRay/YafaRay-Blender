@@ -1,6 +1,6 @@
 Important: read the README file for installation instructions and important information about YafaRay
 
-YafaRay v3.0.0-ALPHA9 (only for developers testing) (2016-06-25) for Blender 2.77a:
+YafaRay v3.0.0-ALPHA10 (only for developers testing) (2016-07-04) for Blender 2.77a:
 ----------------------------------------------
 ** IMPORTANT **
 ----------------------------------------------
@@ -119,6 +119,10 @@ Each computer will generate a different Film. If one of the nodes is set to "Loa
 * Add Volumetric rendering to the Blend material
     When using glass or rough glass in the Blend material, volumetric absorption didn't work. I've added the volumetric rendering to the Blend material so glass/rough glass materials render correctly.
     However, there is a limitation: if blending two materials with different volumetric options, as I cannot "merge" the volumes, I'm using the volume from the first material for blend amount values [0.0-0.5] and the volume from the second material for blend amount ]0.5-1.0]. This is totally not ideal, but better than before in my opinion.
+
+* Added SmartIBL functionality to reduce noise when using World HDRI textures for lighting. The functionality adds a new parameter "SmartIBL blur" that blurs the World texture used for lighting without affecting the world texture used for reflections, etc. High values can cause slowdowns at render process start. This was requested at http://www.yafaray.org/node/566 and http://www.yafaray.org/node/727
+
+* Added Texture Color Controls to be able to control the texture brigthness, contrast, etc, as requested at http://www.yafaray.org/node/334
 
 
 Bug fixes in v3.0.0:
