@@ -204,6 +204,35 @@ class YAFA_V3_PT_preview_texture_controls(YAFA_V3_TextureButtonsPanel, Panel):
             col.prop(context.scene.yafaray.preview, "previewBackground", text="")
 
 
+class YAFA_V3_TEXTURE_PT_colors(YAFA_V3_TextureButtonsPanel, Panel):
+    bl_label = "Colors"
+    bl_options = {'DEFAULT_CLOSED'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+
+    def draw(self, context):
+        layout = self.layout
+
+        tex = context.texture
+
+        split = layout.split()
+
+        col = split.column()
+        col.label(text="RGB Multiply:")
+        sub = col.column(align=True)
+        sub.prop(tex, "factor_red", text="R")
+        sub.prop(tex, "factor_green", text="G")
+        sub.prop(tex, "factor_blue", text="B")
+
+        col = split.column()
+        col.label(text="Adjust:")
+        col.prop(tex, "intensity")
+        col.prop(tex, "contrast")
+        col.prop(tex, "saturation")
+
+        col = layout.column()
+        col.prop(tex, "use_clamp", text="Clamp")
+
+
 class YAFA_V3_TextureSlotPanel(YAFA_V3_TextureButtonsPanel):
     COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 

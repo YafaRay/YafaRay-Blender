@@ -55,6 +55,14 @@ class yafWorld:
                 worldTex = None
 
             if worldTex is not None:
+        
+                yi.paramsSetFloat("adj_mult_factor_red", worldTex.factor_red)
+                yi.paramsSetFloat("adj_mult_factor_green", worldTex.factor_green)
+                yi.paramsSetFloat("adj_mult_factor_blue", worldTex.factor_blue)
+                yi.paramsSetFloat("adj_intensity", worldTex.intensity)
+                yi.paramsSetFloat("adj_contrast", worldTex.contrast)
+                yi.paramsSetFloat("adj_saturation", worldTex.saturation)
+                yi.paramsSetBool("adj_clamp", worldTex.use_clamp)
 
                 if worldTex.type == "IMAGE" and (worldTex.image is not None):
 

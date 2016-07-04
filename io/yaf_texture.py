@@ -55,6 +55,14 @@ class yafTexture:
         yi.paramsClearAll()
 
         textureConfigured = False
+        
+        yi.paramsSetFloat("adj_mult_factor_red", tex.factor_red)
+        yi.paramsSetFloat("adj_mult_factor_green", tex.factor_green)
+        yi.paramsSetFloat("adj_mult_factor_blue", tex.factor_blue)
+        yi.paramsSetFloat("adj_intensity", tex.intensity)
+        yi.paramsSetFloat("adj_contrast", tex.contrast)
+        yi.paramsSetFloat("adj_saturation", tex.saturation)
+        yi.paramsSetBool("adj_clamp", tex.use_clamp)
 
         if tex.yaf_tex_type == 'BLEND':
             yi.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
