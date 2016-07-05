@@ -107,8 +107,8 @@ def register():
 
     World.bg_smartibl_blur = FloatProperty(
         update=update_preview, name="SmartIBL Blur factor",
-        description="SmartIBL blur factor to reduce noise. This only affects the lighting, not the background image itself. High values allow less noise but might be less realistic and cause slowdowns",
-        min=0.00, max=0.75, precision=2, default=0.20)
+        description="SmartIBL blur factor to reduce noise. This only blurs the lighting and shadows, keeping the reflections sharp. High values allow less noise but might be less realistic and cause slowdowns",
+        min=0.00, max=0.75, precision=2, default=0.00)
 
     World.bg_with_caustic = BoolProperty(
         update=update_preview, name="Caustic photons",
