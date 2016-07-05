@@ -62,6 +62,7 @@ class yafWorld:
                 yi.paramsSetFloat("adj_intensity", worldTex.intensity)
                 yi.paramsSetFloat("adj_contrast", worldTex.contrast)
                 yi.paramsSetFloat("adj_saturation", worldTex.saturation)
+                yi.paramsSetFloat("adj_hue", worldTex.yaf_adj_hue)
                 yi.paramsSetBool("adj_clamp", worldTex.use_clamp)
 
                 if worldTex.type == "IMAGE" and (worldTex.image is not None):
