@@ -214,6 +214,10 @@ class YAFA_V3_TEXTURE_PT_colors(YAFA_V3_TextureButtonsPanel, Panel):
 
         tex = context.texture
 
+        layout.prop(tex, "use_color_ramp", text="Ramp")
+        if tex.use_color_ramp:
+            layout.template_color_ramp(tex, "color_ramp", expand=True)
+
         split = layout.split()
 
         col = split.column()

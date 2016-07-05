@@ -107,7 +107,7 @@ class yafMaterial:
 
         isImage = tex.yaf_tex_type == 'IMAGE'
 
-        if (isImage or (tex.yaf_tex_type == 'VORONOI' and tex.color_mode not in 'INTENSITY')):
+        if (isImage or tex.use_color_ramp or (tex.yaf_tex_type == 'VORONOI' and tex.color_mode not in 'INTENSITY')):
             isColored = True
         else:
             isColored = False

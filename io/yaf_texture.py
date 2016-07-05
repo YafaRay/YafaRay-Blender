@@ -64,6 +64,19 @@ class yafTexture:
         yi.paramsSetFloat("adj_saturation", tex.saturation)
         yi.paramsSetBool("adj_clamp", tex.use_clamp)
 
+        if tex.use_color_ramp:
+            yi.paramsSetBool("use_color_ramp", tex.use_color_ramp)
+            yi.paramsSetString("ramp_color_mode", tex.color_ramp.color_mode)
+            yi.paramsSetString("ramp_hue_interpolation", tex.color_ramp.hue_interpolation)
+            yi.paramsSetString("ramp_interpolation", tex.color_ramp.interpolation)
+            i = 0
+            for item in tex.color_ramp.elements:
+                yi.paramsSetColor("ramp_item_%x_color" % i, item.color[0], item.color[1], item.color[2], item.color[3])
+                yi.paramsSetFloat("ramp_item_%x_alpha" % i, item.alpha)
+                yi.paramsSetFloat("ramp_item_%x_position" % i, item.position)
+                i += 1
+            yi.paramsSetInt("ramp_num_items", i)
+        
         if tex.yaf_tex_type == 'BLEND':
             yi.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
             yi.paramsSetString("type", "blend")
