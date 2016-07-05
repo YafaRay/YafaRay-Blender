@@ -1,6 +1,6 @@
 Important: read the README file for installation instructions and important information about YafaRay
 
-YafaRay v3.0.0-ALPHA10 (only for developers testing) (2016-07-04) for Blender 2.77a:
+YafaRay v3.0.0-ALPHA11 (only for developers testing) (2016-07-05) for Blender 2.77a:
 ----------------------------------------------
 ** IMPORTANT **
 ----------------------------------------------
@@ -122,7 +122,9 @@ Each computer will generate a different Film. If one of the nodes is set to "Loa
 
 * Added SmartIBL functionality to reduce noise when using World HDRI textures for lighting. The functionality adds a new parameter "SmartIBL blur" that blurs the World texture used for lighting without affecting the world texture used for reflections, etc. High values can cause slowdowns at render process start. This was requested at http://www.yafaray.org/node/566 and http://www.yafaray.org/node/727
 
-* Added Texture Color Controls to be able to control the texture brigthness, contrast, etc, as requested at http://www.yafaray.org/node/334
+* Added Texture Color Controls to be able to control the texture brigthness, contrast, saturation, hue, etc, as requested at http://www.yafaray.org/node/334
+
+* Added Texture Color Ramps, to be able to create much more interesting procedural textures, also requested at http://www.yafaray.org/node/334
 
 
 Bug fixes in v3.0.0:
