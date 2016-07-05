@@ -25,6 +25,8 @@ from bpy.props import (EnumProperty,
 
 Texture = bpy.types.Texture
 
+def update_preview(self, context):
+    context.texture.saturation = context.texture.saturation
 
 # try to update blender propertie texture.type to YafaRay's texture.yaf_tex_type
 def call_tex_type_update(self, context):
@@ -54,22 +56,22 @@ def register():
         default='NONE')
 
     Texture.yaf_is_normal_map = BoolProperty(
-        name="Use map as normal map",
+        update=update_preview, name="Use map as normal map",
         description="Use image RGB values for normal mapping",
         default=False)
     #test
     Texture.yaf_use_alpha = BoolProperty(
-        name="Use alpha image info",
+        update=update_preview, name="Use alpha image info",
         description="Use alpha values for image mapping",
         default=False)
         
     Texture.yaf_gamma_input = FloatProperty(
-        name="Gamma input",
+        update=update_preview, name="Gamma input",
         description="Gamma correction applied to input texture",
         min=0, max=5, default=1.0)
 
     Texture.yaf_tex_interpolate = EnumProperty(
-        name="Interpolation",
+        update=update_preview, name="Interpolation",
         items=(
             ('bilinear', "Bilinear (default)", ""),
             ('bicubic', "Bicubic", ""),
@@ -88,6 +90,11 @@ def register():
         ),
         default='default')
 
+    Texture.yaf_adj_hue = FloatProperty(
+        update=update_preview, name="Hue adjustment",
+        description="Hue adjustment for the texture",
+        min=-6, max=6, default=0.0, precision=2)
+
 def unregister():
     Texture.yaf_tex_type
     Texture.yaf_is_normal_map
@@ -95,3 +102,4 @@ def unregister():
     Texture.yaf_gamma_input
     Texture.yaf_tex_interpolate
     Texture.yaf_tex_optimization
+    Texture.yaf_adj_hue

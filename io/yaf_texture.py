@@ -62,6 +62,7 @@ class yafTexture:
         yi.paramsSetFloat("adj_intensity", tex.intensity)
         yi.paramsSetFloat("adj_contrast", tex.contrast)
         yi.paramsSetFloat("adj_saturation", tex.saturation)
+        yi.paramsSetFloat("adj_hue", tex.yaf_adj_hue)
         yi.paramsSetBool("adj_clamp", tex.use_clamp)
 
         if tex.use_color_ramp:

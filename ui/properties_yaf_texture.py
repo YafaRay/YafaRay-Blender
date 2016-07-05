@@ -231,8 +231,13 @@ class YAFA_V3_TEXTURE_PT_colors(YAFA_V3_TextureButtonsPanel, Panel):
         col.label(text="Adjust:")
         col.prop(tex, "intensity")
         col.prop(tex, "contrast")
-        col.prop(tex, "saturation")
 
+        split = layout.split()
+        col = split.column()
+        col.prop(tex, "yaf_adj_hue")
+        col = split.column()
+        col.prop(tex, "saturation")
+        
         col = layout.column()
         col.prop(tex, "use_clamp", text="Clamp")
 
