@@ -110,6 +110,11 @@ def register():
         description="SmartIBL blur factor to reduce noise. This only blurs the lighting and shadows, keeping the reflections sharp. High values allow less noise but might be less realistic and cause slowdowns",
         min=0.00, max=0.75, precision=2, default=0.00)
 
+    World.ibl_clamp_sampling = FloatProperty(
+        update=update_preview, name="IBL clamp sampling",
+        description="Trick to reduce light sampling noise at the expense of realism and inexact overall light. The lower, the less noise but worse realism and lighting. 0.f disables clamping (default).",
+        min=0.00, precision=2, default=0.00)
+
     World.bg_with_caustic = BoolProperty(
         update=update_preview, name="Caustic photons",
         description="Allow background light to shoot caustic photons",
@@ -316,6 +321,7 @@ def unregister():
     World.bg_single_color
     World.bg_use_ibl
     World.bg_smartibl_blur
+    World.ibl_clamp_sampling
     World.bg_with_caustic
     World.bg_with_diffuse
     World.bg_ibl_samples

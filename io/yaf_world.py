@@ -122,6 +122,7 @@ class yafWorld:
                     yi.paramsSetString("type", "textureback")
                     yi.paramsSetString("texture", "world_texture")
                     yi.paramsSetBool("ibl", useIBL)
+                    yi.paramsSetFloat("ibl_clamp_sampling", world.ibl_clamp_sampling)
                     if is_preview:
                         yi.paramsSetFloat("smartibl_blur", 0.0) #To avoid causing Blender UI freezing while waiting for the blur process to complete in the material/world previews
                     else:

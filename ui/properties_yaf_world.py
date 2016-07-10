@@ -122,6 +122,8 @@ class YAFA_V3_PT_world(WorldButtonsPanel, Panel):
             col.prop(world, "bg_use_ibl")
             col = split.column()
             col.prop(world, "bg_smartibl_blur")
+            col = split.column()
+            col.prop(world, "ibl_clamp_sampling")
 
             if world.bg_use_ibl:
                 row = layout.row()
