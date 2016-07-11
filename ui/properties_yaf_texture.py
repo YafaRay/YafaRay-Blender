@@ -251,6 +251,10 @@ class YAFA_V3_TEXTURE_PT_colors(YAFA_V3_TextureButtonsPanel, Panel):
 
         layout.prop(tex, "use_color_ramp", text="Ramp")
         if tex.use_color_ramp:
+            if tex.yaf_tex_type == "IMAGE":
+                split = layout.split()
+                row = split.row()
+                row.label("Color ramp is ignored by YafaRay when using image textures", icon="INFO")
             layout.template_color_ramp(tex, "color_ramp", expand=True)
 
         split = layout.split()
