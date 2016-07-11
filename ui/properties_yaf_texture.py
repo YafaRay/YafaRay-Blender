@@ -255,8 +255,14 @@ class YAFA_V3_TEXTURE_PT_colors(YAFA_V3_TextureButtonsPanel, Panel):
                 split = layout.split()
                 row = split.row()
                 row.label("Color ramp is ignored by YafaRay when using image textures", icon="INFO")
-            layout.template_color_ramp(tex, "color_ramp", expand=True)
 
+            if tex.color_ramp.color_mode == "RGB" and tex.color_ramp.interpolation != "CONSTANT" and tex.color_ramp.interpolation != "LINEAR":
+                split = layout.split()
+                row = split.row()
+                row.label("The ramp interpolation '" + tex.color_ramp.interpolation + "' is not supported. Using Linear instead", icon="ERROR")
+
+            layout.template_color_ramp(tex, "color_ramp", expand=True)
+                
         split = layout.split()
 
         col = split.column()
