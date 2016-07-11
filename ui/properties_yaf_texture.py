@@ -392,11 +392,14 @@ class YAFA_V3_TEXTURE_PT_blend(YAFA_V3_TextureTypePanel, Panel):
         layout = self.layout
 
         tex = context.texture
+
         layout.prop(tex, "progression")
-        if tex.progression not in 'LINEAR':  # TODO: remove this if other progression types are supported
-            layout.label(text="Not yet supported in YafaRay")
-        else:
-            layout.label(text=" ")
+
+        sub = layout.row()
+
+        sub.active = (tex.progression in {'LINEAR', 'QUADRATIC', 'EASING', 'RADIAL'})
+        sub.prop(tex, "use_flip_axis", expand=True)
+
 
 
 class YAFA_V3_TEXTURE_PT_image(YAFA_V3_TextureTypePanel, Panel):

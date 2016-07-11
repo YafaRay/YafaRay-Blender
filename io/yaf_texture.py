@@ -95,7 +95,12 @@ class yafTexture:
 
             stype = switchBlendType.get(tex.progression, 'lin')  # set blend type for blend texture, default is 'lin'
             yi.paramsSetString("stype", stype)
-
+            
+            if tex.use_flip_axis == "HORIZONTAL":
+                yi.paramsSetBool("use_flip_axis", False)
+            if tex.use_flip_axis == "VERTICAL":
+                yi.paramsSetBool("use_flip_axis", True)
+                
             textureConfigured = True
 
         elif tex.yaf_tex_type == 'CLOUDS':
