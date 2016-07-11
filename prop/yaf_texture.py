@@ -18,6 +18,7 @@
 
 # <pep8 compliant>
 
+import math
 import bpy
 from bpy.props import (EnumProperty,
                        BoolProperty,
@@ -93,7 +94,9 @@ def register():
     Texture.yaf_adj_hue = FloatProperty(
         update=update_preview, name="Hue adjustment",
         description="Hue adjustment for the texture",
-        min=-6, max=6, default=0.0, precision=2)
+        min=math.radians(-360), max=math.radians(360),
+        subtype="ANGLE", unit="ROTATION",
+        default=0.0, precision=1)
 
 def unregister():
     Texture.yaf_tex_type
