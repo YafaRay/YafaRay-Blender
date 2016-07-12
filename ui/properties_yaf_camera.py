@@ -23,9 +23,9 @@ from bpy.types import Panel
 from bl_ui.properties_data_camera import CameraButtonsPanel
 
 
-class YAFA_E3_PT_lens(CameraButtonsPanel, Panel):
+class YAFA_V3_PT_lens(CameraButtonsPanel, Panel):
     bl_label = "Lens"
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -78,9 +78,9 @@ class YAFA_E3_PT_lens(CameraButtonsPanel, Panel):
         sub.prop(camera, "clip_end", text="End")
 
 
-class YAFA_E3_PT_camera(CameraButtonsPanel, Panel):
+class YAFA_V3_PT_camera(CameraButtonsPanel, Panel):
     bl_label = "Camera"
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -108,9 +108,9 @@ class YAFA_E3_PT_camera(CameraButtonsPanel, Panel):
         col.prop(camera, "sensor_fit", text="")
 
 
-class YAFA_E3_PT_camera_display(CameraButtonsPanel, Panel):
+class YAFA_V3_PT_camera_display(CameraButtonsPanel, Panel):
     bl_label = "Display"
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     def draw(self, context):
         layout = self.layout

@@ -18,6 +18,7 @@
 
 # <pep8 compliant>
 
+import math
 import bpy
 import os
 from bpy.path import abspath, clean_name
@@ -55,9 +56,31 @@ class yafTexture:
         yi.paramsClearAll()
 
         textureConfigured = False
+        
+        yi.paramsSetFloat("adj_mult_factor_red", tex.factor_red)
+        yi.paramsSetFloat("adj_mult_factor_green", tex.factor_green)
+        yi.paramsSetFloat("adj_mult_factor_blue", tex.factor_blue)
+        yi.paramsSetFloat("adj_intensity", tex.intensity)
+        yi.paramsSetFloat("adj_contrast", tex.contrast)
+        yi.paramsSetFloat("adj_saturation", tex.saturation)
+        yi.paramsSetFloat("adj_hue", math.degrees(tex.yaf_adj_hue))
+        yi.paramsSetBool("adj_clamp", tex.use_clamp)
 
+        if tex.use_color_ramp:
+            yi.paramsSetBool("use_color_ramp", tex.use_color_ramp)
+            yi.paramsSetString("ramp_color_mode", tex.color_ramp.color_mode)
+            yi.paramsSetString("ramp_hue_interpolation", tex.color_ramp.hue_interpolation)
+            yi.paramsSetString("ramp_interpolation", tex.color_ramp.interpolation)
+            i = 0
+            for item in tex.color_ramp.elements:
+                yi.paramsSetColor("ramp_item_%x_color" % i, item.color[0], item.color[1], item.color[2], item.color[3])
+                yi.paramsSetFloat("ramp_item_%x_alpha" % i, item.alpha)
+                yi.paramsSetFloat("ramp_item_%x_position" % i, item.position)
+                i += 1
+            yi.paramsSetInt("ramp_num_items", i)
+        
         if tex.yaf_tex_type == 'BLEND':
-            yi.printVerbose("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
+            yi.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
             yi.paramsSetString("type", "blend")
 
             switchBlendType = {
@@ -72,11 +95,16 @@ class yafTexture:
 
             stype = switchBlendType.get(tex.progression, 'lin')  # set blend type for blend texture, default is 'lin'
             yi.paramsSetString("stype", stype)
-
+            
+            if tex.use_flip_axis == "HORIZONTAL":
+                yi.paramsSetBool("use_flip_axis", False)
+            if tex.use_flip_axis == "VERTICAL":
+                yi.paramsSetBool("use_flip_axis", True)
+                
             textureConfigured = True
 
         elif tex.yaf_tex_type == 'CLOUDS':
-            yi.printVerbose("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
+            yi.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
             yi.paramsSetString("type", "clouds")
 
             noise_size = tex.noise_scale
@@ -97,7 +125,7 @@ class yafTexture:
             textureConfigured = True
 
         elif tex.yaf_tex_type == 'WOOD':
-            yi.printVerbose("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
+            yi.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
             yi.paramsSetString("type", "wood")
 
             yi.paramsSetInt("depth", 0)
@@ -142,7 +170,7 @@ class yafTexture:
             textureConfigured = True
 
         elif tex.yaf_tex_type == 'MARBLE':
-            yi.printVerbose("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
+            yi.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
             yi.paramsSetString("type", "marble")
 
             yi.paramsSetInt("depth", tex.noise_depth)
@@ -183,7 +211,7 @@ class yafTexture:
             textureConfigured = True
 
         elif tex.yaf_tex_type == 'VORONOI':
-            yi.printVerbose("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
+            yi.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
             yi.paramsSetString("type", "voronoi")
 
             if tex.color_mode == 'POSITION':
@@ -225,7 +253,7 @@ class yafTexture:
             textureConfigured = True
 
         elif tex.yaf_tex_type == 'MUSGRAVE':
-            yi.printVerbose("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
+            yi.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
             yi.paramsSetString("type", "musgrave")
 
             switchMusgraveType = {
@@ -254,7 +282,7 @@ class yafTexture:
             textureConfigured = True
 
         elif tex.yaf_tex_type == 'DISTORTED_NOISE':
-            yi.printVerbose("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
+            yi.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
             yi.paramsSetString("type", "distorted_noise")
 
             yi.paramsSetFloat("distort", tex.distortion)
@@ -338,7 +366,7 @@ class yafTexture:
             else:
                 texture_optimization = tex.yaf_tex_optimization
 
-            yi.printVerbose("Exporter: Creating Texture: '{0}' type {1}: {2}. Texture Color Space: '{3}', gamma={4}. Texture optimization='{5}'".format(name, tex.yaf_tex_type, image_tex, texture_color_space, texture_gamma, texture_optimization))
+            yi.printInfo("Exporter: Creating Texture: '{0}' type {1}: {2}. Texture Color Space: '{3}', gamma={4}. Texture optimization='{5}'".format(name, tex.yaf_tex_type, image_tex, texture_color_space, texture_gamma, texture_optimization))
 
             yi.paramsSetString("interpolate", tex.yaf_tex_interpolate)
             yi.paramsSetString("texture_optimization", texture_optimization)

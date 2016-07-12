@@ -22,7 +22,7 @@ import bpy
 import time
 import math
 import mathutils
-import yafaray_e3_interface
+import yafaray_v3_interface
 
 
 def multiplyMatrix4x4Vector4(matrix, vector):
@@ -46,7 +46,7 @@ class yafObject(object):
     def createCameras(self):
 
         yi = self.yi
-        yi.printVerbose("Exporting Cameras")
+        yi.printInfo("Exporting Cameras")
     
         render = self.scene.render
         
@@ -58,7 +58,7 @@ class yafObject(object):
         
         cameras = []
 
-        if bpy.types.YAFA_E3_RENDER.useViewToRender or not render.use_multiview:
+        if bpy.types.YAFA_V3_RENDER.useViewToRender or not render.use_multiview:
             cameras.append(CameraData(self.scene.camera, "cam", ""))
         else:
             camera_base_name = self.scene.camera.name.rsplit('_',1)[0]
@@ -68,14 +68,14 @@ class yafObject(object):
                     cameras.append(CameraData(self.scene.objects[camera_base_name+view.camera_suffix], camera_base_name+view.camera_suffix, view.name))
 
         for cam in cameras:
-            if bpy.types.YAFA_E3_RENDER.useViewToRender and bpy.types.YAFA_E3_RENDER.viewMatrix:
+            if bpy.types.YAFA_V3_RENDER.useViewToRender and bpy.types.YAFA_V3_RENDER.viewMatrix:
                 # use the view matrix to calculate the inverted transformed
                 # points cam pos (0,0,0), front (0,0,1) and up (0,1,0)
                 # view matrix works like the opengl view part of the
                 # projection matrix, i.e. transforms everything so camera is
                 # at 0,0,0 looking towards 0,0,1 (y axis being up)
 
-                m = bpy.types.YAFA_E3_RENDER.viewMatrix
+                m = bpy.types.YAFA_V3_RENDER.viewMatrix
                 # m.transpose() --> not needed anymore: matrix indexing changed with Blender rev.42816
                 inv = m.inverted()
 
@@ -102,10 +102,10 @@ class yafObject(object):
 
             yi.paramsClearAll()
 
-            if bpy.types.YAFA_E3_RENDER.useViewToRender:
+            if bpy.types.YAFA_V3_RENDER.useViewToRender:
                 yi.paramsSetString("type", "perspective")
                 yi.paramsSetFloat("focal", 0.7)
-                bpy.types.YAFA_E3_RENDER.useViewToRender = False
+                bpy.types.YAFA_V3_RENDER.useViewToRender = False
 
             else:
                 camera = cam.camera.data
@@ -202,7 +202,7 @@ class yafObject(object):
 
     def get4x4Matrix(self, matrix):
 
-        ret = yafaray_e3_interface.matrix4x4_t()
+        ret = yafaray_v3_interface.matrix4x4_t()
 
         for i in range(4):
             for j in range(4):
@@ -241,7 +241,7 @@ class yafObject(object):
         # Generate unique object ID
         ID = self.yi.getNextFreeID()
 
-        self.yi.printVerbose("Exporting Base Mesh: {0} with ID: {1:d}".format(obj.name, ID))
+        self.yi.printInfo("Exporting Base Mesh: {0} with ID: {1:d}".format(obj.name, ID))
 
         obType = 512  # Create this geometry object as a base object for instances
 
@@ -267,7 +267,7 @@ class yafObject(object):
 
     def writeMesh(self, obj, matrix):
 
-        self.yi.printVerbose("Exporting Mesh: {0}".format(obj.name))
+        self.yi.printInfo("Exporting Mesh: {0}".format(obj.name))
 
         # Generate unique object ID
         ID = self.yi.getNextFreeID()
@@ -297,7 +297,7 @@ class yafObject(object):
 
     def writeBGPortal(self, obj, matrix):
 
-        self.yi.printVerbose("Exporting Background Portal Light: {0}".format(obj.name))
+        self.yi.printInfo("Exporting Background Portal Light: {0}".format(obj.name))
 
         # Generate unique object ID
         ID = self.yi.getNextFreeID()
@@ -319,7 +319,7 @@ class yafObject(object):
 
     def writeMeshLight(self, obj, matrix):
 
-        self.yi.printVerbose("Exporting Meshlight: {0}".format(obj.name))
+        self.yi.printInfo("Exporting Meshlight: {0}".format(obj.name))
 
         # Generate unique object ID
         ID = self.yi.getNextFreeID()
@@ -354,7 +354,7 @@ class yafObject(object):
 
     def writeVolumeObject(self, obj, matrix):
 
-        self.yi.printVerbose("Exporting Volume Region: {0}".format(obj.name))
+        self.yi.printInfo("Exporting Volume Region: {0}".format(obj.name))
 
         yi = self.yi
         # me = obj.data  /* UNUSED */
@@ -567,7 +567,7 @@ class yafObject(object):
         for pSys in object.particle_systems:
             for mod in [m for m in object.modifiers if (m is not None) and (m.type == 'PARTICLE_SYSTEM')]:
                 if (pSys.settings.render_type == 'PATH') and mod.show_render and (pSys.name == mod.particle_system.name):
-                    yi.printVerbose("Exporter: Creating Hair Particle System {!r}".format(pSys.name))
+                    yi.printInfo("Exporter: Creating Hair Particle System {!r}".format(pSys.name))
                     tstart = time.time()
                     # TODO: clay particles uses at least materials thikness?
                     if object.active_material is not None:
@@ -607,7 +607,7 @@ class yafObject(object):
                     # TODO: keep object smooth
                     #yi.smoothMesh(0, 60.0)
                         yi.endGeometry()
-                    yi.printVerbose("Exporter: Particle creation time: {0:.3f}".format(time.time() - tstart))
+                    yi.printInfo("Exporter: Particle creation time: {0:.3f}".format(time.time() - tstart))
 
                     if pSys.settings.use_render_emitter:
                         renderEmitter = True

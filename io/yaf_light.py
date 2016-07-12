@@ -127,7 +127,7 @@ class yafLight:
 
         yi.paramsClearAll()
 
-        yi.printVerbose("Exporting Lamp: {0} [{1}]".format(name, lampType))
+        yi.printInfo("Exporting Lamp: {0} [{1}]".format(name, lampType))
 
         if lamp.create_geometry:  # and not self.lightMat:
             yi.paramsClearAll()

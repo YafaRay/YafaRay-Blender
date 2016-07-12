@@ -23,9 +23,9 @@ from bpy.types import Panel
 from bl_ui.properties_render import RenderButtonsPanel
 
 
-class YAFA_E3_PT_Render(RenderButtonsPanel, Panel):
+class YAFA_V3_PT_Render(RenderButtonsPanel, Panel):
     bl_label = "Render"
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     def draw(self, context):
 
@@ -38,9 +38,9 @@ class YAFA_E3_PT_Render(RenderButtonsPanel, Panel):
         layout.row().operator("render.render_view", text="Render 3D View", icon='VIEW3D')
         layout.prop(rd, "display_mode", text="Display")
 
-class YAFA_E3_PT_dimensions(RenderButtonsPanel, Panel):
+class YAFA_V3_PT_dimensions(RenderButtonsPanel, Panel):
     bl_label = "Dimensions"
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
@@ -81,9 +81,9 @@ from . import properties_yaf_integrator
 from . import properties_yaf_AA_settings
 
 
-class YAFA_E3_PT_output(RenderButtonsPanel, Panel):
+class YAFA_V3_PT_output(RenderButtonsPanel, Panel):
     bl_label = "Output"
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -92,58 +92,115 @@ class YAFA_E3_PT_output(RenderButtonsPanel, Panel):
         sc = context.scene
         image_settings = rd.image_settings
 
-        layout.prop(rd, "filepath", text="")
-        row = layout.row()
-        row.prop(sc, "img_add_blend_name")
-        col = row.column()
-        col.prop(sc, "img_add_datetime")
+        if sc.gs_type_render == "into_blender" and not sc.gs_secondary_file_output:
+            row = layout.row()
+            row.label("To enable file output, enable Secondary File Output or choose Render into File or Render into XML", icon="INFO")
+        else:
+            layout.prop(sc, "img_save_with_blend_file")
+            if not sc.img_save_with_blend_file:
+                row = layout.row()
+                layout.prop(rd, "filepath", text="")
+            row = layout.row()
+            col = row.column()
+            col.prop(sc, "img_add_blend_name")
+            col = row.column()
+            col.prop(sc, "img_add_datetime")
+            row = layout.row()
+            col = row.column()
+            col.prop(sc, "gs_images_autosave_interval_type")
+            col = row.column()
+            if sc.gs_images_autosave_interval_type == "pass-interval":
+                col.prop(sc, "gs_images_autosave_interval_passes")
+            elif sc.gs_images_autosave_interval_type == "time-interval":
+                col.prop(sc, "gs_images_autosave_interval_seconds")
+            else:
+                col.label("")
+            
+            split = layout.split(percentage=0.6)
+            col = split.column()
+            col.prop(sc, "img_output", text="", icon='IMAGE_DATA')
+            col = split.column()
+            col.row().prop(image_settings, "color_mode", text="Color", expand=True)
 
-        split = layout.split(percentage=0.6)
-        col = split.column()
-        col.prop(sc, "img_output", text="", icon='IMAGE_DATA')
-        col = split.column()
-        col.row().prop(image_settings, "color_mode", text="Color", expand=True)
+            if sc.img_output == "OPEN_EXR":
+                split = layout.split()
+                split.prop(sc, "img_multilayer")
 
-        if sc.img_output == "OPEN_EXR":
-            split = layout.split()
-            split.prop(sc, "img_multilayer")
-
-        if sc.img_output == "OPEN_EXR" or sc.img_output == "HDR":  #If the output file is a HDR/EXR file, we force the render output to Linear
-                pass
-        elif sc.gs_type_render == "file" or sc.gs_type_render == "xml":
-                split = layout.split(percentage=0.6)
-                col = split.column()
-                col.prop(sc.display_settings, "display_device")
-                
-                if sc.display_settings.display_device == "None":
+            if sc.img_output == "OPEN_EXR" or sc.img_output == "HDR":  #If the output file is a HDR/EXR file, we force the render output to Linear
+                    pass
+            elif sc.gs_type_render == "file" or sc.gs_type_render == "xml":
+                    split = layout.split(percentage=0.6)
                     col = split.column()
-                    col.prop(sc, "gs_gamma", text = "Gamma")
-
-                if sc.display_settings.display_device == "sRGB":
-                    pass
-                elif sc.display_settings.display_device == "None":
-                    pass
-                elif sc.display_settings.display_device == "XYZ":
-                    row = layout.row(align=True)
-                    row.label(text="YafaRay 'XYZ' support is experimental and may not give the expected results", icon="ERROR")
-                else:
-                    row = layout.row(align=True)
-                    row.label(text="YafaRay doesn't support '" + sc.display_settings.display_device + "', assuming sRGB", icon="ERROR")
+                    col.prop(sc.display_settings, "display_device")
                     
-        split = layout.split(percentage=0.6)
-        col = split.column()
-        col.prop(sc, "gs_premult", text = "Premultiply Alpha")
-        if sc.img_output  == "OPEN_EXR" and not sc.gs_premult:
-            row = layout.row(align=True)
-            row.label(text="Typically you should enable Premultiply in EXR files", icon="INFO")
-        if sc.img_output  == "PNG" and sc.gs_premult:
-            row = layout.row(align=True)
-            row.label(text="Typically you should disable Premultiply in PNG files", icon="INFO")
+                    if sc.display_settings.display_device == "None":
+                        col = split.column()
+                        col.prop(sc, "gs_gamma", text = "Gamma")
+
+                    if sc.display_settings.display_device == "sRGB":
+                        pass
+                    elif sc.display_settings.display_device == "None":
+                        pass
+                    elif sc.display_settings.display_device == "XYZ":
+                        row = layout.row(align=True)
+                        row.label(text="YafaRay 'XYZ' support is experimental and may not give the expected results", icon="ERROR")
+                    else:
+                        row = layout.row(align=True)
+                        row.label(text="YafaRay doesn't support '" + sc.display_settings.display_device + "', assuming sRGB", icon="ERROR")
+                        
+            split = layout.split(percentage=0.6)
+            col = split.column()
+            col.prop(sc, "gs_premult", text = "Premultiply Alpha")
+            if sc.img_output  == "OPEN_EXR" and sc.gs_premult == "no":
+                row = layout.row(align=True)
+                row.label(text="Typically you should enable Premultiply in EXR files", icon="INFO")
+            if sc.img_output  == "PNG" and sc.gs_premult == "yes":
+                row = layout.row(align=True)
+                row.label(text="Typically you should disable Premultiply in PNG files", icon="INFO")
+            if sc.img_output  != "PNG" and sc.img_output  != "OPEN_EXR" and sc.img_output  != "JPEG" and sc.gs_premult == "auto":
+                row = layout.row(align=True)
+                row.label(text="Can't guess premultiply for " + sc.img_output + " , enabling by default but better select Yes or No", icon="INFO")
+
+            if sc.img_output != "OPEN_EXR" and sc.img_output != "HDR":
+                split = layout.split()
+                col = split.column()
+                col.prop(sc, "img_denoise")
+                if sc.img_denoise:
+                    col = split.column()
+                    col.prop(sc, "img_denoiseMix", text="Mix")
+                    col = split.column()
+                    col.prop(sc, "img_denoiseHLum", text="h(lum)")
+                    col = split.column()
+                    col.prop(sc, "img_denoiseHCol", text="h(chrom)")
+                    split = layout.split()
+                    col = split.column()
+                    col.label("Denoise will not appear in Blender, only in saved image files", icon="INFO")
+
+            row = layout.row()
+            col = row.column()
+            col.prop(sc, "gs_film_save_load")
+            if sc.gs_film_save_load == "save" or sc.gs_film_save_load == "load-save":
+                row = layout.row()
+                col = row.column()            
+                col.prop(sc, "gs_film_save_binary_format")
+                col = row.column()
+                col.prop(sc, "gs_film_autosave_interval_type")
+                col = row.column()
+                if sc.gs_film_autosave_interval_type == "pass-interval":
+                    col.prop(sc, "gs_film_autosave_interval_passes")
+                elif sc.gs_film_autosave_interval_type == "time-interval":
+                    col.prop(sc, "gs_film_autosave_interval_seconds")
+                else:
+                    col.label("")
+            
+            if sc.gs_film_save_load == "load-save":
+                row = layout.row()
+                row.label("If the loaded image Film does not match exactly the scene, crashes and/or incorrect renders may happen, USE WITH CARE!", icon="ERROR")
 
 
-class YAFA_E3_PT_post_processing(RenderButtonsPanel, Panel):
+class YAFA_V3_PT_post_processing(RenderButtonsPanel, Panel):
     bl_label = "Post Processing"
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
@@ -161,23 +218,28 @@ class YAFA_E3_PT_post_processing(RenderButtonsPanel, Panel):
         col.prop(rd, "dither_intensity", text="Dither", slider=True)
 
 
-class YAFA_E3_PT_convert(RenderButtonsPanel, Panel):
+class YAFA_V3_PT_convert(RenderButtonsPanel, Panel):
     bl_label = "Convert old YafaRay Settings"
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     def draw(self, context):
         layout = self.layout
         layout.column().operator("data.convert_yafaray_properties", text="Convert data from 2.4x")
 
 
-class YAFA_E3_PT_Advanced(RenderButtonsPanel, Panel):
+class YAFA_V3_PT_Advanced(RenderButtonsPanel, Panel):
     bl_label = "Advanced Settings - only for experts"
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
         scene = context.scene
         layout = self.layout
+        
+        split = layout.split()
+        col = split.column()
+        col.prop(scene, "adv_base_sampling_offset")
+ 
         split = layout.split()
         col = split.column()
         col.prop(scene, "adv_auto_shadow_bias_enabled")

@@ -1,4 +1,21 @@
-To install YafaRay into Blender:
+To install YafaRay v3 into Blender:
+
+** IMPORTANT **
+----------------------------------------------
+The new YafaRay-v3 will *NOT* replace the existing YafaRay versions, and it can be installed *in addition* to them.
+So, YafaRay-v3 *must* be enabled in Blender user preferences, and in your current YafaRay scenes you have to switch to the renderer "YafaRay-v3" to use the new version.
+
+If you have several YafaRay versions together, *make sure* that you enable in Blender *first* the old and *later* the new v3 in that order. If you have problems, disable both, restart Blender and enable them in that order.
+
+YafaRay v3 has only limited support for multiple YafaRay versions and forks installed at the same time. Having several versions could cause in some cases:
+* Black renders
+* Random crashes
+* Inability to enable the YafaRay v3 plugin or all kinds of strange problems
+
+If you have any of these problems, remove any other yafaray folders (or derived forks) from the Blender addons folder and try again. This typically solves most of the problems stated above.
+
+In v3, support has been DROPPED for Windows XP and MacOSX v10.6
+----------------------------------------------
 
 Don't use the Blender from the distro repositories. Download the Blender official builds from:
 https://www.blender.org/download/
@@ -6,16 +23,19 @@ https://www.blender.org/download/
 Once Blender is installed, locate the folder where it was installed. The paths given below are just examples, but they will probably be different in your system.
 
 Copy this entire folder "yafaray" to (for example):
-  - in Linux 64bit, for example: "$HOME/blender-2.74-linux-glibc211-x86_64/2.74/scripts/addons" folder.
-  - in Windows 64bit, for example: "C:\Program Files\Blender Foundation\Blender\2.74\scripts\addons" folder.
+  - in Linux 64bit, for example: "$HOME/blender-2.77a-linux-glibc211-x86_64/2.77/scripts/addons" folder.
+  - in Windows 64bit, for example: "C:\Program Files\Blender Foundation\Blender\2.77\scripts\addons" folder.
 
-After it, start Blender, go to User Preferences, AddOns and try to enable Render:YafaRay. Once (hopefully) enabled you should see it in the list of renderers.
+After it, start Blender, go to User Preferences, AddOns and try to enable Render:"YafaRay-v3". Once (hopefully) enabled you should see it in the list of renderers.
+
+(Optional) In the User Preferences, AddOns, YafaRay-v3: select the YafaRay Computer Node number. If you have several computers and you want to render an image or animation using several computers (render farm), just select a different Computer Node number for each PC. This will allow the internal ImageFilm files to use different samples in the different computers, so later they can be combined into a combined render combining the ImageFilm files from each PC ("offline" multicomputer rendering)
 
 * Important: the YafaRay Linux 32bit build requires a processor with SSE/SSE2 instructions. Any non-ancient processor should have them...
 
 If you have any issues:
 
-* Check that you have copied the "yafaray" folder into the correct Blender addons folder.
+* Check that you have copied the "yafaray_v3" folder into the correct Blender addons folder.
 * Check that you have downloaded the appropiate YafaRay build for your Operating System and Blender build (32/64 bit)
 * Check that you are using the official Blender build from www.blender.org and it's a version supported by YafaRay (see CHANGELOG)
+* In extreme cases (black renders, crashes, etc) remove all older YafaRay versions and other YafaRay derived forks, and try again.
 * If you still have problems, please ask for help in the yafaRay.org forums or post a bug report in http://www.yafaray.org/development/bugtracker/yafaray  

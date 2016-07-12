@@ -24,18 +24,18 @@ from bl_ui.properties_world import WorldButtonsPanel
 
 # Inherit World data block
 from bl_ui.properties_world import WORLD_PT_context_world
-WORLD_PT_context_world.COMPAT_ENGINES.add('YAFA_E3_RENDER')
+WORLD_PT_context_world.COMPAT_ENGINES.add('YAFA_V3_RENDER')
 del WORLD_PT_context_world
 
 # Inherit World Preview Panel
 from bl_ui.properties_world import WORLD_PT_preview
-WORLD_PT_preview.COMPAT_ENGINES.add('YAFA_E3_RENDER')
+WORLD_PT_preview.COMPAT_ENGINES.add('YAFA_V3_RENDER')
 del WORLD_PT_preview
 
 
-class YAFA_E3_PT_world(WorldButtonsPanel, Panel):
+class YAFA_V3_PT_world(WorldButtonsPanel, Panel):
     bl_label = "Background Settings"
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
     ibl = True
 
     def draw(self, context):
@@ -120,6 +120,10 @@ class YAFA_E3_PT_world(WorldButtonsPanel, Panel):
             split = layout.split(percentage=0.33)
             col = split.column()
             col.prop(world, "bg_use_ibl")
+            col = split.column()
+            col.prop(world, "bg_smartibl_blur")
+            col = split.column()
+            col.prop(world, "ibl_clamp_sampling")
 
             if world.bg_use_ibl:
                 row = layout.row()
@@ -263,10 +267,10 @@ class YAFA_E3_PT_world(WorldButtonsPanel, Panel):
 
 
 
-class YAFA_E3_PT_advanced(WorldButtonsPanel, Panel):
+class YAFA_V3_PT_advanced(WorldButtonsPanel, Panel):
     bl_label = "Advanced settings"
     bl_options = {'DEFAULT_CLOSED'}
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
     
     def draw(self, context):
         layout = self.layout

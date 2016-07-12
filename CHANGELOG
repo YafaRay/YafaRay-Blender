@@ -1,5 +1,153 @@
 Important: read the README file for installation instructions and important information about YafaRay
 
+YafaRay v3.0.0-ALPHA11 (only for developers testing) (2016-07-05) for Blender 2.77a:
+----------------------------------------------
+** IMPORTANT **
+----------------------------------------------
+The new YafaRay-v3 will *NOT* replace the existing YafaRay versions, and it can be installed *in addition* to them.
+So, YafaRay-v3 *must* be enabled in Blender user preferences, and in your current YafaRay scenes you have to switch to the renderer "YafaRay-v3" to use the new version.
+
+If you have several YafaRay versions together, *make sure* that you enable in Blender *first* the old and *later* the new v3 in that order. If you have problems, disable both, restart Blender and enable them in that order.
+
+YafaRay v3 has only limited support for multiple YafaRay versions and forks installed at the same time. Having several versions could cause in some cases:
+* Black renders
+* Random crashes
+* Inability to enable the YafaRay v3 plugin or all kinds of strange problems
+
+If you have any of these problems, remove any other yafaray folders (or derived forks) from the Blender addons folder and try again. This typically solves most of the problems stated above.
+
+In v3, support has been DROPPED for Windows XP and MacOSX v10.6
+----------------------------------------------
+
+YafaRay-v3 has gone through deep changes to the code. Even if there are no apparent big changes, the underlying code has undergone a lot of modifications. So, this is an ALPHA/unstable version, only for developers testing
+
+Major codebase changes in v3.0.0:
+* Dropped support for Windows XP and MacOSX v10.6. Sorry, but the code changes required this.
+
+* Updated for Blender 2.77 (using Python 3.5).
+
+* Codebase updated from old standard C++98 to the new C++11. This will allow better and easier code maintenance as well as access to newer C++ features to improve YafaRay even more in the future.
+
+* Entire old MultiThreading system replaced by new standard C++11 threads system.
+
+* Windows-MinGW C++11 MultiThreading system using now the library https://github.com/meganz/mingw-std-threads  This should significantly improve render speed in Windows in many scenes by reducing the multithreading overhead.
+
+* Added several Boost libraries to allow saving/loading photon map files and improve unicode/multiplatform compatibility. 
+
+* Changes to allow compilation in Visual Studio 2013 (although YafaRay is slower when compiled with VS2013 for some reason)
+
+
+Feature changes/additions in v3.0.0:
+* Multithreaded Photon Map generation, including multithreaded Photon KDTree building: this should greatly improve render speeds when using Direct Light+caustic map, Photon Map, SPPM or Path Tracing+photon. 
+
+* Ability to Save/Load/Reuse photon maps: this should greatly improve render speeds in scenes where only camera moves. See: http://yafaray.org/node/460. WARNING: When loading/reusing Photon Map files, the User is responsible to ensure they match the scene. If the User loads inadequate photon maps, the render results could be totally wrong or even have crashes. USE WITH CARE.
+
+* Ability to AutoSave image files, either at the end of each pass or using a user-configurable time interval. This should help if there is a crash or sudden power off, as some images could be obtained from before the incident.
+
+* Ability to AutoSave/Load the main ImageFilm. This might help to CONTINUE interrupted renders or to add additional samples to a render that has already finished. WARNING: When loading ImageFilm files, the User is responsible to ensure they match the scene. If the ImageFilm does not match the scene and render passes exactly, the render results could be totally wrong or even have crashes. USE WITH CARE.
+
+* Ability to perform Multi-Computer distributed render. Each computer should have a different Node number [0..1000] to ensure they don't repeate the same samples. The Node number can be setup in a parameter or in the Exporter under Blender User Preferences -> YafaRay v3 -> Preferences -> Computer Node (remember to Save Settings to store the number permanently in Blender).
+
+Each computer will generate a different Film. If one of the nodes is set to "Load" the film, it will look for ALL the Film files in the same folder (with the same base file name and frame number) and combine them together to create a combined image with all samples from all individual film files.
+
+* Added OpenCV library and added DeNoise options for the exported image files: JPG, PNG, TGA, TIF. This feature is not available for HDR/EXR formats. Three parameters are exposed for the users:
+  - h(luminance): the higher this is, the more noise reduction you get, but the image can become blurred
+  - h(chrominance): the higher, the more color noise reduction, but the colors can become blurred
+  - Mix: this is intended to add (on purpose) part of the noise from the original image into the final denoised image. This is to avoid "banding" artifacts in smooth and noiseless surfaces. Setting for example 0.8 means that 80% of the final result will come from the "denoised" image and 20% will come from the original (noisy) image.
+
+* YafaRay-v3 can be installed "in parallel" with other major versions of YafaRay and coexist with them. "YafaRay v3" will appear as a DIFFERENT renderer and has to be enabled and selected in each scene as if it were a new renderer. This should help to compare the results and features over different major versions as well as allowing using a "stable" and a more "experimental" versions in parallel at the same time. However, support for this is very limited and depends on many factors such as class name clashes, order of registration, dll and library dependency collisions, etc. If having issues, please remove any other yafaray versions and forks and try again.
+
+* Initial support for filepaths with Unicode characters (accents, etc) can be used now for loading textures, etc. See: http://yafaray.org/node/703    This support is still limited and could fail in some cases.
+
+* Secondary File Output: now it will be possible to render into render *and* export to image files at the same time! There are several functions that depend on this now, such as the render parameters badge, which will no longer appear in the Blender render, only in the exported images.
+
+* It's now possible to save the images automatically to the same place where the .blend file resides, into a folder with same name as the blend file and suffix "_render"
+
+* Now the user can use CTRL+C in the console to interrupt a render in progress. This now works in all modes (render into Blender, render to Image files or using yafaray-xml). The interruption due to CTRL+C will now be handled correctly, ensuring the image files and badge are properly saved.
+
+* yafaray-xml: no longer needed to specify the Library path nor the Plugins path. The old Windows Registry requirement has been removed and it's not necessary anymore. Now, yafaray-xml will load the libraries from the same folder where the yafaray-xml executable resides and it will load the plugins from the subfolder "plugins" respect to the folder where the yafaray-xml executable resides
+
+* Removed option -pst in yafaray-xml, now it has to be enabled via parameter in the xml file
+
+* New Logging system
+  - Title, author, comments can be entered now in the Blender Exporter and will appear in the logs and badge.
+  - YafaRay compilation information (platform, compiler), Blender information and some System Information will appear automatically in the log for easier support of user problems.
+  - Console log will show the time of the day, and the duration of the previous event in the log.
+  - Render log can be exported to a TXT file automatically, which will include the render results and information.
+  - Render log can be exported to an HTML report automaticall, which will include a link to the rendered image and the render results and information.
+  - The log verbosity can be selected in the Blender Exporter, to select how much information we want to show in the console or TXT/HTML log (more clear logs when selecting "Info", more details when selecting "Verbose" or "Debug")
+  - YafaRay-xml added commandline settings for log file output (txt and/or html) and removed old custom string
+
+
+* Improved Parameters Badge:
+  - New non-intrusive badge, that is appended to the image. Requires to use "secondary file output" (the badge will no longer appear in Blender due to Blender API limitations that don't allow using a non-intrusive badge when rendering into Blender). See: http://yafaray.org/node/383
+  - Title, author, etc, can be entered in the Exporter to appear in the badge
+  - More information, more detailed and clear in the badge. See: http://yafaray.org/node/162 http://yafaray.org/node/224
+  - New YafaRay icon for the badge, low contrast grayscale.
+  - Custom icon can be selected to replace the YafaRay icon in the badge.
+  - Unicode characters can be used now for the badge (accented characters, etc).
+  - Badge position can be selected: top or bottom (the icon position changes automatically for nicer presentation)
+  - The amount of details shown in the badge can be selected (show render parameters, AA settings, none or both)
+  - Show separately render time and photon generation time, plus added total time (including maps generation).
+  
+* Added new Render Tile "Centre" (now by default) so the renders start in the centre of the image and expand from there. This should allow a faster view of the to-be render, as typically most objects of interest are in the centre of the image.
+  
+* New Dark areas detection type: curve  (see http://yafaray.org/node/704)
+
+* New more optimized rendering tile structure, to avoid having to wait for the last 1 or 2 tiles to finish rendering before the next pass/frame starts. Now, the last tiles will be automatically subdivided to reduce the waiting times. See: http://yafaray.org/node/709
+
+* Ability to enable/disable Caustic and/or Diffuse Photons generation in the Photon Map integrator.
+
+* New mirrorX, mirrorY feature for Textures. See: http://yafaray.org/node/227
+
+* More fine-grained Photon Control for light sources. See: http://yafaray.org/node/475
+
+* Ability to automatically save the exported images and logs including the .blend filename and/or current date/time. See: http://yafaray.org/node/331
+
+* Ability to set a per-material raytracing depth, for example to speed up scenes with glass. See: http://yafaray.org/node/494
+
+* Ability to automatically save a preset file with each exported image. The preset can be reused if needed by copying it to the users "home" folder, into the "yafaray_userdata/presets/render/" subfolder
+
+* Fixed the Presets storage and retrieval. They will be saved/loaded in the "home" user folder, inside the subfolder "yafaray_userdata/presets/render/" (will be created automatically if it does not exist). Also, more parameters have been included in the presets now and old parameters were removed.
+
+* Parameter to enable/disable World background shadow casting. Option to control separately World background sky/sun shadow casting.
+
+* Bidirectional integrator declared as "Deprecated" and no longer supported, as explained in http://www.yafaray.org/node/720
+
+* Small optimizations for AA resampling, especially when no more pixels are supposed to be resampled
+
+* Add Volumetric rendering to the Blend material
+    When using glass or rough glass in the Blend material, volumetric absorption didn't work. I've added the volumetric rendering to the Blend material so glass/rough glass materials render correctly.
+    However, there is a limitation: if blending two materials with different volumetric options, as I cannot "merge" the volumes, I'm using the volume from the first material for blend amount values [0.0-0.5] and the volume from the second material for blend amount ]0.5-1.0]. This is totally not ideal, but better than before in my opinion.
+
+* Added SmartIBL functionality to reduce noise when using World HDRI textures for lighting. The functionality adds a new parameter "SmartIBL blur" that blurs the World texture used for lighting without affecting the world texture used for reflections, etc. High values can cause slowdowns at render process start. This was requested at http://www.yafaray.org/node/566 and http://www.yafaray.org/node/727
+
+* Added Texture Color Controls to be able to control the texture brigthness, contrast, saturation, hue, etc, as requested at http://www.yafaray.org/node/334
+
+* Added Texture Color Ramps, to be able to create much more interesting procedural textures, also requested at http://www.yafaray.org/node/334
+
+
+Bug fixes in v3.0.0:
+* Fixed: Soft Spotlight too dark when nearer than 1.0 blender unit from objects. See: http://yafaray.org/node/587
+
+* Fixed: Rough Glass not working in Blend materials. See: http://yafaray.org/node/365
+
+* Fixed: black spots in some cases. See: http://yafaray.org/node/730
+
+* Fixed: bug in border rendering where it was displaced one pixel sometimes. See: http://www.yafaray.org/community/forum/viewtopic.php?f=23&t=5151&start=0
+
+* Clay material default color changed to "real" middle gray. See: http://www.yafaray.org/community/forum/viewtopic.php?f=23&t=5152&start=0#p31497
+
+* Fixed incorrect updating of lamp preview when lamp parameters are modified
+
+* Fix AO Clay pass self shadow problem, reported by RioFranco (Olivier)
+
+* Changes in SWIG code to try to reduce crashes. Not sure if this will solve all problems but I hope this change helps.
+
+* Bidirectional: fix crash when using sky background as only light source
+
+* SPPM progress bar and tags fixed
+
 
 YafaRay v2.1.1 (2016-04-16) for Blender 2.76b:
 ----------------------------------------------
@@ -36,6 +184,8 @@ Note: there has been important changes and bug fixes in this version. They have 
     - Removed Texture scale/offset controls as they could cause confusion with the actual texture scale/offset parameters
 
 Important note: YafaRay only supports *one* scene in the .blend file. If you have more than one scene, it could cause unexpected results and problems in the new Material Preview Controls.
+
+* Fixed: console colors including blue component were incorect for Windows builds
 
 
 YafaRay-E (experimental) v2.1.0 (2016-01-31) for Blender 2.76b:

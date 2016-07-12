@@ -18,15 +18,15 @@
 
 # <pep8 compliant>
 
+import math
 from bpy.path import abspath
 from os.path import realpath, normpath
-
 
 class yafWorld:
     def __init__(self, interface):
         self.yi = interface
 
-    def exportWorld(self, scene):
+    def exportWorld(self, scene, is_preview):
         yi = self.yi
 
         world = scene.world
@@ -44,17 +44,26 @@ class yafWorld:
             iblSamples = 16
             bgPower = 1
 
-        self.yi.printVerbose("Exporting World, type: {0}".format(bg_type))
+        self.yi.printInfo("Exporting World, type: {0}".format(bg_type))
         yi.paramsClearAll()
 
         if bg_type == 'Texture':
             if world.active_texture is not None:
                 worldTex = world.active_texture
-                self.yi.printVerbose("World Texture, name: {0}".format(worldTex.name))
+                self.yi.printInfo("World Texture, name: {0}".format(worldTex.name))
             else:
                 worldTex = None
 
             if worldTex is not None:
+        
+                yi.paramsSetFloat("adj_mult_factor_red", worldTex.factor_red)
+                yi.paramsSetFloat("adj_mult_factor_green", worldTex.factor_green)
+                yi.paramsSetFloat("adj_mult_factor_blue", worldTex.factor_blue)
+                yi.paramsSetFloat("adj_intensity", worldTex.intensity)
+                yi.paramsSetFloat("adj_contrast", worldTex.contrast)
+                yi.paramsSetFloat("adj_saturation", worldTex.saturation)
+                yi.paramsSetFloat("adj_hue", math.degrees(worldTex.yaf_adj_hue))
+                yi.paramsSetBool("adj_clamp", worldTex.use_clamp)
 
                 if worldTex.type == "IMAGE" and (worldTex.image is not None):
 
@@ -113,6 +122,11 @@ class yafWorld:
                     yi.paramsSetString("type", "textureback")
                     yi.paramsSetString("texture", "world_texture")
                     yi.paramsSetBool("ibl", useIBL)
+                    yi.paramsSetFloat("ibl_clamp_sampling", world.ibl_clamp_sampling)
+                    if is_preview:
+                        yi.paramsSetFloat("smartibl_blur", 0.0) #To avoid causing Blender UI freezing while waiting for the blur process to complete in the material/world previews
+                    else:
+                        yi.paramsSetFloat("smartibl_blur", world.bg_smartibl_blur)
                     # 'with_caustic' and 'with_diffuse' settings gets checked in textureback.cc,
                     # so if IBL enabled when they are used...
                     yi.paramsSetInt("ibl_samples", iblSamples)

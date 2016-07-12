@@ -42,7 +42,7 @@ class yafIntegrator:
         yi.paramsSetBool("transpShad", scene.gs_transp_shad)
 
         light_type = scene.intg_light_method
-        yi.printVerbose("Exporting Integrator: {0}".format(light_type))
+        yi.printInfo("Exporting Integrator: {0}".format(light_type))
 
         yi.paramsSetBool("do_AO", scene.intg_use_AO)
         yi.paramsSetInt("AO_samples", scene.intg_AO_samples)
@@ -64,8 +64,8 @@ class yafIntegrator:
 
         elif light_type == "Photon Mapping":
             yi.paramsSetString("type", "photonmapping")
-            yi.paramsSetBool("enable_caustics", scene.intg_enable_caustics)
-            yi.paramsSetBool("enable_diffuse", scene.intg_enable_diffuse)
+            yi.paramsSetBool("caustics", scene.intg_photonmap_enable_caustics)
+            yi.paramsSetBool("diffuse", scene.intg_photonmap_enable_diffuse)
             yi.paramsSetString("photon_maps_processing", scene.intg_photon_maps_processing)
             
             yi.paramsSetInt("bounces", scene.intg_bounces)
@@ -151,7 +151,7 @@ class yafIntegrator:
 
         if world:
             vint_type = world.v_int_type
-            yi.printVerbose("Exporting Volume Integrator: {0}".format(vint_type))
+            yi.printInfo("Exporting Volume Integrator: {0}".format(vint_type))
 
             if vint_type == 'Single Scatter':
                 yi.paramsSetString("type", "SingleScatterIntegrator")

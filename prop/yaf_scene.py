@@ -57,7 +57,7 @@ class YafaRayLoggingProperties(bpy.types.PropertyGroup):
             ('bottom', "Bottom", "Params badge will appear at the bottom of the exported image file. It may appear cropped in Blender."),
             ('none', "None", "Params badge will not appear")
         ),
-        default='top')
+        default='none')
 
     saveLog = BoolProperty(
         name="Save log file",
@@ -67,12 +67,12 @@ class YafaRayLoggingProperties(bpy.types.PropertyGroup):
     saveHTML = BoolProperty(
         name="Save HTML file",
         description="Save HTML information/log file with the exported image files",
-        default=False)
+        default=True)
 
     savePreset = BoolProperty(
         name="Save Preset file",
         description="Save a preset file, with the Render Settings, with the exported image files",
-        default=False)
+        default=True)
 
     verbosityLevels=sorted((
             ('mute', "Mute (silent)", "Prints nothing", 0),
@@ -168,10 +168,20 @@ class YafaRayNoiseControlProperties(bpy.types.PropertyGroup):
         description="Detect noise in RGB components in addidion to pixel brightness",
         default=False)
         
+    dark_detection_type = EnumProperty(
+        name="Dark areas noise detection",
+        items=(
+            ('none', "None", "No special dark areas noise detection (default)"),
+            ('linear', "Linear", "Linearly change AA threshold depending on pixel brightness and Dark factor"),
+            ('curve', "Curve", "Change AA threshold based on a pre-computed curve")
+        ),
+        default="linear")
+        
     dark_threshold_factor = FloatProperty(
-        name="Dark areas noise detection factor",
+        name="Dark factor",
         description=("Factor used to reduce the AA threshold in dark areas."
-                     " It will reduce noise in dark areas, but noise in bright areas will take longer"),
+                     " It will reduce noise in dark areas, but noise in bright areas will take longer."
+                     " You probably need to increase the main AA threshold value if you use this parameter" ),
         min=0.0, max=1.0, precision=3,
         default=0.0)
 
@@ -703,25 +713,16 @@ def register():
         name="Tile order",
         description="Selects tiles order type",
         items=(
-            ('linear', "Linear", ""),
-            ('random', "Random", "")
+            ('linear', "Linear", "Render tiles appear in succesive lines until all render is complete."),
+            ('random', "Random", "Render tiles appear at random locations until all render is complete."),
+            ('centre', "Centre", "Render tiles appear around the centre of the image expanding until all render is complete.")
         ),
-        default='random')
+        default='centre')
 
     Scene.gs_auto_threads = BoolProperty(
         name="Auto threads",
         description="Activate thread number auto detection",
         default=True)
-
-    Scene.gs_photon_threads = IntProperty(
-        name="Threads Photon Maps",
-        description="Number of threads for photon mapping (it can make calculations faster or slower depending on hardware and OS)",
-        min=1, default=1)
-
-    Scene.gs_photon_auto_threads = BoolProperty(
-        name="Auto threads Photon Maps",
-        description="Thread number auto detection for photon mapping (it can make calculations faster or slower depending on hardware and OS)",
-        default=False)
 
     Scene.gs_clay_render = BoolProperty(
         name="Render clay",
@@ -795,10 +796,21 @@ def register():
         description="Min Ray Dist (default 0.00005). Change ONLY if artifacts or light leaks due to bad ray intersections. Increasing this value can led to artifacts and incorrect renders",
         min=0.00000001, max=10000, default=0.00005)
 
-    Scene.gs_premult = BoolProperty(
+    Scene.adv_base_sampling_offset = IntProperty(
+        name="Base Sampling Offset",
+        description="For multi-computer film generation, set a different sampling offset in each computer so they don't \"repeat\" the same samples. Separate them enough (at least the number of samples each computer is supposed to calculate)",
+        min=0, max=2000000000,
+        default=0)
+
+    Scene.gs_premult = EnumProperty(
         name="Premultiply",
         description="Premultipy Alpha channel for renders with transparent background",
-        default=True)
+        items=(
+            ('yes', "Yes", "Apply Alpha channel Premultiply"),
+            ('no', "No", "Don't apply Alpha channel Premultiply"),
+            ('auto', "Auto", "Automatically try to guess if Alpha channel Premultiply is needed depending on the file type (recommended)")
+        ),
+        default='auto')
 
     Scene.gs_transp_shad = BoolProperty(
         name="Transparent shadows",
@@ -823,7 +835,7 @@ def register():
     Scene.gs_secondary_file_output = BoolProperty(
         name="Secondary file output",
         description="Enable saving YafaRay render results at the same time as importing into Blender",
-        default=False)
+        default=True)
 
     Scene.gs_tex_optimization = EnumProperty(
         name="Textures optimization",
@@ -834,6 +846,61 @@ def register():
             ('none', "None", "No optimization, lossless and faster but high RAM usage")
         ),
         default='optimized')
+
+    Scene.gs_images_autosave_interval_seconds = FloatProperty(
+        name="Interval (s)",
+        description="Images AutoSave Interval (in seconds) to autosave partially rendered images. WARNING: short intervals can increase significantly render time.",
+        min=5.0, default=300.0, precision=1)
+
+    Scene.gs_images_autosave_interval_passes = IntProperty(
+        name="Interval (passes)",
+        description="Images AutoSave Interval (every X passes) to autosave partially rendered images.",
+        min=1, default=1)
+
+    Scene.gs_images_autosave_interval_type = EnumProperty(
+        name="Autosave interval",
+        description="Images AutoSave: type of interval",
+        items=(
+            ('pass-interval', "Passes interval", "Autosaves the image every X render AA passes"),
+            ('time-interval', "Time interval", "Autosaves the image every X seconds"),
+            ('none', "Disabled", "Image autosave will be disabled")
+        ),
+        default="none")
+
+    Scene.gs_film_save_load = EnumProperty(
+        name="Internal ImageFilm save/load",
+        description="Option to save / load the imageFilm, may be useful to continue interrupted renders. The ImageFilm file can be BIG and SLOW, especially when enabling many render passes.",
+        items=(
+            ('load-save', "Load and Save", "Loads the internal ImageFilm files at start (autodetecting binary/text format automatically). USE WITH CARE! It will also save the ImageFilm (in the selected binary or text format) with the images"),
+            ('save', "Save", "Saves the internal ImageFilm (in the selected binary or text format) with the images"),
+            ('none', "Disabled", "Image autosave will be disabled")
+        ),
+        default="none")
+
+    Scene.gs_film_autosave_interval_seconds = FloatProperty(
+        name="Interval (s)",
+        description="Internal ImageFilm AutoSave Interval (in seconds). WARNING: short intervals can increase significantly render time.",
+        min=5.0, default=300.0, precision=1)
+
+    Scene.gs_film_autosave_interval_passes = IntProperty(
+        name="Interval (passes)",
+        description="Internal ImageFilm AutoSave Interval (every X passes).",
+        min=1, default=1)
+
+    Scene.gs_film_autosave_interval_type = EnumProperty(
+        name="Autosave interval",
+        description="Internal ImageFilm AutoSave: type of interval",
+        items=(
+            ('pass-interval', "Passes interval", "Autosaves the image every X render AA passes"),
+            ('time-interval', "Time interval", "Autosaves the image every X seconds"),
+            ('none', "Disabled", "Image autosave will be disabled")
+        ),
+        default="none")
+
+    Scene.gs_film_save_binary_format = BoolProperty(
+        name="ImageFilm binary format",
+        description="If enabled, it will save the ImageFilm file in binary format (smaller and faster, but NOT portable among systems). By default this is enabled. This setting does not affect the Film loading, which autodetects the film format automatically.",
+        default=True)
         
     ######### YafaRays own image output property ############
     Scene.img_output = EnumProperty(
@@ -854,10 +921,35 @@ def register():
         description="Enable MultiLayer image export, only available in certain formats as EXR",
         default=False)
 
+    Scene.img_denoise = BoolProperty(
+        name="Denoise",
+        description="Enable Denoise for image export. Not available for HDR / EXR formats",
+        default=False)
+
+    Scene.img_denoiseHLum = IntProperty(
+        name="Denoise hLum",
+        description="Denoise h (luminance) property. Increase it to reduce brightness noise (but could blur the image!)",
+        min=1, max=40, default=5)
+
+    Scene.img_denoiseHCol = IntProperty(
+        name="Denoise hCol",
+        description="Denoise h (chrominance) property. Increase it to reduce color noise (but could blur the colors in the image!)",
+        min=1, max=40, default=5)
+
+    Scene.img_denoiseMix = FloatProperty(
+        name="Denoise Mix",
+        description="Proportion of denoised and original image. Recommended approx 0.8 (80% denoised + 20% original) to avoid banding artifacts in fully denoised images",
+        min=0.0, max=1.0, default=0.8, precision=2)
+
+    Scene.img_save_with_blend_file = BoolProperty(
+        name="Save with .blend file",
+        description="Save image/logs in a folder with same name as the .blend file plus suffix ""_render""",
+        default=True)
+
     Scene.img_add_blend_name = BoolProperty(
         name="Include .blend name",
         description="Include .blend name in the image filename",
-        default=False)
+        default=True)
         
     Scene.img_add_datetime = BoolProperty(
         name="Include date/time",
@@ -879,7 +971,7 @@ def register():
 
     Scene.intg_use_caustics = BoolProperty(
         name="Caustic Photons",
-        description="Enable photon map for caustics only",
+        description="Enable caustic photons processing in Direct Light integrator",
         default=False)
 
     Scene.intg_photons = IntProperty(
@@ -930,22 +1022,23 @@ def register():
         min=0.0, max=1.0,
         default=(0.9, 0.9, 0.9))
 
-    Scene.intg_enable_caustics = BoolProperty(
+    Scene.intg_photonmap_enable_caustics = BoolProperty(
         name="Caustic Photons",
-        description="Enable caustic photons processing",
+        description="Enable caustic photons processing in Photon Map integrator",
         default=True)
 
-    Scene.intg_enable_diffuse = BoolProperty(
+    Scene.intg_photonmap_enable_diffuse = BoolProperty(
         name="Diffuse Photons",
-        description="Enable diffuse photons processing",
+        description="Enable diffuse photons processing in Photon Map integrator",
         default=True)
 
     Scene.intg_photon_maps_processing = EnumProperty(
         name="Photon Maps processing",
         items=(
-            ('generate-only', 'Generate only', "Generate the Photon Maps in each render (default and recommended)"),
-            ('generate-save', 'Generate and save', "Generate the Photon Maps and save to a cache file so other renders can re-use the maps"),
-            ('load', 'Load', "Load the Photon Maps from cache files. USE WITH CARE, only for scenes where ONLY the camera changes, like fly-through scenes")
+            ('generate-only', 'Generate only', "Generate the Photon Maps in each render (default and RECOMMENDED)"),
+            ('generate-save', 'Generate and save', "Generate the Photon Maps and save them to files so they can be reloaded later"),
+            ('load', 'Load', "Load the Photon Maps from files. USE WITH CARE, only for scenes where ONLY the camera changes, like fly-through scenes"),
+            ('reuse-previous', 'Reuse previous', "Reuse previously generated Photon Maps from memory. USE WITH CARE, only for scenes where ONLY the camera changes, like fly-through scenes")            
         ),
         default='generate-only')
 
@@ -1118,8 +1211,6 @@ def unregister():
     Scene.gs_tile_size
     Scene.gs_tile_order
     Scene.gs_auto_threads
-    Scene.gs_photon_threads
-    Scene.gs_photon_auto_threads
     Scene.gs_clay_render
     Scene.gs_clay_render_keep_transparency
     Scene.gs_clay_render_keep_normals
@@ -1127,23 +1218,36 @@ def unregister():
     Scene.gs_clay_sigma
     Scene.gs_clay_col
     Scene.gs_mask_render
-    Scene.gs_draw_params
     Scene.bg_transp
     Scene.bg_transp_refract
     Scene.adv_auto_shadow_bias_enabled
     Scene.adv_shadow_bias_value
     Scene.adv_auto_min_raydist_enabled
     Scene.adv_min_raydist_value
-    Scene.gs_custom_string
+    Scene.adv_base_sampling_offset
+    
     Scene.gs_premult
     Scene.gs_transp_shad
     Scene.gs_show_sam_pix
     Scene.gs_type_render
     Scene.gs_secondary_file_output
     Scene.gs_tex_optimization
+    Scene.gs_images_autosave_interval_seconds
+    Scene.gs_images_autosave_interval_passes
+    Scene.gs_images_autosave_interval_type
+    Scene.gs_film_save_load
+    Scene.gs_film_autosave_interval_seconds
+    Scene.gs_film_autosave_interval_passes
+    Scene.gs_film_autosave_interval_type
+    Scene.gs_film_save_binary_format
 
     Scene.img_output
     Scene.img_multilayer
+    Scene.img_denoise
+    Scene.img_denoiseHLum
+    Scene.img_denoiseHCol
+    Scene.img_denoiseMix
+    Scene.img_save_with_blend_file
     Scene.img_add_blend_name
     Scene.img_add_datetime
 
@@ -1157,8 +1261,8 @@ def unregister():
     Scene.intg_AO_samples
     Scene.intg_AO_distance
     Scene.intg_AO_color
-    Scene.intg_enable_caustics
-    Scene.intg_enable_diffuse
+    Scene.intg_photonmap_enable_caustics
+    Scene.intg_photonmap_enable_diffuse
     Scene.intg_photon_maps_processing
     Scene.intg_bounces
     Scene.intg_diffuse_radius

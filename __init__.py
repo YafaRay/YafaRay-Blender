@@ -24,18 +24,26 @@ import ctypes
 
 PLUGIN_PATH = os.path.join(__path__[0], 'bin', 'plugins')
 BIN_PATH = os.path.join(__path__[0], 'bin')
-YAF_ID_NAME = "YAFA_E3_RENDER"
+YAF_ID_NAME = "YAFA_V3_RENDER"
+
+# Version to be automatically populated during the build process, getting the version from git tags
+# for example:
+# sed -i "s/(devel)/$(git --git-dir=/yafaray/src/Blender-Exporter/.git --work-tree=/yafaray/src/Blender-Exporter describe --dirty --always --tags)/g" "/yafaray/linux/build/yafaray_v3/__init__.py"
+YAFARAY_EXPORTER_VERSION = "(devel)"
 
 sys.path.append(BIN_PATH)
 
 bl_info = {
-    "name": "YafaRay-E v3 Exporter",
-    "description": "YafaRay-E integration for blender",
+    "name": "YafaRay v3 Exporter",
+    "description": "YafaRay integration for blender",
     "author": "Shuvro Sarker, Kim Skoglund (Kerbox), Pedro Alcaide (povmaniaco),"
               "Paulo Gomes (tuga3d), Michele Castigliego (subcomandante),"
               "Bert Buchholz, Rodrigo Placencia (DarkTide),"
               "Alexander Smirnov (Exvion), Olaf Arnold (olaf), David Bluecame",
-    "version": ('Experimental', 3, 0, 0),
+    # Version to be automatically populated during the build process, getting the version from git tags
+    # for example:
+    # sed -i "s/(devel)/$(git --git-dir=/yafaray/src/Blender-Exporter/.git --work-tree=/yafaray/src/Blender-Exporter describe --dirty --always --tags)/g" "/yafaray/linux/build/yafaray_v3/__init__.py"
+    "version": ("(devel)", ""),
     "blender": (2, 7, 7),
     "location": "Info Header > Engine dropdown menu",
     "wiki_url": "http://www.yafaray.org/community/forum",
@@ -43,43 +51,11 @@ bl_info = {
     "category": "Render"
     }
 
-# Preload needed libraries
-# Loading order of the dlls is sensible please do not alter it
-if sys.platform == 'win32':
-    if sys.maxsize == 2**63 - 1:    # Windows 64bit system
-        for file in os.listdir(BIN_PATH):
-            # load dll's from a MSVC installation
-            if file in {'yafaray_e3_core.dll'}:
-                dllArray = ['zlib1', 'iconv', 'zlib', 'libpng15', 'libxml2', 'yafaray_e3_core', 'yafaray_e3_plugin']
-                break
-            # load dll's from a MinGW64 installation
-            else:
-                dllArray = ['libwinpthread-1', 'libgcc_s_seh-1', 'libstdc++-6', 'libiconv-2', 'libzlib1', 'libxml2-2', 'libHalf', 'libIex', 'libImath', 'libIlmThread', 'libIlmImf', 'libjpeg-8', 'libpng16', 'libtiff-5', 'libbz2-1', 'libfreetype-6', 'libboost_system-mt', 'libboost_filesystem-mt', 'libboost_serialization', 'libyafaray_e3_core', 'libyafaray_e3_plugin']
+# Set Library Search options
+if sys.platform == 'win32':   #I think this is the easiest and most flexible way to set the search options for Windows DLL
+    os.environ['PATH'] = os.path.dirname(__file__) + '\\bin;' + os.environ['PATH']
+# For Linux and MacOSX, set the RPATH in all the .so and .dylib libraries to relative paths respect to their location 
 
-    else:    # Windows 32bit system
-        for file in os.listdir(BIN_PATH):
-            # load dll's from a MSVC installation
-            if file in {'yafaray_e3_core.dll'}:
-                dllArray = ['zlib1', 'iconv', 'zlib', 'libpng15', 'libxml2', 'yafaray_e3_core', 'yafaray_e3_plugin']
-                break
-            # load dll's from a MinGW32 installation
-            else:
-                dllArray = ['libwinpthread-1', 'libgcc_s_sjlj-1', 'libstdc++-6', 'libiconv-2', 'libzlib1', 'libxml2-2', 'libHalf', 'libIex', 'libImath', 'libIlmThread', 'libIlmImf', 'libjpeg-8', 'libpng16', 'libtiff-5', 'libbz2-1', 'libfreetype-6', 'libboost_system-mt', 'libboost_filesystem-mt', 'libboost_serialization', 'libyafaray_e3_core', 'libyafaray_e3_plugin']
-
-elif sys.platform == 'darwin':
-    dllArray = ['libyafaray_e3_core.dylib', 'libyafaray_e3_plugin.dylib']
-else:
-    if sys.maxsize == 2**63 - 1:    # Linux 64bit system
-        dllArray = ['libHalf.so.6.0.0', 'libIex.so.6.0.0', 'libImath.so.6.0.0', 'libIlmThread.so.6.0.0', 'libIlmImf.so.6.0.0', 'libpython3.4m.so.1.0', 'libjpeg.so.62.0.0', 'libz.so.1.2.3.4', 'libpng12.so.0.44.0', 'libtiff.so.4.3.3', 'libfreetype.so.6.6.0', 'libboost_system-mt', 'libboost_filesystem-mt', 'libboost_serialization', 'libyafaray_e3_core.so', 'libyafaray_e3_plugin.so']
-
-    else:   # Linux 32bit system
-        dllArray = ['libHalf.so.6.0.0', 'libIex.so.6.0.0', 'libImath.so.6.0.0', 'libIlmThread.so.6.0.0', 'libIlmImf.so.6.0.0', 'libpython3.4m.so.1.0', 'libjpeg.so.62.0.0', 'libz.so.1.2.3.4', 'libpng12.so.0.44.0', 'libtiff.so.4.3.3', 'libfreetype.so.6.6.0', 'libboost_system-mt', 'libboost_filesystem-mt', 'libboost_serialization', 'libyafaray_e3_core.so', 'libyafaray_e3_plugin.so']
-
-for dll in dllArray:
-    try:
-        ctypes.cdll.LoadLibrary(os.path.join(BIN_PATH, dll))
-    except Exception as e:
-        print("ERROR: Failed to load library {0}, {1}".format(dll, repr(e)))
 
 if "bpy" in locals():
     import imp
@@ -94,7 +70,8 @@ else:
     from . import io
     from . import ui
     from . import ot
-
+    from bpy.types import AddonPreferences
+    from bpy.props import IntProperty
 
 @persistent
 def load_handler(dummy):
@@ -115,27 +92,46 @@ def load_handler(dummy):
     # convert image output file type setting from blender to yafaray's file type setting on file load, so that both are the same...
     if bpy.context.scene.render.image_settings.file_format is not bpy.context.scene.img_output:
         bpy.context.scene.img_output = bpy.context.scene.render.image_settings.file_format
-    
+
+class YafaRay_Preferences(AddonPreferences):
+    bl_idname = __name__
+
+    yafaray_computer_node = IntProperty(
+        name="YafaRay computer node",
+        description='Computer node number in multi-computer render environments / render farms',
+        default=0, min=0, max=1000
+    )
+
+    def draw(self, context):
+        layout = self.layout
+        split = layout.split()
+        col = split.column()
+        col.prop(self, "yafaray_computer_node")
+        col = col.column()
+        col.label("Click Save User Settings below to store the changes permanently in YafaRay!", icon="INFO")
 
 def register():
+    bpy.utils.register_class(YafaRay_Preferences)
     prop.register()
     bpy.utils.register_module(__name__)
     bpy.app.handlers.load_post.append(load_handler)
     # register keys for 'render 3d view', 'render still' and 'render animation'
-    km = bpy.context.window_manager.keyconfigs.addon.keymaps.new(name='Screen')
-    kmi = km.keymap_items.new('render.render_view', 'F12', 'PRESS', False, False, False, True)
-    kmi = km.keymap_items.new('render.render_animation', 'F12', 'PRESS', False, False, True, False)
-    kmi = km.keymap_items.new('render.render_still', 'F12', 'PRESS', False, False, False, False)
+    if bpy.context.window_manager.keyconfigs.addon is not None:
+        km = bpy.context.window_manager.keyconfigs.addon.keymaps.new(name='Screen')
+        kmi = km.keymap_items.new('render.render_view', 'F12', 'PRESS', False, False, False, True)
+        kmi = km.keymap_items.new('render.render_animation', 'F12', 'PRESS', False, False, True, False)
+        kmi = km.keymap_items.new('render.render_still', 'F12', 'PRESS', False, False, False, False)
 
 
 def unregister():
     prop.unregister()
     # unregister keys for 'render 3d view', 'render still' and 'render animation'
-    kma = bpy.context.window_manager.keyconfigs.addon.keymaps['Screen']
-    for kmi in kma.keymap_items:
-        if kmi.idname == 'render.render_view' or kmi.idname == 'render.render_animation' \
-        or kmi.idname == 'render.render_still':
-            kma.keymap_items.remove(kmi)
+    if bpy.context.window_manager.keyconfigs.addon is not None:
+        kma = bpy.context.window_manager.keyconfigs.addon.keymaps['Screen']
+        for kmi in kma.keymap_items:
+            if kmi.idname == 'render.render_view' or kmi.idname == 'render.render_animation' \
+            or kmi.idname == 'render.render_still':
+                kma.keymap_items.remove(kmi)
     bpy.utils.unregister_module(__name__)
     bpy.app.handlers.load_post.remove(load_handler)
 

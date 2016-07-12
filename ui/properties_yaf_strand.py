@@ -21,12 +21,12 @@
 from bpy.types import Panel
 
 
-class YAFA_E3_PT_strand_settings(Panel):
+class YAFA_V3_PT_strand_settings(Panel):
     bl_label = "Strand Settings"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "particle"
-    COMPAT_ENGINES = {'YAFA_E3_RENDER'}
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     @classmethod
     def poll(cls, context):

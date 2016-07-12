@@ -86,6 +86,7 @@ def exportAA(yi, scene):
     yi.paramsSetFloat("AA_light_sample_multiplier_factor", scene.yafaray.noise_control.light_sample_multiplier_factor)
     yi.paramsSetFloat("AA_indirect_sample_multiplier_factor", scene.yafaray.noise_control.indirect_sample_multiplier_factor)
     yi.paramsSetBool("AA_detect_color_noise", scene.yafaray.noise_control.detect_color_noise)
+    yi.paramsSetString("AA_dark_detection_type", scene.yafaray.noise_control.dark_detection_type)
     yi.paramsSetFloat("AA_dark_threshold_factor", scene.yafaray.noise_control.dark_threshold_factor)
     yi.paramsSetInt("AA_variance_edge_size", scene.yafaray.noise_control.variance_edge_size)
     yi.paramsSetInt("AA_variance_pixels", scene.yafaray.noise_control.variance_pixels)
@@ -176,31 +177,53 @@ def exportRenderSettings(yi, scene):
     if scene.name == "preview" and bpy.data.scenes[0].yafaray.preview.enable:
         yi.paramsSetBool("show_sam_pix", False)
 
+    enable_premult = True
+    if scene.gs_premult == "auto":
+        if scene.img_output == "PNG" or scene.img_output == "JPEG":
+            enable_premult = False
+        else:
+            enable_premult = True
+    elif scene.gs_premult == "yes":
+        enable_premult = True
+    else:
+        enable_premult = False
+
     if scene.gs_type_render == "file" or scene.gs_type_render == "xml":
-        yi.paramsSetBool("premult", scene.gs_premult)
+        yi.paramsSetBool("premult", enable_premult)
+
     else:
         yi.paramsSetBool("premult", True)   #We force alpha premultiply when rendering into Blender as it expects premultiplied input
-        yi.paramsSetBool("premult2", scene.gs_premult)   #In case we use a secondary file output, we set the premultiply according to the Blender setting
+        yi.paramsSetBool("premult2", enable_premult)   #In case we use a secondary file output, we set the premultiply according to the Blender setting
 
     yi.paramsSetInt("tile_size", scene.gs_tile_size)
     yi.paramsSetString("tiles_order", scene.gs_tile_order)
 
     if scene.gs_auto_threads:
         yi.paramsSetInt("threads", -1)
-    else:
-        yi.paramsSetInt("threads", scene.gs_threads)
-
-    if scene.gs_photon_auto_threads:
         yi.paramsSetInt("threads_photons", -1)
     else:
-        yi.paramsSetInt("threads_photons", scene.gs_photon_threads)
+        yi.paramsSetInt("threads", scene.gs_threads)
+        yi.paramsSetInt("threads_photons", scene.gs_threads)
 
     yi.paramsSetString("background_name", "world_background")
+    
+    yi.paramsSetString("images_autosave_interval_type", scene.gs_images_autosave_interval_type)
+    yi.paramsSetInt("images_autosave_interval_passes", scene.gs_images_autosave_interval_passes)
+    yi.paramsSetFloat("images_autosave_interval_seconds", scene.gs_images_autosave_interval_seconds)
+
+    yi.paramsSetString("film_save_load", scene.gs_film_save_load)
+    yi.paramsSetBool("film_save_binary_format", scene.gs_film_save_binary_format)
+    yi.paramsSetString("film_autosave_interval_type", scene.gs_film_autosave_interval_type)
+    yi.paramsSetInt("film_autosave_interval_passes", scene.gs_film_autosave_interval_passes)
+    yi.paramsSetFloat("film_autosave_interval_seconds", scene.gs_film_autosave_interval_seconds)
 
     yi.paramsSetBool("adv_auto_shadow_bias_enabled", scene.adv_auto_shadow_bias_enabled)
     yi.paramsSetFloat("adv_shadow_bias_value", scene.adv_shadow_bias_value)
     yi.paramsSetBool("adv_auto_min_raydist_enabled", scene.adv_auto_min_raydist_enabled)
     yi.paramsSetFloat("adv_min_raydist_value", scene.adv_min_raydist_value)
+    yi.paramsSetFloat("adv_min_raydist_value", scene.adv_min_raydist_value)
+    yi.paramsSetInt("adv_base_sampling_offset", scene.adv_base_sampling_offset)
+    yi.paramsSetInt("adv_computer_node", bpy.context.user_preferences.addons["yafaray_v3"].preferences.yafaray_computer_node)
 
 
 def setLoggingAndBadgeSettings(yi, scene):
