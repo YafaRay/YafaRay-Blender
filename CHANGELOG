@@ -1,14 +1,13 @@
-YafaRay-E (Experimental) Change Log (current version at the top, oldest at the bottom)
-
-Note: this CHANGELOG file only shows the YafaRay-E releases and changes, not the official stable YafaRay changes.
-
-For more information about releases and changes see: https://github.com/DavidBluecame/Blender-Exporter/releases
-
 Important: read the README file for installation instructions and important information about YafaRay
 
 
-Yafaray-E v2.1.1 (2016-02-06) for Blender 2.76b:
-------------------------------------------------
+YafaRay v2.1.1 (2016-04-16) for Blender 2.76b:
+----------------------------------------------
+No changes respect to Experimental v2.1.1, only version changes (removed "Experimental")
+
+
+YafaRay-E (experimental) v2.1.1 (2016-02-06) for Blender 2.76b:
+----------------------------------------------
 Note: there has been important changes and bug fixes in this version. They have solved some long-standing issues but perhaps they could cause new issues and unexpected results, so we have to keep an eye on them.
 
 * IMPORTANT: Fix for incorrect IBL lighting in World Background Texture when set to Angular. See: http://www.yafaray.org/node/714
@@ -39,7 +38,7 @@ Note: there has been important changes and bug fixes in this version. They have 
 Important note: YafaRay only supports *one* scene in the .blend file. If you have more than one scene, it could cause unexpected results and problems in the new Material Preview Controls.
 
 
-Yafaray-E v2.1.0 (2016-01-31) for Blender 2.76b:
+YafaRay-E (experimental) v2.1.0 (2016-01-31) for Blender 2.76b:
 ------------------------------------------------
 
 - Added Normal Coordinates for textures, so you can use a gradient texture mapped to normal coordinates to simulate, for example, some cloth materials (see http://yafaray.org/node/188 )
@@ -64,7 +63,7 @@ Yafaray-E v2.1.0 (2016-01-31) for Blender 2.76b:
     * Background selection: added a parameter to select the desired background: "checker" is the default, "none" is a white background and "world" would be the blend scene world definition. Selecting "world" would allow a more realistic and customized material preview, but it will probably be noisier and slower (depending on the samples selected in the World definition)
 
 
-Yafaray-E v2.0.2 (2016-01-26) for Blender 2.76b:
+YafaRay-E (experimental) v2.0.2 (2016-01-26) for Blender 2.76b:
 ------------------------------------------------
 - Fixed crash when Blend materials were used and their components were also blend, which had some component materials missing
 - Max value for the dark noise factor parameter expanded to 1.0 to allow even darker areas to have better AA sampling
@@ -72,12 +71,12 @@ Yafaray-E v2.0.2 (2016-01-26) for Blender 2.76b:
 - Fix for black dots using HDRI spherical and Coated Glossy
 
 
-Yafaray-E v2.0.1 (2016-01-05) for Blender 2.76b:
+YafaRay-E (experimental) v2.0.1 (2016-01-05) for Blender 2.76b:
 ------------------------------------------------
 - Fixed Instances not working in v2.0.0 (regression)
 
 
-Yafaray-E v2.0.0 (2016-01-01) for Blender 2.76b:
+YafaRay-E (experimental) v2.0.0 (2016-01-01) for Blender 2.76b:
 ------------------------------------------------
 - STRUCTURAL CHANGES to implement Render Passes. The Passes are especially intended for Direct Light and Photon Mapping integrators. Some passes may not work (or work incorrectly) in other integrators.
 - STRUCTURAL CHANGES to implement Render Views (Stereo3D / MultiView)
@@ -100,7 +99,7 @@ Yafaray-E v2.0.0 (2016-01-01) for Blender 2.76b:
 
 
 
-Yafaray-E v1.1.0 (2015-11-06) for Blender 2.76:
+YafaRay-E (experimental) v1.1.0 (2015-11-06) for Blender 2.76:
 -----------------------------------------------
 - Changes to the Core code and build files to enable building for Mac OSX 64bit (v10.6 or higher), based on the excellent work from Jens Verwiebe. Thank you very much, Jens!!
 
@@ -116,7 +115,7 @@ Yafaray-E v1.1.0 (2015-11-06) for Blender 2.76:
 
 
 
-Yafaray-E v1.0.0 (2015-10-13) for Blender 2.76:
+YafaRay-E (experimental) v1.0.0 (2015-10-13) for Blender 2.76:
 -----------------------------------------------
 Note: from v1.0.0 I will no longer use the suffix "beta", as all YafaRay-Experimental versions are inherently betas ;-). I will use for version scheme: "Major.Minor.Bugfix". Major will be very important and structural changes with possible API breakage, Minor will be new and modified functionality without API breakage, Bugfix will be small changes and bugfixes.
 
@@ -173,7 +172,7 @@ https://github.com/DavidBluecame/Blender-Exporter/commit/70138b7ec2c2aa3f94d3c82
 
 
 
-Yafaray-E v0.1.99-beta4c (2015-07-29) for Blender 2.75 RC:
+YafaRay-E (experimental) v0.1.99-beta4c (2015-07-29) for Blender 2.75 RC:
 ----------------------------------------------------------
 Note: builds were not created for this version, as it was only used for limited-scale testing. However, the changes made in this version remain in newer Releases and builds.
 
@@ -207,7 +206,7 @@ This new parameter is at the bottom of the material panel, in the new advanced s
 
 
 
-Yafaray-E v0.1.99-beta4 (2015-06-20) for Blender 2.75 RC:
+YafaRay-E (experimental) v0.1.99-beta4 (2015-06-20) for Blender 2.75 RC:
 ---------------------------------------------------------
 
 - Changes to the blend material "component" material1,material2 handling: http://www.yafaray.org/node/546
@@ -226,7 +225,7 @@ WARNING: this change breaks backwards compatibility. When opening a .blend creat
 
 
 
-Yafaray-E v0.1.99-beta3 (2015-05-02) for Blender 2.74.5 (up to Blender builbots for 2015-05-02):
+YafaRay-E (experimental) v0.1.99-beta3 (2015-05-02) for Blender 2.74.5 (up to Blender builbots for 2015-05-02):
 ------------------------------------------------------------------------------------------------
 Blender made a change to their API in their development branch 2.74.4 to include MultiView. That change caused YafaRay to render black images despite being working fine.
 
@@ -259,7 +258,7 @@ Unfortunately due to Blender API limitations, in some of the new texture sliders
 
 
 
-Yafaray-E v0.1.99-beta2 (2015-04-18) for Blender 2.74:
+YafaRay-E (experimental) v0.1.99-beta2 (2015-04-18) for Blender 2.74:
 -------------------------------------------------------
 - New Clay Material, with a small correction since the previous beta1
 - Fix for bad NaN normals that happened sometimes.
@@ -268,7 +267,7 @@ http://www.yafaray.org/community/forum/viewtopic.php?f=23&t=5084
 
 
 
-Yafaray-E v0.1.99-beta1 (2015-04-11) for Blender 2.74:
+YafaRay-E (experimental) v0.1.99-beta1 (2015-04-11) for Blender 2.74:
 ------------------------------------------------------
 Based on the official stable YafaRay v0.1.5 git version
 
