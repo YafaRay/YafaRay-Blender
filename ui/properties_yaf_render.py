@@ -32,6 +32,16 @@ class YAFA_V3_PT_Render(RenderButtonsPanel, Panel):
         layout = self.layout
         rd = context.scene.render
 
+        if context.scene.img_save_with_blend_file:
+            row = layout.row()
+            row.label("Parameter 'Save with Blend file' is enabled in the Output options.", icon="INFO")
+            row = layout.row()
+            row.label("Be aware that the first time you render, it will change *automatically* the image output folder", icon="INFO")
+        if context.scene.gs_secondary_file_output:
+            row = layout.row()
+            row.label("Parameter 'Secondary File Output' is enabled in the General Settings options.", icon="INFO")
+            row = layout.row()
+            row.label("Be aware that even when rendering into Blender, it will save images to the image output folder", icon="INFO")
         row = layout.row()
         row.operator("render.render_still", text="Image", icon='RENDER_STILL')
         row.operator("render.render_animation", text="Animation", icon='RENDER_ANIMATION')
