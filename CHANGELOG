@@ -1,9 +1,9 @@
 Important: read the README file for installation instructions and important information about YafaRay
 
-YafaRay v3.0.0-ALPHA11 (only for developers testing) (2016-07-05) for Blender 2.77a:
-----------------------------------------------
+YafaRay v3.0.0-beta (2016-07-12) for Blender 2.77a:
+---------------------------------------------------
 ** IMPORTANT **
-----------------------------------------------
+---------------------------------------------------
 The new YafaRay-v3 will *NOT* replace the existing YafaRay versions, and it can be installed *in addition* to them.
 So, YafaRay-v3 *must* be enabled in Blender user preferences, and in your current YafaRay scenes you have to switch to the renderer "YafaRay-v3" to use the new version.
 
@@ -17,14 +17,14 @@ YafaRay v3 has only limited support for multiple YafaRay versions and forks inst
 If you have any of these problems, remove any other yafaray folders (or derived forks) from the Blender addons folder and try again. This typically solves most of the problems stated above.
 
 In v3, support has been DROPPED for Windows XP and MacOSX v10.6
-----------------------------------------------
+---------------------------------------------------
 
-YafaRay-v3 has gone through deep changes to the code. Even if there are no apparent big changes, the underlying code has undergone a lot of modifications. So, this is an ALPHA/unstable version, only for developers testing
 
 Major codebase changes in v3.0.0:
+---------------------------------
 * Dropped support for Windows XP and MacOSX v10.6. Sorry, but the code changes required this.
 
-* Updated for Blender 2.77 (using Python 3.5).
+* Updated for Blender 2.77a (using Python 3.5).
 
 * Codebase updated from old standard C++98 to the new C++11. This will allow better and easier code maintenance as well as access to newer C++ features to improve YafaRay even more in the future.
 
@@ -38,6 +38,7 @@ Major codebase changes in v3.0.0:
 
 
 Feature changes/additions in v3.0.0:
+------------------------------------
 * Multithreaded Photon Map generation, including multithreaded Photon KDTree building: this should greatly improve render speeds when using Direct Light+caustic map, Photon Map, SPPM or Path Tracing+photon. 
 
 * Ability to Save/Load/Reuse photon maps: this should greatly improve render speeds in scenes where only camera moves. See: http://yafaray.org/node/460. WARNING: When loading/reusing Photon Map files, the User is responsible to ensure they match the scene. If the User loads inadequate photon maps, the render results could be totally wrong or even have crashes. USE WITH CARE.
@@ -122,12 +123,17 @@ Each computer will generate a different Film. If one of the nodes is set to "Loa
 
 * Added SmartIBL functionality to reduce noise when using World HDRI textures for lighting. The functionality adds a new parameter "SmartIBL blur" that blurs the World texture used for lighting without affecting the world texture used for reflections, etc. High values can cause slowdowns at render process start. This was requested at http://www.yafaray.org/node/566 and http://www.yafaray.org/node/727
 
+* Added IBL sampling clamp to reduce noise when using World HDRI textures for lighting. In some cases blur is not good enough to remove noise and it causes blurred shadows. IBL clamping would help sometimes to reduce noise so blur is not needed, but it could lead to inexact overall lighting, etc. This was requested at http://www.yafaray.org/node/566 and http://www.yafaray.org/node/727
+
 * Added Texture Color Controls to be able to control the texture brigthness, contrast, saturation, hue, etc, as requested at http://www.yafaray.org/node/334
 
 * Added Texture Color Ramps, to be able to create much more interesting procedural textures, also requested at http://www.yafaray.org/node/334
 
+* Implemented all remaining progressions in the Blend texture (only linear was implemented), requested at http://www.yafaray.org/node/313
+
 
 Bug fixes in v3.0.0:
+--------------------
 * Fixed: Soft Spotlight too dark when nearer than 1.0 blender unit from objects. See: http://yafaray.org/node/587
 
 * Fixed: Rough Glass not working in Blend materials. See: http://yafaray.org/node/365
