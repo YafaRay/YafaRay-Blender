@@ -15,6 +15,10 @@ YafaRay v3 has only limited support for multiple YafaRay versions and forks inst
 If you have any of these problems, remove any other yafaray folders (or derived forks) from the Blender addons folder and try again. This typically solves most of the problems stated above.
 
 In v3, support has been DROPPED for Windows XP and MacOSX v10.6
+
+* Important note *: Now by default YafaRay will save the images at the same time as rendering into Blender ("Secondary File Output"). This can be disabled.
+
+Also, YafaRay, by default, ** will change the output folder/file name ** so the images are exported to a subfolder with the same name as the .blend file with suffix _render. This is for convenience and can be disabled, but if you leave the default it could cause you confusion especially when switching to other renderers.
 ----------------------------------------------
 
 Don't use the Blender from the distro repositories. Download the Blender official builds from:
