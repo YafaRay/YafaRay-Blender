@@ -203,8 +203,8 @@ class yafWorld:
         if world is not None:
             yi.paramsSetBool("cast_shadows", world.bg_cast_shadows)
             yi.paramsSetBool("cast_shadows_sun", world.bg_cast_shadows_sun)
-            yi.paramsSetBool("shoot_caustics", world.bg_with_caustic)
-            yi.paramsSetBool("shoot_diffuse", world.bg_with_diffuse)
+            yi.paramsSetBool("with_caustic", world.bg_with_caustic)
+            yi.paramsSetBool("with_diffuse", world.bg_with_diffuse)
             
         yi.createBackground("world_background")
 

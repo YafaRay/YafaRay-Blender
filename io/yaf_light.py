@@ -260,8 +260,8 @@ class yafLight:
         yi.paramsSetFloat("power", power)
         yi.paramsSetBool("light_enabled", lamp.light_enabled)
         yi.paramsSetBool("cast_shadows", lamp.cast_shadows)
-        yi.paramsSetBool("shoot_caustics", lamp.caustic_photons)
-        yi.paramsSetBool("shoot_diffuse", lamp.diffuse_photons)
+        yi.paramsSetBool("with_caustic", lamp.caustic_photons)
+        yi.paramsSetBool("with_diffuse", lamp.diffuse_photons)
         yi.paramsSetBool("photon_only", lamp.photon_only)
         yi.createLight(name)
 

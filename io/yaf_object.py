@@ -308,8 +308,8 @@ class yafObject(object):
         self.yi.paramsSetFloat("power", obj.bgp_power)
         self.yi.paramsSetInt("samples", obj.bgp_samples)
         self.yi.paramsSetInt("object", ID)
-        self.yi.paramsSetBool("shoot_caustics", obj.bgp_with_caustic)
-        self.yi.paramsSetBool("shoot_diffuse", obj.bgp_with_diffuse)
+        self.yi.paramsSetBool("with_caustic", obj.bgp_with_caustic)
+        self.yi.paramsSetBool("with_diffuse", obj.bgp_with_diffuse)
         self.yi.paramsSetBool("photon_only", obj.bgp_photon_only)
         self.yi.createLight(obj.name)
 
