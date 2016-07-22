@@ -289,6 +289,9 @@ class YafaRayRenderPassesProperties(bpy.types.PropertyGroup):
             ('debug-nu', "Debug: NU", "Debug - surface NU", 308),
             ('debug-normal-geom', "Debug: Normals (geometric)", "Normals (geometric, no smoothness)", 309),
             ('debug-normal-smooth', "Debug: Normals (smooth)", "Normals (including smoothness)", 310),
+            ('debug-light-estimation-light-dirac', "Debug: LE Light Dirac", "Light Estimation (Dirac lights)", 311),
+            ('debug-light-estimation-light-sampling', "Debug: LE Light Sampling", "Light Estimation (Area lights, light sampling)", 312),
+            ('debug-light-estimation-mat-sampling', "Debug: LE Mat Sampling", "Light Estimation (Area lights, material sampling)", 313),
         ), key=lambda index: index[1])
 
     renderInternalPassAdvanced=sorted((
