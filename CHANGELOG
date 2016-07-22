@@ -1,6 +1,6 @@
 Important: read the README file for installation instructions and important information about YafaRay
 
-YafaRay v3.0.1-beta (2016-07-22) for Blender 2.77a:
+YafaRay v3.0.2-beta (2016-07-22) for Blender 2.77a:
 ---------------------------------------------------
 ** IMPORTANT **
 ---------------------------------------------------
@@ -22,6 +22,10 @@ In v3, support has been DROPPED for Windows XP and MacOSX v10.6
 
 Also, YafaRay, by default, ** will change the output folder/file name ** so the images are exported to a subfolder with the same name as the .blend file with suffix _render. This is for convenience and can be disabled, but if you leave the default it could cause you confusion especially when switching to other renderers.
 ---------------------------------------------------
+
+Changes from v3.0.1-beta to v3.0.2-beta:
+----------------------------------------
+* ImageFilm load, fix failing load when compiling with GCC v4.8.4
 
 Changes from v3.0.0-beta to v3.0.1-beta:
 ----------------------------------------
