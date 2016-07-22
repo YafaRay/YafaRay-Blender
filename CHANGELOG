@@ -1,6 +1,6 @@
 Important: read the README file for installation instructions and important information about YafaRay
 
-YafaRay v3.0.0-beta (2016-07-12) for Blender 2.77a:
+YafaRay v3.0.1-beta (2016-07-22) for Blender 2.77a:
 ---------------------------------------------------
 ** IMPORTANT **
 ---------------------------------------------------
@@ -22,6 +22,23 @@ In v3, support has been DROPPED for Windows XP and MacOSX v10.6
 
 Also, YafaRay, by default, ** will change the output folder/file name ** so the images are exported to a subfolder with the same name as the .blend file with suffix _render. This is for convenience and can be disabled, but if you leave the default it could cause you confusion especially when switching to other renderers.
 ---------------------------------------------------
+
+Changes from v3.0.0-beta to v3.0.1-beta:
+----------------------------------------
+* Important: Background IBL light sampling fix. This solves a long standing problem with incorrect background lighting accuracy and fireflies. (http://yafaray.org/node/752, http://yafaray.org/node/727, http://yafaray.org/node/566).
+
+* IBL clamp sampling parameter no longer needed thanks to the fix above, so it has been removed from the exporter.
+
+* Fix for crash when using yafaray-xml without specifying the type of badge to be used.
+
+* yafaray-xml: new "-ccd" "console-colors-disabled". If specified, disables the Console colors ANSI codes, useful for some 3rd party software that cannot handle ANSI codes well.
+
+* Light photon control: changed back control param names from "shoot_" to "with_" as originally for better backwards compatibility with 3rd party exporters
+
+* Render Passes: added "generic" external render passes for other Exporters and plugins other than Blender Exporter
+
+* Render passes: added new debug passes for diagnosing light estimation problems
+
 
 
 Major codebase changes in v3.0.0:
