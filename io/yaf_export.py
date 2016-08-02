@@ -447,6 +447,10 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         elif scene.gs_type_render == "xml":
             self.yi.printInfo("Exporter: Writing XML to file {0}".format(self.outputFile))
+            self.yi.paramsSetBool("denoiseEnabled", scene.img_denoise)
+            self.yi.paramsSetInt("denoiseHLum", scene.img_denoiseHLum)
+            self.yi.paramsSetInt("denoiseHCol", scene.img_denoiseHCol)
+            self.yi.paramsSetFloat("denoiseMix", scene.img_denoiseMix)
             self.yi.render(self.co)
 
         else:
