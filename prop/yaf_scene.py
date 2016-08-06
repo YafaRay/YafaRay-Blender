@@ -136,6 +136,19 @@ class YafaRayLoggingProperties(bpy.types.PropertyGroup):
         subtype="FILE_PATH",
         default="")
 
+    customFont = StringProperty(
+        name="Font path",
+        description=("Path to params badge TTF font."
+                     "If blank or wrong, the default YafaRay font will be used"),
+        subtype="FILE_PATH",
+        default="")
+
+    fontScale = FloatProperty(
+        name="Font scale",
+        description=("Font scaling factor."),
+        min=0.2, max=5.0, precision=1,
+        default=1.0)
+
     
 class YafaRayNoiseControlProperties(bpy.types.PropertyGroup):
     resampled_floor = FloatProperty(

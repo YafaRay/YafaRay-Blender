@@ -163,6 +163,11 @@ class YAFA_V3_MT_logging(RenderButtonsPanel, Panel):
                 row.prop(scene.yafaray.logging, "comments")
                 row = layout.row()
                 row.prop(scene.yafaray.logging, "customIcon")
+                row = layout.row()
+                col = row.column()
+                col.prop(scene.yafaray.logging, "customFont")
+                col = row.column()
+                col.prop(scene.yafaray.logging, "fontScale")
 
 
 class YAFA_V3_MT_clay_render(RenderButtonsPanel, Panel):

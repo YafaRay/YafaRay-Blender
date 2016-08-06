@@ -239,6 +239,8 @@ def setLoggingAndBadgeSettings(yi, scene):
     yi.paramsSetString("logging_comments", scene.yafaray.logging.comments)
     if scene.yafaray.logging.customIcon != "":
         yi.paramsSetString("logging_customIcon", os.path.abspath(bpy.path.abspath(scene.yafaray.logging.customIcon)))
+    yi.paramsSetString("logging_fontPath", scene.yafaray.logging.customFont)
+    yi.paramsSetFloat("logging_fontSizeFactor", scene.yafaray.logging.fontScale)
 
 
 def exportRenderPassesSettings(yi, scene):
