@@ -104,6 +104,36 @@ def register():
         ),
         default='lambert')
 
+    Material.wireframe_amount = FloatProperty(
+        update=update_preview, name="Wireframe amount",
+        description="Amount of wireframe shading",
+        min=0.0, max=1.0,
+        step=1, precision=3,
+        soft_min=0.0, soft_max=1.0,
+        default=0.000)
+
+    Material.wireframe_thickness = FloatProperty(
+        update=update_preview, name="Wireframe thickness",
+        description="Thickness of wireframe shading",
+        min=0.0,
+        step=1, precision=3,
+        soft_min=0.0001, soft_max=0.10,
+        default=0.01)
+
+    Material.wireframe_exponent = FloatProperty(
+        update=update_preview, name="Wireframe softness",
+        description="Softness of wireframe shading",
+        min=0.0, max=2.0,
+        step=1, precision=2,
+        default=0.0)
+
+    Material.wireframe_color = FloatVectorProperty(
+        update=update_preview, name="Wireframe color",
+        description="Wireframe Color",
+        subtype='COLOR',
+        min=0.0, max=1.0,
+        default=(1.0, 1.0, 1.0))
+
     Material.glossy_color = FloatVectorProperty(
         update=update_preview, name="Glossy color",
         description="Glossy Color",

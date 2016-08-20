@@ -235,12 +235,18 @@ class yafMaterial:
         yi.paramsSetString("visibility", mat.visibility)
         yi.paramsSetBool("receive_shadows", mat.receive_shadows)
         yi.paramsSetInt("additionaldepth", mat.additionaldepth)
+        
+        yi.paramsSetFloat("wireframe_amount", mat.wireframe_amount)
+        yi.paramsSetColor("wireframe_color", mat.wireframe_color[0], mat.wireframe_color[1], mat.wireframe_color[2])
+        yi.paramsSetFloat("wireframe_thickness", mat.wireframe_thickness)
+        yi.paramsSetFloat("wireframe_exponent", mat.wireframe_exponent)
 
         mcolRoot = ''
         # fcolRoot = '' /* UNUSED */
         bumpRoot = ''
         filterColorRoot = ''
         IORRoot = ''
+        WireframeRoot = ''
         roughnessRoot = ''
 
         i = 0
@@ -266,6 +272,10 @@ class yafMaterial:
             if self.writeTexLayer(lname, mappername, IORRoot, mtex, mtex.use_map_warp, [0], mtex.warp_factor):
                 used = True
                 IORRoot = lname
+            lname = "wireframe_layer%x" % i
+            if self.writeTexLayer(lname, mappername, WireframeRoot, mtex, mtex.use_map_displacement, [0], mtex.displacement_factor):
+                used = True
+                WireframeRoot = lname
             lname = "roughness_layer%x" % i
             if self.writeTexLayer(lname, mappername, roughnessRoot, mtex, mtex.use_map_hardness, [0], mtex.hardness_factor):
                 used = True
@@ -282,7 +292,9 @@ class yafMaterial:
         if len(filterColorRoot) > 0:
             yi.paramsSetString("filter_color_shader", filterColorRoot)
         if len(IORRoot) > 0:
-            yi.paramsSetString("IOR_shader", IORRoot) 
+            yi.paramsSetString("IOR_shader", IORRoot)             
+        if len(WireframeRoot) > 0:
+            yi.paramsSetString("wireframe_shader", WireframeRoot)
         if len(roughnessRoot) > 0:
             yi.paramsSetString("roughness_shader", roughnessRoot)   
         return yi.createMaterial(self.namehash(mat))
@@ -319,6 +331,11 @@ class yafMaterial:
         yi.paramsSetString("visibility", mat.visibility)
         yi.paramsSetBool("receive_shadows", mat.receive_shadows)
         yi.paramsSetInt("additionaldepth", mat.additionaldepth)
+        
+        yi.paramsSetFloat("wireframe_amount", mat.wireframe_amount)
+        yi.paramsSetColor("wireframe_color", mat.wireframe_color[0], mat.wireframe_color[1], mat.wireframe_color[2])
+        yi.paramsSetFloat("wireframe_thickness", mat.wireframe_thickness)
+        yi.paramsSetFloat("wireframe_exponent", mat.wireframe_exponent)
 
         diffRoot = ''
         # mcolRoot = ''  /* UNUSED */
@@ -328,6 +345,7 @@ class yafMaterial:
         sigmaOrenRoot = ''
         exponentRoot = ''
         IORRoot = ''
+        WireframeRoot = ''
         diffReflectRoot = ''
         mirrorRoot = ''
         mcolRoot = ''
@@ -367,6 +385,10 @@ class yafMaterial:
             if self.writeTexLayer(lname, mappername, IORRoot, mtex, mtex.use_map_warp, [0], mtex.warp_factor):
                 used = True
                 IORRoot = lname
+            lname = "wireframe_layer%x" % i
+            if self.writeTexLayer(lname, mappername, WireframeRoot, mtex, mtex.use_map_displacement, [0], mtex.displacement_factor):
+                used = True
+                WireframeRoot = lname
             lname = "diff_refl_layer%x" % i
             if self.writeTexLayer(lname, mappername, diffReflectRoot, mtex, mtex.use_map_diffuse, [0], mtex.diffuse_factor):
                 used = True
@@ -400,6 +422,8 @@ class yafMaterial:
             yi.paramsSetString("exponent_shader", exponentRoot) 
         if len(IORRoot) > 0:
             yi.paramsSetString("IOR_shader", IORRoot) 
+        if len(WireframeRoot) > 0:
+            yi.paramsSetString("wireframe_shader", WireframeRoot)
         if len(diffReflectRoot) > 0:
             yi.paramsSetString("diffuse_refl_shader", diffReflectRoot)       
         if len(mcolRoot) > 0:
@@ -456,6 +480,7 @@ class yafMaterial:
         sigmaOrenRoot = ''
         diffReflectRoot = ''
         IORRoot = ''
+        WireframeRoot = ''
 
         for mtex in used_textures:
             if not mtex.texture:
@@ -517,6 +542,12 @@ class yafMaterial:
                     used = True
                     IORRoot = lname
 
+            if mat.clay_exclude or not scene.gs_clay_render:
+                lname = "wireframe_layer%x" % i
+                if self.writeTexLayer(lname, mappername, WireframeRoot, mtex, mtex.use_map_displacement, [0], mtex.displacement_factor):
+                    used = True
+                    WireframeRoot = lname
+
             if used:
                 self.writeMappingNode(mappername, mtex.texture.name, mtex)
             i += 1
@@ -539,7 +570,9 @@ class yafMaterial:
         if len(diffReflectRoot) > 0:
             yi.paramsSetString("diffuse_refl_shader", diffReflectRoot)             
         if len(IORRoot) > 0:
-            yi.paramsSetString("IOR_shader", IORRoot) 
+            yi.paramsSetString("IOR_shader", IORRoot)
+        if len(WireframeRoot) > 0:
+            yi.paramsSetString("wireframe_shader", WireframeRoot)
 
         yi.paramsSetColor("color", bCol[0], bCol[1], bCol[2])
         yi.paramsSetFloat("transparency", bTransp)
@@ -555,7 +588,12 @@ class yafMaterial:
         yi.paramsSetString("visibility", mat.visibility)
         yi.paramsSetBool("receive_shadows", mat.receive_shadows)
         yi.paramsSetInt("additionaldepth", mat.additionaldepth)
-
+        
+        yi.paramsSetFloat("wireframe_amount", mat.wireframe_amount)
+        yi.paramsSetColor("wireframe_color", mat.wireframe_color[0], mat.wireframe_color[1], mat.wireframe_color[2])
+        yi.paramsSetFloat("wireframe_thickness", mat.wireframe_thickness)
+        yi.paramsSetFloat("wireframe_exponent", mat.wireframe_exponent)
+        
         if scene.gs_clay_render and not mat.clay_exclude:
              if scene.gs_clay_oren_nayar:
                  yi.paramsSetString("diffuse_brdf", "oren_nayar")
@@ -574,10 +612,16 @@ class yafMaterial:
         yi.paramsSetString("type", "blend_mat")
         yi.paramsSetString("material1", self.namehash(bpy.data.materials[mat.material1name]))
         yi.paramsSetString("material2", self.namehash(bpy.data.materials[mat.material2name]))
+        
+        yi.paramsSetFloat("wireframe_amount", mat.wireframe_amount)
+        yi.paramsSetColor("wireframe_color", mat.wireframe_color[0], mat.wireframe_color[1], mat.wireframe_color[2])
+        yi.paramsSetFloat("wireframe_thickness", mat.wireframe_thickness)
+        yi.paramsSetFloat("wireframe_exponent", mat.wireframe_exponent)
 
         i = 0
 
         diffRoot = ''
+        WireframeRoot = ''
         used_textures = self.getUsedTextures(mat)
 
         for mtex in used_textures:
@@ -587,10 +631,18 @@ class yafMaterial:
             used = False
             mappername = "map%x" % i
 
-            lname = "diff_layer%x" % i
-            if self.writeTexLayer(lname, mappername, diffRoot, mtex, mtex.use_map_diffuse, [0], mtex.diffuse_factor):
-                used = True
-                diffRoot = lname
+            if mat.clay_exclude or not scene.gs_clay_render:
+                lname = "diff_layer%x" % i
+                if self.writeTexLayer(lname, mappername, diffRoot, mtex, mtex.use_map_diffuse, [0], mtex.diffuse_factor):
+                    used = True
+                    diffRoot = lname
+
+            if mat.clay_exclude or not scene.gs_clay_render:
+                lname = "wireframe_layer%x" % i
+                if self.writeTexLayer(lname, mappername, WireframeRoot, mtex, mtex.use_map_displacement, [0], mtex.displacement_factor):
+                    used = True
+                    WireframeRoot = lname
+                    
             if used:
                 self.writeMappingNode(mappername, mtex.texture.name, mtex)
             i += 1
@@ -603,6 +655,9 @@ class yafMaterial:
             yi.paramsSetFloat("blend_value", 0)
         else:
             yi.paramsSetFloat("blend_value", mat.blend_value)
+            
+        if len(WireframeRoot) > 0:
+            yi.paramsSetString("wireframe_shader", WireframeRoot)
 
         yi.paramsSetString("visibility", mat.visibility)
         yi.paramsSetBool("receive_shadows", mat.receive_shadows)

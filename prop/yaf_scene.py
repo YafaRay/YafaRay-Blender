@@ -305,6 +305,7 @@ class YafaRayRenderPassesProperties(bpy.types.PropertyGroup):
             ('debug-light-estimation-light-dirac', "Debug: LE Light Dirac", "Light Estimation (Dirac lights)", 311),
             ('debug-light-estimation-light-sampling', "Debug: LE Light Sampling", "Light Estimation (Area lights, light sampling)", 312),
             ('debug-light-estimation-mat-sampling', "Debug: LE Mat Sampling", "Light Estimation (Area lights, material sampling)", 313),
+            ('debug-wireframe', "Debug: Wireframe", "Show the objects wireframe (triangles) depending on the material wireframe parameters (except for wireframe amount)", 314),
         ), key=lambda index: index[1])
 
     renderInternalPassAdvanced=sorted((

@@ -771,13 +771,14 @@ class YAFA_V3_TEXTURE_PT_influence(YAFA_V3_TextureSlotPanel, Panel):
         shaderNodes["IORAmount"] = ["use_map_warp", "warp_factor", "IOR Amount (added to material IOR)"]
         shaderNodes["RoughnessAmount"] = ["use_map_hardness", "hardness_factor", "Roughness amount"]
         shaderNodes["ExponentAmount"] = ["use_map_ambient", "ambient_factor", "Glossy Exponent amount"]
+        shaderNodes["Wireframe"] = ["use_map_displacement", "displacement_factor", "Wireframe Amount"]
                 
         materialShaderNodes = dict()
-        materialShaderNodes["glass"] = ["FilterColor", "MirrorColor", "IORAmount", "Bump"]
-        materialShaderNodes["rough_glass"] = ["RoughnessAmount", "FilterColor", "MirrorColor", "IORAmount", "Bump"]
-        materialShaderNodes["glossy"] = ["DiffuseColor", "DiffuseReflection", "SigmaOren", "GlossyColor", "GlossyAmount", "ExponentAmount", "Bump"]
-        materialShaderNodes["coated_glossy"] = ["DiffuseColor", "DiffuseReflection", "SigmaOren", "GlossyColor", "GlossyAmount", "ExponentAmount", "MirrorAmount", "MirrorColor", "IORAmount", "Bump"]
-        materialShaderNodes["shinydiffusemat"] = ["DiffuseColor", "DiffuseReflection", "SigmaOren", "MirrorAmount", "MirrorColor", "IORAmount", "Transparency", "Translucency", "Bump"]
+        materialShaderNodes["glass"] = ["FilterColor", "MirrorColor", "IORAmount", "Bump", "Wireframe"]
+        materialShaderNodes["rough_glass"] = ["RoughnessAmount", "FilterColor", "MirrorColor", "IORAmount", "Bump", "Wireframe"]
+        materialShaderNodes["glossy"] = ["DiffuseColor", "DiffuseReflection", "SigmaOren", "GlossyColor", "GlossyAmount", "ExponentAmount", "Bump", "Wireframe"]
+        materialShaderNodes["coated_glossy"] = ["DiffuseColor", "DiffuseReflection", "SigmaOren", "GlossyColor", "GlossyAmount", "ExponentAmount", "MirrorAmount", "MirrorColor", "IORAmount", "Bump", "Wireframe"]
+        materialShaderNodes["shinydiffusemat"] = ["DiffuseColor", "DiffuseReflection", "SigmaOren", "MirrorAmount", "MirrorColor", "IORAmount", "Transparency", "Translucency", "Bump", "Wireframe"]
         materialShaderNodes["blend"] = ["BlendAmount"]
 
         if isinstance(idblock, Material):

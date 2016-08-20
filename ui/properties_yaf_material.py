@@ -377,7 +377,7 @@ class YAFA_V3_PT_glass_real(YAFA_V3_MaterialTypePanel, Panel):
             box = layout.box()
             box.label(text="Glass roughness:")
             box.row().prop(yaf_mat, "refr_roughness", slider=True)
-
+        
 
 class YAFA_V3_PT_glass_fake(YAFA_V3_MaterialTypePanel, Panel):
     bl_label = "Fake glass settings"
@@ -418,6 +418,24 @@ class YAFA_V3_PT_blend_(YAFA_V3_MaterialTypePanel, Panel):
 
         blend_one_draw(layout, yaf_mat)
         blend_two_draw(layout, yaf_mat)
+
+
+class YAFA_V3_PT_ZWireframe(MaterialButtonsPanel, Panel):
+    bl_label = "Wireframe shading options"
+    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    bl_options = {'DEFAULT_CLOSED'}
+    
+    def draw(self, context):
+        layout = self.layout
+        yaf_mat = active_node_mat(context.material)
+
+        split = layout.split()
+        col = split.column()
+        col.prop(yaf_mat, "wireframe_amount", slider=True, text="Amount")
+        col.prop(yaf_mat, "wireframe_color", text="")
+        col = split.column()
+        col.prop(yaf_mat, "wireframe_thickness", slider=True, text="Thickness")
+        col.prop(yaf_mat, "wireframe_exponent", slider=True, text="Softness")
 
 
 class YAFA_V3_PT_ZAdvanced(MaterialButtonsPanel, Panel):
