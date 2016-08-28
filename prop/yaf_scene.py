@@ -250,6 +250,76 @@ class YafaRayRenderPassesProperties(bpy.types.PropertyGroup):
         description="Property to show the mask only instead of the masked rendered image",
         default=False)
 
+    objectEdgeThickness = IntProperty(
+        name="Object Edge Thickness",
+        description="Thickness of the edges used in the Object Edge and Toon Render Passess",
+        min=1, max=10,
+        default=2)
+
+    facesEdgeThickness = IntProperty(
+        name="Faces Edge Thickness",
+        description="Thickness of the edges used in the Faces Edge Render Pass",
+        min=1, max=10,
+        default=1)
+
+    objectEdgeThreshold = FloatProperty(
+        name="Object Edge Threshold",
+        description=("Threshold for the edge detection process used in the Object Edge and Toon Render Passes"),
+        min=0.0, max=1.0, 
+        precision=3,
+        default=0.3)
+
+    facesEdgeThreshold = FloatProperty(
+        name="Faces Edge Threshold",
+        description=("Threshold for the edge detection process used in the Faces Edge Render Pass"),
+        min=0.0, max=1.0, 
+        precision=3,
+        default=0.01)
+
+    objectEdgeSmoothness = FloatProperty(
+        name="Object Edge Smoothness",
+        description=("Smoothness (blur) of the edges used in the Object Edge and Toon Render Passes"),
+        min=0.0, max=5.0, 
+        precision=2,
+        default=0.75)
+
+    facesEdgeSmoothness = FloatProperty(
+        name="Faces Edge Smoothness",
+        description=("Smoothness (blur) of the edges used in the Faces Edge Render Pass"),
+        min=0.0, max=5.0, 
+        precision=2,
+        default=0.5)
+
+    toonEdgeColor = FloatVectorProperty(
+        name="Toon Edge Color",
+        description=("Color of the edges used in the Toon Render Pass"),
+        subtype='COLOR',
+        step=1, precision=2,
+        min=0.0, max=1.0,
+        soft_min=0.0, soft_max=1.0,
+        default=(0.0, 0.0, 0.0))
+
+    toonPreSmooth = FloatProperty(
+        name="Toon Pre-Smooth",
+        description=("Toon effect: smoothness applied to the original image"),
+        min=0.0, 
+        precision=2,
+        default=3.0)
+
+    toonPostSmooth = FloatProperty(
+        name="Toon Post-Smooth",
+        description=("Toon effect: smoothness applied to the original image"),
+        min=0.0, 
+        precision=2,
+        default=3.0)
+
+    toonQuantization = FloatProperty(
+        name="Toon Color Quantization",
+        description=("Toon effect: color Quantization applied to the original image"),
+        min=0.0, max=1.0,
+        precision=3,
+        default=0.1)
+        
 
     #The numbers here MUST NEVER CHANGE to keep backwards compatibility with older scenes. The numbers do not need to match the Core internal pass numbers.
     #The matching between these properties and the YafaRay Core internal passes is done via the first string, for example 'z-depth-abs'. They must match the list of strings for internal passes in the Core: include/core_api/color.h
@@ -269,6 +339,7 @@ class YafaRayRenderPassesProperties(bpy.types.PropertyGroup):
             ('reflect', "Basic: Reflection", "Basic: Reflections (all, including perfect and glossy)", 7),
             ('refract', "Basic: Refraction", "Basic: Refractions (all, including perfect and sampled)", 8),
             ('mist', "Basic: Mist", "Basic: Mist", 9),
+            ('toon', "Basic: Toon", "Basic: Toon", 10),
         ), key=lambda index: index[1])
         
     renderPassItemsDepth=sorted((
@@ -306,6 +377,8 @@ class YafaRayRenderPassesProperties(bpy.types.PropertyGroup):
             ('debug-light-estimation-light-sampling', "Debug: LE Light Sampling", "Light Estimation (Area lights, light sampling)", 312),
             ('debug-light-estimation-mat-sampling', "Debug: LE Mat Sampling", "Light Estimation (Area lights, material sampling)", 313),
             ('debug-wireframe', "Debug: Wireframe", "Show the objects wireframe (triangles) depending on the material wireframe parameters (except for wireframe amount)", 314),
+            ('debug-faces-edges', "Debug: Faces Edges", "Show the faces edges, potentially useful as alternative wireframe pass that can show quads and polygons in a better way", 315),
+            ('debug-objects-edges', "Debug: Objects Edges", "Show the objects edges, potentially useful for toon-like shading", 316),
         ), key=lambda index: index[1])
 
     renderInternalPassAdvanced=sorted((

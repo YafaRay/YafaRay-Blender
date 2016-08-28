@@ -253,6 +253,17 @@ def exportRenderPassesSettings(yi, scene):
     yi.paramsSetBool("pass_mask_invert", scene.yafaray.passes.pass_mask_invert)
     yi.paramsSetBool("pass_mask_only", scene.yafaray.passes.pass_mask_only)
     
+    yi.paramsSetInt("objectEdgeThickness", scene.yafaray.passes.objectEdgeThickness)
+    yi.paramsSetInt("facesEdgeThickness", scene.yafaray.passes.facesEdgeThickness)
+    yi.paramsSetFloat("objectEdgeThreshold", scene.yafaray.passes.objectEdgeThreshold)
+    yi.paramsSetFloat("facesEdgeThreshold", scene.yafaray.passes.facesEdgeThreshold)
+    yi.paramsSetFloat("objectEdgeSmoothness", scene.yafaray.passes.objectEdgeSmoothness)
+    yi.paramsSetFloat("facesEdgeSmoothness", scene.yafaray.passes.facesEdgeSmoothness)
+    yi.paramsSetColor("toonEdgeColor", scene.yafaray.passes.toonEdgeColor[0], scene.yafaray.passes.toonEdgeColor[1], scene.yafaray.passes.toonEdgeColor[2])
+    yi.paramsSetFloat("toonPreSmooth", scene.yafaray.passes.toonPreSmooth)
+    yi.paramsSetFloat("toonPostSmooth", scene.yafaray.passes.toonPostSmooth)
+    yi.paramsSetFloat("toonQuantization", scene.yafaray.passes.toonQuantization)
+
     if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_z:
         yi.paramsSetString("pass_Depth", scene.yafaray.passes.pass_Depth)
     else:

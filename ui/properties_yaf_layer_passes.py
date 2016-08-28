@@ -257,17 +257,49 @@ class YAFA_V3_PT_layer_passes(RenderLayerButtonsPanel, Panel):
                         sub = row.column(align=True)
                         sub.prop(scene.yafaray.passes, "pass_SubsurfaceCol", "")
 
-                row = layout.row()
+
+                box = layout.box()
+                box.label(text="Masking Passes settings:")
+
+                row = box.row()
                 row.prop(scene.yafaray.passes, "pass_mask_obj_index")
-                
                 sub = row.column(align=True)
                 sub.prop(scene.yafaray.passes, "pass_mask_mat_index")
-                
-                row = layout.row()
-                row.prop(scene.yafaray.passes, "pass_mask_invert")                        
 
+                row = box.row()
+                row.prop(scene.yafaray.passes, "pass_mask_invert")                        
                 sub = row.column(align=True)
                 sub.prop(scene.yafaray.passes, "pass_mask_only")                        
+
+
+                box = layout.box()
+                box.label(text="Toon and Object Edge Passes settings:")
+
+                row = box.row()
+                row.prop(scene.yafaray.passes, "objectEdgeThickness")                        
+                sub = row.column(align=True)
+                sub.prop(scene.yafaray.passes, "toonEdgeColor", text = "")                        
+                sub = row.column(align=True)
+                sub.prop(scene.yafaray.passes, "objectEdgeSmoothness")                        
+                sub = row.column(align=True)
+                sub.prop(scene.yafaray.passes, "objectEdgeThreshold")                        
+
+                row = box.row()
+                row.prop(scene.yafaray.passes, "toonPreSmooth")                        
+                sub = row.column(align=True)
+                sub.prop(scene.yafaray.passes, "toonQuantization")                        
+                sub = row.column(align=True)
+                sub.prop(scene.yafaray.passes, "toonPostSmooth")  
+
+                box = layout.box()
+                box.label(text="Faces Edge Pass settings:")
+
+                row = box.row()
+                row.prop(scene.yafaray.passes, "facesEdgeThickness")
+                sub = row.column(align=True)
+                sub.prop(scene.yafaray.passes, "facesEdgeSmoothness")                        
+                sub = row.column(align=True)
+                sub.prop(scene.yafaray.passes, "facesEdgeThreshold")                        
 
 
 class YAFA_V3_PT_views(RenderLayerButtonsPanel, Panel):
