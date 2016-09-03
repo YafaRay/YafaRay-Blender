@@ -457,9 +457,10 @@ class YAFA_V3_PT_ZAdvanced(MaterialButtonsPanel, Panel):
         col = split.column()
         layout.row().prop(yaf_mat, "receive_shadows")
 
-        split = layout.split()
-        col = split.column()
-        layout.row().prop(yaf_mat, "additionaldepth")
+        if yaf_mat.mat_type != "blend":
+            split = layout.split()
+            col = split.column()
+            layout.row().prop(yaf_mat, "additionaldepth")
 
         split = layout.split()
         col = split.column()
