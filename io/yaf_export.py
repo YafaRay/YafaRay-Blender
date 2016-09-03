@@ -28,6 +28,7 @@ import yafaray_v3_interface
 import traceback
 import datetime
 import platform
+import tempfile
 
 from .. import PLUGIN_PATH
 from .. import YAF_ID_NAME
@@ -290,6 +291,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         
         filebasename = ""
         if self.scene.img_add_blend_name:
+            if bpy.data.filepath == "":
+                filebasename += "temp"
             filebasename += os.path.splitext(os.path.basename(bpy.data.filepath))[0]+" - "
             
         filebasename += frame_numb_str.format(self.scene.frame_current)
@@ -321,7 +324,10 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         render = scene.render
 
         if scene.img_save_with_blend_file:
-            fp = "//"+os.path.splitext(os.path.basename(bpy.data.filepath))[0]+"_render/"
+            if bpy.data.filepath == "":
+                fp = tempfile.gettempdir() + "/temp_render"
+            else:
+                fp = "//"+os.path.splitext(os.path.basename(bpy.data.filepath))[0]+"_render/"
             render.filepath = fp
             fp = bpy.path.abspath(fp)
         else:
