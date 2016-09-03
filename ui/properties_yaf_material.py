@@ -461,6 +461,9 @@ class YAFA_V3_PT_ZAdvanced(MaterialButtonsPanel, Panel):
         col = split.column()
         layout.row().prop(yaf_mat, "additionaldepth")
 
+        split = layout.split()
+        col = split.column()
+        layout.row().prop(yaf_mat, "samplingfactor")
 
 if __name__ == "__main__":  # only for live edit.
     import bpy

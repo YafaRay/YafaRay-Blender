@@ -40,9 +40,15 @@ class YAFA_V3_PT_AA_settings(RenderButtonsPanel, Panel):
 
         split = layout.split()
         col = split.column()
-        col.prop(scene, "AA_filter_type")
-        col.prop(scene, "AA_min_samples")
-        col.prop(scene, "AA_pixelwidth")
+        spp = col.column()
+        sub = col.column()
+        sub.prop(scene, "AA_filter_type")
+        spp.prop(scene, "AA_min_samples")
+        sub.prop(scene, "AA_pixelwidth")
+        spp.enabled = False
+        if scene.intg_light_method != "SPPM":
+            sub.enabled = scene.AA_passes > 1
+            spp.enabled = True
         # fix suggest by 'samo' in http://www.yafaray.org/node/581
         col = split.column()
         spp = col.column()
@@ -53,7 +59,8 @@ class YAFA_V3_PT_AA_settings(RenderButtonsPanel, Panel):
             spp.enabled = True
         #
         spp.prop(scene, "AA_passes")
-        sub.prop(scene, "AA_inc_samples")
+        spp.prop(scene, "AA_inc_samples")
+        spp.prop(scene.yafaray.noise_control, "background_resampling")
 
         row = layout.row()
         row.enabled = False

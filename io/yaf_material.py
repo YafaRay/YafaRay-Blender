@@ -235,6 +235,7 @@ class yafMaterial:
         yi.paramsSetString("visibility", mat.visibility)
         yi.paramsSetBool("receive_shadows", mat.receive_shadows)
         yi.paramsSetInt("additionaldepth", mat.additionaldepth)
+        yi.paramsSetFloat("samplingfactor", mat.samplingfactor)
         
         yi.paramsSetFloat("wireframe_amount", mat.wireframe_amount)
         yi.paramsSetColor("wireframe_color", mat.wireframe_color[0], mat.wireframe_color[1], mat.wireframe_color[2])
@@ -331,6 +332,7 @@ class yafMaterial:
         yi.paramsSetString("visibility", mat.visibility)
         yi.paramsSetBool("receive_shadows", mat.receive_shadows)
         yi.paramsSetInt("additionaldepth", mat.additionaldepth)
+        yi.paramsSetFloat("samplingfactor", mat.samplingfactor)
         
         yi.paramsSetFloat("wireframe_amount", mat.wireframe_amount)
         yi.paramsSetColor("wireframe_color", mat.wireframe_color[0], mat.wireframe_color[1], mat.wireframe_color[2])
@@ -588,6 +590,7 @@ class yafMaterial:
         yi.paramsSetString("visibility", mat.visibility)
         yi.paramsSetBool("receive_shadows", mat.receive_shadows)
         yi.paramsSetInt("additionaldepth", mat.additionaldepth)
+        yi.paramsSetFloat("samplingfactor", mat.samplingfactor)
         
         yi.paramsSetFloat("wireframe_amount", mat.wireframe_amount)
         yi.paramsSetColor("wireframe_color", mat.wireframe_color[0], mat.wireframe_color[1], mat.wireframe_color[2])
@@ -662,6 +665,7 @@ class yafMaterial:
         yi.paramsSetString("visibility", mat.visibility)
         yi.paramsSetBool("receive_shadows", mat.receive_shadows)
         yi.paramsSetInt("additionaldepth", mat.additionaldepth)
+        yi.paramsSetFloat("samplingfactor", mat.samplingfactor)
 
         return yi.createMaterial(self.namehash(mat))
 

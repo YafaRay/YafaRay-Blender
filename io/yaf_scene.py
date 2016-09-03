@@ -92,6 +92,7 @@ def exportAA(yi, scene):
     yi.paramsSetInt("AA_variance_pixels", scene.yafaray.noise_control.variance_pixels)
     yi.paramsSetFloat("AA_clamp_samples", scene.yafaray.noise_control.clamp_samples)
     yi.paramsSetFloat("AA_clamp_indirect", scene.yafaray.noise_control.clamp_indirect)
+    yi.paramsSetBool("background_resampling", scene.yafaray.noise_control.background_resampling)
 
     if scene.name == "preview" and bpy.data.scenes[0].yafaray.preview.enable:
         yi.paramsSetInt("AA_passes", bpy.data.scenes[0].yafaray.preview.previewAApasses)

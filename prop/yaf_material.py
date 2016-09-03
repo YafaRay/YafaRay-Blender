@@ -345,6 +345,12 @@ def register():
         min=0, max=20,
         default=0)
 
+    Material.samplingfactor = FloatProperty(
+        update=update_preview, name="Sampling Factor",
+        description="The number of samples in the adaptative AA passes are multiplied by this per-material factor. This does not affect the first pass.",
+        min=1.0,
+        default=1.0)
+
 def unregister():
     del Material.mat_type
     del Material.diffuse_reflect
@@ -383,3 +389,8 @@ def unregister():
     del Material.visibility
     del Material.receive_shadows
     del Material.additionaldepth
+    del Material.wireframe_amount
+    del Material.wireframe_thickness
+    del Material.wireframe_exponent
+    del Material.wireframe_color
+    del Material.samplingfactor

@@ -222,6 +222,11 @@ class YafaRayNoiseControlProperties(bpy.types.PropertyGroup):
         min=0.0, precision=1,
         default=0.0)
 
+    background_resampling = BoolProperty(
+        update=update_preview, name="Background Resampling",
+        description="If disabled, the background will not be resamples in subsequent adaptative AA passes.",
+        default=True)
+
     
 class YafaRayRenderPassesProperties(bpy.types.PropertyGroup):
     pass_enable = BoolProperty(
@@ -379,6 +384,7 @@ class YafaRayRenderPassesProperties(bpy.types.PropertyGroup):
             ('debug-wireframe', "Debug: Wireframe", "Show the objects wireframe (triangles) depending on the material wireframe parameters (except for wireframe amount)", 314),
             ('debug-faces-edges', "Debug: Faces Edges", "Show the faces edges, potentially useful as alternative wireframe pass that can show quads and polygons in a better way", 315),
             ('debug-objects-edges', "Debug: Objects Edges", "Show the objects edges, potentially useful for toon-like shading", 316),
+            ('debug-sampling-factor', "Debug: Sampling Factor", "Show the materials sampling factor", 317),
         ), key=lambda index: index[1])
 
     renderInternalPassAdvanced=sorted((
