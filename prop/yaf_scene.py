@@ -355,16 +355,18 @@ class YafaRayRenderPassesProperties(bpy.types.PropertyGroup):
     renderPassItemsIndex=sorted((
             ('obj-index-abs', "Index-Object (absolute)", "Index-Object: Grayscale value = obj.index in the object properties (absolute values)", 201),
             ('obj-index-norm', "Index-Object (normalized)", "Index-Object: Grayscale value = obj.index in the object properties (normalized values)", 202),
-            ('obj-index-auto', "Index-Object (auto)", "Index-Object: A color automatically generated for each object", 203),
+            ('obj-index-auto', "Index-Object (auto, color)", "Index-Object: A color automatically generated for each object", 203),
             ('obj-index-mask', "Index-Object Mask", "Index-Object: Masking object based on obj.index.mask setting", 204),
             ('obj-index-mask-shadow', "Index-Object Mask Shadow", "Index-Object: Masking object shadow based on obj.index.mask setting", 205),
             ('obj-index-mask-all', "Index-Object Mask All (Object+Shadow)", "Index-Object: Masking object+shadow based on obj.index.mask setting", 206),
             ('mat-index-abs', "Index-Material (absolute)", "Index-Material: Grayscale value = mat.index in the material properties (absolute values)", 207),
             ('mat-index-norm', "Index-Material (normalized)", "Index-Material: Grayscale value = mat.index in the material properties (normalized values)", 208),
-            ('mat-index-auto', "Index-Material (auto)", "Index-Material: A color automatically generated for each material", 209),
+            ('mat-index-auto', "Index-Material (auto, color)", "Index-Material: A color automatically generated for each material", 209),
             ('mat-index-mask', "Index-Material Mask", "Index-Material: Masking material based on mat.index.mask setting", 210),
             ('mat-index-mask-shadow', "Index-Material Mask Shadow", "Index-Material: Masking material shadow based on mat.index.mask setting", 211),
-            ('mat-index-mask-all', "Index-Material Mask All (Object+Shadow)", "Index-Material: Masking material+shadow based on mat.index.mask setting", 212)
+            ('mat-index-mask-all', "Index-Material Mask All (Object+Shadow)", "Index-Material: Masking material+shadow based on mat.index.mask setting", 212),
+            ('obj-index-auto-abs', "Index-Object (auto, absolute)", "Index-Object: An absolute value automatically generated for each object", 213),
+            ('mat-index-auto-abs', "Index-Material (auto, absolute)", "Index-Material: An absolute value automatically generated for each material", 214)
         ), key=lambda index: index[1])
         
     renderPassItemsDebug=sorted((
