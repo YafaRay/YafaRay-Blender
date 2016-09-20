@@ -39,7 +39,6 @@ After it, start Blender, go to User Preferences, AddOns and try to enable Render
 If you have any issues:
 
 * Check that you have copied the "yafaray_v3" folder into the correct Blender addons folder.
-* If you get the error message "file too short" in Linux systems, it could be caused by incorrect zip decompressing of links. Make sure you decompress the zip file in Linux so the links are correctly decompressed.
 * Check that you have downloaded the appropiate YafaRay build for your Operating System and Blender build (32/64 bit)
 * Check that you are using the official Blender build from www.blender.org and it's a version supported by YafaRay (see CHANGELOG)
 * In extreme cases (black renders, crashes, etc) remove all older YafaRay versions and other YafaRay derived forks, and try again.

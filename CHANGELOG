@@ -1,5 +1,68 @@
 Important: read the README file for installation instructions and important information about YafaRay
 
+YafaRay v3.1.0-beta (2016-09-20) for Blender 2.78:
+-------------------------------------------------- 
+
+Feature changes/additions in v3.1.0:
+------------------------------------
+* New per-material Sampling Factor. New parameter to resample background or not.
+These new parameters will *not* work in the first pass, only in the second and subsequent AA passes.
+
+    * Option to resample background, as requested at http://www.yafaray.org/node/214. Works in all integrators except SPPM
+    * Option to specify a per-material sampling factor to do additional sampling in certain materials, as requested at http://www.yafaray.org/node/746. Works in all integrators except SPPM
+
+* New WireFrame material properties as well as a WireFrame render pass, as requested in: http://yafaray.org/node/198
+
+  Now, all materials (including Blend material) will have a new Wireframe shading panel. The wireframe can be used in two different ways, depending on whether we want it to be part of the final rendered image or if we want it in a separate Render Pass:
+       * Embedded in the Render itself: set a wireframe amount (and optionally map the wireframe amount to a texture). Set the other wireframe options such as color, thickness and softness, and render the scene.
+       * Separate Render Pass: make sure the Wireframe amount in the materials is set to 0.0 so the Wireframe does not appear in the Combined Render. Set the rest of the material wireframe options (color, thickness, etc). Enable Render Passes and select Debug-Wireframe pass in one of the passes (preferrably one of the RGBA render passes such as Vector or Color)
+      
+      Important comments:
+       * When using WireFrame, the material may not be fully energy conserving. However, I suppose this is not a problem as the wireframe render is not a photorealistic render in the first place.
+       * All Quads and Polygons will be always seen as Triangles (with the crossed line). This is, unfortunately, somthing I cannot solve. YafaRay is currently based on triangle meshes and all Quads and Polygons are first converted to triangle meshes in the Blender Exporter, before entering YafaRay. So, in the Wireframe you will always see triangles, never quads, etc.
+       * In the Blend material, the Wireframe shading cannot be mapped to a texture
+
+* New Render Passes: Basic Toon effect, Object Edges and Faces Edges. See: http://www.yafaray.org/community/forum/viewtopic.php?f=23&t=5181
+      "Wireframe" material options and render pass will be calculated at "material" integration level. It should be more finely detailed but will only show triangles (quads will show the "crossing" line).
+
+      "Faces edges" will be a render pass calculated at Film level showing the edge contours. In this case, quads will be shown more correctly. However, to calculate the faces edges with the current architecture I had to use indirect methods that are way less precise, so some artifacts and missing or incomplete edges are to be expected, including aliasing in the edges. I've added some parameters that can be accessed in the Render Passes tab for users to fine tune the edges generation as much as possible.
+
+      "Object edges" will be the same, but only rendering object edges and contour, more useful for toon-like renders, for example. Limitations are the same as with the Faces Edges.
+
+      "Toon" render pass: as I already got the above working, I thought it could be nice to work a bit more and get a full "toon-like" Render Pass. This render pass will take the original image, apply some smoothing and color quantization to make the image more "cartoon-like" and add the Object Edge. The users will be able to choose the edge color, adjust a bit the thickness and smoothing/quantization. This will be only a *very basic* toon render pass, don't expect a perfect contouring, etc!! I didn't even try making an animation yet, I suppose there will some edges changing from one frame to the next, not sure if it will be distracting or not...
+
+
+* Render Badge: ability to select Font ttf file and a font size factor. This will allow better presen
+tation and to select fonts with better Unicode support on demand
+
+New Automatic "absolute/numeric" Object/Material Index render passes, as requested in http://www.yafaray.org/node/745
+
+
+Bug fixes in v3.1.0:
+--------------------
+* IMPORTANT: The v3.1.0 Linux builds that can be downloaded in yafaray.org should now be free from the issues "file too short" that happened in the v3.0.2 builds, as described in http://www.yafaray.org/node/759
+
+* IMPORTANT: Fixed (hopefully) the memory allocation bug in Blend materials described at http://www.yafaray.org/
+node/763 that caused either crashes or incorrect render results
+
+* Glass material: more realistic, corrected total reflection including the reflection color/texture. In some scenes this could change the results of Glass rendering!  See http://www.yafaray.org/node/770
+
+* Volumes: fixed issue with white/black areas (negative values, etc) in certain circumstances. See: http://www.yafaray.org/node/766
+
+* Object/Material Absolute Index passes: avoid antialiasing in the edges.
+    As requested in http://www.yafaray.org/community/forum/viewtopic.php?f=23&t=5180
+    Any "Intermediate" values will be "rounded up" (ceiled). This is one of the many possible criteria to do this, but it gives similar results to Blender Internal, so I will use it.
+
+* Image output denoise: denoise parameters added to the XMLinterface, they didn't work in the XML interface in v3.0.2
+
+* Fixed colorA_t class initialization inconsistencies. We need to keep an eye on this, could cause changes in the Alpha in some scenes (hopefully not)
+
+* Fix problems when rendering a scene that was not yet saved to a .blend file. Now, if the scene has not yet been saved, the secondary output, preset and logs will be saved to a temporary subfolder in the system temporary directory
+
+* Removed additional ray depth from Blend material UI. This setting is not used at all in the Blend material, because Core just calculates the maximum additional ray depth between the component materials automatically. So, I'm removing this to avoid confusing users.
+
+
+
 YafaRay v3.0.2-beta (2016-07-22) for Blender 2.77a:
 ---------------------------------------------------
 ** IMPORTANT **
