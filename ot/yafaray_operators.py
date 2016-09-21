@@ -229,6 +229,6 @@ class YAF_OT_presets_ior_list(Operator):
 
     def execute(self, context):
         yaf_mat = context.material
-        bpy.types.YAF_MT_presets_ior_list.bl_label = self.name
+        bpy.types.YAFA_V3_MT_presets_ior_list.bl_label = self.name
         yaf_mat.IOR_refraction = self.index
         return {'FINISHED'}
