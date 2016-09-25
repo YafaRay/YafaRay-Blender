@@ -1,5 +1,16 @@
 Important: read the README file for installation instructions and important information about YafaRay
 
+YafaRay v3.1.1-beta (2016-09-25) for Blender 2.78:
+-------------------------------------------------- 
+
+Bug fixes in v3.1.1:
+--------------------
+* IMPORTANT: Fixed Volumetrics regression bug introduced in v3.1.0 (artifacts in the images and crashes). This time it should work fine while also solving the original Volumetric bug that v3.1.0 tried to fix.
+
+* Fixed incorrect Glass IOR presets retrieval in Blender Exporter
+
+
+
 YafaRay v3.1.0-beta (2016-09-20) for Blender 2.78:
 -------------------------------------------------- 
 

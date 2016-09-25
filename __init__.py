@@ -44,7 +44,7 @@ bl_info = {
     # for example:
     # sed -i "s/(devel)/$(git --git-dir=/yafaray/src/Blender-Exporter/.git --work-tree=/yafaray/src/Blender-Exporter describe --dirty --always --tags)/g" "/yafaray/linux/build/yafaray_v3/__init__.py"
     "version": ("(devel)", ""),
-    "blender": (2, 7, 7),
+    "blender": (2, 7, 8),
     "location": "Info Header > Engine dropdown menu",
     "wiki_url": "http://www.yafaray.org/community/forum",
     "tracker_url": "http://www.yafaray.org/development/bugtracker/yafaray",
