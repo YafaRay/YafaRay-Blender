@@ -26,10 +26,8 @@ PLUGIN_PATH = os.path.join(__path__[0], 'bin', 'plugins')
 BIN_PATH = os.path.join(__path__[0], 'bin')
 YAF_ID_NAME = "YAFA_V3_RENDER"
 
-# Version to be automatically populated during the build process, getting the version from git tags
-# for example:
-# sed -i "s/(devel)/$(git --git-dir=/yafaray/src/Blender-Exporter/.git --work-tree=/yafaray/src/Blender-Exporter describe --dirty --always --tags)/g" "/yafaray/linux/build/yafaray_v3/__init__.py"
-YAFARAY_EXPORTER_VERSION = "(devel)"
+# Version to be automatically populated during the cmake build process, getting the version from git tags
+YAFARAY_EXPORTER_VERSION = "@YAFARAY_BLENDER_EXPORTER_VERSION@"
 
 sys.path.append(BIN_PATH)
 
@@ -40,10 +38,8 @@ bl_info = {
               "Paulo Gomes (tuga3d), Michele Castigliego (subcomandante),"
               "Bert Buchholz, Rodrigo Placencia (DarkTide),"
               "Alexander Smirnov (Exvion), Olaf Arnold (olaf), David Bluecame",
-    # Version to be automatically populated during the build process, getting the version from git tags
-    # for example:
-    # sed -i "s/(devel)/$(git --git-dir=/yafaray/src/Blender-Exporter/.git --work-tree=/yafaray/src/Blender-Exporter describe --dirty --always --tags)/g" "/yafaray/linux/build/yafaray_v3/__init__.py"
-    "version": ("(devel)", ""),
+# Version to be automatically populated during the cmake build process, getting the version from git tags
+    "version": ("@YAFARAY_BLENDER_EXPORTER_VERSION@", ""),
     "blender": (2, 7, 8),
     "location": "Info Header > Engine dropdown menu",
     "wiki_url": "http://www.yafaray.org/community/forum",
