@@ -22,7 +22,7 @@ import sys
 import os
 import ctypes
 
-PLUGIN_PATH = os.path.join(__path__[0], 'bin', 'plugins')
+PLUGIN_PATH = os.path.join(__path__[0], 'bin', 'yafaray-plugins')
 BIN_PATH = os.path.join(__path__[0], 'bin')
 YAF_ID_NAME = "YAFA_V3_RENDER"
 
