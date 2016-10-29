@@ -99,77 +99,86 @@ Also, YafaRay, by default, ** will change the output folder/file name ** so the 
 
 Changes from v3.0.1-beta to v3.0.2-beta:
 ----------------------------------------
-* ImageFilm load, fix failing load when compiling with GCC v4.8.4
+* ImageFilm load, fix failing load when compiling with GCC v4.8.4. `[Core]`
 
 Changes from v3.0.0-beta to v3.0.1-beta:
 ----------------------------------------
-* Important: Background IBL light sampling fix. This solves a long standing problem with incorrect background lighting accuracy and fireflies. (http://yafaray.org/node/752, http://yafaray.org/node/727, http://yafaray.org/node/566).
+* Important: Background IBL light sampling fix. This solves a long standing problem with incorrect background lighting accuracy and fireflies. (http://yafaray.org/node/752, http://yafaray.org/node/727, http://yafaray.org/node/566). `[Core]`
 
-* IBL clamp sampling parameter no longer needed thanks to the fix above, so it has been removed from the exporter.
+* IBL clamp sampling parameter no longer needed thanks to the fix above, so it has been removed from the exporter. `[Blender Exporter]`
 
-* Fix for crash when using yafaray-xml without specifying the type of badge to be used.
+* Fix for crash when using yafaray-xml without specifying the type of badge to be used. `[Core]`
 
-* yafaray-xml: new "-ccd" "console-colors-disabled". If specified, disables the Console colors ANSI codes, useful for some 3rd party software that cannot handle ANSI codes well.
+* yafaray-xml: new "-ccd" "console-colors-disabled". If specified, disables the Console colors ANSI codes, useful for some 3rd party software that cannot handle ANSI codes well. `[Core]`
 
-* Light photon control: changed back control param names from "shoot_" to "with_" as originally for better backwards compatibility with 3rd party exporters
+* Light photon control: changed back control param names from "shoot_" to "with_" as originally for better backwards compatibility with 3rd party exporters. `[Blender Exporter + Core]`
 
-* Render Passes: added "generic" external render passes for other Exporters and plugins other than Blender Exporter
+* Render Passes: added "generic" external render passes for other Exporters and plugins other than Blender Exporter. `[Core]`
 
-* Render passes: added new debug passes for diagnosing light estimation problems
+* Render passes: added new debug passes for diagnosing light estimation problems. `[Blender Exporter + Core]`
 
 
 
 Major codebase changes in v3.0.0:
 ---------------------------------
-* Dropped support for Windows XP and MacOSX v10.6. Sorry, but the code changes required this.
+* Dropped support for Windows XP and MacOSX v10.6. Sorry, but the code changes required this. `[Blender Exporter + Core]`
 
-* Updated for Blender 2.77a (using Python 3.5).
+* Updated for Blender 2.77a (using Python 3.5). `[Core]`
 
-* Codebase updated from old standard C++98 to the new C++11. This will allow better and easier code maintenance as well as access to newer C++ features to improve YafaRay even more in the future.
+* Codebase updated from old standard C++98 to the new C++11. This will allow better and easier code maintenance as well as access to newer C++ features to improve YafaRay even more in the future. `[Core]`
 
-* Entire old MultiThreading system replaced by new standard C++11 threads system.
+* Entire old MultiThreading system replaced by new standard C++11 threads system. `[Core]`
 
-* Windows-MinGW C++11 MultiThreading system using now the library https://github.com/meganz/mingw-std-threads  This should significantly improve render speed in Windows in many scenes by reducing the multithreading overhead.
+* Windows-MinGW C++11 MultiThreading system using now the library https://github.com/meganz/mingw-std-threads  This should significantly improve render speed in Windows in many scenes by reducing the multithreading overhead. `[Core]`
 
-* Added several Boost libraries to allow saving/loading photon map files and improve unicode/multiplatform compatibility. 
+* Added several Boost libraries to allow saving/loading photon map files and improve unicode/multiplatform compatibility. `[Core]`
 
-* Changes to allow compilation in Visual Studio 2013 (although YafaRay is slower when compiled with VS2013 for some reason)
+* Changes to allow compilation in Visual Studio 2013 (although YafaRay is slower when compiled with VS2013 for some reason). `[Core]`
 
 
 Feature changes/additions in v3.0.0:
 ------------------------------------
-* Multithreaded Photon Map generation, including multithreaded Photon KDTree building: this should greatly improve render speeds when using Direct Light+caustic map, Photon Map, SPPM or Path Tracing+photon. 
+* Multithreaded Photon Map generation, including multithreaded Photon KDTree building. `[Blender Exporter + Core]`
+This should greatly improve render speeds when using Direct Light+caustic map, Photon Map, SPPM or Path Tracing+photon. 
 
-* Ability to Save/Load/Reuse photon maps: this should greatly improve render speeds in scenes where only camera moves. See: http://yafaray.org/node/460. WARNING: When loading/reusing Photon Map files, the User is responsible to ensure they match the scene. If the User loads inadequate photon maps, the render results could be totally wrong or even have crashes. USE WITH CARE.
+* Ability to Save/Load/Reuse photon maps. `[Blender Exporter + Core]`
+This should greatly improve render speeds in scenes where only camera moves. See: http://yafaray.org/node/460. WARNING: When loading/reusing Photon Map files, the User is responsible to ensure they match the scene. If the User loads inadequate photon maps, the render results could be totally wrong or even have crashes. USE WITH CARE.
 
-* Ability to AutoSave image files, either at the end of each pass or using a user-configurable time interval. This should help if there is a crash or sudden power off, as some images could be obtained from before the incident.
+* Ability to AutoSave image files. `[Blender Exporter + Core]`
+Either at the end of each pass or using a user-configurable time interval. This should help if there is a crash or sudden power off, as some images could be obtained from before the incident.
 
-* Ability to AutoSave/Load the main ImageFilm. This might help to CONTINUE interrupted renders or to add additional samples to a render that has already finished. WARNING: When loading ImageFilm files, the User is responsible to ensure they match the scene. If the ImageFilm does not match the scene and render passes exactly, the render results could be totally wrong or even have crashes. USE WITH CARE.
+* Ability to AutoSave/Load the main ImageFilm. `[Blender Exporter + Core]`
+This might help to CONTINUE interrupted renders or to add additional samples to a render that has already finished. WARNING: When loading ImageFilm files, the User is responsible to ensure they match the scene. If the ImageFilm does not match the scene and render passes exactly, the render results could be totally wrong or even have crashes. USE WITH CARE.
 
-* Ability to perform Multi-Computer distributed render. Each computer should have a different Node number [0..1000] to ensure they don't repeate the same samples. The Node number can be setup in a parameter or in the Exporter under Blender User Preferences -> YafaRay v3 -> Preferences -> Computer Node (remember to Save Settings to store the number permanently in Blender).
+* Ability to perform Multi-Computer distributed render. `[Blender Exporter + Core]`
+Each computer should have a different Node number [0..1000] to ensure they don't repeate the same samples. The Node number can be setup in a parameter or in the Exporter under Blender User Preferences -> YafaRay v3 -> Preferences -> Computer Node (remember to Save Settings to store the number permanently in Blender).
 
 Each computer will generate a different Film. If one of the nodes is set to "Load" the film, it will look for ALL the Film files in the same folder (with the same base file name and frame number) and combine them together to create a combined image with all samples from all individual film files.
 
-* Added OpenCV library and added DeNoise options for the exported image files: JPG, PNG, TGA, TIF. This feature is not available for HDR/EXR formats. Three parameters are exposed for the users:
+* Added OpenCV library and added DeNoise options for the exported image files: JPG, PNG, TGA, TIF. `[Blender Exporter + Core]`
+This feature is not available for HDR/EXR formats. Three parameters are exposed for the users:
   - h(luminance): the higher this is, the more noise reduction you get, but the image can become blurred
   - h(chrominance): the higher, the more color noise reduction, but the colors can become blurred
   - Mix: this is intended to add (on purpose) part of the noise from the original image into the final denoised image. This is to avoid "banding" artifacts in smooth and noiseless surfaces. Setting for example 0.8 means that 80% of the final result will come from the "denoised" image and 20% will come from the original (noisy) image.
 
-* YafaRay-v3 can be installed "in parallel" with other major versions of YafaRay and coexist with them. "YafaRay v3" will appear as a DIFFERENT renderer and has to be enabled and selected in each scene as if it were a new renderer. This should help to compare the results and features over different major versions as well as allowing using a "stable" and a more "experimental" versions in parallel at the same time. However, support for this is very limited and depends on many factors such as class name clashes, order of registration, dll and library dependency collisions, etc. If having issues, please remove any other yafaray versions and forks and try again.
+* YafaRay-v3 can be installed "in parallel" with other major versions of YafaRay and coexist with them. `[Blender Exporter + Core]`
+"YafaRay v3" will appear as a DIFFERENT renderer and has to be enabled and selected in each scene as if it were a new renderer. This should help to compare the results and features over different major versions as well as allowing using a "stable" and a more "experimental" versions in parallel at the same time. However, support for this is very limited and depends on many factors such as class name clashes, order of registration, dll and library dependency collisions, etc. If having issues, please remove any other yafaray versions and forks and try again. 
 
-* Initial support for filepaths with Unicode characters (accents, etc) can be used now for loading textures, etc. See: http://yafaray.org/node/703    This support is still limited and could fail in some cases.
+* Initial support for filepaths with Unicode characters (accents, etc) can be used now for loading textures, etc. See: http://yafaray.org/node/703    This support is still limited and could fail in some cases. `[Core]`
 
-* Secondary File Output: now it will be possible to render into render *and* export to image files at the same time! There are several functions that depend on this now, such as the render parameters badge, which will no longer appear in the Blender render, only in the exported images.
+* Secondary File Output: now it will be possible to render into render *and* export to image files at the same time! There are several functions that depend on this now, such as the render parameters badge, which will no longer appear in the Blender render, only in the exported images. `[Blender Exporter + Core]`
 
-* It's now possible to save the images automatically to the same place where the .blend file resides, into a folder with same name as the blend file and suffix "_render"
+* It's now possible to save the images automatically to the same place where the .blend file resides, into a folder with same name as the blend file and suffix "_render" `[Blender Exporter]`
 
-* Now the user can use CTRL+C in the console to interrupt a render in progress. This now works in all modes (render into Blender, render to Image files or using yafaray-xml). The interruption due to CTRL+C will now be handled correctly, ensuring the image files and badge are properly saved.
+* Now the user can use CTRL+C in the console to interrupt a render in progress. `[Core]`
+This now works in all modes (render into Blender, render to Image files or using yafaray-xml). The interruption due to CTRL+C will now be handled correctly, ensuring the image files and badge are properly saved.
 
-* yafaray-xml: no longer needed to specify the Library path nor the Plugins path. The old Windows Registry requirement has been removed and it's not necessary anymore. Now, yafaray-xml will load the libraries from the same folder where the yafaray-xml executable resides and it will load the plugins from the subfolder "plugins" respect to the folder where the yafaray-xml executable resides
+* yafaray-xml: no longer needed to specify the Library path nor the Plugins path. `[Core]`
+The old Windows Registry requirement has been removed and it's not necessary anymore. Now, yafaray-xml will load the libraries from the same folder where the yafaray-xml executable resides and it will load the plugins from the subfolder "plugins" respect to the folder where the yafaray-xml executable resides
 
-* Removed option -pst in yafaray-xml, now it has to be enabled via parameter in the xml file
+* Removed option -pst in yafaray-xml, now it has to be enabled via parameter in the xml file `[Core]`
 
-* New Logging system
+* New Logging system `[Blender Exporter + Core]`
   - Title, author, comments can be entered now in the Blender Exporter and will appear in the logs and badge.
   - YafaRay compilation information (platform, compiler), Blender information and some System Information will appear automatically in the log for easier support of user problems.
   - Console log will show the time of the day, and the duration of the previous event in the log.
@@ -179,7 +188,7 @@ Each computer will generate a different Film. If one of the nodes is set to "Loa
   - YafaRay-xml added commandline settings for log file output (txt and/or html) and removed old custom string
 
 
-* Improved Parameters Badge:
+* Improved Parameters Badge. `[Blender Exporter + Core]`
   - New non-intrusive badge, that is appended to the image. Requires to use "secondary file output" (the badge will no longer appear in Blender due to Blender API limitations that don't allow using a non-intrusive badge when rendering into Blender). See: http://yafaray.org/node/383
   - Title, author, etc, can be entered in the Exporter to appear in the badge
   - More information, more detailed and clear in the badge. See: http://yafaray.org/node/162 http://yafaray.org/node/224
@@ -190,68 +199,68 @@ Each computer will generate a different Film. If one of the nodes is set to "Loa
   - The amount of details shown in the badge can be selected (show render parameters, AA settings, none or both)
   - Show separately render time and photon generation time, plus added total time (including maps generation).
   
-* Added new Render Tile "Centre" (now by default) so the renders start in the centre of the image and expand from there. This should allow a faster view of the to-be render, as typically most objects of interest are in the centre of the image.
+* Added new Render Tile "Centre" (now by default) so the renders start in the centre of the image and expand from there. This should allow a faster view of the to-be render, as typically most objects of interest are in the centre of the image. `[Blender Exporter + Core]`
   
-* New Dark areas detection type: curve  (see http://yafaray.org/node/704)
+* New Dark areas detection type: curve  (see http://yafaray.org/node/704) `[Blender Exporter + Core]`
 
-* New more optimized rendering tile structure, to avoid having to wait for the last 1 or 2 tiles to finish rendering before the next pass/frame starts. Now, the last tiles will be automatically subdivided to reduce the waiting times. See: http://yafaray.org/node/709
+* New more optimized rendering tile structure, to avoid having to wait for the last 1 or 2 tiles to finish rendering before the next pass/frame starts. Now, the last tiles will be automatically subdivided to reduce the waiting times. See: http://yafaray.org/node/709  `[Core]`
 
-* Ability to enable/disable Caustic and/or Diffuse Photons generation in the Photon Map integrator.
+* Ability to enable/disable Caustic and/or Diffuse Photons generation in the Photon Map integrator. `[Blender Exporter + Core]`
 
-* New mirrorX, mirrorY feature for Textures. See: http://yafaray.org/node/227
+* New mirrorX, mirrorY feature for Textures. See: http://yafaray.org/node/227 `[Blender Exporter + Core]`
 
-* More fine-grained Photon Control for light sources. See: http://yafaray.org/node/475
+* More fine-grained Photon Control for light sources. See: http://yafaray.org/node/475 `[Blender Exporter + Core]`
 
-* Ability to automatically save the exported images and logs including the .blend filename and/or current date/time. See: http://yafaray.org/node/331
+* Ability to automatically save the exported images and logs including the .blend filename and/or current date/time. See: http://yafaray.org/node/331 `[Blender Exporter]`
 
-* Ability to set a per-material raytracing depth, for example to speed up scenes with glass. See: http://yafaray.org/node/494
+* Ability to set a per-material raytracing depth, for example to speed up scenes with glass. See: http://yafaray.org/node/494 `[Blender Exporter + Core]`
 
-* Ability to automatically save a preset file with each exported image. The preset can be reused if needed by copying it to the users "home" folder, into the "yafaray_userdata/presets/render/" subfolder
+* Ability to automatically save a preset file with each exported image. The preset can be reused if needed by copying it to the users "home" folder, into the "yafaray_userdata/presets/render/" subfolder `[Blender Exporter]`
 
-* Fixed the Presets storage and retrieval. They will be saved/loaded in the "home" user folder, inside the subfolder "yafaray_userdata/presets/render/" (will be created automatically if it does not exist). Also, more parameters have been included in the presets now and old parameters were removed.
+* Fixed the Presets storage and retrieval. They will be saved/loaded in the "home" user folder, inside the subfolder "yafaray_userdata/presets/render/" (will be created automatically if it does not exist). Also, more parameters have been included in the presets now and old parameters were removed. `[Blender Exporter]`
 
-* Parameter to enable/disable World background shadow casting. Option to control separately World background sky/sun shadow casting.
+* Parameter to enable/disable World background shadow casting. Option to control separately World background sky/sun shadow casting. `[Blender Exporter + Core]`
 
-* Bidirectional integrator declared as "Deprecated" and no longer supported, as explained in http://www.yafaray.org/node/720
+* Bidirectional integrator declared as "Deprecated" and no longer supported, as explained in http://www.yafaray.org/node/720 `[Blender Exporter + Core]`
 
-* Small optimizations for AA resampling, especially when no more pixels are supposed to be resampled
+* Small optimizations for AA resampling, especially when no more pixels are supposed to be resampled `[Core]`
 
-* Add Volumetric rendering to the Blend material
+* Add Volumetric rendering to the Blend material. `[Core]`
     When using glass or rough glass in the Blend material, volumetric absorption didn't work. I've added the volumetric rendering to the Blend material so glass/rough glass materials render correctly.
     However, there is a limitation: if blending two materials with different volumetric options, as I cannot "merge" the volumes, I'm using the volume from the first material for blend amount values [0.0-0.5] and the volume from the second material for blend amount ]0.5-1.0]. This is totally not ideal, but better than before in my opinion.
 
-* Added SmartIBL functionality to reduce noise when using World HDRI textures for lighting. The functionality adds a new parameter "SmartIBL blur" that blurs the World texture used for lighting without affecting the world texture used for reflections, etc. High values can cause slowdowns at render process start. This was requested at http://www.yafaray.org/node/566 and http://www.yafaray.org/node/727
+* Added SmartIBL functionality to reduce noise when using World HDRI textures for lighting. The functionality adds a new parameter "SmartIBL blur" that blurs the World texture used for lighting without affecting the world texture used for reflections, etc. High values can cause slowdowns at render process start. This was requested at http://www.yafaray.org/node/566 and http://www.yafaray.org/node/727 `[Blender Exporter + Core]`
 
-* Added IBL sampling clamp to reduce noise when using World HDRI textures for lighting. In some cases blur is not good enough to remove noise and it causes blurred shadows. IBL clamping would help sometimes to reduce noise so blur is not needed, but it could lead to inexact overall lighting, etc. This was requested at http://www.yafaray.org/node/566 and http://www.yafaray.org/node/727
+* Added IBL sampling clamp to reduce noise when using World HDRI textures for lighting. In some cases blur is not good enough to remove noise and it causes blurred shadows. IBL clamping would help sometimes to reduce noise so blur is not needed, but it could lead to inexact overall lighting, etc. This was requested at http://www.yafaray.org/node/566 and http://www.yafaray.org/node/727 `[Blender Exporter + Core]`
 
-* Added Texture Color Controls to be able to control the texture brigthness, contrast, saturation, hue, etc, as requested at http://www.yafaray.org/node/334
+* Added Texture Color Controls to be able to control the texture brigthness, contrast, saturation, hue, etc, as requested at http://www.yafaray.org/node/334 `[Blender Exporter + Core]`
 
-* Added Texture Color Ramps, to be able to create much more interesting procedural textures, also requested at http://www.yafaray.org/node/334
+* Added Texture Color Ramps, to be able to create much more interesting procedural textures, also requested at http://www.yafaray.org/node/334 `[Blender Exporter + Core]`
 
-* Implemented all remaining progressions in the Blend texture (only linear was implemented), requested at http://www.yafaray.org/node/313
+* Implemented all remaining progressions in the Blend texture (only linear was implemented), requested at http://www.yafaray.org/node/313 `[Core]`
 
 
 Bug fixes in v3.0.0:
 --------------------
-* Fixed: Soft Spotlight too dark when nearer than 1.0 blender unit from objects. See: http://yafaray.org/node/587
+* Fixed: Soft Spotlight too dark when nearer than 1.0 blender unit from objects. See: http://yafaray.org/node/587 `[Core]`
 
-* Fixed: Rough Glass not working in Blend materials. See: http://yafaray.org/node/365
+* Fixed: Rough Glass not working in Blend materials. See: http://yafaray.org/node/365 `[Core]`
 
-* Fixed: black spots in some cases. See: http://yafaray.org/node/730
+* Fixed: black spots in some cases. See: http://yafaray.org/node/730 `[Core]`
 
-* Fixed: bug in border rendering where it was displaced one pixel sometimes. See: http://www.yafaray.org/community/forum/viewtopic.php?f=23&t=5151&start=0
+* Fixed: bug in border rendering where it was displaced one pixel sometimes. See: http://www.yafaray.org/community/forum/viewtopic.php?f=23&t=5151&start=0 `[Blender Exporter]`
 
-* Clay material default color changed to "real" middle gray. See: http://www.yafaray.org/community/forum/viewtopic.php?f=23&t=5152&start=0#p31497
+* Clay material default color changed to "real" middle gray. See: http://www.yafaray.org/community/forum/viewtopic.php?f=23&t=5152&start=0#p31497 `[Blender Exporter]`
 
-* Fixed incorrect updating of lamp preview when lamp parameters are modified
+* Fixed incorrect updating of lamp preview when lamp parameters are modified `[Blender Exporter]`
 
-* Fix AO Clay pass self shadow problem, reported by RioFranco (Olivier)
+* Fix AO Clay pass self shadow problem, reported by RioFranco (Olivier) `[Core]`
 
-* Changes in SWIG code to try to reduce crashes. Not sure if this will solve all problems but I hope this change helps.
+* Changes in SWIG code to try to reduce crashes. Not sure if this will solve all problems but I hope this change helps. `[Core]`
 
-* Bidirectional: fix crash when using sky background as only light source
+* Bidirectional: fix crash when using sky background as only light source `[Core]`
 
-* SPPM progress bar and tags fixed
+* SPPM progress bar and tags fixed `[Core]`
 
 
 YafaRay v2.1.1 (2016-04-16) for Blender 2.76b:
@@ -263,23 +272,23 @@ YafaRay-E (experimental) v2.1.1 (2016-02-06) for Blender 2.76b:
 ----------------------------------------------
 Note: there has been important changes and bug fixes in this version. They have solved some long-standing issues but perhaps they could cause new issues and unexpected results, so we have to keep an eye on them.
 
-* IMPORTANT: Fix for incorrect IBL lighting in World Background Texture when set to Angular. See: http://www.yafaray.org/node/714
+* IMPORTANT: Fix for incorrect IBL lighting in World Background Texture when set to Angular. See: http://www.yafaray.org/node/714 `[Core]`
 
-* IMPORTANT: Adjustment to the automatic intersection/shadow bias calculation formula to avoid black artifacts in the scenes with fine details. However, now we can get again some black dots in some scenes again. For now, no good solution at hand (any good solution would require fundamental changes to the engine and probably slow down the renders in a significant amount). However, I hope to have found a better balance now. See: http://blenderartists.org/forum/showthread.php?389385-YafaRay-E-(Experimental)-v2-0-2-builds-Windows-Linux-and-Mac-OSX-for-Blender-2-76b&p=3004974&viewfull=1#post3004974
+* IMPORTANT: Adjustment to the automatic intersection/shadow bias calculation formula to avoid black artifacts in the scenes with fine details. However, now we can get again some black dots in some scenes again. For now, no good solution at hand (any good solution would require fundamental changes to the engine and probably slow down the renders in a significant amount). However, I hope to have found a better balance now. See: http://blenderartists.org/forum/showthread.php?389385-YafaRay-E-(Experimental)-v2-0-2-builds-Windows-Linux-and-Mac-OSX-for-Blender-2-76b&p=3004974&viewfull=1#post3004974 `[Core]`
 
-* IMPORTANT: Fix for black dots (alpha=0) sometimes when using Mitchell/Lanzcos filters. It's not clear what is the best way of solving this problem. This fix is the one that makes more sense but could cause new issues, we have to keep an eye on this. See: http://www.yafaray.org/node/712
+* IMPORTANT: Fix for black dots (alpha=0) sometimes when using Mitchell/Lanzcos filters. It's not clear what is the best way of solving this problem. This fix is the one that makes more sense but could cause new issues, we have to keep an eye on this. See: http://www.yafaray.org/node/712 `[Core]`
 
-* Fixed Black artifacts in World Background Textures. See: http://www.yafaray.org/node/714
+* Fixed Black artifacts in World Background Textures. See: http://www.yafaray.org/node/714 `[Core]`
 
-* Fixed regression error in v2.1.0 when using Area Lights. See: http://www.yafaray.org/node/713
+* Fixed regression error in v2.1.0 when using Area Lights. See: http://www.yafaray.org/node/713 `[Blender Exporter]`
 
-* Fixed World Preview not updating correctly. This is probably caused by Blender itself, I had to use the same workaround I used in the past to fix the material preview updating problem
+* Fixed World Preview not updating correctly. This is probably caused by Blender itself, I had to use the same workaround I used in the past to fix the material preview updating problem. `[Blender Exporter]`
 
-* Fixed crash when using textures with Normal or Window coordinates (which are view dependent) along with Caustic Photons. However, we have to consider that Photons are supposed to be view-independent, but when using textures with Window or Normal coordinates (which are view dependant), then the Photons WILL also be view dependant as well! So, using textures with "tricks" like Normal or Windows coordinates can cause low frequency noise in animations with Photons. This would not be a problem, but the price for using such "tricks" in renders.
+* Fixed crash when using textures with Normal or Window coordinates (which are view dependent) along with Caustic Photons. However, we have to consider that Photons are supposed to be view-independent, but when using textures with Window or Normal coordinates (which are view dependant), then the Photons WILL also be view dependant as well! So, using textures with "tricks" like Normal or Windows coordinates can cause low frequency noise in animations with Photons. This would not be a problem, but the price for using such "tricks" in renders. `[Core]`
 
-* Fixed python error when selecting an image texture before with no image opened yet.
+* Fixed python error when selecting an image texture before with no image opened yet. `[Blender Exporter]`
 
-* "Final" changes to the Material Preview Advanced Controls:
+* "Final" changes to the Material Preview Advanced Controls. `[Blender Exporter]`
     - Added Dynamic Camera Rotation & Zoom.
     - Changes to ensure the preview object is centered and rotation keeps it always in the centre.
     - Changes to keep the scale/proportions of custom preview objects
@@ -290,17 +299,17 @@ Note: there has been important changes and bug fixes in this version. They have 
 
 Important note: YafaRay only supports *one* scene in the .blend file. If you have more than one scene, it could cause unexpected results and problems in the new Material Preview Controls.
 
-* Fixed: console colors including blue component were incorect for Windows builds
+* Fixed: console colors including blue component were incorect for Windows builds `[Core]`
 
 
 YafaRay-E (experimental) v2.1.0 (2016-01-31) for Blender 2.76b:
 ------------------------------------------------
 
-- Added Normal Coordinates for textures, so you can use a gradient texture mapped to normal coordinates to simulate, for example, some cloth materials (see http://yafaray.org/node/188 )
-- Fixed some crashes when changing Material/Texture settings
-- Increased max limit for Sample Multiplier Factor from 2.0 to 4.0 so more steep exponential increase of samples can be done for every pass. Be aware that the number of samples will grow very fast in every pass if the factor is above 1.5.
+- Added Normal Coordinates for textures, so you can use a gradient texture mapped to normal coordinates to simulate, for example, some cloth materials (see http://yafaray.org/node/188 ) `[Blender Exporter + Core]`
+- Fixed some crashes when changing Material/Texture settings `[Core]`
+- Increased max limit for Sample Multiplier Factor from 2.0 to 4.0 so more steep exponential increase of samples can be done for every pass. Be aware that the number of samples will grow very fast in every pass if the factor is above 1.5. `[Blender Exporter]`
 
-- Advanced Controls for Material/Texture Preview
+- Advanced Controls for Material/Texture Preview. `[Blender Exporter]`
   As requested in http://yafaray.org/node/699 I've made some changes to allow fine-grained control of the Material and Texture Preview window.
 
   Some videos explaining the new feature:
@@ -315,58 +324,58 @@ YafaRay-E (experimental) v2.1.0 (2016-01-31) for Blender 2.76b:
     * Ability to change light power in the material previsualisation window: added a power factor parameter for the lights and another parameter to set the color of the lights themselves to experiment with different lighting conditions on the material
     * Ability to change previsualisation object size: with the parameter to scale the object plus added parameters to scale/displace the texture as well in the preview
     * Rendering an object from the scene as a previsualisation object: added a parameter to select an arbitrary object from the blend scene as preview object.
-    * Background selection: added a parameter to select the desired background: "checker" is the default, "none" is a white background and "world" would be the blend scene world definition. Selecting "world" would allow a more realistic and customized material preview, but it will probably be noisier and slower (depending on the samples selected in the World definition)
+    * Background selection: added a parameter to select the desired background: "checker" is the default, "none" is a white background and "world" would be the blend scene world definition. Selecting "world" would allow a more realistic and customized material preview, but it will probably be noisier and slower (depending on the samples selected in the World definition) 
 
 
 YafaRay-E (experimental) v2.0.2 (2016-01-26) for Blender 2.76b:
 ------------------------------------------------
-- Fixed crash when Blend materials were used and their components were also blend, which had some component materials missing
-- Max value for the dark noise factor parameter expanded to 1.0 to allow even darker areas to have better AA sampling
-- Fix for Oren Nayar to avoid generating white/black dots when used together with bump mapping
-- Fix for black dots using HDRI spherical and Coated Glossy
+- Fixed crash when Blend materials were used and their components were also blend, which had some component materials missing. `[Blender Exporter]`
+- Max value for the dark noise factor parameter expanded to 1.0 to allow even darker areas to have better AA sampling `[Blender Exporter]`
+- Fix for Oren Nayar to avoid generating white/black dots when used together with bump mapping `[Core]`
+- Fix for black dots using HDRI spherical and Coated Glossy `[Core]`
 
 
 YafaRay-E (experimental) v2.0.1 (2016-01-05) for Blender 2.76b:
 ------------------------------------------------
-- Fixed Instances not working in v2.0.0 (regression)
+- Fixed Instances not working in v2.0.0 (regression) `[Core]`
 
 
 YafaRay-E (experimental) v2.0.0 (2016-01-01) for Blender 2.76b:
 ------------------------------------------------
-- STRUCTURAL CHANGES to implement Render Passes. The Passes are especially intended for Direct Light and Photon Mapping integrators. Some passes may not work (or work incorrectly) in other integrators.
-- STRUCTURAL CHANGES to implement Render Views (Stereo3D / MultiView)
-- STRUCTURAL CHANGES to implement a (hopefully) improved more automatic and reliable Shadow Bias and Intersection Bias, based on triangle size and coordinates positions.
-- New Noise Control parameters, including a new clamping function to reduce noise at the cost of reducing physical accuracy and realism.
-- RAM optimization options for JPG,PNG,TGA and TIFF textures. Using "optimized" (by default now) will reduce RAM usage for those textures in approx. 70%. The "optimized" option is lossless (except in TIFF 16bit). There is a "compressed" option that is lossy but allows an extra reduction of approx. 20% in RAM usage.
-- Support for exporting in MultiLayer EXR files, that can be opened in Blender as well.
-- XML rendering now supports an option to save partially rendered images every "x" seconds, probably useful when creaiting external GUIs to the XML interface.
-- Ability to select what "internal" YafaRay Render Pass has to be mapped to an "external" Render Pass. This provides a lot of power and flexibility when generating Render Passes.
-- Object ID/Material ID passes, with option of automatic ID color pass.
-- Object ID Masking and Material ID masking (objects only, objects+shadows, shadows only)
-- Debug passes and UV debug pass available to be able to find mesh/mapping/texturing problems at the same time as rendering the scene.
-- Samplerate pass, to apply post-processing filters to the noisier parts of the render.
-- Added dispersive caustics to SPPM.
-- Changes to dispersion in rough glass.
-- Removal of entire Qt interface. As far as we know it was old, unmaintained and probably useless anyway.
-- Fix (although horrible) for the Bidirectional integrator generating black renders with some types of lights.
-- A few speed improvements, I don't expect a significant change but I hope they help a bit, especially in 64bit systems.
-- Fixes to the material preview to be correctly refreshed after any changes to the material properties.
+- STRUCTURAL CHANGES to implement Render Passes. The Passes are especially intended for Direct Light and Photon Mapping integrators. Some passes may not work (or work incorrectly) in other integrators. `[Blender Exporter + Core]`
+- STRUCTURAL CHANGES to implement Render Views (Stereo3D / MultiView) `[Blender Exporter + Core]`
+- STRUCTURAL CHANGES to implement a (hopefully) improved more automatic and reliable Shadow Bias and Intersection Bias, based on triangle size and coordinates positions. `[Blender Exporter + Core]`
+- New Noise Control parameters, including a new clamping function to reduce noise at the cost of reducing physical accuracy and realism. `[Blender Exporter + Core]`
+- RAM optimization options for JPG,PNG,TGA and TIFF textures. Using "optimized" (by default now) will reduce RAM usage for those textures in approx. 70%. The "optimized" option is lossless (except in TIFF 16bit). There is a "compressed" option that is lossy but allows an extra reduction of approx. 20% in RAM usage. `[Blender Exporter + Core]`
+- Support for exporting in MultiLayer EXR files, that can be opened in Blender as well. `[Blender Exporter + Core]`
+- XML rendering now supports an option to save partially rendered images every "x" seconds, probably useful when creaiting external GUIs to the XML interface. `[Core]`
+- Ability to select what "internal" YafaRay Render Pass has to be mapped to an "external" Render Pass. This provides a lot of power and flexibility when generating Render Passes. `[Blender Exporter + Core]`
+- Object ID/Material ID passes, with option of automatic ID color pass. `[Blender Exporter + Core]`
+- Object ID Masking and Material ID masking (objects only, objects+shadows, shadows only) `[Blender Exporter + Core]`
+- Debug passes and UV debug pass available to be able to find mesh/mapping/texturing problems at the same time as rendering the scene. `[Blender Exporter + Core]`
+- Samplerate pass, to apply post-processing filters to the noisier parts of the render. `[Blender Exporter + Core]`
+- Added dispersive caustics to SPPM. `[Core]`
+- Changes to dispersion in rough glass. `[Core]`
+- Removal of entire Qt interface. As far as we know it was old, unmaintained and probably useless anyway. `[Core]`
+- Fix (although horrible) for the Bidirectional integrator generating black renders with some types of lights. `[Core]`
+- A few speed improvements, I don't expect a significant change but I hope they help a bit, especially in 64bit systems. `[Core]`
+- Fixes to the material preview to be correctly refreshed after any changes to the material properties. `[Blender Exporter]`
 
 
 
 YafaRay-E (experimental) v1.1.0 (2015-11-06) for Blender 2.76:
 -----------------------------------------------
-- Changes to the Core code and build files to enable building for Mac OSX 64bit (v10.6 or higher), based on the excellent work from Jens Verwiebe. Thank you very much, Jens!!
+- Changes to the Core code and build files to enable building for Mac OSX 64bit (v10.6 or higher), based on the excellent work from Jens Verwiebe. Thank you very much, Jens!! `[Core]`
 
-- Added a new "Resampled Floor" parameter to the Adaptative AA calculations, to increase the noise reduction performance. The idea is that if the amount of resampled pixels go below that "floor" value during a certain pass, the AA threshold is automatically decreased in 10% for the next pass. More information: http://yafaray.org/node/690
+- Added a new "Resampled Floor" parameter to the Adaptative AA calculations, to increase the noise reduction performance. The idea is that if the amount of resampled pixels go below that "floor" value during a certain pass, the AA threshold is automatically decreased in 10% for the next pass. More information: http://yafaray.org/node/690 `[Blender Exporter + Core]`
 
-- Blend materials can now be selected using drop down menus. This feature has been ported from povmaniaco's The Bounty fork of YafaRay. Thanks, povmaniaco!!
+- Blend materials can now be selected using drop down menus. This feature has been ported from povmaniaco's The Bounty fork of YafaRay. Thanks, povmaniaco!! `[Blender Exporter]`
 
-- Added a new texture sampling parameter in Blender Exporter to control the type of interpolation in the image texture. Options will be: bilinear (default), bicubic or none. See: http://www.yafaray.org/community/forum/viewtopic.php?f=22&t=5121
+- Added a new texture sampling parameter in Blender Exporter to control the type of interpolation in the image texture. Options will be: bilinear (default), bicubic or none. See: http://www.yafaray.org/community/forum/viewtopic.php?f=22&t=5121 `[Blender Exporter]`
 
-- Added a per-material parameter to control reception of shadows. Now it's possible to select if a material should receive shadows from other objects (as default) or not. See: http://yafaray.org/node/687
+- Added a per-material parameter to control reception of shadows. Now it's possible to select if a material should receive shadows from other objects (as default) or not. See: http://yafaray.org/node/687 `[Blender Exporter + Core]`
 
-- Minor changes for existing material visibility feature to improve (just a tiny bit) performance. 
+- Minor changes for existing material visibility feature to improve (just a tiny bit) performance. `[Core]`
 
 
 
@@ -374,8 +383,7 @@ YafaRay-E (experimental) v1.0.0 (2015-10-13) for Blender 2.76:
 -----------------------------------------------
 Note: from v1.0.0 I will no longer use the suffix "beta", as all YafaRay-Experimental versions are inherently betas ;-). I will use for version scheme: "Major.Minor.Bugfix". Major will be very important and structural changes with possible API breakage, Minor will be new and modified functionality without API breakage, Bugfix will be small changes and bugfixes.
 
-- IMPORTANT CHANGES to Color Management and Color Pipeline Linear Workflow: http://www.yafaray.org/node/670
-
+- IMPORTANT CHANGES to Color Management and Color Pipeline Linear Workflow: http://www.yafaray.org/node/670 `[Blender Exporter + Core]`
 Initial prototype to try to fix the (apparently broken) YafaRay color pipeline workflow and to replace the simple gamma input/output correction with a proper sRGB decoding/coding in non-HDR files.
 
 More information here: http://www.yafaray.org/node/670
@@ -406,8 +414,7 @@ Several bug tracker entries are supposed to be fixed with this change:
 
 
 
-- IMPORTANT CHANGES to Volumetrics for proper raytracing of volumes:
-
+- IMPORTANT CHANGES to Volumetrics for proper raytracing of volumes. `[Core]`
 Problems with volumes and transparent objects have been reported in the bug tracker several times:
 http://yafaray.org/node/289
 http://yafaray.org/node/666
@@ -416,13 +423,13 @@ The problem was that Volumes were not really included in the raytracing process,
 
 Now, if there are no parameters set in the XML for transparent background or transparent refracted background, their default values will be "false" and not "true" as until now. This will avoid confusion due to the new way "transparent refracted background" works, not rendering the background at all so volumes rendered against a transparent background do not carry "remains" of the background with them. 
 
-- Fix for attenuation when using 2 or more volumetric objects: http://www.yafaray.org/node/332
+- Fix for attenuation when using 2 or more volumetric objects: http://www.yafaray.org/node/332 `[Core]`
 
-- Fix for error message "Index out of bounds in pdf1D_t" when spotlights with falloff > 0.70 and photons were used: http://www.yafaray.org/node/681
+- Fix for error message "Index out of bounds in pdf1D_t" when spotlights with falloff > 0.70 and photons were used: http://www.yafaray.org/node/681 `[Core]`
 
-- Fix for Alpha Premultiply broken in Blender exporter: http://www.yafaray.org/node/682  Now the "Premultiply Alpha" option is back in the Exporter, but only when Export to file or to xml is selected. Premultiply will now be forced to true when exporting into Blender. 
+- Fix for Alpha Premultiply broken in Blender exporter: http://www.yafaray.org/node/682  Now the "Premultiply Alpha" option is back in the Exporter, but only when Export to file or to xml is selected. Premultiply will now be forced to true when exporting into Blender. `[Blender Exporter]`
 
-- Fix for some YafaRay camera panels incorrectly appearing in LuxRender! http://www.luxrender.net/forum/viewtopic.php?f=16&t=12405&sid=14e5a712bb33cbdee95c65fb1920ad38&start=20
+- Fix for some YafaRay camera panels incorrectly appearing in LuxRender! `[Blender Exporter]` http://www.luxrender.net/forum/viewtopic.php?f=16&t=12405&sid=14e5a712bb33cbdee95c65fb1920ad38&start=20
 https://github.com/DavidBluecame/Blender-Exporter/commit/70138b7ec2c2aa3f94d3c820babc10d12af6f943 
 
 
@@ -433,22 +440,24 @@ Note: builds were not created for this version, as it was only used for limited-
 
 More info about the discussion and changes: http://www.yafaray.org/node/662
 
-- Fix for issue where Final Gather uses non-IBL background in glass: http://www.yafaray.org/node/572
+- Fix for issue where Final Gather uses non-IBL background in glass: http://www.yafaray.org/node/572 `[Core]`
 
-- Fix for white dots in Path Tracer integrator: http://www.yafaray.org/node/662
+- Fix for white dots in Path Tracer integrator: http://www.yafaray.org/node/662 `[Core]`
 
-- Fix for bump mapping artifacts: http://www.yafaray.org/node/660
+- Fix for bump mapping artifacts: http://www.yafaray.org/node/660 `[Core]`
 WARNING: I've made significant changes to the bump mapping when using image textures, trying to improve it and get results more similar to Blender, but it could cause new issues so enough testing should be done to make sure bump/normal mapping still works correctly.
  
-- Improvements to the noise fireflies in Rough Glass: http://www.yafaray.org/node/663
+- Improvements to the noise fireflies in Rough Glass: http://www.yafaray.org/node/663 `[Core]`
 
-- New parameter to enable/disable lights. In the XML, into each "light" section you can add:
+- New parameter to enable/disable lights. `[Blender Exporter + Core]`
+In the XML, into each "light" section you can add:
 <light_enabled bval="false"/> or <light_enabled bval="true"/>
 
-- Ability to control per-light shadow casting. In blender exporter this is in the new "advanced settings" at the very bottom of the light panel. In the xml file, you can add this to the "light" sections:
+- Ability to control per-light shadow casting. `[Blender Exporter + Core]`
+In blender exporter this is in the new "advanced settings" at the very bottom of the light panel. In the xml file, you can add this to the "light" sections:
 <cast_shadows bval="true"/> or <cast_shadows bval="false"/>
 
-- New per-material "visibility" enum parameter that can have the following values:
+- New per-material "visibility" enum parameter that can have the following values. `[Blender Exporter + Core]`
 
 'normal' (default): Normal - Normal visibility - visible casting shadows.
 'no_shadows': No shadows - visible but not casting shadows.
@@ -464,7 +473,7 @@ This new parameter is at the bottom of the material panel, in the new advanced s
 YafaRay-E (experimental) v0.1.99-beta4 (2015-06-20) for Blender 2.75 RC:
 ---------------------------------------------------------
 
-- Changes to the blend material "component" material1,material2 handling: http://www.yafaray.org/node/546
+- Changes to the blend material "component" material1,material2 handling: http://www.yafaray.org/node/546 `[Blender Exporter]`
 
 In previous versions if you created or deleted materials in the .blend file, sometimes all the material components of the blend materials changed or dissapeared randomly. To avoid it, now the materials are referenced by name using strings. You cannot use dropdown menus anymore to select the blend submaterials, and you have to be careful now not to rename the materials used by "blend" materials. However, with the new system if you create or delete other materials it will not affect the blend material1,material2 assignments.
 
@@ -472,9 +481,9 @@ Increased the level of detail in the YafaRay Log, so if there are any problems w
 
 WARNING: this change breaks backwards compatibility. When opening a .blend created with an older version of YafaRay the blend material components will be "upgraded" to the new system, but the"blend" materials in a blend made with the new version could behave wrongly if you open it with an older version.
 
-- New advanced parameters for fine control of Shadow Bias/Min Ray Dist if the automatic calculation is not good enough. Please give us feedback about it in the forum: http://www.yafaray.org/community/forum/viewtopic.php?f=23&t=5084 
+- New advanced parameters for fine control of Shadow Bias/Min Ray Dist if the automatic calculation is not good enough. Please give us feedback about it in the forum: http://www.yafaray.org/community/forum/viewtopic.php?f=23&t=5084 `[Blender Exporter + Core]`
 
-- Fix for caustics noise coming from Non-IBL background in Photon Mapping. Now the background will only be used for Caustics if IBL is enabled and (if there is a caustics parameter available in the background settings) if caustics is enabled in the background.
+- Fix for caustics noise coming from Non-IBL background in Photon Mapping. Now the background will only be used for Caustics if IBL is enabled and (if there is a caustics parameter available in the background settings) if caustics is enabled in the background. `[Core]`
 
 - Background "power" parameters relocated to places where they make more sense. They were hidden and only visible when IBL was enabled, but most of the times the power parameter affects the background rendering even if IBL is disabled.
 
@@ -484,15 +493,15 @@ YafaRay-E (experimental) v0.1.99-beta3 (2015-05-02) for Blender 2.74.5 (up to Bl
 ------------------------------------------------------------------------------------------------
 Blender made a change to their API in their development branch 2.74.4 to include MultiView. That change caused YafaRay to render black images despite being working fine.
 
-Very kindly Jens Verwiebe sent us the fix for Blender Exporter so YafaRay can work again with Blender 2.74.4. This fix is not a full integration in the new MultiView functionality, it just allows YafaRay to work again with Blender.
+Very kindly Jens Verwiebe sent us the fix for Blender Exporter so YafaRay can work again with Blender 2.74.4. This fix is not a full integration in the new MultiView functionality, it just allows YafaRay to work again with Blender. `[Blender Exporter]`
 
 More changes in this beta3 version:
 
-- Fix for -NAN results in the Bidirectional integrator when using Architectural, Angular and Ortho cameras. See: http://www.yafaray.org/node/538
+- Fix for -NAN results in the Bidirectional integrator when using Architectural, Angular and Ortho cameras. See: http://www.yafaray.org/node/538 `[Core]`
 
-- Fix for problem with Rough Glass too bright when dispersion is enabled. See: http://www.yafaray.org/node/642
+- Fix for problem with Rough Glass too bright when dispersion is enabled. See: http://www.yafaray.org/node/642 `[Core]`
 
-- Extended Texture Mapping system, allowing using textures to map additional properties in materials, to be able to create either more realistic or more exotic materials and reduce the dependency on the "blend" material. More information in: http://www.yafaray.org/community/forum/viewtopic.php?f=22&t=5091
+- Extended Texture Mapping system, allowing using textures to map additional properties in materials, to be able to create either more realistic or more exotic materials and reduce the dependency on the "blend" material. More information in: http://www.yafaray.org/community/forum/viewtopic.php?f=22&t=5091 `[Blender Exporter + Core]`
 
 Important note: when using some of the new mappings, the renders may slow down. I'm not sure whether it's because of the additional calculations (very likely) or if it's something we can optimize further in the future. In any case, it should only be noticeable when using the new mappings, and I think it's worth the ability to create new materials now.
 
@@ -515,10 +524,10 @@ Unfortunately due to Blender API limitations, in some of the new texture sliders
 
 YafaRay-E (experimental) v0.1.99-beta2 (2015-04-18) for Blender 2.74:
 -------------------------------------------------------
-- New Clay Material, with a small correction since the previous beta1
-- Fix for bad NaN normals that happened sometimes.
+- New Clay Material, with a small correction since the previous beta1. `[Blender Exporter]`
+- Fix for bad NaN normals that happened sometimes. `[Core]`
 - Calculate automatically Shadow Bias and Minimum Ray Dist depending on the scene size. This is to avoid black artifacts when resizing the objects. However as it's a fundamental change that affects everything, perhaps some new artifacts could appear in the images now and further fine tuning needed in this new formula. Please give us feedback about it in the forum:
-http://www.yafaray.org/community/forum/viewtopic.php?f=23&t=5084 
+http://www.yafaray.org/community/forum/viewtopic.php?f=23&t=5084  `[Core]`
 
 
 
@@ -526,6 +535,6 @@ YafaRay-E (experimental) v0.1.99-beta1 (2015-04-11) for Blender 2.74:
 ------------------------------------------------------
 Based on the official stable YafaRay v0.1.5 git version
 
-- New Clay Material system, more powerful and flexible
-- Texture mapping of Sigma factor in Shiny Diffuse/Oren Nayar
-- Fix for Negated colors in Musgrave/Voronoi textures mapped to diffuse color.
+- New Clay Material system, more powerful and flexible. `[Blender Exporter]`
+- Texture mapping of Sigma factor in Shiny Diffuse/Oren Nayar. `[Blender Exporter + Core]`
+- Fix for Negated colors in Musgrave/Voronoi textures mapped to diffuse color. [Core]
