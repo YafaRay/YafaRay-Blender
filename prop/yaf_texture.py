@@ -98,22 +98,6 @@ def register():
         subtype="ANGLE", unit="ROTATION",
         default=0.0, precision=1)
 
-    Texture.distance_avg_enabled = BoolProperty(
-        update=update_preview, name="Distance color avg",
-        description="Enable distance color averaging, to reduce details, noise and artifacts in textures seen from far away (for example concrete, grass, etc)",
-        default=False)
-        
-    Texture.distance_avg_dist_min = FloatProperty(
-        update=update_preview, name="Avg Dist Min",
-        description="Minimum distance between camera and object below which the original texture will be used",
-        min=0, default=0.0)
-
-    Texture.distance_avg_dist_max = FloatProperty(
-        update=update_preview, name="Avg Dist Max",
-        description="Max distance between camera and object over which the averaged texture color will be used. Between min and max distance, a progressive blend between original texture and averaged color will be used. Dist Max cannot be smaller than Dist Min",
-        min=0, default=100.0)
-
-
 def unregister():
     Texture.yaf_tex_type
     Texture.yaf_is_normal_map
@@ -122,6 +106,3 @@ def unregister():
     Texture.yaf_tex_interpolate
     Texture.yaf_tex_optimization
     Texture.yaf_adj_hue
-    Texture.distance_avg_enabled
-    Texture.distance_avg_dist_min
-    Texture.distance_avg_dist_max

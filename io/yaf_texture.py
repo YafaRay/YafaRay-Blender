@@ -65,10 +65,7 @@ class yafTexture:
         yi.paramsSetFloat("adj_saturation", tex.saturation)
         yi.paramsSetFloat("adj_hue", math.degrees(tex.yaf_adj_hue))
         yi.paramsSetBool("adj_clamp", tex.use_clamp)
-        yi.paramsSetBool("distance_avg_enabled", tex.distance_avg_enabled)
-        yi.paramsSetFloat("distance_avg_dist_min", tex.distance_avg_dist_min)
-        yi.paramsSetFloat("distance_avg_dist_max", tex.distance_avg_dist_max)
-        
+
         if tex.use_color_ramp:
             yi.paramsSetBool("use_color_ramp", tex.use_color_ramp)
             yi.paramsSetString("ramp_color_mode", tex.color_ramp.color_mode)

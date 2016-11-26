@@ -462,12 +462,6 @@ class YAFA_V3_TEXTURE_PT_image_sampling(YAFA_V3_TextureTypePanel, Panel):
             row.prop(tex, "use_interpolation", text="Use image background interpolation")
             #row.prop(tex, "use_calculate_alpha", text="Calculate Alpha")
         layout.prop(tex, "yaf_tex_optimization")
-        row = layout.row(align=True)
-        col = row.column()
-        col.prop(tex, "distance_avg_enabled")
-        if tex.distance_avg_enabled:
-            col.prop(tex, "distance_avg_dist_min")
-            col.prop(tex, "distance_avg_dist_max")
 
 
 class YAFA_V3_TEXTURE_PT_image_mapping(YAFA_V3_TextureTypePanel, Panel):
