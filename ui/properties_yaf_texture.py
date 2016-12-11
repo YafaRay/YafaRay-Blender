@@ -489,10 +489,8 @@ class YAFA_V3_TEXTURE_PT_image_mapping(YAFA_V3_TextureTypePanel, Panel):
             col.label(text="Mirror:")
             row = col.row(align=True)
             row.prop(tex, "use_mirror_x", text="X")
-            row.active = (tex.repeat_x > 1)
             row = col.row(align=True)
             row.prop(tex, "use_mirror_y", text="Y")
-            row.active = (tex.repeat_y > 1)
             
             layout.separator()
             
