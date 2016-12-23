@@ -76,7 +76,8 @@ def register():
         items=(
             ('bilinear', "Bilinear (default)", ""),
             ('bicubic', "Bicubic", ""),
-            ('none', "No interpolation", "")
+            ('none', "No interpolation", ""),
+            ('mipmap_trilinear', "Mipmaps - trilinear", "Mipmaps generation, trilinear interpolation (faster but lower quality)")
         ),
         default='bilinear')
         
@@ -97,6 +98,16 @@ def register():
         min=math.radians(-360), max=math.radians(360),
         subtype="ANGLE", unit="ROTATION",
         default=0.0, precision=1)
+        
+    Texture.yaf_mipmapleveltest = FloatProperty(
+        update=update_preview, name="mipmapleveltest",
+        description="mipmapleveltest",
+        min=0, default=0.0)
+
+    Texture.yaf_img_grayscale = BoolProperty(
+        update=update_preview, name="Use as Grayscale",
+        description="Convert internally to Grayscale to reduce memory usage for bump or mask textures, for example",
+        default=False)
 
 def unregister():
     Texture.yaf_tex_type
@@ -106,3 +117,5 @@ def unregister():
     Texture.yaf_tex_interpolate
     Texture.yaf_tex_optimization
     Texture.yaf_adj_hue
+    Texture.yaf_mipmapleveltest
+    Texture.yaf_img_grayscale

@@ -458,10 +458,12 @@ class YAFA_V3_TEXTURE_PT_image_sampling(YAFA_V3_TextureTypePanel, Panel):
             row.prop(tex, "use_calculate_alpha", text="Calculate Alpha")
             layout.prop(tex, "use_flip_axis", text="Flip X/Y Axis")
             layout.prop(tex, "yaf_tex_interpolate")
+            #layout.prop(tex, "mipmapleveltest")
         else:
             row.prop(tex, "use_interpolation", text="Use image background interpolation")
             #row.prop(tex, "use_calculate_alpha", text="Calculate Alpha")
         layout.prop(tex, "yaf_tex_optimization")
+        layout.prop(tex, "yaf_img_grayscale", text="Use as Grayscale")
 
 
 class YAFA_V3_TEXTURE_PT_image_mapping(YAFA_V3_TextureTypePanel, Panel):

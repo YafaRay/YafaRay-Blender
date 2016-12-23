@@ -57,6 +57,7 @@ class yafTexture:
 
         textureConfigured = False
         
+        yi.paramsSetBool("img_grayscale", tex.yaf_img_grayscale)
         yi.paramsSetFloat("adj_mult_factor_red", tex.factor_red)
         yi.paramsSetFloat("adj_mult_factor_green", tex.factor_green)
         yi.paramsSetFloat("adj_mult_factor_blue", tex.factor_blue)
@@ -64,6 +65,7 @@ class yafTexture:
         yi.paramsSetFloat("adj_contrast", tex.contrast)
         yi.paramsSetFloat("adj_saturation", tex.saturation)
         yi.paramsSetFloat("adj_hue", math.degrees(tex.yaf_adj_hue))
+        yi.paramsSetFloat("mipmapleveltest", tex.yaf_mipmapleveltest)
         yi.paramsSetBool("adj_clamp", tex.use_clamp)
 
         if tex.use_color_ramp:
