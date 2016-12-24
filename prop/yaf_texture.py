@@ -77,7 +77,8 @@ def register():
             ('bilinear', "Bilinear (default)", ""),
             ('bicubic', "Bicubic", ""),
             ('none', "No interpolation", ""),
-            ('mipmap_trilinear', "Mipmaps - trilinear", "Mipmaps generation, trilinear interpolation (faster but lower quality)")
+            ('mipmap_trilinear', "Mipmaps - trilinear", "Mipmaps generation, trilinear interpolation (faster but lower quality)"),
+            ('mipmap_ewa', "Mipmaps - EWA", "Mipmaps generation, EWA interpolation (slower but higher quality)")            
         ),
         default='bilinear')
         
