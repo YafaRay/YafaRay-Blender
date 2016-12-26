@@ -65,7 +65,8 @@ class yafTexture:
         yi.paramsSetFloat("adj_contrast", tex.contrast)
         yi.paramsSetFloat("adj_saturation", tex.saturation)
         yi.paramsSetFloat("adj_hue", math.degrees(tex.yaf_adj_hue))
-        yi.paramsSetFloat("mipmapleveltest", tex.yaf_mipmapleveltest)
+        yi.paramsSetFloat("trilinear_level_bias", tex.yaf_trilinear_level_bias)
+        yi.paramsSetFloat("ewa_max_anisotropy", tex.yaf_ewa_max_anisotropy)
         yi.paramsSetBool("adj_clamp", tex.use_clamp)
 
         if tex.use_color_ramp:

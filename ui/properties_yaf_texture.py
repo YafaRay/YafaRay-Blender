@@ -458,7 +458,10 @@ class YAFA_V3_TEXTURE_PT_image_sampling(YAFA_V3_TextureTypePanel, Panel):
             row.prop(tex, "use_calculate_alpha", text="Calculate Alpha")
             layout.prop(tex, "use_flip_axis", text="Flip X/Y Axis")
             layout.prop(tex, "yaf_tex_interpolate")
-            #layout.prop(tex, "mipmapleveltest")
+            if tex.yaf_tex_interpolate == "mipmap_ewa":
+                layout.prop(tex, "yaf_ewa_max_anisotropy")
+            elif tex.yaf_tex_interpolate == "mipmap_trilinear":
+                layout.prop(tex, "yaf_trilinear_level_bias")
         else:
             row.prop(tex, "use_interpolation", text="Use image background interpolation")
             #row.prop(tex, "use_calculate_alpha", text="Calculate Alpha")
