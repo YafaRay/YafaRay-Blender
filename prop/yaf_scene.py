@@ -387,6 +387,13 @@ class YafaRayRenderPassesProperties(bpy.types.PropertyGroup):
             ('debug-faces-edges', "Debug: Faces Edges", "Show the faces edges, potentially useful as alternative wireframe pass that can show quads and polygons in a better way", 315),
             ('debug-objects-edges', "Debug: Objects Edges", "Show the objects edges, potentially useful for toon-like shading", 316),
             ('debug-sampling-factor', "Debug: Sampling Factor", "Show the materials sampling factor", 317),
+            ('debug-dp-lengths', "Debug: differential dP lengths", "For debugging mipmaps, etc, show differential dPdx and dPdy lengths", 318),
+            ('debug-dpdx', "Debug: differential dPdx", "For debugging mipmaps, etc, show differential dPdx X,Y,Z coordinates", 319),
+            ('debug-dpdy', "Debug: differential dPdy", "For debugging mipmaps, etc, show differential dPdy X,Y,Z coordinates", 320),
+            ('debug-dpdxy', "Debug: differential dPdx+dPdy", "For debugging mipmaps, etc, show differential dPdx+dPdy X,Y,Z coordinates", 321),
+            ('debug-dudx-dvdx', "Debug: differential dUdx, dVdx", "For debugging mipmaps, etc, show differential dUdx and dVdx", 322),
+            ('debug-dudy-dvdy', "Debug: differential dUdy, dVdy", "For debugging mipmaps, etc, show differential dUdy and dVdy", 323),
+            ('debug-dudxy-dvdxy', "Debug: differential dUdx+dUdy, dVdx+dVdy", "For debugging mipmaps, etc, show differential dUdx+dUdy and dVdx+dVdy", 324),
         ), key=lambda index: index[1])
 
     renderInternalPassAdvanced=sorted((
