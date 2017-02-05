@@ -85,6 +85,8 @@ class YAFA_V3_PT_general_settings(RenderButtonsPanel, Panel):
         split = layout.split()
         col = split.column()
         col.prop(scene, "gs_tex_optimization")
+        col = split.column()
+        col.prop(scene, "gs_tex_colorspace_interpolation_method")
 
         split = layout.split()
         col = split.column()

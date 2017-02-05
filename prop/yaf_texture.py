@@ -114,6 +114,18 @@ def register():
         update=update_preview, name="Use as Grayscale",
         description="Convert internally to Grayscale to reduce memory usage for bump or mask textures, for example",
         default=False)
+        
+    Texture.yaf_tex_colorspace_interpolation_method = EnumProperty(
+        name="ColorSpace Interpolation",
+        description="Method to generate the texture interpolation and colorspace conversion",
+        items=(
+            ('linear-memory', "Linear optimized for Memory", "Color Space conversion (correctly) before interpolation. Optimized for lower RAM usage, but it's slower."),
+            ('linear-speed', "Linear optimized for Speed", "Color Space conversion (correctly) before interpolation. Optimized for speed, but has higher RAM usage."),
+            ('old-legacy', "Old/Legacy", "Old Color Space interpolation legacy method, not color accurate, for backwards compatibility: color space conversion is done after interpolation (which is not really correct). "),
+            ('none-raw', "None/RAW", "No color space conversion, textures are interpolated ""as is"", faster and less RAM usage, adequate for bump maps, normal maps, etc."),
+            ('default', "Default", "Use global colorspace interpolation setting from the Render tab")
+        ),
+        default='default')
 
 def unregister():
     Texture.yaf_tex_type
@@ -126,3 +138,4 @@ def unregister():
     Texture.yaf_trilinear_level_bias
     Texture.yaf_ewa_max_anisotropy
     Texture.yaf_img_grayscale
+    Texture.yaf_tex_colorspace_interpolation_method

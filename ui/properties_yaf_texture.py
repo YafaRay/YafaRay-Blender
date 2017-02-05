@@ -466,6 +466,7 @@ class YAFA_V3_TEXTURE_PT_image_sampling(YAFA_V3_TextureTypePanel, Panel):
             row.prop(tex, "use_interpolation", text="Use image background interpolation")
             #row.prop(tex, "use_calculate_alpha", text="Calculate Alpha")
         layout.prop(tex, "yaf_tex_optimization")
+        layout.prop(tex, "yaf_tex_colorspace_interpolation_method")
         layout.prop(tex, "yaf_img_grayscale", text="Use as Grayscale")
 
 
