@@ -369,16 +369,10 @@ class yafTexture:
             else:
                 texture_optimization = tex.yaf_tex_optimization
 
-            if tex.yaf_tex_colorspace_interpolation_method == "default":
-                colorspace_interpolation_method = scene.gs_tex_colorspace_interpolation_method
-            else:
-                colorspace_interpolation_method = tex.yaf_tex_colorspace_interpolation_method
-
             yi.printInfo("Exporter: Creating Texture: '{0}' type {1}: {2}. Texture Color Space: '{3}', gamma={4}. Texture optimization='{5}'".format(name, tex.yaf_tex_type, image_tex, texture_color_space, texture_gamma, texture_optimization))
 
             yi.paramsSetString("interpolate", tex.yaf_tex_interpolate)
             yi.paramsSetString("texture_optimization", texture_optimization)
-            yi.paramsSetString("colorspace_interpolation_method", colorspace_interpolation_method)
 
             # repeat
             repeat_x = 1

@@ -951,17 +951,6 @@ def register():
             ('none', "None", "No optimization, lossless and faster but high RAM usage")
         ),
         default='optimized')
-        
-    Scene.gs_tex_colorspace_interpolation_method = EnumProperty(
-        name="ColorSpace Interpolation",
-        description="Method to generate the texture interpolation and colorspace conversion",
-        items=(
-            ('linear-memory', "Linear optimized for Memory", "Color Space conversion (correctly) before interpolation. Optimized for lower RAM usage, but it's slower."),
-            ('linear-speed', "Linear optimized for Speed", "Color Space conversion (correctly) before interpolation. Optimized for speed, but has higher RAM usage."),
-            ('old-legacy', "Old/Legacy", "Old Color Space interpolation legacy method, not color accurate, for backwards compatibility: color space conversion is done after interpolation (which is not really correct). "),
-            ('none-raw', "None/RAW", "No color space conversion, textures are interpolated ""as is"", faster and less RAM usage, adequate for bump maps, normal maps, etc.")
-        ),
-        default='linear-speed')
 
     Scene.gs_images_autosave_interval_seconds = FloatProperty(
         name="Interval (s)",
@@ -1348,7 +1337,6 @@ def unregister():
     Scene.gs_type_render
     Scene.gs_secondary_file_output
     Scene.gs_tex_optimization
-    Scene.gs_tex_colorspace_interpolation_method
     Scene.gs_images_autosave_interval_seconds
     Scene.gs_images_autosave_interval_passes
     Scene.gs_images_autosave_interval_type
