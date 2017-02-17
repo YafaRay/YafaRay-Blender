@@ -87,7 +87,7 @@ def register():
         description="Texture optimization to reduce RAM usage",
         items=(
             ('compressed', "Compressed", "Lossy color compression, some color/transparency details will be lost, more RAM improvement"),
-            ('optimized', "Optimized", "Lossless optimization, good RAM improvement"),
+            ('optimized', "Optimized", "Almost lossless optimization, good RAM improvement"),
             ('none', "None", "No optimization, lossless and faster but high RAM usage"),
             ('default', "Default", "Use global texture optimization setting from the Render tab")
         ),
