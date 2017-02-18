@@ -88,6 +88,7 @@ class yafIntegrator:
             yi.paramsSetString("type", "pathtracing")
             yi.paramsSetInt("path_samples", scene.intg_path_samples)
             yi.paramsSetInt("bounces", scene.intg_bounces)
+            yi.paramsSetBool("russian_roulette", scene.intg_russian_roulette)
             yi.paramsSetBool("no_recursive", scene.intg_no_recursion)
             yi.paramsSetString("photon_maps_processing", scene.intg_photon_maps_processing)
 

@@ -122,6 +122,7 @@ class YAFA_V3_PT_render(RenderButtonsPanel, Panel):
             col = layout.row()
             col.prop(scene, "intg_path_samples")
             col.prop(scene, "intg_bounces")
+            col.prop(scene, "intg_russian_roulette")
             col = layout.row()
             col.prop(scene, "intg_no_recursion")
 
