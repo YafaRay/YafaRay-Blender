@@ -1153,10 +1153,11 @@ def register():
         min=1,
         default=4)
 
-    Scene.intg_russian_roulette = BoolProperty(
-        name="Russian Roulette",
-        description="Use russian roulette to speed up path tracing, faster but possibly noisier",
-        default=False)
+    Scene.intg_russian_roulette_min_bounces = IntProperty(
+        name="Min bounces",
+        description="After this number of bounces, start using russian roulette to speed up path tracing. The lower this value, the faster but possibly noisier, especially in darker areas. To disable russian roulette, set Min bounces = Depth.",
+        min=0,
+        default=2)
 
     Scene.intg_diffuse_radius = FloatProperty(
         name="Search radius",
@@ -1375,7 +1376,7 @@ def unregister():
     Scene.intg_photonmap_enable_diffuse
     Scene.intg_photon_maps_processing
     Scene.intg_bounces
-    Scene.intg_russian_roulette
+    Scene.intg_russian_roulette_min_bounces
     Scene.intg_diffuse_radius
     Scene.intg_cPhotons
     Scene.intg_search
