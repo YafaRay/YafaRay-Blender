@@ -1069,7 +1069,7 @@ def register():
             ('Photon Mapping', "Photon Mapping", ""),
             ('Pathtracing', "Pathtracing", ""),
             ('Debug', "Debug", ""),
-            ('Bidirectional', "Bidirectional (DEPRECATED)", ""),
+            ('Bidirectional', "Bidirectional (unstable)", ""),
             ('SPPM', "SPPM", "")
         ),
         default='Direct Lighting')
