@@ -42,9 +42,9 @@ class YAFA_V3_PT_AA_settings(RenderButtonsPanel, Panel):
         col = split.column()
         spp = col.column()
         sub = col.column()
-        spp.prop(scene, "AA_filter_type")
+        sub.prop(scene, "AA_filter_type")
         spp.prop(scene, "AA_min_samples")
-        spp.prop(scene, "AA_pixelwidth")
+        sub.prop(scene, "AA_pixelwidth")
         spp.enabled = False
         if scene.intg_light_method != "SPPM":
             sub.enabled = scene.AA_passes > 1
