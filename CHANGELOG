@@ -17,7 +17,8 @@ Feature changes/additions:
 Bug fixes:
 ----------
 * Bidirectional: fixed transparent background not working, was causing the entire render to have transparent alpha. See: http://www.yafaray.org/community/forum/viewtopic.php?f=15&t=5236  `[Core]`
-
+* Bidirectional: fixes (horrible hacks in fact, but...) for unitialized values causing incorrect illumination in scenes  `[Core]`
+* SPPM: fixed SPPM AA panel where the AA filter type and pixel width were incorrectly disabled  `[Blender Exporter]`
 
 
 YafaRay v3.2.0 (2017-03-21) for Blender 2.78c:
