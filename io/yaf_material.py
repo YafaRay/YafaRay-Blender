@@ -234,6 +234,7 @@ class yafMaterial:
         yi.paramsSetBool("fake_shadows", mat.fake_shadows)
         yi.paramsSetString("visibility", mat.visibility)
         yi.paramsSetBool("receive_shadows", mat.receive_shadows)
+        yi.paramsSetBool("flat_material", False)
         yi.paramsSetInt("additionaldepth", mat.additionaldepth)
         yi.paramsSetFloat("samplingfactor", mat.samplingfactor)
         
@@ -331,6 +332,7 @@ class yafMaterial:
         yi.paramsSetFloat("specular_reflect", bSpecr)
         yi.paramsSetString("visibility", mat.visibility)
         yi.paramsSetBool("receive_shadows", mat.receive_shadows)
+        yi.paramsSetBool("flat_material", False)
         yi.paramsSetInt("additionaldepth", mat.additionaldepth)
         yi.paramsSetFloat("samplingfactor", mat.samplingfactor)
         
@@ -589,6 +591,7 @@ class yafMaterial:
         yi.paramsSetFloat("IOR", mat.IOR_reflection)  # added IOR for reflection
         yi.paramsSetString("visibility", mat.visibility)
         yi.paramsSetBool("receive_shadows", mat.receive_shadows)
+        yi.paramsSetBool("flat_material", mat.flat_material)
         yi.paramsSetInt("additionaldepth", mat.additionaldepth)
         yi.paramsSetFloat("samplingfactor", mat.samplingfactor)
         
@@ -664,6 +667,7 @@ class yafMaterial:
 
         yi.paramsSetString("visibility", mat.visibility)
         yi.paramsSetBool("receive_shadows", mat.receive_shadows)
+        yi.paramsSetBool("flat_material", False)
         yi.paramsSetInt("additionaldepth", mat.additionaldepth)
         yi.paramsSetFloat("samplingfactor", mat.samplingfactor)
 

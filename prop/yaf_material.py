@@ -339,6 +339,11 @@ def register():
         description="If this parameter is set to false, the material will not receive shadows from other objects",
         default=True)
 
+    Material.flat_material = BoolProperty(
+        update=update_preview, name="Flat Material",
+        description="Flat Material is a special non-photorealistic material that does not multiply the surface color by the cosine of the angle with the light, as happens in real life. For special applications only",
+        default=False)
+
     Material.additionaldepth = IntProperty(
         update=update_preview, name="Additional Ray Depth",
         description="Additional per-material Ray depth to be added to the general Ray Depth setting",
@@ -388,6 +393,7 @@ def unregister():
     del Material.material2name
     del Material.visibility
     del Material.receive_shadows
+    del Material.flat_material
     del Material.additionaldepth
     del Material.wireframe_amount
     del Material.wireframe_thickness

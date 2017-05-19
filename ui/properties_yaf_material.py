@@ -456,6 +456,11 @@ class YAFA_V3_PT_ZAdvanced(MaterialButtonsPanel, Panel):
         split = layout.split()
         col = split.column()
         layout.row().prop(yaf_mat, "receive_shadows")
+        
+        if yaf_mat.mat_type == "shinydiffusemat":
+            split = layout.split()
+            col = split.column()
+            layout.row().prop(yaf_mat, "flat_material")
 
         if yaf_mat.mat_type != "blend":
             split = layout.split()
