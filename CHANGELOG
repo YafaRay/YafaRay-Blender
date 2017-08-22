@@ -7,8 +7,8 @@ This is an abbreviated list of changes. The full/detailed list of changes can be
 * Blender Exporter: https://github.com/YafaRay/Blender-Exporter/commits/master
 
 
-YafaRay development version (work in progress, not yet released)
-----------------------------------------------------------------
+YafaRay v3.3.0 (2017-08-22)
+---------------------------
 
 Feature changes/additions:
 --------------------------
@@ -19,6 +19,8 @@ Bug fixes:
 * Bidirectional: fixed transparent background not working, was causing the entire render to have transparent alpha. See: http://www.yafaray.org/community/forum/viewtopic.php?f=15&t=5236  `[Core]`
 * Bidirectional: fixes (horrible hacks in fact, but...) for unitialized values causing incorrect illumination in scenes  `[Core]`
 * SPPM: fixed SPPM AA panel where the AA filter type and pixel width were incorrectly disabled  `[Blender Exporter]`
+* Fixed hang in Windows 7 when YafaRay is built using Visual Studio 2013.  `[Core]`
+* Some building fixes  `[Core]`
 
 
 YafaRay v3.2.0 (2017-03-21) for Blender 2.78c:
