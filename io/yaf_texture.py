@@ -18,6 +18,7 @@
 
 # <pep8 compliant>
 
+import time
 import math
 import bpy
 import os
@@ -300,7 +301,7 @@ class yafTexture:
 
             textureConfigured = True
 
-        elif tex.yaf_tex_type == 'IMAGE' and tex.image and tex.image.source in {'FILE', 'GENERATED'}:
+        elif tex.yaf_tex_type == 'IMAGE' and tex.image and tex.image.source in {'FILE', 'SEQUENCE', 'GENERATED'}:
 
             filename = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
 
@@ -330,6 +331,24 @@ class yafTexture:
                         image_tex = abspath(tex.image.filepath, library=tex.image.library)
                     else:
                         image_tex = abspath(tex.image.filepath)
+                    if not os.path.exists(image_tex):
+                        yi.printError("Exporter: Image texture {0} not found on: {1}".format(tex.name, image_tex))
+                        return False
+            if tex.image.source == 'SEQUENCE':
+                tex.image_user.use_auto_refresh = False #To ensure the frame refreshes, we toggle this parameter
+                time.sleep(0.05) #If we don't let some time to pass the frame sometimes does not update correctly
+                tex.image_user.use_auto_refresh = True #If we don't force this, the filename to the image frame does not update correctly for some reason...
+                time.sleep(0.05) #If we don't let some time to pass the frame sometimes does not update correctly
+                if tex.image.packed_file:
+                    image_tex = "yaf_extracted_image_{0}.{1}".format(clean_name(tex.name), fileformat)
+                    image_tex = os.path.join(save_dir, extract_path, image_tex)
+                    image_tex = abspath(image_tex)
+                    tex.image.save_render(image_tex, scene)
+                else:
+                    if tex.image.library is not None:
+                        image_tex = abspath(tex.image.filepath_from_user(), library=tex.image.library)
+                    else:
+                        image_tex = abspath(tex.image.filepath_from_user())
                     if not os.path.exists(image_tex):
                         yi.printError("Exporter: Image texture {0} not found on: {1}".format(tex.name, image_tex))
                         return False
