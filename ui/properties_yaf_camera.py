@@ -121,7 +121,7 @@ class YAFA_V3_PT_camera_display(CameraButtonsPanel, Panel):
 
         col = split.column()
         col.prop(camera, "show_limits", text="Limits")
-        col.prop(camera, "show_title_safe", text="Title Safe")
+        #col.prop(camera, "show_title_safe", text="Title Safe") #FIXME DAVID: Disabled it as it's causing error messages "rna_uiItemR: property not found: Camera.show_title_safe". This line should probably have to be removed
         col.prop(camera, "show_sensor", text="Sensor")
         col.prop(camera, "show_name", text="Name")
 
