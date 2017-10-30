@@ -18,6 +18,7 @@
 
 # <pep8 compliant>
 
+import re
 import math
 import bpy
 import os
@@ -300,7 +301,7 @@ class yafTexture:
 
             textureConfigured = True
 
-        elif tex.yaf_tex_type == 'IMAGE' and tex.image and tex.image.source in {'FILE', 'GENERATED'}:
+        elif tex.yaf_tex_type == 'IMAGE' and tex.image and tex.image.source in {'FILE', 'SEQUENCE', 'GENERATED'}:
 
             filename = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
 
@@ -330,6 +331,47 @@ class yafTexture:
                         image_tex = abspath(tex.image.filepath, library=tex.image.library)
                     else:
                         image_tex = abspath(tex.image.filepath)
+                    if not os.path.exists(image_tex):
+                        yi.printError("Exporter: Image texture {0} not found on: {1}".format(tex.name, image_tex))
+                        return False
+            if tex.image.source == 'SEQUENCE':
+                if tex.image.packed_file:
+                    image_tex = "yaf_extracted_image_{0}.{1}".format(clean_name(tex.name), fileformat)
+                    image_tex = os.path.join(save_dir, extract_path, image_tex)
+                    image_tex = abspath(image_tex)
+                    tex.image.save_render(image_tex, scene)
+                else:
+                    #Try to figure out the correct file name depending on the frame, guessing the calculations done by Blender
+                    if tex.image_user.use_cyclic:
+                        image_number = scene.frame_current - tex.image_user.frame_start
+                        if image_number < 0:
+                            image_number += (divmod(-1 * image_number, tex.image_user.frame_duration)[0]+1) * tex.image_user.frame_duration
+
+                        image_number = (image_number % tex.image_user.frame_duration) + tex.image_user.frame_offset + 1
+
+                    else:
+                        image_number = scene.frame_current - (tex.image_user.frame_start - 1) + tex.image_user.frame_offset
+                        if image_number < tex.image_user.frame_start:
+                            image_number = tex.image_user.frame_start
+                        elif image_number > (tex.image_user.frame_duration + tex.image_user.frame_offset):
+                            image_number = (tex.image_user.frame_duration + tex.image_user.frame_offset)
+
+                    tex_image_filepath = abspath(tex.image.filepath)
+                    tex_image_filepath_splitext = os.path.splitext(tex_image_filepath)
+                    tex_image_filepath_searchnumber = re.search(r'\d+$', tex_image_filepath_splitext[0])
+                    tex_image_filepath_base = tex_image_filepath[0:tex_image_filepath_searchnumber.span()[0]] if tex_image_filepath_searchnumber else tex_image_filepath_splitext[0]
+                    tex_image_filepath_number = tex_image_filepath_searchnumber.group() if tex_image_filepath_searchnumber else None
+                    tex_image_filepath_number_numdigits = len(tex_image_filepath_number) if tex_image_filepath_number else 0
+                    tex_image_filepath_ext = tex_image_filepath_splitext[1]
+                    if tex_image_filepath_number is not None:
+                        tex_image_filepath_sequence = tex_image_filepath_base + str(image_number).zfill(tex_image_filepath_number_numdigits) + tex_image_filepath_ext
+                    else:
+                        tex_image_filepath_sequence = tex_image_filepath_base + str(image_number) + tex_image_filepath_ext
+
+                    if tex.image.library is not None:
+                        image_tex = abspath(tex_image_filepath_sequence, library=tex.image.library)
+                    else:
+                        image_tex = abspath(tex_image_filepath_sequence)
                     if not os.path.exists(image_tex):
                         yi.printError("Exporter: Image texture {0} not found on: {1}".format(tex.name, image_tex))
                         return False
