@@ -409,7 +409,7 @@ class yafObject(object):
         yi.paramsSetFloat("maxZ", min(max(vec[2::3]), 1e10))
 
         yi.createVolumeRegion("VR.{0}-{1}".format(obj.name, str(obj.__hash__())))
-        bpy.data.meshes.remove(mesh)
+        bpy.data.meshes.remove(mesh, do_unlink=False)
 
     def writeGeometry(self, ID, obj, matrix, pass_index, obType=0, oMat=None):
 
@@ -429,12 +429,12 @@ class yafObject(object):
 
             if not mesh.tessfaces:
                 # if there are no faces, no need to write geometry, remove mesh data then...
-                bpy.data.meshes.remove(mesh)
+                bpy.data.meshes.remove(mesh, do_unlink=False)
                 return
         else:
             if not mesh.faces:
                 # if there are no faces, no need to write geometry, remove mesh data then...
-                bpy.data.meshes.remove(mesh)
+                bpy.data.meshes.remove(mesh, do_unlink=False)
                 return
 
         # Check if the object has an orco mapped texture
@@ -538,7 +538,7 @@ class yafObject(object):
 
         self.yi.endGeometry()
 
-        bpy.data.meshes.remove(mesh)
+        bpy.data.meshes.remove(mesh, do_unlink=False)
 
     def getFaceMaterial(self, meshMats, matIndex, matSlots):
 
