@@ -350,6 +350,17 @@ def register():
         min=0, max=20,
         default=0)
 
+    Material.transparentbias_factor = FloatProperty(
+        update=update_preview, name="Transparent Bias",
+        description="If this value is >0.0 an additional (non-realistic) 'bias' will be added to each ray when it hits a transparent surface. This could be useful to render many stacked transparent surfaces and avoid black artifacts in some cases BUT COULD CAUSE EASILY OTHER WEIRD ARTIFACTS, USE WITH CARE!!. If the ray hits a transparent surface, the next secondary ray will not start exactly after that surface but after this bias factor. So, subsequent transparent surfaces can be skipped and not rendered, but the objects behind will be rendered (unless they are too close, in that case they might not be rendered!).",
+        min=0.0,
+        default=0.0)
+
+    Material.transparentbias_multiply_raydepth = BoolProperty(
+        update=update_preview, name="Multiply Bias by Ray Depth",
+        description="If the Transparent Bias is used and this is disabled, the bias will be just added to each secondary ray initial position. If this parameter is enabled, the bias for each ray will be multiplied by the ray depth. That way, the first few surfaces will be rendered giving a better density but the further the secondary rays are generated, the bigger the bias will be.",
+        default=False)
+        
     Material.samplingfactor = FloatProperty(
         update=update_preview, name="Sampling Factor",
         description="The number of samples in the adaptative AA passes are multiplied by this per-material factor. This does not affect the first pass.",
@@ -395,6 +406,8 @@ def unregister():
     del Material.receive_shadows
     del Material.flat_material
     del Material.additionaldepth
+    del Material.transparentbias_factor
+    del Material.transparentbias_multiply_raydepth
     del Material.wireframe_amount
     del Material.wireframe_thickness
     del Material.wireframe_exponent

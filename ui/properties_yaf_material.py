@@ -461,6 +461,12 @@ class YAFA_V3_PT_ZAdvanced(MaterialButtonsPanel, Panel):
             split = layout.split()
             col = split.column()
             layout.row().prop(yaf_mat, "flat_material")
+            split = layout.split()
+            col = split.column()
+            row = layout.row()
+            row.prop(yaf_mat, "transparentbias_factor")
+            col = row.column()
+            col.prop(yaf_mat, "transparentbias_multiply_raydepth")
 
         if yaf_mat.mat_type != "blend":
             split = layout.split()

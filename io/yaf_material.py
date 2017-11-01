@@ -593,6 +593,9 @@ class yafMaterial:
         yi.paramsSetBool("receive_shadows", mat.receive_shadows)
         yi.paramsSetBool("flat_material", mat.flat_material)
         yi.paramsSetInt("additionaldepth", mat.additionaldepth)
+        yi.paramsSetFloat("transparentbias_factor", mat.transparentbias_factor)
+        yi.paramsSetBool("transparentbias_multiply_raydepth", mat.transparentbias_multiply_raydepth)
+        
         yi.paramsSetFloat("samplingfactor", mat.samplingfactor)
         
         yi.paramsSetFloat("wireframe_amount", mat.wireframe_amount)
