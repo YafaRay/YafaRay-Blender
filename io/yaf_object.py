@@ -22,8 +22,8 @@ import bpy
 import time
 import math
 import mathutils
+from .. import yaf_global_vars
 import yafaray_v3_interface
-
 
 def multiplyMatrix4x4Vector4(matrix, vector):
     result = mathutils.Vector((0.0, 0.0, 0.0, 0.0))
@@ -58,7 +58,7 @@ class yafObject(object):
         
         cameras = []
 
-        if bpy.types.YAFA_V3_RENDER.useViewToRender or not render.use_multiview:
+        if yaf_global_vars.useViewToRender or not render.use_multiview:
             cameras.append(CameraData(self.scene.camera, "cam", ""))
         else:
             camera_base_name = self.scene.camera.name.rsplit('_',1)[0]
@@ -68,14 +68,14 @@ class yafObject(object):
                     cameras.append(CameraData(self.scene.objects[camera_base_name+view.camera_suffix], camera_base_name+view.camera_suffix, view.name))
 
         for cam in cameras:
-            if bpy.types.YAFA_V3_RENDER.useViewToRender and bpy.types.YAFA_V3_RENDER.viewMatrix:
+            if yaf_global_vars.useViewToRender and yaf_global_vars.viewMatrix:
                 # use the view matrix to calculate the inverted transformed
                 # points cam pos (0,0,0), front (0,0,1) and up (0,1,0)
                 # view matrix works like the opengl view part of the
                 # projection matrix, i.e. transforms everything so camera is
                 # at 0,0,0 looking towards 0,0,1 (y axis being up)
 
-                m = bpy.types.YAFA_V3_RENDER.viewMatrix
+                m = yaf_global_vars.viewMatrix
                 # m.transpose() --> not needed anymore: matrix indexing changed with Blender rev.42816
                 inv = m.inverted()
 
@@ -102,10 +102,10 @@ class yafObject(object):
 
             yi.paramsClearAll()
 
-            if bpy.types.YAFA_V3_RENDER.useViewToRender:
+            if yaf_global_vars.useViewToRender:
                 yi.paramsSetString("type", "perspective")
                 yi.paramsSetFloat("focal", 0.7)
-                bpy.types.YAFA_V3_RENDER.useViewToRender = False
+                yaf_global_vars.useViewToRender = False
 
             else:
                 camera = cam.camera.data

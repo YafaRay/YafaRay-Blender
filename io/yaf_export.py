@@ -43,6 +43,7 @@ from .yaf_material import yafMaterial
 from ..ot import yafaray_presets
 from pprint import pprint
 from pprint import pformat
+from .. import yaf_global_vars
 
 class YafaRayRenderEngine(bpy.types.RenderEngine):
     bl_idname = YAF_ID_NAME
@@ -50,8 +51,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
     bl_label = "YafaRay v3 Render"
     prog = 0.0
     tag = ""
-    useViewToRender = False
-    viewMatrix = None
+    yaf_global_vars.useViewToRender = False
+    yaf_global_vars.viewMatrix = None
 
     def setInterface(self, yi):
         self.materialMap = {}
