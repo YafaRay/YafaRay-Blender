@@ -490,7 +490,10 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                                     for tile in tiles:
                                         view_name, tile_name, tile_bitmap = tile
                                         try:
-                                            l.passes[tile_name+view_suffix].rect = tile_bitmap
+                                            if bpy.app.version < (2, 79, 0 ):
+                                                l.passes[tile_name+view_suffix].rect = tile_bitmap
+                                            else:
+                                                l.passes.find_by_name(tile_name, view.name).rect = tile_bitmap
                                         except:
                                             print("Exporter: Exception while rendering in drawAreaCallback function:")
                                             traceback.print_exc()
@@ -527,7 +530,10 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                                         if view.use and not (scene.render.views_format == "STEREO_3D" and view.name != "left" and view.name != "right"):
                                             full_tile_name = tile_name + "." + view.name
                                             try:
-                                                l.passes[full_tile_name].rect = tile_bitmap
+                                                if bpy.app.version < (2, 79, 0 ):
+                                                    l.passes[full_tile_name].rect = tile_bitmap
+                                                else:
+                                                    l.passes.find_by_name(tile_name, view.name).rect = tile_bitmap
                                             except:
                                                 print("Exporter: Exception while rendering in flushCallback function:")
                                                 traceback.print_exc()
@@ -535,7 +541,10 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                                     if scene.render.views[view_name].use and not (scene.render.views_format == "STEREO_3D" and view_name != "left" and view_name != "right"):
                                         full_tile_name = tile_name + "." + view_name
                                         try:
-                                            l.passes[full_tile_name].rect = tile_bitmap
+                                            if bpy.app.version < (2, 79, 0 ):
+                                                l.passes[full_tile_name].rect = tile_bitmap
+                                            else:
+                                                l.passes.find_by_name(tile_name, view_name).rect = tile_bitmap
                                         except:
                                             print("Exporter: Exception while rendering in flushCallback function:")
                                             traceback.print_exc()
