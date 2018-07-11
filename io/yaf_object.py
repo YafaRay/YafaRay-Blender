@@ -58,7 +58,12 @@ class yafObject(object):
         
         cameras = []
 
-        if yaf_global_vars.useViewToRender or not render.use_multiview:
+        if bpy.app.version < (2, 74, 4 ):
+            render_use_multiview = False
+        else:
+            render_use_multiview = render.use_multiview
+
+        if yaf_global_vars.useViewToRender or not render_use_multiview:
             cameras.append(CameraData(self.scene.camera, "cam", ""))
         else:
             camera_base_name = self.scene.camera.name.rsplit('_',1)[0]

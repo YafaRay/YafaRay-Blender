@@ -18,6 +18,8 @@ Bug fixes:
 ----------
 * VERY IMPORTANT: Fixed the infamous bug "DAG zero... not allowed to happen!" that caused all objects in Blender to be deleted. I want to thank the user "pouar" for finding the problem and the solution for this! :-) More information: http://www.yafaray.org/node/819#comment-1921
 * Fixed Multiview rendering, that had been broken due to a Blender 2.79 API change
+* Mesh management: changes to make it compatible again with Blender versions prior to 2.78
+* RenderPasses rendering: changes to make it compatible again with Blender versions prior to 2.74.4
 * Minor fix for a warning "rna_uiItemR: property not found: Camera.show_title_safe" that happened sometimes.
 
 

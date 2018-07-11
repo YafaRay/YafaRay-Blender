@@ -479,7 +479,16 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 try:
                     l = res.layers[0]
                     if bpy.app.version < (2, 74, 4 ):
-                        l.rect, l.passes[0].rect = tiles
+                        for tile in tiles:
+                            view_name, tile_name, tile_bitmap = tile
+                            try:
+                                if tile_name == "Combined":
+                                    l.rect = tile_bitmap
+                                else:
+                                    l.passes[tile_name].rect = tile_bitmap
+                            except:
+                                print("Exporter: Exception while rendering in drawAreaCallback function:")
+                                traceback.print_exc()
                     else:
                         if scene.render.use_multiview:
                             #due to Blender limitations while drawing the tiles, I cannot use the view names properly and I have to repeat the currently drawing tile into all views so it shows correctly. Maybe there is a better way?
@@ -520,7 +529,16 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 try:
                     l = res.layers[0]
                     if bpy.app.version < (2, 74, 4 ):
-                        l.rect, l.passes[0].rect = tiles
+                        for tile in tiles:
+                            view_name, tile_name, tile_bitmap = tile
+                            try:
+                                if tile_name == "Combined":
+                                    l.rect = tile_bitmap
+                                else:
+                                    l.passes[tile_name].rect = tile_bitmap
+                            except:
+                                print("Exporter: Exception while rendering in drawAreaCallback function:")
+                                traceback.print_exc()
                     else:
                         for tile in tiles:
                             view_name, tile_name, tile_bitmap = tile
