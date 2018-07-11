@@ -40,7 +40,7 @@ bl_info = {
               "Alexander Smirnov (Exvion), Olaf Arnold (olaf), David Bluecame",
 # Version to be automatically populated during the cmake build process, getting the version from git tags
     "version": ("@YAFARAY_BLENDER_EXPORTER_VERSION@", ""),
-    "blender": (2, 7, 8),
+    "blender": (2, 7, 9),
     "location": "Info Header > Engine dropdown menu",
     "wiki_url": "http://www.yafaray.org/community/forum",
     "tracker_url": "http://www.yafaray.org/development/bugtracker/yafaray",
