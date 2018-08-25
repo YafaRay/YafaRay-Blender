@@ -237,6 +237,7 @@ class YAFARAY_OT_presets_renderset(YAF_AddPresetBase, Operator):
         "scene.intg_photonmap_enable_caustics",
         "scene.intg_photonmap_enable_diffuse",
         "scene.intg_bounces",
+        "scene.intg_russian_roulette_min_bounces",
         "scene.intg_diffuse_radius",
         "scene.intg_cPhotons",
         "scene.intg_search",

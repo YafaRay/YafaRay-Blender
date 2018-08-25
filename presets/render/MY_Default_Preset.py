@@ -28,6 +28,7 @@ scene.intg_AO_samples = 32
 scene.intg_AO_distance = 1.0
 scene.intg_AO_color = 0.9, 0.9, 0.9
 scene.intg_bounces = 4
+scene.intg_russian_roulette_min_bounces = 2
 scene.intg_diffuse_radius = 1.0
 scene.intg_cPhotons = 500000
 scene.intg_search = 100
