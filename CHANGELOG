@@ -7,20 +7,29 @@ This is an abbreviated list of changes. The full/detailed list of changes can be
 * Blender Exporter: https://github.com/YafaRay/Blender-Exporter/commits/master
 
 
-YafaRay (development v3.x.x, work in progress)
-----------------------------------------------
+YafaRay v3.4.0 (2020-03-22)
+---------------------------
+Note: don't mind the release date, the project has been mostly inactive for a long time, so only a few (although significant) changes since v3.3.0, but it was about time to give the last changes a proper release version number.
+
 Feature changes/additions:
 --------------------------
 * Basic support for Image Sequences. `[Blender Exporter]`
 * New per-material transparency bias for Shiny Diffuse. When there are objects with many transparent surfaces stacked close together (such as leaves in a tree) sometimes black artifacts appear if the ray reaches the maximum depth. This can be solved by increasing the maximum ray depth, but the render times increase. I've added two new parameters for the Shiny Diffuse material to try to achieve a "trick", which is not realistic and may cause other artifacts but that should prevent the black areas without having to increase the maximum ray depth so much. `[Blender Exporter + Core]`
 
+Dependencies changes:
+---------------------
+* IMPORTANT: Migration from Qt4 to Qt5 as Qt4 reached End of Life  `[Core]`
+* Dependency on meganz/mingw-std-threads made optional, because it's needed for old MinGW compilers but it causes conflicts with new MinGW compilers, so better to have it as an option in CMake (disabled by default)  `[Core]`
+* Compatibility fix for Python 3.8  `[Core]`
+
 Bug fixes:
 ----------
-* VERY IMPORTANT: Fixed the infamous bug "DAG zero... not allowed to happen!" that caused all objects in Blender to be deleted. I want to thank the user "pouar" for finding the problem and the solution for this! :-) More information: http://www.yafaray.org/node/819#comment-1921
-* Fixed Multiview rendering, that had been broken due to a Blender 2.79 API change
-* Mesh management: changes to make it compatible again with Blender versions prior to 2.78
-* RenderPasses rendering: changes to make it compatible again with Blender versions prior to 2.74.4
-* Minor fix for a warning "rna_uiItemR: property not found: Camera.show_title_safe" that happened sometimes.
+* VERY IMPORTANT: Fixed the infamous bug "DAG zero... not allowed to happen!" that caused all objects in Blender to be deleted. I want to thank the user "pouar" for finding the problem and the solution for this! :-) More information: http://www.yafaray.org/node/819#comment-1921  `[Blender Exporter]`
+* Fixed Multiview rendering, that had been broken due to a Blender 2.79 API change  `[Blender Exporter]`
+* Mesh management: changes to make it compatible again with Blender versions prior to 2.78  `[Blender Exporter]`
+* RenderPasses rendering: changes to make it compatible again with Blender versions prior to 2.74.4  `[Blender Exporter]`
+* Minor fix for a warning "rna_uiItemR: property not found: Camera.show_title_safe" that happened sometimes.  `[Blender Exporter]`
+* Fix - Min bounces, Russian Roulette minimum bounces jump in. Now saved into render settings.  `[Blender Exporter]`
 
 
 YafaRay v3.3.0 (2017-08-22)
