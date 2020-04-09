@@ -6,6 +6,11 @@ This is an abbreviated list of changes. The full/detailed list of changes can be
 * YafaRay Core code: https://github.com/YafaRay/Core/commits/master
 * Blender Exporter (for Blender v2.7x): https://github.com/YafaRay/Blender-Exporter/commits/master
 
+YafaRay v3.4.1a (2020-04-09) for Blender 2.79:
+---------------------------------------------
+* A few documentation changes to clarify bug reporting and Blender v2.79 release download `[Blender Exporter]`
+
+
 YafaRay v3.4.1 (2020-04-08) for Blender 2.79:
 ---------------------------------------------
 * Changed documentation to state that any bug reporting and resolution will solely be done in the GitHub Project "Issues" tab. Bugs in the old yafaray.org bugtracker will not be processed anymore. `[Blender Exporter + Core]`

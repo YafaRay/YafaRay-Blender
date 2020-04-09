@@ -21,14 +21,14 @@ In v3, support has been DROPPED for Windows XP and MacOSX v10.6
 Also, YafaRay, by default, ** will change the output folder/file name ** so the images are exported to a subfolder with the same name as the .blend file with suffix _render. This is for convenience and can be disabled, but if you leave the default it could cause you confusion especially when switching to other renderers.
 ----------------------------------------------
 
-Don't use the Blender from the distro repositories. Download the Blender official builds from:
-https://www.blender.org/download/
+Don't use the Blender from the distro repositories. Download the Blender official 2.79 builds from:
+https://www.blender.org/download/releases/2-79/
 
 Once Blender is installed, locate the folder where it was installed. The paths given below are just examples, but they will probably be different in your system.
 
 Copy this entire folder "yafaray_v3" to (for example):
-  - in Linux 64bit, for example: "$HOME/blender-2.77a-linux-glibc211-x86_64/2.77/scripts/addons" folder.
-  - in Windows 64bit, for example: "C:\Program Files\Blender Foundation\Blender\2.77\scripts\addons" folder.
+  - in Linux 64bit, for example: "$HOME/blender-2.79b-linux-glibc219-x86_64/2.79/scripts/addons" folder.
+  - in Windows 64bit, for example: "C:\Program Files\Blender Foundation\Blender\2.79\scripts\addons" folder.
 
 After it, start Blender, go to User Preferences, AddOns and try to enable Render:"YafaRay-v3". Once (hopefully) enabled you should see it in the list of renderers.
 
@@ -42,4 +42,5 @@ If you have any issues:
 * Check that you have downloaded the appropiate YafaRay build for your Operating System and Blender build (32/64 bit)
 * Check that you are using the official Blender build from www.blender.org and it's a version supported by YafaRay (see CHANGELOG)
 * In extreme cases (black renders, crashes, etc) remove all older YafaRay versions and other YafaRay derived forks, and try again.
-* If you still have problems, please ask for help in the yafaRay.org forums or post a bug report in http://www.yafaray.org/development/bugtracker/yafaray  
+* If you still have problems, please post your bug reports and feature requests in the "Issues" tab of the corresponding GitHub Project
+NOTE: The old bugtracker in www.yafaray.org will *no longer* be used for bug tracking / feature requests.

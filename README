@@ -38,6 +38,9 @@ CURRENT LIMITATIONS
 -------------------
 * This Blender Exporter only works with Blender v2.7x
 
+* Don't use the Blender from the distro repositories. Download the Blender official 2.79 builds from:
+https://www.blender.org/download/releases/2-79/
+
 * YafaRay only supports *one* scene in the .blend file. If you have more than one scene, it could cause unexpected results and problems in the new Material Preview Controls.
 
 * YafaRay v3 has only limited support for multiple YafaRay versions and forks installed at the same time
