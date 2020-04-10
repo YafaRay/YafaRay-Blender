@@ -150,9 +150,9 @@ def convertLight(lightObj):
         problemList.append("No properties on light {0}".format(light.name))
         return problemList
 
-    switchLampType = {"Area": "area", "Spot": "spot", "Sun": "sun", "Point": "point", \
+    switchLightType = {"Area": "area", "Spot": "spot", "Sun": "sun", "Point": "point", \
                       "IES LIGHT": "ies", "Directional": "sun", "Sphere": "point"}
-    light.lamp_type = switchLampType.get(props["type"], "point")
+    light.lamp_type = switchLightType.get(props["type"], "point")
 
     variableDict = dict(
         samples="yaf_samples",
@@ -503,3 +503,23 @@ class ConvertYafarayProperties(bpy.types.Operator):
             print(p)
 
         return {'FINISHED'}
+
+
+classes = (
+    ConvertYafarayProperties,
+)
+
+def register():
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+
+def unregister():
+    from bpy.utils import unregister_class
+    for cls in reversed(classes):
+        unregister_class(cls)
+
+
+if __name__ == "__main__":  # only for live edit.
+    import bpy
+    bpy.utils.register_module(__name__)

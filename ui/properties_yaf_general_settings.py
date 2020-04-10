@@ -43,13 +43,13 @@ class YAFA_V3_PT_general_settings(RenderButtonsPanel, Panel):
         render = scene.render
 
         row = layout.row(align=True)
-        row.menu("YAFA_V3_MT_presets_render", text=bpy.types.YAFA_V3_MT_presets_render.bl_label)
-        row.operator("yafaray.preset_add", text="", icon='ZOOMIN')
-        #row.operator("yafaray.preset_add", text="", icon='ZOOMOUT').remove_active = True  #Does not work as expected, possibly better that the user deletes the presets manually himself to avoid deleting the wrong one by mistake anyway?
+        #FIXME DAVID! row.menu("YAFA_V3_MT_presets_render", text=bpy.types.YAFA_V3_MT_presets_render.bl_label)
+        #row.operator("yafaray.preset_add", text="", icon='ADD')
+        #row.operator("yafaray.preset_remove", text="", icon='REMOVE').remove_active = True  #Does not work as expected, possibly better that the user deletes the presets manually himself to avoid deleting the wrong one by mistake anyway?
 
         layout.separator()
 
-        split = layout.split(percentage=0.58)
+        split = layout.split(factor=0.58)
         col = split.column()
         col.prop(scene, "gs_ray_depth")
         col.prop(scene, "gs_type_render")
@@ -60,16 +60,16 @@ class YAFA_V3_PT_general_settings(RenderButtonsPanel, Panel):
         
         if (scene.yafaray.logging.saveLog or scene.yafaray.logging.saveHTML or scene.yafaray.logging.savePreset or scene.yafaray.logging.paramsBadgePosition == "top" or scene.yafaray.logging.paramsBadgePosition == "bottom") and scene.gs_type_render == "into_blender" and not scene.gs_secondary_file_output:
                 row = layout.row()
-                row.label("Params badge and saving log/html/preset files only works when exporting to image file.", icon='ERROR')
+                row.label(text="Params badge and saving log/html/preset files only works when exporting to image file.", icon='ERROR')
                 row = layout.row()
-                row.label("To get the badge/logs, render to image or render into Blender+enable Secondary File Output.", icon='ERROR')
+                row.label(text="To get the badge/logs, render to image or render into Blender+enable Secondary File Output.", icon='ERROR')
                 row = layout.row()
 
         if scene.yafaray.logging.paramsBadgePosition == "bottom" and scene.gs_type_render == "file":
                 row = layout.row()
-                row.label("Image with Params Badge at bottom will appear CROPPED in Blender,", icon='INFO')
+                row.label(text="Image with Params Badge at bottom will appear CROPPED in Blender,", icon='INFO')
                 row = layout.row()
-                row.label("  but will be CORRECT in the exported image file.", icon='INFO')
+                row.label(text="  but will be CORRECT in the exported image file.", icon='INFO')
 
         col = split.column()
         sub = col.column()
@@ -96,11 +96,11 @@ class YAFA_V3_PT_general_settings(RenderButtonsPanel, Panel):
         if not scene.gs_auto_threads:
                 sub.prop(scene, "gs_threads")
         else:
-                sub.label("")
+                sub.label(text="")
         col.prop(scene, "gs_show_sam_pix", toggle=True)
-        col.prop(render, "use_instances", text="Use instances", toggle=True)
+        #FIXME DAVID! col.prop(render, "use_instances", text="Use instances", toggle=True)
 
-        split = layout.split(percentage=0.5)
+        split = layout.split(factor=0.5)
         col = split.column()
         col.prop(scene, "bg_transp", toggle=True)
         col = split.column()
@@ -109,7 +109,7 @@ class YAFA_V3_PT_general_settings(RenderButtonsPanel, Panel):
         sub.prop(scene, "bg_transp_refract", toggle=True)
 
 
-class YAFA_V3_MT_logging(RenderButtonsPanel, Panel):
+class YAFA_V3_PT_logging(RenderButtonsPanel, Panel):
     bl_label = "Logging / Params Badge Settings"
     COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
@@ -118,7 +118,7 @@ class YAFA_V3_MT_logging(RenderButtonsPanel, Panel):
         scene = context.scene
         render = scene.render
 
-        split = layout.split(percentage=0.43)
+        split = layout.split(factor=0.43)
         col = split.column()
         col.prop(scene.yafaray.logging, "paramsBadgePosition")
         col = split.column()
@@ -143,15 +143,15 @@ class YAFA_V3_MT_logging(RenderButtonsPanel, Panel):
         if scene.yafaray.logging.saveLog or scene.yafaray.logging.saveHTML or scene.yafaray.logging.savePreset or scene.yafaray.logging.paramsBadgePosition == "top" or scene.yafaray.logging.paramsBadgePosition == "bottom":
                 if scene.gs_type_render == "into_blender" and not scene.gs_secondary_file_output:
                         row = layout.row()
-                        row.label("Params badge and saving log/html/preset files only works when exporting to image file.", icon='ERROR')
+                        row.label(text="Params badge and saving log/html/preset files only works when exporting to image file.", icon='ERROR')
                         row = layout.row()
-                        row.label("To get the badge/logs, render to image or render into Blender+enable Secondary File Output.", icon='ERROR')
+                        row.label(text="To get the badge/logs, render to image or render into Blender+enable Secondary File Output.", icon='ERROR')
 
                 if scene.yafaray.logging.paramsBadgePosition == "bottom" and scene.gs_type_render == "file":
                         row = layout.row()
-                        row.label("Image with Params Badge at bottom will appear CROPPED in Blender,", icon='INFO')
+                        row.label(text="Image with Params Badge at bottom will appear CROPPED in Blender,", icon='INFO')
                         row = layout.row()
-                        row.label("  but will be CORRECT in the exported image file.", icon='INFO')
+                        row.label(text="  but will be CORRECT in the exported image file.", icon='INFO')
 
                 row = layout.row()
                 row.prop(scene.yafaray.logging, "title")
@@ -170,7 +170,7 @@ class YAFA_V3_MT_logging(RenderButtonsPanel, Panel):
                 col.prop(scene.yafaray.logging, "fontScale")
 
 
-class YAFA_V3_MT_clay_render(RenderButtonsPanel, Panel):
+class YAFA_V3_PT_clay_render(RenderButtonsPanel, Panel):
     bl_label = "Clay Render Settings"
     COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
@@ -180,7 +180,7 @@ class YAFA_V3_MT_clay_render(RenderButtonsPanel, Panel):
         render = scene.render
 
         row = layout.row(align=True)
-        split = layout.split(percentage=0.5)
+        split = layout.split(factor=0.5)
         col = split.column()
         col.prop(scene, "gs_clay_render", toggle=True)
         if scene.gs_clay_render:
@@ -200,6 +200,24 @@ class YAFA_V3_MT_clay_render(RenderButtonsPanel, Panel):
 
 
 
+classes = (
+    #YAFA_V3_MT_presets_render,
+    YAFA_V3_PT_general_settings,
+    #YAFA_V3_PT_logging,
+    #YAFA_V3_PT_clay_render,
+)
+
+def register():
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+
+def unregister():
+    from bpy.utils import unregister_class
+    for cls in reversed(classes):
+        unregister_class(cls)
+
+        
 if __name__ == "__main__":  # only for live edit.
     import bpy
     bpy.utils.register_module(__name__)

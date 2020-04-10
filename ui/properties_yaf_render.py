@@ -34,19 +34,19 @@ class YAFA_V3_PT_Render(RenderButtonsPanel, Panel):
 
         if context.scene.img_save_with_blend_file:
             row = layout.row()
-            row.label("Parameter 'Save with Blend file' is enabled in the Output options.", icon="INFO")
+            row.label(text="Parameter 'Save with Blend file' is enabled in the Output options.", icon="INFO")
             row = layout.row()
-            row.label("Be aware that the first time you render, it will change *automatically* the image output folder", icon="INFO")
+            row.label(text="Be aware that the first time you render, it will change *automatically* the image output folder", icon="INFO")
         if context.scene.gs_secondary_file_output:
             row = layout.row()
-            row.label("Parameter 'Secondary File Output' is enabled in the General Settings options.", icon="INFO")
+            row.label(text="Parameter 'Secondary File Output' is enabled in the General Settings options.", icon="INFO")
             row = layout.row()
-            row.label("Be aware that even when rendering into Blender, it will save images to the image output folder", icon="INFO")
+            row.label(text="Be aware that even when rendering into Blender, it will save images to the image output folder", icon="INFO")
         row = layout.row()
         row.operator("render.render_still", text="Image", icon='RENDER_STILL')
         row.operator("render.render_animation", text="Animation", icon='RENDER_ANIMATION')
         layout.row().operator("render.render_view", text="Render 3D View", icon='VIEW3D')
-        layout.prop(rd, "display_mode", text="Display")
+        #FIXME DAVID! layout.prop(rd, "display_mode", text="Display")
 
 class YAFA_V3_PT_dimensions(RenderButtonsPanel, Panel):
     bl_label = "Dimensions"
@@ -60,9 +60,9 @@ class YAFA_V3_PT_dimensions(RenderButtonsPanel, Panel):
         rd = scene.render
 
         row = layout.row(align=True)
-        row.menu("RENDER_MT_presets", text=bpy.types.RENDER_MT_presets.bl_label)
-        row.operator("render.preset_add", text="", icon='ZOOMIN')
-        row.operator("render.preset_add", text="", icon='ZOOMOUT').remove_active = True
+        #FIXME DAVID! row.menu("RENDER_PT_presets", text=bpy.types.RENDER_PT_presets.bl_label)
+        row.operator("render.preset_add", text="", icon='ADD')
+        row.operator("render.preset_remove", text="", icon='REMOVE').remove_active = True
 
         split = layout.split()
 
@@ -86,10 +86,6 @@ class YAFA_V3_PT_dimensions(RenderButtonsPanel, Panel):
         sub.prop(scene, "frame_end", text="End")
         sub.prop(scene, "frame_step", text="Step")
 
-from . import properties_yaf_general_settings
-from . import properties_yaf_integrator
-from . import properties_yaf_AA_settings
-
 
 class YAFA_V3_PT_output(RenderButtonsPanel, Panel):
     bl_label = "Output"
@@ -104,7 +100,7 @@ class YAFA_V3_PT_output(RenderButtonsPanel, Panel):
 
         if sc.gs_type_render == "into_blender" and not sc.gs_secondary_file_output:
             row = layout.row()
-            row.label("To enable file output, enable Secondary File Output or choose Render into File or Render into XML", icon="INFO")
+            row.label(text="To enable file output, enable Secondary File Output or choose Render into File or Render into XML", icon="INFO")
         else:
             layout.prop(sc, "img_save_with_blend_file")
             if not sc.img_save_with_blend_file:
@@ -124,9 +120,9 @@ class YAFA_V3_PT_output(RenderButtonsPanel, Panel):
             elif sc.gs_images_autosave_interval_type == "time-interval":
                 col.prop(sc, "gs_images_autosave_interval_seconds")
             else:
-                col.label("")
+                col.label(text="")
             
-            split = layout.split(percentage=0.6)
+            split = layout.split(factor=0.6)
             col = split.column()
             col.prop(sc, "img_output", text="", icon='IMAGE_DATA')
             col = split.column()
@@ -139,7 +135,7 @@ class YAFA_V3_PT_output(RenderButtonsPanel, Panel):
             if sc.img_output == "OPEN_EXR" or sc.img_output == "HDR":  #If the output file is a HDR/EXR file, we force the render output to Linear
                     pass
             elif sc.gs_type_render == "file" or sc.gs_type_render == "xml":
-                    split = layout.split(percentage=0.6)
+                    split = layout.split(factor=0.6)
                     col = split.column()
                     col.prop(sc.display_settings, "display_device")
                     
@@ -158,7 +154,7 @@ class YAFA_V3_PT_output(RenderButtonsPanel, Panel):
                         row = layout.row(align=True)
                         row.label(text="YafaRay doesn't support '" + sc.display_settings.display_device + "', assuming sRGB", icon="ERROR")
                         
-            split = layout.split(percentage=0.6)
+            split = layout.split(factor=0.6)
             col = split.column()
             col.prop(sc, "gs_premult", text = "Premultiply Alpha")
             if sc.img_output  == "OPEN_EXR" and sc.gs_premult == "no":
@@ -184,7 +180,7 @@ class YAFA_V3_PT_output(RenderButtonsPanel, Panel):
                     col.prop(sc, "img_denoiseHCol", text="h(chrom)")
                     split = layout.split()
                     col = split.column()
-                    col.label("Denoise will not appear in Blender, only in saved image files", icon="INFO")
+                    col.label(text="Denoise will not appear in Blender, only in saved image files", icon="INFO")
 
             row = layout.row()
             col = row.column()
@@ -201,11 +197,11 @@ class YAFA_V3_PT_output(RenderButtonsPanel, Panel):
                 elif sc.gs_film_autosave_interval_type == "time-interval":
                     col.prop(sc, "gs_film_autosave_interval_seconds")
                 else:
-                    col.label("")
+                    col.label(text="")
             
             if sc.gs_film_save_load == "load-save":
                 row = layout.row()
-                row.label("If the loaded image Film does not match exactly the scene, crashes and/or incorrect renders may happen, USE WITH CARE!", icon="ERROR")
+                row.label(text="If the loaded image Film does not match exactly the scene, crashes and/or incorrect renders may happen, USE WITH CARE!", icon="ERROR")
 
 
 class YAFA_V3_PT_post_processing(RenderButtonsPanel, Panel):
@@ -266,6 +262,26 @@ class YAFA_V3_PT_Advanced(RenderButtonsPanel, Panel):
             sub = col.column()
             sub.prop(scene, "adv_min_raydist_value")
             
+classes = (
+    YAFA_V3_PT_Render,
+    YAFA_V3_PT_dimensions,
+    YAFA_V3_PT_output,
+    YAFA_V3_PT_post_processing,
+    YAFA_V3_PT_convert,
+    YAFA_V3_PT_Advanced,
+)
+
+def register():
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+
+def unregister():
+    from bpy.utils import unregister_class
+    for cls in reversed(classes):
+        unregister_class(cls)
+
+        
 if __name__ == "__main__":  # only for live edit.
     import bpy
     bpy.utils.register_module(__name__)

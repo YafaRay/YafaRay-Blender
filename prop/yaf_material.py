@@ -45,7 +45,6 @@ def items_mat2(self, context):
 def update_preview(self, context):
     context.material.preview_render_type = context.material.preview_render_type
 
-
 def register():
     Material.mat_type = EnumProperty(
         update=update_preview, name="Material type",
@@ -78,6 +77,14 @@ def register():
     Material.transparency = FloatProperty(
         update=update_preview, name="Transparency",
         description="Material transparency",
+        min=0.0, max=1.0,
+        step=1, precision=3,
+        soft_min=0.0, soft_max=1.0,
+        default=0.000)
+
+    Material.translucency = FloatProperty(
+        update=update_preview, name="Translucency",
+        description="Material translucency",
         min=0.0, max=1.0,
         step=1, precision=3,
         soft_min=0.0, soft_max=1.0,
@@ -140,6 +147,14 @@ def register():
         subtype='COLOR',
         min=0.0, max=1.0,
         default=(1.0, 1.0, 1.0))
+
+    Material.mirror_color = FloatVectorProperty(
+        update=update_preview, name="Mirror color",
+        description="Mirror Color",
+        subtype='COLOR',
+        min=0.0, max=1.0,
+        default=(1.0, 1.0, 1.0))
+
 
     # added mirror col property for coated glossy material
     Material.coat_mir_col = FloatVectorProperty(
@@ -301,6 +316,11 @@ def register():
         description="",
         default=False)
 
+    Material.emit = BoolProperty(
+        update=update_preview, name="emit",
+        description="",
+        default=False)
+
     #Deprecated blend material component Enum references, only to keep compatibility with old scenes
     Material.material1 = EnumProperty(
         update=update_preview, name="Material one",
@@ -372,10 +392,12 @@ def unregister():
     del Material.diffuse_reflect
     del Material.specular_reflect
     del Material.transparency
+    del Material.translucency
     del Material.transmit_filter
     del Material.fresnel_effect
     del Material.brdf_type
     del Material.glossy_color
+    del Material.mirror_color
     del Material.coat_mir_col
     del Material.glass_mir_col
     del Material.glossy_reflect
@@ -398,6 +420,7 @@ def unregister():
     del Material.sigma
     del Material.rough
     del Material.coated
+    del Material.emit
     del Material.material1
     del Material.material2
     del Material.material1name

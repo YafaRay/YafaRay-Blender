@@ -47,6 +47,8 @@ class yafWorld:
         self.yi.printInfo("Exporting World, type: {0}".format(bg_type))
         yi.paramsClearAll()
 
+        return None #FIXME DAVID
+
         if bg_type == 'Texture':
             if world.active_texture is not None:
                 worldTex = world.active_texture

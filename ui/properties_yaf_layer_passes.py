@@ -35,14 +35,11 @@ class YAFA_V3_PT_layers(RenderLayerButtonsPanel, Panel):
         rd = scene.render
 
         row = layout.row()
-        if bpy.app.version < (2, 65, 3 ):
-            row.template_list(rd, "layers", rd.layers, "active_index", rows=2)
-        else:
-            row.template_list("RENDERLAYER_UL_renderlayers", "", rd, "layers", rd.layers, "active_index", rows=2)
+        row.template_list("RENDERLAYER_UL_renderlayers", "", rd, "layers", rd.layers, "active_index", rows=2)
 
         col = row.column(align=True)
-        col.operator("scene.render_layer_add", icon='ZOOMIN', text="")
-        col.operator("scene.render_layer_remove", icon='ZOOMOUT', text="")
+        col.operator("scene.render_layer_add", icon='ADD', text="")
+        col.operator("scene.render_layer_remove", icon='REMOVE', text="")
 
         row = layout.row()
         rl = rd.layers.active
@@ -337,13 +334,31 @@ class YAFA_V3_PT_views(RenderLayerButtonsPanel, Panel):
                     row.template_list("RENDERLAYER_UL_renderviews", "name", rd, "views", rd.views, "active_index", rows=2)
 
                     col = row.column(align=True)
-                    col.operator("scene.render_view_add", icon='ZOOMIN', text="")
-                    col.operator("scene.render_view_remove", icon='ZOOMOUT', text="")
+                    col.operator("scene.render_view_add", icon='ADD', text="")
+                    col.operator("scene.render_view_remove", icon='REMOVE', text="")
 
                     row = layout.row()
                     row.label(text="Camera Suffix:")
                     row.prop(rv, "camera_suffix", text="")
 
+
+classes = (
+    YAFA_V3_PT_layers,
+    YAFA_V3_PT_layer_passes,
+    YAFA_V3_PT_views,
+)
+
+def register():
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+
+def unregister():
+    from bpy.utils import unregister_class
+    for cls in reversed(classes):
+        unregister_class(cls)
+
+        
 if __name__ == "__main__":  # only for live edit.
     import bpy
     bpy.utils.register_module(__name__)

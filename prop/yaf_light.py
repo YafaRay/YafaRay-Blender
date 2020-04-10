@@ -25,39 +25,39 @@ from bpy.props import (EnumProperty,
                        FloatProperty,
                        StringProperty)
 
-Lamp = bpy.types.Lamp
+Light = bpy.types.Light
 
 def update_preview(self, context):
-    context.lamp.type = context.lamp.type
+    context.light.type = context.light.type
 
 
 def call_lighttype_update(self, context):
-    lamp = context.lamp
-    if lamp is not None:
-        switchLampType = {'area': 'AREA', 'spot': 'SPOT', 'sun': 'SUN', 'point': 'POINT', 'ies': 'SPOT', 'directional': 'SUN'}
-        lamp.type = switchLampType.get(lamp.lamp_type)
+    light = context.light
+    if light is not None:
+        switchLightType = {'area': 'AREA', 'spot': 'SPOT', 'sun': 'SUN', 'point': 'POINT', 'ies': 'SPOT', 'directional': 'SUN'}
+        light.type = switchLightType.get(light.light_type)
 
 
 def set_shadow_method(self, context):
-    lamp = context.lamp
-    if lamp.yaf_show_dist_clip:
-        lamp.shadow_method = 'BUFFER_SHADOW'
+    light = context.light
+    if light.yaf_show_dist_clip:
+        light.shadow_method = 'BUFFER_SHADOW'
     else:
-        lamp.shadow_method = 'RAY_SHADOW'
-    context.lamp.type = context.lamp.type
+        light.shadow_method = 'RAY_SHADOW'
+    context.light.type = context.light.type
     
 
 def sync_with_distance(self, context):
-    lamp = context.lamp
-    if lamp.yaf_sphere_radius != lamp.distance:
-        lamp.distance = lamp.yaf_sphere_radius
-    context.lamp.type = context.lamp.type
+    light = context.light
+    if light.yaf_sphere_radius != light.distance:
+        light.distance = light.yaf_sphere_radius
+    context.light.type = context.light.type
 
 
 def register():
-    Lamp.lamp_type = EnumProperty(
+    Light.light_type = EnumProperty(
         name="Light type",
-        description="Type of lamp",
+        description="Type of light",
         items=(
             ('point', "Point", "Omnidirectional point light source"),
             ('sun', "Sun", "Constant direction parallel ray light source"),
@@ -68,114 +68,114 @@ def register():
         ),
         default="point", update=call_lighttype_update)
 
-    Lamp.yaf_energy = FloatProperty(
+    Light.yaf_energy = FloatProperty(
         update=update_preview, name="Power",
         description="Intensity multiplier for color",
         min=0.0, max=10000.0,
         default=1.0)
 
-    Lamp.yaf_sphere_radius = FloatProperty(
+    Light.yaf_sphere_radius = FloatProperty(
         name="Radius",
         description="Radius of the sphere light",
         min=0.01, max=10000.0,
         soft_min=0.01, soft_max=100.0,
         default=1.0, update=sync_with_distance)
 
-    Lamp.directional = BoolProperty(
+    Light.directional = BoolProperty(
         update=update_preview, name="Directional",
         description="Directional sunlight type, like 'spot' (for concentrate photons at area)",
         default=False)
 
-    Lamp.create_geometry = BoolProperty(
+    Light.create_geometry = BoolProperty(
         update=update_preview, name="Create and show geometry",
         description="Creates a visible geometry in the dimensions of the light during the render",
         default=False)
 
-    Lamp.infinite = BoolProperty(
+    Light.infinite = BoolProperty(
         update=update_preview, name="Infinite",
         description="Determines if light is infinite or filling a semi-infinite cylinder",
         default=True)
 
-    Lamp.spot_soft_shadows = BoolProperty(
+    Light.spot_soft_shadows = BoolProperty(
         update=update_preview, name="Soft shadows",
         description="Use soft shadows",
         default=False)
 
-    Lamp.shadow_fuzzyness = FloatProperty(
+    Light.shadow_fuzzyness = FloatProperty(
         update=update_preview, name="Shadow fuzzyness",
         description="Fuzzyness of the soft shadows (0 - hard shadow, 1 - fuzzy shadow)",
         min=0.0, max=1.0,
         default=1.0)
 
-    Lamp.photon_only = BoolProperty(
+    Light.photon_only = BoolProperty(
         update=update_preview, name="Photon only",
         description="This spot will only throw photons not direct light",
         default=False)
 
-    Lamp.angle = FloatProperty(
+    Light.angle = FloatProperty(
         update=update_preview, name="Angle",
         description="Angle of the cone in degrees (shadow softness)",
         min=0.0, max=80.0,
         default=0.5)
 
-    Lamp.ies_soft_shadows = BoolProperty(
+    Light.ies_soft_shadows = BoolProperty(
         update=update_preview, name="IES Soft shadows",
         description="Use soft shadows for IES light type",
         default=False)
 
-    Lamp.ies_file = StringProperty(
+    Light.ies_file = StringProperty(
         update=update_preview, name="IES File",
         description="File to be used as the light projection",
         subtype='FILE_PATH',
         default="")
 
-    Lamp.yaf_samples = IntProperty(
+    Light.yaf_samples = IntProperty(
         update=update_preview, name="Samples",
         description="Number of samples to be taken for direct lighting",
         min=0, max=512,
         default=16)
 
-    Lamp.yaf_show_dist_clip = BoolProperty(
+    Light.yaf_show_dist_clip = BoolProperty(
         name="Show distance and clipping",
-        description="Show distance, clip start and clip end settings for spot lamp in 3D view",
+        description="Show distance, clip start and clip end settings for spot light in 3D view",
         default=False, update=set_shadow_method)
 
-    Lamp.light_enabled = BoolProperty(
+    Light.light_enabled = BoolProperty(
         update=update_preview, name="Light enabled",
         description="Enable/Disable light",
         default=True)
         
-    Lamp.cast_shadows = BoolProperty(
+    Light.cast_shadows = BoolProperty(
         update=update_preview, name="Cast shadows",
         description="Enable casting shadows. This is the normal and expected behavior. Disable it only for special cases!",
         default=True)
 
-    Lamp.caustic_photons = BoolProperty(
+    Light.caustic_photons = BoolProperty(
         update=update_preview, name="Caustic photons",
         description="Allow light to shoot caustic photons",
         default=True)
 
-    Lamp.diffuse_photons = BoolProperty(
+    Light.diffuse_photons = BoolProperty(
         update=update_preview, name="Diffuse photons",
         description="Allow light to shoot diffuse photons",
         default=True)
 
 def unregister():
-    del Lamp.lamp_type
-    del Lamp.yaf_energy
-    del Lamp.yaf_sphere_radius
-    del Lamp.directional
-    del Lamp.create_geometry
-    del Lamp.infinite
-    del Lamp.spot_soft_shadows
-    del Lamp.shadow_fuzzyness
-    del Lamp.photon_only
-    del Lamp.angle
-    del Lamp.ies_soft_shadows
-    del Lamp.ies_file
-    del Lamp.yaf_samples
-    del Lamp.yaf_show_dist_clip
-    del Lamp.light_enabled
-    del Lamp.cast_shadows
-    del Lamp.caustic_photons
-    del Lamp.diffuse_photons
+    del Light.light_type
+    del Light.yaf_energy
+    del Light.yaf_sphere_radius
+    del Light.directional
+    del Light.create_geometry
+    del Light.infinite
+    del Light.spot_soft_shadows
+    del Light.shadow_fuzzyness
+    del Light.photon_only
+    del Light.angle
+    del Light.ies_soft_shadows
+    del Light.ies_file
+    del Light.yaf_samples
+    del Light.yaf_show_dist_clip
+    del Light.light_enabled
+    del Light.cast_shadows
+    del Light.caustic_photons
+    del Light.diffuse_photons

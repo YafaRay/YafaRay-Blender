@@ -12,7 +12,7 @@ SOURCE CODE
 YafaRay source code is hosted in GitHub.
 
 * YafaRay Core source code is available in: https://github.com/YafaRay/Core
-* YafaRay Blender-Exporter (for Blender v2.7x) source code is available in: https://github.com/YafaRay/Blender-Exporter
+* YafaRay Blender-Exporter (for Blender v2.82) source code is available in: https://github.com/YafaRay/Blender28-Exporter
 
 
 RELEASES
@@ -24,7 +24,7 @@ There are two different types of YafaRay Releases:
 
 For the latest YafaRay Releases check for builds here:
 * YafaRay Core: releases/binary files available in https://github.com/YafaRay/Core/releases
-* YafaRay Blender-Exporter (for Blender v2.7x): releases/binary files available in https://github.com/YafaRay/Blender-Exporter/releases
+* YafaRay Blender-Exporter (for Blender v2.82): releases/binary files available in https://github.com/YafaRay/Blender28-Exporter/releases
 
 
 BUG REPORTS / FEATURE REQUESTS
@@ -36,10 +36,8 @@ NOTE: The old bugtracker in www.yafaray.org will *no longer* be used for bug tra
 
 CURRENT LIMITATIONS
 -------------------
-* This Blender Exporter only works with Blender v2.7x
-
-* Don't use the Blender from the distro repositories. Download the Blender official 2.79 builds from:
-https://www.blender.org/download/releases/2-79/
+* This Blender Exporter only works with Blender v2.82
+* This is a VERY EXPERIMENTAL and pre-ALPHA, not valid for any real Production work. Many features don't work correctly or at all.
 
 * YafaRay only supports *one* scene in the .blend file. If you have more than one scene, it could cause unexpected results and problems in the new Material Preview Controls.
 

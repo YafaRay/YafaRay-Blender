@@ -18,6 +18,7 @@
 
 # <pep8 compliant>
 
+from . import yaf_preferences
 from . import yaf_object
 from . import yaf_material
 from . import yaf_light
@@ -26,22 +27,26 @@ from . import yaf_camera
 from . import yaf_texture
 from . import yaf_world
 
+modules = (
+    yaf_preferences,
+    yaf_object,
+    yaf_material,
+    yaf_light,
+    yaf_scene,
+    yaf_camera,
+    yaf_texture,
+    yaf_world,
+)
 
 def register():
-    yaf_object.register()
-    yaf_material.register()
-    yaf_light.register()
-    yaf_scene.register()
-    yaf_camera.register()
-    yaf_texture.register()
-    yaf_world.register()
-
+    for module in modules:
+        module.register()
 
 def unregister():
-    yaf_object.unregister()
-    yaf_material.unregister()
-    yaf_light.unregister()
-    yaf_scene.unregister()
-    yaf_camera.unregister()
-    yaf_texture.unregister()
-    yaf_world.unregister()
+    for module in reversed(modules):
+        module.unregister()
+
+
+if __name__ == "__main__":  # only for live edit.
+    import bpy
+    bpy.utils.register_module(__name__)

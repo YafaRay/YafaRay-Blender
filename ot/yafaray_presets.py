@@ -47,8 +47,8 @@ def yaf_preset_find(name, preset_path, disp_name=False):
 
 class YAF_AddPresetBase():
     bl_options = {'REGISTER'}  # only because invoke_props_popup requires.
-    name = bpy.props.StringProperty(name="Name", description="Name of the preset, used to make the path name", maxlen=64, default="")
-    remove_active = bpy.props.BoolProperty(default=False, options={'HIDDEN'})
+    name : bpy.props.StringProperty(name="Name", description="Name of the preset, used to make the path name", maxlen=64, default="")
+    remove_active : bpy.props.BoolProperty(default=False, options={'HIDDEN'})
 
     def execute(self, context):
 
@@ -159,19 +159,20 @@ class YAF_AddPresetBase():
                 file_preset.write("%s\n" % rna_path)
             file_preset.write("\n")
 
-        for rna_path in self.preset_values:
-            value = eval(rna_path)
-            if type(value) == float:  # formatting of the floating point values
-                value = round(value, 4)
-            if str(value).startswith('Color'):  # formatting of the Color Vectors (r,g,b)
-                r, g, b = round(value.r, 3), round(value.g, 3), round(value.b, 3)
-                file_preset.write("%s = %r, %r, %r\n" % (rna_path, r, g, b))
-            else:
-                try:  # convert thin wrapped sequences to simple lists to repr()
-                    value = value[:]
-                except:
-                    pass
-                file_preset.write("%s = %r\n" % (rna_path, value))
+        if False: #FIXME DAVID
+            for rna_path in self.preset_values:
+                value = eval(rna_path)
+                if type(value) == float:  # formatting of the floating point values
+                    value = round(value, 4)
+                if str(value).startswith('Color'):  # formatting of the Color Vectors (r,g,b)
+                    r, g, b = round(value.r, 3), round(value.g, 3), round(value.b, 3)
+                    file_preset.write("%s = %r, %r, %r\n" % (rna_path, r, g, b))
+                else:
+                    try:  # convert thin wrapped sequences to simple lists to repr()
+                        value = value[:]
+                    except:
+                        pass
+                    file_preset.write("%s = %r\n" % (rna_path, value))
 
         file_preset.close()
 
@@ -387,3 +388,23 @@ class Yafaray_Menu(StructRNA, _GenericUI, metaclass=RNAMeta):  # Yafaray's own P
             os.makedirs(search_path[0])
        
         self.path_menu(search_path, self.preset_operator)
+
+
+classes = (
+    YAFARAY_OT_presets_renderset,
+)
+
+def register():
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+
+def unregister():
+    from bpy.utils import unregister_class
+    for cls in reversed(classes):
+        unregister_class(cls)
+
+
+if __name__ == "__main__":  # only for live edit.
+    import bpy
+    bpy.utils.register_module(__name__)

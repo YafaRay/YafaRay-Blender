@@ -20,6 +20,8 @@
 
 import bpy
 import yafaray_v3_interface
+from inspect import getmembers
+from pprint import pprint
 
 
 def proj2int(val):
@@ -45,9 +47,16 @@ class yafMaterial:
 
     def getUsedTextures(self, material):
         used_textures = []
-        for tex_slot in material.texture_slots:
-            if tex_slot and tex_slot.use and tex_slot.texture:
-                used_textures.append(tex_slot)
+        if material.node_tree and False:
+            for node in material.node_tree.nodes:
+                pprint(getmembers(node))
+                if node.type.startswith("TEX_IMAGE"): #FIXME DAVID TEX_ but later getting .texture attribute does not work
+                    used_textures.append(node)
+            
+
+        #for tex_slot in material.texture_slots:
+        #    if tex_slot and tex_slot.use and tex_slot.texture:
+        #        used_textures.append(tex_slot)
 
         return used_textures
 

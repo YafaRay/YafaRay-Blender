@@ -49,7 +49,7 @@ class YafaRayProperties(bpy.types.PropertyGroup):
     pass
 
 class YafaRayLoggingProperties(bpy.types.PropertyGroup):
-    paramsBadgePosition = EnumProperty(
+    paramsBadgePosition : EnumProperty(
         name="Params Badge position",
         description="Choose the position of the params badge in the exported image file. Inside Blender it may appear incorrect or not at all",
         items=(
@@ -59,17 +59,17 @@ class YafaRayLoggingProperties(bpy.types.PropertyGroup):
         ),
         default='none')
 
-    saveLog = BoolProperty(
+    saveLog : BoolProperty(
         name="Save log file",
         description="Save text log file with the exported image files",
         default=False)
 
-    saveHTML = BoolProperty(
+    saveHTML : BoolProperty(
         name="Save HTML file",
         description="Save HTML information/log file with the exported image files",
         default=True)
 
-    savePreset = BoolProperty(
+    savePreset : BoolProperty(
         name="Save Preset file",
         description="Save a preset file, with the Render Settings, with the exported image files",
         default=True)
@@ -84,51 +84,51 @@ class YafaRayLoggingProperties(bpy.types.PropertyGroup):
             ('debug', "Debug", "Prints debug messages (if any)", 6),
         ), key=lambda index: index[3])
 
-    consoleVerbosity = EnumProperty(
+    consoleVerbosity : EnumProperty(
         name="Console Verbosity",
         description="Select the desired verbosity level for console log output",
         items=(verbosityLevels
         ),
         default="info")
 
-    logVerbosity = EnumProperty(
+    logVerbosity : EnumProperty(
         name="Log/HTML Verbosity",
         description="Select the desired verbosity level for log and HTML output",
         items=(verbosityLevels
         ),
         default="info")
 
-    drawRenderSettings = BoolProperty(
+    drawRenderSettings : BoolProperty(
         name="Draw Render Settings",
         description="Draw Render Settings in the params badge",
         default=True)
         
-    drawAANoiseSettings = BoolProperty(
+    drawAANoiseSettings : BoolProperty(
         name="Draw AA/Noise Settings",
         description="Draw AA and Noise Control Settings in the params badge",
         default=True)
 
-    title = StringProperty(
+    title : StringProperty(
         name="Title",
         description=("Title to be shown in the logs and/or params badge"),
         default="")
 
-    author = StringProperty(
+    author : StringProperty(
         name="Author",
         description=("Author to be shown in the logs and/or params badge"),
         default="")
 
-    contact = StringProperty(
+    contact : StringProperty(
         name="Contact info",
         description=("Contact information (phone, e-mail, etc) to be shown in the logs and/or params badge"),
         default="")
 
-    comments = StringProperty(
+    comments : StringProperty(
         name="Comments",
         description=("Comments to be added to the logs and/or params badge"),
         default="")
 
-    customIcon = StringProperty(
+    customIcon : StringProperty(
         name="Custom PNG icon path",
         description=("Path to custom icon for logs and/or params badge."
                      "(recommended around 70x45, black background)."
@@ -136,14 +136,14 @@ class YafaRayLoggingProperties(bpy.types.PropertyGroup):
         subtype="FILE_PATH",
         default="")
 
-    customFont = StringProperty(
+    customFont : StringProperty(
         name="Font path",
         description=("Path to params badge TTF font."
                      "If blank or wrong, the default YafaRay font will be used"),
         subtype="FILE_PATH",
         default="")
 
-    fontScale = FloatProperty(
+    fontScale : FloatProperty(
         name="Font scale",
         description=("Font scaling factor."),
         min=0.2, max=5.0, precision=1,
@@ -151,37 +151,37 @@ class YafaRayLoggingProperties(bpy.types.PropertyGroup):
 
     
 class YafaRayNoiseControlProperties(bpy.types.PropertyGroup):
-    resampled_floor = FloatProperty(
+    resampled_floor : FloatProperty(
         name="Resampled floor (%)",
         description=("Noise reduction: when resampled pixels go below this value (% of total pixels),"
                      " the AA threshold will automatically decrease before the next pass"),
         min=0.0, max=100.0, precision=1,
         default=0.0)
 
-    sample_multiplier_factor = FloatProperty(
+    sample_multiplier_factor : FloatProperty(
         name="AA sample multiplier factor",
         description="Factor to increase the AA samples multiplier for next AA pass",
         min=1.0, max=4.0, precision=2,
         default=1.0)
 
-    light_sample_multiplier_factor = FloatProperty(
+    light_sample_multiplier_factor : FloatProperty(
         name="Light sample multiplier factor",
         description="Factor to increase the light samples multiplier for next AA pass",
         min=1.0, max=4.0, precision=2,
         default=1.0)
 
-    indirect_sample_multiplier_factor = FloatProperty(
+    indirect_sample_multiplier_factor : FloatProperty(
         name="Indirect sample multiplier factor",
         description="Factor to increase the indirect samples (FG for example) multiplier for next AA pass",
         min=1.0, max=4.0, precision=2,
         default=1.0)
 
-    detect_color_noise = BoolProperty(
+    detect_color_noise : BoolProperty(
         name="Color noise detection",
         description="Detect noise in RGB components in addidion to pixel brightness",
         default=False)
         
-    dark_detection_type = EnumProperty(
+    dark_detection_type : EnumProperty(
         name="Dark areas noise detection",
         items=(
             ('none', "None", "No special dark areas noise detection (default)"),
@@ -190,7 +190,7 @@ class YafaRayNoiseControlProperties(bpy.types.PropertyGroup):
         ),
         default="linear")
         
-    dark_threshold_factor = FloatProperty(
+    dark_threshold_factor : FloatProperty(
         name="Dark factor",
         description=("Factor used to reduce the AA threshold in dark areas."
                      " It will reduce noise in dark areas, but noise in bright areas will take longer."
@@ -198,104 +198,104 @@ class YafaRayNoiseControlProperties(bpy.types.PropertyGroup):
         min=0.0, max=1.0, precision=3,
         default=0.0)
 
-    variance_edge_size = IntProperty(
+    variance_edge_size : IntProperty(
         name="Variance window",
         description="Window edge size for variance noise detection",
         min=4, max=20,
         default=10)
 
-    variance_pixels = IntProperty(
+    variance_pixels : IntProperty(
         name="Variance threshold",
         description="Threshold (in pixels) for variance noise detection. 0 disables variance detection",
         min=0, max=10,
         default=0)
 
-    clamp_samples = FloatProperty(
+    clamp_samples : FloatProperty(
         name="Clamp samples",
         description="Clamp RGB values in all samples, less noise but less realism. 0.0 disables clamping",
         min=0.0, precision=1,
         default=0.0)
 
-    clamp_indirect = FloatProperty(
+    clamp_indirect : FloatProperty(
         name="Clamp indirect",
         description="Clamp RGB values in the indirect light, less noise but less realism. 0.0 disables clamping",
         min=0.0, precision=1,
         default=0.0)
 
-    background_resampling = BoolProperty(
+    background_resampling : BoolProperty(
         update=update_preview, name="Background Resampling",
         description="If disabled, the background will not be resamples in subsequent adaptative AA passes.",
         default=True)
 
     
 class YafaRayRenderPassesProperties(bpy.types.PropertyGroup):
-    pass_enable = BoolProperty(
+    pass_enable : BoolProperty(
         name="Enable render passes",
         default=False)
 
-    pass_mask_obj_index = IntProperty(
+    pass_mask_obj_index : IntProperty(
         name="Mask Object Index",
         description="Object index used for masking in the Mask render passes",
         min=0,
         default=0)
         
-    pass_mask_mat_index = IntProperty(
+    pass_mask_mat_index : IntProperty(
         name="Mask Material Index",
         description="Material index used for masking in the Mask render passes",
         min=0,
         default=0)    
         
-    pass_mask_invert = BoolProperty(
+    pass_mask_invert : BoolProperty(
         name="Invert Mask selection",
         description="Property to mask-in or mask-out the desired objects/materials in the Mask render passes",
         default=False)
     
-    pass_mask_only = BoolProperty(
+    pass_mask_only : BoolProperty(
         name="Mask Only",
         description="Property to show the mask only instead of the masked rendered image",
         default=False)
 
-    objectEdgeThickness = IntProperty(
+    objectEdgeThickness : IntProperty(
         name="Object Edge Thickness",
         description="Thickness of the edges used in the Object Edge and Toon Render Passess",
         min=1, max=10,
         default=2)
 
-    facesEdgeThickness = IntProperty(
+    facesEdgeThickness : IntProperty(
         name="Faces Edge Thickness",
         description="Thickness of the edges used in the Faces Edge Render Pass",
         min=1, max=10,
         default=1)
 
-    objectEdgeThreshold = FloatProperty(
+    objectEdgeThreshold : FloatProperty(
         name="Object Edge Threshold",
         description=("Threshold for the edge detection process used in the Object Edge and Toon Render Passes"),
         min=0.0, max=1.0, 
         precision=3,
         default=0.3)
 
-    facesEdgeThreshold = FloatProperty(
+    facesEdgeThreshold : FloatProperty(
         name="Faces Edge Threshold",
         description=("Threshold for the edge detection process used in the Faces Edge Render Pass"),
         min=0.0, max=1.0, 
         precision=3,
         default=0.01)
 
-    objectEdgeSmoothness = FloatProperty(
+    objectEdgeSmoothness : FloatProperty(
         name="Object Edge Smoothness",
         description=("Smoothness (blur) of the edges used in the Object Edge and Toon Render Passes"),
         min=0.0, max=5.0, 
         precision=2,
         default=0.75)
 
-    facesEdgeSmoothness = FloatProperty(
+    facesEdgeSmoothness : FloatProperty(
         name="Faces Edge Smoothness",
         description=("Smoothness (blur) of the edges used in the Faces Edge Render Pass"),
         min=0.0, max=5.0, 
         precision=2,
         default=0.5)
 
-    toonEdgeColor = FloatVectorProperty(
+    toonEdgeColor : FloatVectorProperty(
         name="Toon Edge Color",
         description=("Color of the edges used in the Toon Render Pass"),
         subtype='COLOR',
@@ -304,21 +304,21 @@ class YafaRayRenderPassesProperties(bpy.types.PropertyGroup):
         soft_min=0.0, soft_max=1.0,
         default=(0.0, 0.0, 0.0))
 
-    toonPreSmooth = FloatProperty(
+    toonPreSmooth : FloatProperty(
         name="Toon Pre-Smooth",
         description=("Toon effect: smoothness applied to the original image"),
         min=0.0, 
         precision=2,
         default=3.0)
 
-    toonPostSmooth = FloatProperty(
+    toonPostSmooth : FloatProperty(
         name="Toon Post-Smooth",
         description=("Toon effect: smoothness applied to the original image"),
         min=0.0, 
         precision=2,
         default=3.0)
 
-    toonQuantization = FloatProperty(
+    toonQuantization : FloatProperty(
         name="Toon Color Quantization",
         description=("Toon effect: color Quantization applied to the original image"),
         min=0.0, max=1.0,
@@ -425,210 +425,210 @@ class YafaRayRenderPassesProperties(bpy.types.PropertyGroup):
     renderPassAllItems = sorted(renderPassItemsBasic+renderInternalPassAdvanced+renderPassItemsIndex+renderPassItemsDebug+renderPassItemsDepth+renderPassItemsAO, key=lambda index: index[1])
 
     #This property is not currently used by YafaRay Core, as the combined external pass is always using the internal combined pass. 
-    pass_Combined = EnumProperty(
+    pass_Combined : EnumProperty(
         name="Combined",  #RGBA (4 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsDisabled
         ),
         default="disabled")
 
-    pass_Depth = EnumProperty(
+    pass_Depth : EnumProperty(
         name="Depth",  #Gray (1 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsDepth
         ),
         default="z-depth-norm")
 
-    pass_Vector = EnumProperty(
+    pass_Vector : EnumProperty(
         name="Vector",  #RGBA (4 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
         ),
         default="obj-index-auto")
 
-    pass_Normal = EnumProperty(
+    pass_Normal : EnumProperty(
         name="Normal",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
         ),
         default="debug-normal-smooth")
         
-    pass_UV = EnumProperty(
+    pass_UV : EnumProperty(
         name="UV",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
         ),
         default="debug-uv")
 
-    pass_Color = EnumProperty(
+    pass_Color : EnumProperty(
         name="Color",  #RGBA (4 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
         ),
         default="mat-index-auto")
 
-    pass_Emit = EnumProperty(
+    pass_Emit : EnumProperty(
         name="Emit",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
         ),
         default="emit")
         
-    pass_Mist = EnumProperty(
+    pass_Mist : EnumProperty(
         name="Mist",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
         ),
         default="mist")
 
-    pass_Diffuse = EnumProperty(
+    pass_Diffuse : EnumProperty(
         name="Diffuse",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
         ),
         default="diffuse")
         
-    pass_Spec = EnumProperty(
+    pass_Spec : EnumProperty(
         name="Spec",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
         ),
         default="adv-reflect")
 
-    pass_AO = EnumProperty(
+    pass_AO : EnumProperty(
         name="AO",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsAO
         ),
         default="ao")
 
-    pass_Env = EnumProperty(
+    pass_Env : EnumProperty(
         name="Env",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
         ),
         default="env")
 
-    pass_Indirect = EnumProperty(
+    pass_Indirect : EnumProperty(
         name="Indirect",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
         ),
         default="indirect")
 
-    pass_Shadow = EnumProperty(
+    pass_Shadow : EnumProperty(
         name="Shadow",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
         ),
         default="shadow")
 
-    pass_Reflect = EnumProperty(
+    pass_Reflect : EnumProperty(
         name="Reflect",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
         ),
         default="reflect")
 
-    pass_Refract = EnumProperty(
+    pass_Refract : EnumProperty(
         name="Refract",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
         ),
         default="refract")
 
-    pass_IndexOB = EnumProperty(
+    pass_IndexOB : EnumProperty(
         name="Object Index",  #Gray (1 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsIndex
         ),
         default="obj-index-norm")
         
-    pass_IndexMA = EnumProperty(
+    pass_IndexMA : EnumProperty(
         name="Material Index",  #Gray (1 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassItemsIndex
         ),
         default="mat-index-norm")
 
-    pass_DiffDir = EnumProperty(
+    pass_DiffDir : EnumProperty(
         name="Diff Dir",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
         ),
         default="diffuse")
         
-    pass_DiffInd = EnumProperty(
+    pass_DiffInd : EnumProperty(
         name="Diff Ind",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
         ),
         default="adv-diffuse-indirect")
 
-    pass_DiffCol = EnumProperty(
+    pass_DiffCol : EnumProperty(
         name="Diff Col",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
         ),
         default="adv-diffuse-color")
 
-    pass_GlossDir = EnumProperty(
+    pass_GlossDir : EnumProperty(
         name="Gloss Dir",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
         ),
         default="adv-glossy")
         
-    pass_GlossInd = EnumProperty(
+    pass_GlossInd : EnumProperty(
         name="Gloss Ind",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
         ),
         default="adv-glossy-indirect")
 
-    pass_GlossCol = EnumProperty(
+    pass_GlossCol : EnumProperty(
         name="Gloss Col",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
         ),
         default="adv-glossy-color")
 
-    pass_TransDir = EnumProperty(
+    pass_TransDir : EnumProperty(
         name="Trans Dir",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
         ),
         default="adv-trans")
         
-    pass_TransInd = EnumProperty(
+    pass_TransInd : EnumProperty(
         name="Trans Ind",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
         ),
         default="adv-trans-indirect")
 
-    pass_TransCol = EnumProperty(
+    pass_TransCol : EnumProperty(
         name="Trans Col",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
         ),
         default="adv-trans-color")
 
-    pass_SubsurfaceDir = EnumProperty(
+    pass_SubsurfaceDir : EnumProperty(
         name="SubSurface Dir",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
         ),
         default="adv-subsurface")
         
-    pass_SubsurfaceInd = EnumProperty(
+    pass_SubsurfaceInd : EnumProperty(
         name="SubSurface Ind",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
         ),
         default="adv-subsurface-indirect")
 
-    pass_SubsurfaceCol = EnumProperty(
+    pass_SubsurfaceCol : EnumProperty(
         name="SubSurface Col",  #RGB (3 x float)
         description="Select the type of image you want to be displayed in this pass",
         items=(renderPassAllItems
@@ -637,13 +637,13 @@ class YafaRayRenderPassesProperties(bpy.types.PropertyGroup):
 
 class YafaRayMaterialPreviewControlProperties(bpy.types.PropertyGroup):
 
-    enable = BoolProperty(
+    enable : BoolProperty(
         update=update_preview,
         name="Material Preview Controls enabled",
         description="Enable/Disable material preview controls",
         default=False)
 
-    objScale = FloatProperty(
+    objScale : FloatProperty(
         update=update_preview,
         name="objScale",
         description=("Material Preview object scaling factor"),
@@ -651,7 +651,7 @@ class YafaRayMaterialPreviewControlProperties(bpy.types.PropertyGroup):
         precision=2, step=10,
         default=1.0)
 
-    rotZ = FloatProperty(
+    rotZ : FloatProperty(
         update=update_preview,
         name="rotZ",
         description=("Material Preview object rotation Z axis"),
@@ -660,7 +660,7 @@ class YafaRayMaterialPreviewControlProperties(bpy.types.PropertyGroup):
         subtype="ANGLE", unit="ROTATION",
         default=0.0)
 
-    lightRotZ = FloatProperty(
+    lightRotZ : FloatProperty(
         update=update_preview,
         name="lightRotZ",
         description=("Material Preview light rotation Z axis"),
@@ -669,21 +669,21 @@ class YafaRayMaterialPreviewControlProperties(bpy.types.PropertyGroup):
         subtype="ANGLE", unit="ROTATION",
         default=0.0)
 
-    keyLightPowerFactor = FloatProperty(
+    keyLightPowerFactor : FloatProperty(
         update=update_preview,
         name="keyLightPowerFactor",
         description=("Material Preview power factor for the key light"),
         min=0.0, max=10.0, precision=2, step=10,
         default=1.0)
 
-    fillLightPowerFactor = FloatProperty(
+    fillLightPowerFactor : FloatProperty(
         update=update_preview,
         name="lightPowerFactor",
         description=("Material Preview power factor for the fill lights"),
         min=0.0, max=10.0, precision=2, step=10,
         default=0.5)
 
-    keyLightColor = FloatVectorProperty(
+    keyLightColor : FloatVectorProperty(
         update=update_preview,
         name="keyLightColor",
         description=("Material Preview color for key light"),
@@ -693,7 +693,7 @@ class YafaRayMaterialPreviewControlProperties(bpy.types.PropertyGroup):
         soft_min=0.0, soft_max=1.0,
         default=(1.0, 1.0, 1.0))
 
-    fillLightColor = FloatVectorProperty(
+    fillLightColor : FloatVectorProperty(
         update=update_preview,
         name="fillLightColor",
         description=("Material Preview color for fill lights"),
@@ -703,19 +703,19 @@ class YafaRayMaterialPreviewControlProperties(bpy.types.PropertyGroup):
         soft_min=0.0, soft_max=1.0,
         default=(1.0, 1.0, 1.0))
 
-    previewRayDepth = IntProperty(
+    previewRayDepth : IntProperty(
         update=update_preview,
         name="previewRayDepth",
         description=("Material Preview max ray depth, set higher for better (slower) glass preview"),
         min=0, max=20, default=2)
 
-    previewAApasses = IntProperty(
+    previewAApasses : IntProperty(
         update=update_preview,
         name="previewAApasses",
         description=("Material Preview AA passes, set higher for better (slower) preview"),
         min=1, max=20, default=1)
 
-    previewBackground = EnumProperty(
+    previewBackground : EnumProperty(
         update=update_preview,
         name="previewBackground",
         description=("Material Preview background type"),
@@ -726,20 +726,20 @@ class YafaRayMaterialPreviewControlProperties(bpy.types.PropertyGroup):
         ),
         default="checker")
 
-    previewObject = StringProperty(
+    previewObject : StringProperty(
         update=update_preview,
         name="previewObject",
         description=("Material Preview custom object to be shown, if empty will use default preview objects"),
         default="")
 
-    camDist = FloatProperty(
+    camDist : FloatProperty(
         update=update_preview,
         name="camDist",
         description=("Material Preview Camera distance to object"),
         min=0.1, max=22.0, precision=2, step=100,
         default=12.0)
         
-    camRot = FloatVectorProperty(
+    camRot : FloatVectorProperty(
         update=update_preview,
         name="camRot",
         description=("Material Preview camera rotation"),

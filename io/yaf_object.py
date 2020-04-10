@@ -28,7 +28,7 @@ import yafaray_v3_interface
 def multiplyMatrix4x4Vector4(matrix, vector):
     result = mathutils.Vector((0.0, 0.0, 0.0, 0.0))
     for i in range(4):
-        result[i] = vector * matrix[i]  # use reverse vector multiply order, API changed with rev. 38674
+        result[i] = vector @ matrix[i]  # use reverse vector multiply order, API changed with rev. 38674
 
     return result
 
@@ -39,9 +39,9 @@ class yafObject(object):
         self.materialMap = mMap
         self.is_preview = preview
 
-    def setScene(self, scene):
-
-        self.scene = scene
+    def setDepsgraph(self, depsgraph):
+        self.depsgraph = depsgraph
+        self.scene = depsgraph.scene
 
     def createCameras(self):
 
@@ -58,10 +58,7 @@ class yafObject(object):
         
         cameras = []
 
-        if bpy.app.version < (2, 74, 4 ):
-            render_use_multiview = False
-        else:
-            render_use_multiview = render.use_multiview
+        render_use_multiview = render.use_multiview
 
         if yaf_global_vars.useViewToRender or not render_use_multiview:
             cameras.append(CameraData(self.scene.camera, "cam", ""))
@@ -147,15 +144,17 @@ class yafObject(object):
 
                     # DOF params, only valid for real camera
                     # use DOF object distance if present or fixed DOF
-                    if camera.dof_object is not None:
-                        # use DOF object distance
-                        dist = (pos.xyz - camera.dof_object.location.xyz).length
-                        dof_distance = dist
-                    else:
-                        # use fixed DOF distance
-                        dof_distance = camera.dof_distance
+                     
+                    if False: #FIXME DAVID
+                        if camera.dof_object is not None:
+                            # use DOF object distance
+                            dist = (pos.xyz - camera.dof_object.location.xyz).length
+                            dof_distance = dist
+                        else:
+                            # use fixed DOF distance
+                            dof_distance = camera.dof_distance
 
-                    yi.paramsSetFloat("dof_distance", dof_distance)
+                    #yi.paramsSetFloat("dof_distance", dof_distance) #FIXME DAVID!
                     yi.paramsSetFloat("aperture", camera.aperture)
                     # bokeh params
                     yi.paramsSetString("bokeh_type", camera.bokeh_type)
@@ -414,46 +413,36 @@ class yafObject(object):
         yi.paramsSetFloat("maxZ", min(max(vec[2::3]), 1e10))
 
         yi.createVolumeRegion("VR.{0}-{1}".format(obj.name, str(obj.__hash__())))
-        if bpy.app.version < (2, 78, 0 ):
-            bpy.data.meshes.remove(mesh)
-        else:
-            bpy.data.meshes.remove(mesh, do_unlink=False)
+        bpy.data.meshes.remove(mesh, do_unlink=False)
 
     def writeGeometry(self, ID, obj, matrix, pass_index, obType=0, oMat=None):
-
-        mesh = obj.to_mesh(self.scene, True, 'RENDER')
+        mesh = obj.to_mesh(preserve_all_data_layers=True, depsgraph=self.depsgraph)
         isSmooth = False
         hasOrco = False
         # test for UV Map after BMesh API changes
-        uv_texture = mesh.tessface_uv_textures if 'tessface_uv_textures' in dir(mesh) else mesh.uv_textures
+        uv_texture = mesh.uv_layers if 'uv_layers' in dir(mesh) else mesh.uv_textures
         # test for faces after BMesh API changes
-        face_attr = 'faces' if 'faces' in dir(mesh) else 'tessfaces'
-        hasUV = len(uv_texture) > 0  # check for UV's
+        face_attr = 'polygons' if 'polygons' in dir(mesh) else 'loop_triangles'
+        hasUV = False #FIXME DAVID! #len(uv_texture) > 0  # check for UV's
 
-        if face_attr == 'tessfaces':
-            if not mesh.tessfaces and mesh.polygons:
+        if face_attr == 'loop_triangles':
+            if not mesh.loop_triangles and mesh.polygons:
                 # BMesh API update, check for tessellated faces, if needed calculate them...
-                mesh.update(calc_tessface=True)
+                mesh.update(calc_edges=False, calc_edges_loose=False, calc_loop_triangles=True)
 
-            if not mesh.tessfaces:
+            if not mesh.loop_triangles:
                 # if there are no faces, no need to write geometry, remove mesh data then...
-                if bpy.app.version < (2, 78, 0 ):
-                    bpy.data.meshes.remove(mesh)
-                else:
-                    bpy.data.meshes.remove(mesh, do_unlink=False)
+                bpy.data.meshes.remove(mesh, do_unlink=False)
                 return
         else:
-            if not mesh.faces:
+            if not mesh.polygons:
                 # if there are no faces, no need to write geometry, remove mesh data then...
-                if bpy.app.version < (2, 78, 0 ):
-                    bpy.data.meshes.remove(mesh)
-                else:
-                    bpy.data.meshes.remove(mesh, do_unlink=False)
+                bpy.data.meshes.remove(mesh, do_unlink=False)
                 return
 
         # Check if the object has an orco mapped texture
         for mat in [mmat for mmat in mesh.materials if mmat is not None]:
-            for m in [mtex for mtex in mat.texture_slots if mtex is not None]:
+            for m in [mtex for mtex in mat.texture_paint_slots if mtex is not None]:
                 if m.texture_coords == 'ORCO':
                     hasOrco = True
                     break
@@ -520,7 +509,6 @@ class yafObject(object):
 
             co = None
             if hasUV:
-
                 if self.is_preview:
                     co = uv_texture[0].data[index].uv
                 else:
@@ -552,10 +540,7 @@ class yafObject(object):
 
         self.yi.endGeometry()
 
-        if bpy.app.version < (2, 78, 0 ):
-            bpy.data.meshes.remove(mesh)
-        else:
-            bpy.data.meshes.remove(mesh, do_unlink=False)
+        pass #FIXME DAVID! #bpy.data.meshes.remove(mesh, do_unlink=False)
 
     def getFaceMaterial(self, meshMats, matIndex, matSlots):
 
@@ -582,6 +567,7 @@ class yafObject(object):
 
         # Check for hair particles:
         for pSys in object.particle_systems:
+            continue #FIXME DAVID!
             for mod in [m for m in object.modifiers if (m is not None) and (m.type == 'PARTICLE_SYSTEM')]:
                 if (pSys.settings.render_type == 'PATH') and mod.show_render and (pSys.name == mod.particle_system.name):
                     yi.printInfo("Exporter: Creating Hair Particle System {!r}".format(pSys.name))

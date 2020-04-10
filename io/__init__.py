@@ -26,3 +26,26 @@ from . import yaf_texture
 from . import yaf_object
 from . import yaf_light
 from . import yaf_material
+
+modules = (
+    yaf_export,
+    #yaf_world,
+    #yaf_integrator,
+    #yaf_texture,
+    #yaf_object,
+    #yaf_light,
+    #yaf_material,
+)
+
+def register():
+    for module in modules:
+        module.register()
+
+def unregister():
+    for module in reversed(modules):
+        module.unregister()
+
+
+if __name__ == "__main__":  # only for live edit.
+    import bpy
+    bpy.utils.register_module(__name__)

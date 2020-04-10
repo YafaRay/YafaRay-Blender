@@ -1,13 +1,21 @@
-YafaRay + Blender Exporter for Blender v2.7 ChangeLog
-=====================================================
+YafaRay + Blender Exporter for Blender v2.82 ChangeLog
+======================================================
 Important: read the README file for installation instructions and important information about YafaRay
 
 This is an abbreviated list of changes. The full/detailed list of changes can be seen at:
 * YafaRay Core code: https://github.com/YafaRay/Core/commits/master
-* Blender Exporter (for Blender v2.7x): https://github.com/YafaRay/Blender-Exporter/commits/master
+* Blender Exporter (for Blender v2.82): https://github.com/YafaRay/Blender28-Exporter/commits/master
+
+YafaRay v3.4.1-alpha1 (2020-04-10) for Blender 2.82:
+----------------------------------------------------
+* Initial changes for Blender v2.82. VERY EXPERIMENTAL. Many things are not working, or not working correctly. `[Blender Exporter]`
+  - Nodes not implemented yet
+  - Therefore, no textures available at the moment
+  - World not working
+
 
 YafaRay v3.4.1a (2020-04-09) for Blender 2.79:
----------------------------------------------
+----------------------------------------------
 * A few documentation changes to clarify bug reporting and Blender v2.79 release download `[Blender Exporter]`
 
 

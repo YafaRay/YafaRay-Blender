@@ -50,7 +50,7 @@ class YAFA_V3_PT_lens(CameraButtonsPanel, Panel):
 
             layout.separator()
 
-            layout.label("Depth of Field:")
+            layout.label(text="Depth of Field:")
             layout.prop(camera, "aperture")
             split = layout.split()
             split.prop(camera, "dof_object", text="")
@@ -89,9 +89,10 @@ class YAFA_V3_PT_camera(CameraButtonsPanel, Panel):
 
         row = layout.row(align=True)
 
-        row.menu("CAMERA_MT_presets", text=bpy.types.CAMERA_MT_presets.bl_label)
-        row.operator("camera.preset_add", text="", icon="ZOOMIN")
-        row.operator("camera.preset_add", text="", icon="ZOOMOUT").remove_active = True
+        if False: #FIXME DAVID!
+            row.menu("CAMERA_PT_presets", text=bpy.types.CAMERA_PT_presets.bl_label)
+            row.operator("camera.preset_add", text="", icon="ADD")
+            row.operator("camera.preset_remove", text="", icon="REMOVE").remove_active = True
 
         layout.label(text="Sensor:")
 
@@ -126,12 +127,30 @@ class YAFA_V3_PT_camera_display(CameraButtonsPanel, Panel):
         col.prop(camera, "show_name", text="Name")
 
         col = split.column()
-        col.prop_menu_enum(camera, "show_guide")
-        col.prop(camera, "draw_size", text="Size")
+        #FIXME DAVID! col.prop_menu_enum(camera, "show_guide")
+        #FIXME DAVID! col.prop(camera, "draw_size", text="Size")
         col.prop(camera, "show_passepartout", text="Passepartout")
         sub = col.column()
         sub.active = camera.show_passepartout
         sub.prop(camera, "passepartout_alpha", text="Alpha", slider=True)
+
+
+
+classes = (
+    YAFA_V3_PT_lens,
+    YAFA_V3_PT_camera,
+    YAFA_V3_PT_camera_display,
+)
+
+def register():
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+
+def unregister():
+    from bpy.utils import unregister_class
+    for cls in reversed(classes):
+        unregister_class(cls)
 
 
 if __name__ == "__main__":  # only for live edit.

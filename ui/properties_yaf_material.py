@@ -20,11 +20,10 @@
 
 import bpy
 from ..ui.ior_values import ior_list
-from bpy.types import Panel, Menu
-from bl_ui.properties_material import (MaterialButtonsPanel,
-                                       active_node_mat,
-                                       check_material)
-
+from bpy.types import Panel, Menu, NodeTree, NodeSocket
+from bl_ui.properties_material import (MaterialButtonsPanel)
+from bpy_extras.node_utils import find_node_input
+import bpy
 
 def blend_one_draw(layout, mat):
     try:
@@ -42,14 +41,28 @@ def blend_two_draw(layout, mat):
     return True
 
 
-class YAFA_V3_MaterialTypePanel(MaterialButtonsPanel):
+class YAFA_V3_PT_MaterialTypePanel(MaterialButtonsPanel, Panel):
+    bl_label = ""
+    bl_options = {'HIDE_HEADER'}
     COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     @classmethod
     def poll(cls, context):
         yaf_mat = context.material
         engine = context.scene.render.engine
-        return check_material(yaf_mat) and (yaf_mat.mat_type in cls.material_type) and (engine in cls.COMPAT_ENGINES)
+        return yaf_mat and (yaf_mat.mat_type in cls.material_type) and (engine in cls.COMPAT_ENGINES)
+
+def panel_node_draw(layout, ntree, _output_type, input_name):
+    node = ntree.get_output_node('ALL')
+
+    if node:
+        input = find_node_input(node, input_name)
+        if input:
+            layout.template_node_view(ntree, node, input)
+        else:
+            layout.label(text="Incompatible output node")
+    else:
+        layout.label(text="No output node")
 
 
 class YAFA_V3_PT_context_material(MaterialButtonsPanel, Panel):
@@ -72,19 +85,20 @@ class YAFA_V3_PT_context_material(MaterialButtonsPanel, Panel):
         slot = context.material_slot
         space = context.space_data
 
+        if yaf_mat:
+            layout.prop(yaf_mat, "use_nodes", icon='NODETREE')
+            layout.separator()
+
         if ob:
             row = layout.row()
-            if bpy.app.version < (2, 65, 3 ):
-                row.template_list(ob, "material_slots", ob, "active_material_index", rows=2)
-            else:
-                row.template_list("MATERIAL_UL_matslots", "", ob, "material_slots", ob, "active_material_index", rows=2)
+            row.template_list("MATERIAL_UL_matslots", "", ob, "material_slots", ob, "active_material_index", rows=2)
 
             col = row.column(align=True)
-            col.operator("object.material_slot_add", icon='ZOOMIN', text="")
-            col.operator("object.material_slot_remove", icon='ZOOMOUT', text="")
+            col.operator("object.material_slot_add", icon='ADD', text="")
+            col.operator("object.material_slot_remove", icon='REMOVE', text="")
 
             # TODO: code own operators to copy yaf material settings...
-            col.menu("MATERIAL_MT_specials", icon='DOWNARROW_HLT', text="")
+            col.menu("MATERIAL_MT_context_menu", icon='DOWNARROW_HLT', text="")
 
             if ob.mode == 'EDIT':
                 row = layout.row(align=True)
@@ -92,7 +106,7 @@ class YAFA_V3_PT_context_material(MaterialButtonsPanel, Panel):
                 row.operator("object.material_slot_select", text="Select")
                 row.operator("object.material_slot_deselect", text="Deselect")
 
-        split = layout.split(percentage=0.75)
+        split = layout.split(factor=0.75)
 
         if ob:
             split.template_ID(ob, "active_material", new="material.new")
@@ -131,25 +145,25 @@ class YAFA_V3_PT_preview_controls(MaterialButtonsPanel, Panel):
     def draw(self, context):
         if context.scene.yafaray.preview.enable:
             layout = self.layout
-            yaf_mat = active_node_mat(context.material)
+            yaf_mat = context.material
             split = layout.split() 
             col = split.column()
-            col.label("Preview dynamic rotation/zoom")
+            col.label(text="Preview dynamic rotation/zoom")
             split = layout.split() 
             col = split.column()
             col.prop(context.scene.yafaray.preview, "camRot", text="")
             col = split.column()
             row = col.row()
-            row.operator("preview.camzoomout", text='Zoom Out', icon='ZOOM_OUT')
+            #FIXME DAVID! row.operator("preview.camzoomout", text='Zoom Out', icon='ZOOM_OUT')
             col2 = row.column()
-            col2.operator("preview.camzoomin", text='Zoom In', icon='ZOOM_IN')
+            #FIXME DAVID! col2.operator("preview.camzoomin", text='Zoom In', icon='ZOOM_IN')
             row = col.row()
-            row.label("")
+            row.label(text="")
             row = col.row()
-            row.operator("preview.camrotreset", text='Reset dynamic rotation/zoom')
+            #FIXME DAVID! row.operator("preview.camrotreset", text='Reset dynamic rotation/zoom')
             split = layout.split() 
             col = split.column()
-            col.label("Preview object control")
+            col.label(text="Preview object control")
             split = layout.split()
             col = split.column()
             col.prop(context.scene.yafaray.preview, "objScale", text="Scale")
@@ -159,26 +173,26 @@ class YAFA_V3_PT_preview_controls(MaterialButtonsPanel, Panel):
             col.prop_search(context.scene.yafaray.preview, "previewObject", bpy.data, "objects", text="")
             split = layout.split() 
             col = split.column()
-            col.label("Preview lights control")
+            col.label(text="Preview lights control")
             col = split.column()
             col.prop(context.scene.yafaray.preview, "lightRotZ", text="lights Z Rotation")
             split = layout.split()
             col = split.column()
-            col.label("Key light:")
+            col.label(text="Key light:")
             col = split.column()
             col.prop(context.scene.yafaray.preview, "keyLightPowerFactor", text="Power factor")
             col = split.column()
             col.prop(context.scene.yafaray.preview, "keyLightColor", text="")
             split = layout.split() 
             col = split.column()
-            col.label("Fill lights:")
+            col.label(text="Fill lights:")
             col = split.column()
             col.prop(context.scene.yafaray.preview, "fillLightPowerFactor", text="Power factor")
             col = split.column()
             col.prop(context.scene.yafaray.preview, "fillLightColor", text="")
             split = layout.split() 
             col = split.column()
-            col.label("Preview scene control")
+            col.label(text="Preview scene control")
             split = layout.split()
             col = split.column()
             col.prop(context.scene.yafaray.preview, "previewRayDepth", text="Ray Depth")
@@ -226,14 +240,14 @@ class YAFA_V3_MT_presets_ior_list(Menu):
             sl.menu(sm.bl_idname)
 
 
-class YAFA_V3_PT_shinydiffuse_diffuse(YAFA_V3_MaterialTypePanel, Panel):
+class YAFA_V3_PT_shinydiffuse_diffuse(YAFA_V3_PT_MaterialTypePanel):
     bl_label = "Diffuse reflection"
     COMPAT_ENGINES = {'YAFA_V3_RENDER'}
     material_type = 'shinydiffusemat'
 
     def draw(self, context):
         layout = self.layout
-        yaf_mat = active_node_mat(context.material)
+        yaf_mat = context.material
 
         split = layout.split()
         col = split.column()
@@ -261,14 +275,14 @@ class YAFA_V3_PT_shinydiffuse_diffuse(YAFA_V3_MaterialTypePanel, Panel):
         box.row().prop(yaf_mat, "transmit_filter", slider=True)
 
 
-class YAFA_V3_PT_shinydiffuse_specular(YAFA_V3_MaterialTypePanel, Panel):
+class YAFA_V3_PT_shinydiffuse_specular(YAFA_V3_PT_MaterialTypePanel):
     bl_label = "Specular reflection"
     COMPAT_ENGINES = {'YAFA_V3_RENDER'}
     material_type = 'shinydiffusemat'
 
     def draw(self, context):
         layout = self.layout
-        yaf_mat = active_node_mat(context.material)
+        yaf_mat = context.material
 
         split = layout.split()
         col = split.column()
@@ -283,14 +297,14 @@ class YAFA_V3_PT_shinydiffuse_specular(YAFA_V3_MaterialTypePanel, Panel):
         layout.row().prop(yaf_mat, "specular_reflect", slider=True)
 
 
-class YAFA_V3_PT_glossy_diffuse(YAFA_V3_MaterialTypePanel, Panel):
+class YAFA_V3_PT_glossy_diffuse(YAFA_V3_PT_MaterialTypePanel):
     bl_label = "Diffuse reflection"
     COMPAT_ENGINES = {'YAFA_V3_RENDER'}
     material_type = 'glossy', 'coated_glossy'
 
     def draw(self, context):
         layout = self.layout
-        yaf_mat = active_node_mat(context.material)
+        yaf_mat = context.material
 
         split = layout.split()
         col = split.column()
@@ -306,14 +320,14 @@ class YAFA_V3_PT_glossy_diffuse(YAFA_V3_MaterialTypePanel, Panel):
         layout.row().prop(yaf_mat, "diffuse_reflect", slider=True)
 
 
-class YAFA_V3_PT_glossy_specular(YAFA_V3_MaterialTypePanel, Panel):
+class YAFA_V3_PT_glossy_specular(YAFA_V3_PT_MaterialTypePanel):
     bl_label = "Specular reflection"
     COMPAT_ENGINES = {'YAFA_V3_RENDER'}
     material_type = 'glossy', 'coated_glossy'
 
     def draw(self, context):
         layout = self.layout
-        yaf_mat = active_node_mat(context.material)
+        yaf_mat = context.material
 
         split = layout.split()
         col = split.column()
@@ -347,14 +361,14 @@ class YAFA_V3_PT_glossy_specular(YAFA_V3_MaterialTypePanel, Panel):
             layout.row().prop(yaf_mat, "specular_reflect", slider=True)
 
 
-class YAFA_V3_PT_glass_real(YAFA_V3_MaterialTypePanel, Panel):
+class YAFA_V3_PT_glass_real(YAFA_V3_PT_MaterialTypePanel):
     bl_label = "Real glass settings"
     COMPAT_ENGINES = {'YAFA_V3_RENDER'}
     material_type = 'glass', 'rough_glass'
 
     def draw(self, context):
         layout = self.layout
-        yaf_mat = active_node_mat(context.material)
+        yaf_mat = context.material
 
         layout.label(text="Refraction and Reflections:")
         split = layout.split()
@@ -379,14 +393,14 @@ class YAFA_V3_PT_glass_real(YAFA_V3_MaterialTypePanel, Panel):
             box.row().prop(yaf_mat, "refr_roughness", slider=True)
         
 
-class YAFA_V3_PT_glass_fake(YAFA_V3_MaterialTypePanel, Panel):
+class YAFA_V3_PT_glass_fake(YAFA_V3_PT_MaterialTypePanel):
     bl_label = "Fake glass settings"
     COMPAT_ENGINES = {'YAFA_V3_RENDER'}
     material_type = 'glass', 'rough_glass'
 
     def draw(self, context):
         layout = self.layout
-        yaf_mat = active_node_mat(context.material)
+        yaf_mat = context.material
 
         split = layout.split()
         col = split.column()
@@ -397,14 +411,14 @@ class YAFA_V3_PT_glass_fake(YAFA_V3_MaterialTypePanel, Panel):
         layout.row().prop(yaf_mat, "fake_shadows")
 
 
-class YAFA_V3_PT_blend_(YAFA_V3_MaterialTypePanel, Panel):
+class YAFA_V3_PT_blend(YAFA_V3_PT_MaterialTypePanel):
     bl_label = "Blend material settings"
     COMPAT_ENGINES = {'YAFA_V3_RENDER'}
     material_type = 'blend'
 
     def draw(self, context):
         layout = self.layout
-        yaf_mat = active_node_mat(context.material)
+        yaf_mat = context.material
 
         split = layout.split()
         col = split.column()
@@ -427,7 +441,7 @@ class YAFA_V3_PT_ZWireframe(MaterialButtonsPanel, Panel):
     
     def draw(self, context):
         layout = self.layout
-        yaf_mat = active_node_mat(context.material)
+        yaf_mat = context.material
 
         split = layout.split()
         col = split.column()
@@ -445,7 +459,7 @@ class YAFA_V3_PT_ZAdvanced(MaterialButtonsPanel, Panel):
     
     def draw(self, context):
         layout = self.layout
-        yaf_mat = active_node_mat(context.material)
+        yaf_mat = context.material
 
         layout.prop(yaf_mat, "pass_index")
 
@@ -477,6 +491,35 @@ class YAFA_V3_PT_ZAdvanced(MaterialButtonsPanel, Panel):
         col = split.column()
         layout.row().prop(yaf_mat, "samplingfactor")
 
+
+
+classes = (
+    YAFA_V3_PT_context_material,
+    YAFA_V3_MATERIAL_PT_preview,
+    YAFA_V3_PT_preview_controls,
+    YAFA_V3_MT_presets_ior_list,
+    YAFA_V3_PT_shinydiffuse_diffuse,
+    YAFA_V3_PT_shinydiffuse_specular,
+    YAFA_V3_PT_glossy_diffuse,
+    YAFA_V3_PT_glossy_specular,
+    YAFA_V3_PT_glass_real,
+    YAFA_V3_PT_glass_fake,
+    YAFA_V3_PT_blend,
+    YAFA_V3_PT_ZWireframe,
+    YAFA_V3_PT_ZAdvanced,
+)
+
+def register():
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+
+def unregister():
+    from bpy.utils import unregister_class
+    for cls in reversed(classes):
+        unregister_class(cls)
+
+        
 if __name__ == "__main__":  # only for live edit.
     import bpy
     bpy.utils.register_module(__name__)

@@ -19,12 +19,12 @@
 # <pep8 compliant>
 
 from bpy.types import Panel
-from bl_ui.properties_data_lamp import DataButtonsPanel
+from bl_ui.properties_data_light import DataButtonsPanel
 
-# Inherit Lamp data block
-from bl_ui.properties_data_lamp import DATA_PT_context_lamp
-DATA_PT_context_lamp.COMPAT_ENGINES.add('YAFA_V3_RENDER')
-del DATA_PT_context_lamp    
+# Inherit Light data block
+from bl_ui.properties_data_light import DATA_PT_context_light
+DATA_PT_context_light.COMPAT_ENGINES.add('YAFA_V3_RENDER')
+del DATA_PT_context_light    
 
 class YAFA_V3_PT_preview(Panel):
     bl_space_type = 'PROPERTIES'
@@ -36,71 +36,71 @@ class YAFA_V3_PT_preview(Panel):
     @classmethod
     def poll(cls, context):
         engine = context.scene.render.engine
-        return context.lamp and (engine in cls.COMPAT_ENGINES)
+        return context.light and (engine in cls.COMPAT_ENGINES)
 
     def draw(self, context):
-        self.layout.template_preview(context.lamp)
+        self.layout.template_preview(context.light)
 
 
-class YAFA_V3_PT_lamp(DataButtonsPanel, Panel):
-    bl_label = "Lamp"
+class YAFA_V3_PT_light(DataButtonsPanel, Panel):
+    bl_label = "Light"
     COMPAT_ENGINES = {'YAFA_V3_RENDER'}
 
     def draw(self, context):
         layout = self.layout
 
-        lamp = context.lamp
+        light = context.light
 
-        layout.prop(lamp, "lamp_type", expand=True)
-        layout.prop(lamp, "light_enabled")
+        layout.prop(light, "light_type", expand=True)
+        layout.prop(light, "light_enabled")
 
-        if lamp.lamp_type == "area":
-            layout.prop(lamp, "color")
-            layout.prop(lamp, "yaf_energy", text="Power")
-            layout.prop(lamp, "yaf_samples")
-            layout.prop(lamp, "create_geometry")
+        if light.light_type == "area":
+            layout.prop(light, "color")
+            layout.prop(light, "yaf_energy", text="Power")
+            layout.prop(light, "yaf_samples")
+            layout.prop(light, "create_geometry")
 
-        elif lamp.lamp_type == "spot":
-            layout.prop(lamp, "color")
-            layout.prop(lamp, "yaf_energy", text="Power")
-            layout.prop(lamp, "spot_soft_shadows", toggle=True)
+        elif light.light_type == "spot":
+            layout.prop(light, "color")
+            layout.prop(light, "yaf_energy", text="Power")
+            layout.prop(light, "spot_soft_shadows", toggle=True)
 
-            if lamp.spot_soft_shadows:
+            if light.spot_soft_shadows:
                 box = layout.box()
-                box.prop(lamp, "yaf_samples")
-                box.prop(lamp, "shadow_fuzzyness")
+                box.prop(light, "yaf_samples")
+                box.prop(light, "shadow_fuzzyness")
 
-        elif lamp.lamp_type == "sun":
-            layout.prop(lamp, "color")
-            layout.prop(lamp, "yaf_energy", text="Power")
-            layout.prop(lamp, "yaf_samples")
-            layout.prop(lamp, "angle")
+        elif light.light_type == "sun":
+            layout.prop(light, "color")
+            layout.prop(light, "yaf_energy", text="Power")
+            layout.prop(light, "yaf_samples")
+            layout.prop(light, "angle")
 
-        elif lamp.lamp_type == "directional":
-            layout.prop(lamp, "color")
-            layout.prop(lamp, "yaf_energy", text="Power")
-            layout.prop(lamp, "infinite")
-            if not lamp.infinite:
-                layout.prop(lamp, "shadow_soft_size", text="Radius of directional cone")
+        elif light.light_type == "directional":
+            layout.prop(light, "color")
+            layout.prop(light, "yaf_energy", text="Power")
+            layout.prop(light, "infinite")
+            if not light.infinite:
+                layout.prop(light, "shadow_soft_size", text="Radius of directional cone")
 
-        elif lamp.lamp_type == "point":
-            layout.prop(lamp, "color")
-            layout.prop(lamp, "yaf_energy", text="Power")
-            if hasattr(lamp, "use_sphere"):
-                layout.prop(lamp, "use_sphere", toggle=True)
-                if lamp.use_sphere:
+        elif light.light_type == "point":
+            layout.prop(light, "color")
+            layout.prop(light, "yaf_energy", text="Power")
+            if hasattr(light, "use_sphere"):
+                layout.prop(light, "use_sphere", toggle=True)
+                if light.use_sphere:
                     box = layout.box()
-                    box.prop(lamp, "yaf_sphere_radius")
-                    box.prop(lamp, "yaf_samples")
-                    box.prop(lamp, "create_geometry")
+                    box.prop(light, "yaf_sphere_radius")
+                    box.prop(light, "yaf_samples")
+                    box.prop(light, "create_geometry")
 
-        elif lamp.lamp_type == "ies":
-            layout.prop(lamp, "color")
-            layout.prop(lamp, "yaf_energy", text="Power")
-            layout.prop(lamp, "ies_file")
-            layout.prop(lamp, "ies_soft_shadows", toggle=True)
-            if lamp.ies_soft_shadows:
-                layout.box().prop(lamp, "yaf_samples")
+        elif light.light_type == "ies":
+            layout.prop(light, "color")
+            layout.prop(light, "yaf_energy", text="Power")
+            layout.prop(light, "ies_file")
+            layout.prop(light, "ies_soft_shadows", toggle=True)
+            if light.ies_soft_shadows:
+                layout.box().prop(light, "yaf_samples")
 
 # povman test
 class YAFA_V3_PT_area(DataButtonsPanel, Panel):
@@ -109,24 +109,24 @@ class YAFA_V3_PT_area(DataButtonsPanel, Panel):
 
     @classmethod
     def poll(cls, context):
-        lamp = context.lamp
+        light = context.light
         engine = context.scene.render.engine
-        return (lamp and lamp.type == 'AREA') and (engine in cls.COMPAT_ENGINES)
+        return (light and light.type == 'AREA') and (engine in cls.COMPAT_ENGINES)
 
     def draw(self, context):
         layout = self.layout
 
-        lamp = context.lamp
+        light = context.light
 
         col = layout.column()
-        col.row().prop(lamp, "shape", expand=True)
+        col.row().prop(light, "shape", expand=True)
         sub = col.row(align=True)
 
-        if lamp.shape == 'SQUARE':
-            sub.prop(lamp, "size")
-        elif lamp.shape == 'RECTANGLE':
-            sub.prop(lamp, "size", text="Size X")
-            sub.prop(lamp, "size_y", text="Size Y")
+        if light.shape == 'SQUARE':
+            sub.prop(light, "size")
+        elif light.shape == 'RECTANGLE':
+            sub.prop(light, "size", text="Size X")
+            sub.prop(light, "size_y", text="Size Y")
 # end
 
 class YAFA_V3_PT_spot(DataButtonsPanel, Panel):
@@ -135,53 +135,72 @@ class YAFA_V3_PT_spot(DataButtonsPanel, Panel):
 
     @classmethod
     def poll(cls, context):
-        lamp = context.lamp
+        light = context.light
         engine = context.scene.render.engine
-        return (lamp and lamp.lamp_type == "spot") and (engine in cls.COMPAT_ENGINES)
+        return (light and light.light_type == "spot") and (engine in cls.COMPAT_ENGINES)
 
     def draw(self, context):
         layout = self.layout
-        lamp = context.lamp
+        light = context.light
 
         split = layout.split()
 
         col = split.column()
-        col.prop(lamp, "spot_size", text="Size")
-        col.prop(lamp, "yaf_show_dist_clip")
-        if lamp.yaf_show_dist_clip:
-            col.prop(lamp, "distance")
-            col.prop(lamp, "shadow_buffer_clip_start", text="Clip Start")
+        col.prop(light, "spot_size", text="Size")
+        col.prop(light, "yaf_show_dist_clip")
+        if light.yaf_show_dist_clip:
+            col.prop(light, "distance")
+            col.prop(light, "shadow_buffer_clip_start", text="Clip Start")
 
         col = split.column()
 
-        col.prop(lamp, "spot_blend", text="Blend", slider=True)
-        col.prop(lamp, "show_cone")
-        if lamp.yaf_show_dist_clip:
+        col.prop(light, "spot_blend", text="Blend", slider=True)
+        col.prop(light, "show_cone")
+        if light.yaf_show_dist_clip:
             col.label(text="")
-            col.prop(lamp, "shadow_buffer_clip_end", text=" Clip End")
+            col.prop(light, "shadow_buffer_clip_end", text=" Clip End")
 
-class YAFA_V3_PT_lamp_advanced(DataButtonsPanel, Panel):
+class YAFA_V3_PT_light_advanced(DataButtonsPanel, Panel):
     bl_label = "Advanced settings"
     bl_options = {'DEFAULT_CLOSED'}
     COMPAT_ENGINES = {'YAFA_V3_RENDER'}
     
     def draw(self, context):
         layout = self.layout
-        lamp = context.lamp
+        light = context.light
 
         split = layout.split()
         col = split.column()
-        col.row().prop(lamp, "cast_shadows")
+        col.row().prop(light, "cast_shadows")
         col = split.column()
-        col.row().prop(lamp, "photon_only")
+        col.row().prop(light, "photon_only")
 
         split = layout.split()
         col = split.column()
-        col.row().prop(lamp, "caustic_photons")
+        col.row().prop(light, "caustic_photons")
         col = split.column()
-        col.row().prop(lamp, "diffuse_photons")
+        col.row().prop(light, "diffuse_photons")
 
 
+classes = (
+    YAFA_V3_PT_preview,
+    YAFA_V3_PT_light,
+    YAFA_V3_PT_area,
+    YAFA_V3_PT_spot,
+    YAFA_V3_PT_light_advanced,
+)
+
+def register():
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+
+def unregister():
+    from bpy.utils import unregister_class
+    for cls in reversed(classes):
+        unregister_class(cls)
+
+        
 if __name__ == "__main__":  # only for live edit.
     import bpy
     bpy.utils.register_module(__name__)

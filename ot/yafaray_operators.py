@@ -26,7 +26,7 @@ from .. import yaf_global_vars
 class OBJECT_OT_get_position(Operator):
     bl_label = "From( get position )"
     bl_idname = "world.get_position"
-    bl_description = "Get the position of the sun from the selected lamp location"
+    bl_description = "Get the position of the sun from the selected light location"
 
     def execute(self, context):
         warning_message = sunPosAngle(mode="get", val="position")
@@ -40,7 +40,7 @@ class OBJECT_OT_get_position(Operator):
 class OBJECT_OT_get_angle(Operator):
     bl_label = "From( get angle )"
     bl_idname = "world.get_angle"
-    bl_description = "Get the position of the sun from selected lamp angle"
+    bl_description = "Get the position of the sun from selected light angle"
 
     def execute(self, context):
         warning_message = sunPosAngle(mode="get", val="angle")
@@ -54,7 +54,7 @@ class OBJECT_OT_get_angle(Operator):
 class OBJECT_OT_update_sun(Operator):
     bl_label = "From( update sun )"
     bl_idname = "world.update_sun"
-    bl_description = "Update the position and angle of selected lamp in 3D View according to GUI values"
+    bl_description = "Update the position and angle of selected light in 3D View according to GUI values"
 
     def execute(self, context):
         warning_message = sunPosAngle(mode="update")
@@ -70,10 +70,10 @@ def sunPosAngle(mode="get", val="position"):
     scene = bpy.context.scene
     world = scene.world
 
-    if active_object and active_object.type == "LAMP":
+    if active_object and active_object.type == "LIGHT":
 
         if mode == "get":
-            # get the position of the sun from selected lamp 'location'
+            # get the position of the sun from selected light 'location'
             if val == "position":
                 location = mathutils.Vector(active_object.location)
 
@@ -110,7 +110,7 @@ def sunPosAngle(mode="get", val="position"):
             return
 
     else:
-        return "No selected LAMP object in the scene!"
+        return "No selected LIGHT object in the scene!"
 
 
 def checkSceneLights():
@@ -124,8 +124,8 @@ def checkSceneLights():
         return True
     # if above is true, this 'for' is not used
     for sceneObj in scene.objects:
-        if not sceneObj.hide_render and sceneObj.is_visible(scene): # check lamp, meshlight or portal light object
-            if sceneObj.type == "LAMP" or sceneObj.ml_enable or sceneObj.bgp_enable:
+        if not sceneObj.hide_render: #FIXME DAVID and sceneObj.is_visible(scene): # check light, meshlight or portal light object
+            if sceneObj.type == "LIGHT" or sceneObj.ml_enable or sceneObj.bgp_enable:
                 haveLights = True
                 break
     #
@@ -219,8 +219,8 @@ class RENDER_OT_render_still(Operator):
 class YAF_OT_presets_ior_list(Operator):
     bl_idname = "material.set_ior_preset"
     bl_label = "IOR presets"
-    index = bpy.props.FloatProperty()
-    name = bpy.props.StringProperty()
+    index : bpy.props.FloatProperty()
+    name : bpy.props.StringProperty()
 
     @classmethod
     def poll(cls, context):
@@ -232,3 +232,28 @@ class YAF_OT_presets_ior_list(Operator):
         bpy.types.YAFA_V3_MT_presets_ior_list.bl_label = self.name
         yaf_mat.IOR_refraction = self.index
         return {'FINISHED'}
+
+
+classes = (
+    OBJECT_OT_get_position,
+    OBJECT_OT_get_angle,
+    RENDER_OT_render_view,
+    RENDER_OT_render_animation,
+    RENDER_OT_render_still,
+    YAF_OT_presets_ior_list,
+)
+
+def register():
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+
+def unregister():
+    from bpy.utils import unregister_class
+    for cls in reversed(classes):
+        unregister_class(cls)
+
+
+if __name__ == "__main__":  # only for live edit.
+    import bpy
+    bpy.utils.register_module(__name__)

@@ -27,7 +27,41 @@ from . import properties_yaf_strand
 from . import properties_yaf_object
 from . import properties_yaf_light
 from . import properties_yaf_scene
-from . import properties_yaf_layer_passes
+from . import properties_yaf_general_settings
+from . import properties_yaf_integrator
+from . import properties_yaf_AA_settings
+
+#from . import properties_yaf_layer_passes #FIXME DAVID
+
+modules = (
+    properties_yaf_general_settings,
+    properties_yaf_AA_settings,
+    properties_yaf_integrator,
+    properties_yaf_render,
+    properties_yaf_camera,
+    properties_yaf_material,
+    properties_yaf_texture,
+    properties_yaf_world,
+    properties_yaf_strand,
+    properties_yaf_object,
+    properties_yaf_light,
+    properties_yaf_scene,
+    #properties_yaf_layer_passes #FIXME DAVID,
+)
+
+def register():
+    for module in modules:
+        module.register()
+
+def unregister():
+    for module in reversed(modules):
+        module.unregister()
+
+
+if __name__ == "__main__":  # only for live edit.
+    import bpy
+    bpy.utils.register_module(__name__)
+
 
 from bl_ui import properties_object as properties_object
 for member in dir(properties_object):  # add all "object" panels from blender
@@ -178,17 +212,18 @@ for member in dir(properties_physics_rigidbody_constraint):  # add all "speaker 
         pass
 del properties_physics_rigidbody_constraint
 
-from bl_ui import properties_physics_smoke as properties_physics_smoke
-for member in dir(properties_physics_smoke):  # add all "speaker (SOC 2011, pepper branch)" panels from blender
-    subclass = getattr(properties_physics_smoke, member)
-    try:
-        if hasattr(subclass, 'COMPAT_ENGINES'):
-            subclass.COMPAT_ENGINES.add('YAFA_V3_RENDER')
-        else:
-            subclass.COMPAT_ENGINES = {'YAFA_V3_RENDER'}
-    except:
-        pass
-del properties_physics_smoke
+if False: #FIXME DAVID!
+    from bl_ui import properties_physics_smoke as properties_physics_smoke
+    for member in dir(properties_physics_smoke):  # add all "speaker (SOC 2011, pepper branch)" panels from blender
+        subclass = getattr(properties_physics_smoke, member)
+        try:
+            if hasattr(subclass, 'COMPAT_ENGINES'):
+                subclass.COMPAT_ENGINES.add('YAFA_V3_RENDER')
+            else:
+                subclass.COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+        except:
+            pass
+    del properties_physics_smoke
 
 from bl_ui import properties_physics_softbody as properties_physics_softbody
 for member in dir(properties_physics_softbody):  # add all "speaker (SOC 2011, pepper branch)" panels from blender

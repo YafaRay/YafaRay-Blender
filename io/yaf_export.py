@@ -45,6 +45,9 @@ from pprint import pprint
 from pprint import pformat
 from .. import yaf_global_vars
 
+#from inspect import getmembers
+#from pprint import pprint
+
 class YafaRayRenderEngine(bpy.types.RenderEngine):
     bl_idname = YAF_ID_NAME
     bl_use_preview = True
@@ -75,17 +78,18 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         self.yi.loadPlugins(PLUGIN_PATH)
         self.yaf_object = yafObject(self.yi, self.materialMap, self.is_preview)
-        self.yaf_lamp = yafLight(self.yi, self.is_preview)
+        self.yaf_light = yafLight(self.yi, self.is_preview)
         self.yaf_world = yafWorld(self.yi)
         self.yaf_integrator = yafIntegrator(self.yi)
         self.yaf_texture = yafTexture(self.yi)
         self.yaf_material = yafMaterial(self.yi, self.materialMap, self.yaf_texture.loadedTextures)
 
     def exportScene(self):
-        for obj in self.scene.objects:
+        for inst in self.depsgraph.object_instances:
+            obj = inst.object
             self.exportTexture(obj)
         self.exportMaterials()
-        self.yaf_object.setScene(self.scene)
+        self.yaf_object.setDepsgraph(self.depsgraph)
         self.exportObjects()
         self.yaf_object.createCameras()
         
@@ -95,6 +99,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.yaf_world.exportWorld(self.scene, self.is_preview)
 
     def exportTexture(self, obj):
+        return None #FIXME DAVID!
         # First export the textures of the materials type 'blend'
         for mat_slot in [m for m in obj.material_slots if m.material is not None]:
             if mat_slot.material.mat_type == 'blend':
@@ -126,28 +131,32 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.yaf_texture.writeTexture(self.scene, tex.texture)
 
     def object_on_visible_layer(self, obj):
+        return True #FIXME DAVID!
         obj_visible = False
         for layer_visible in [object_layers and scene_layers for object_layers, scene_layers in zip(obj.layers, self.scene.layers)]:
             obj_visible |= layer_visible
         return obj_visible
 
     def exportObjects(self):
-        self.yi.printInfo("Exporter: Processing Lamps...")
+        self.yi.printInfo("Exporter: Processing Lights...")
 
-        # export only visible lamps
-        for obj in [o for o in self.scene.objects if not o.hide_render and o.is_visible(self.scene) and o.type == 'LAMP']:
-            if obj.is_duplicator:
+        # export only visible lights
+        for inst in self.depsgraph.object_instances:
+            obj = inst.object
+            if obj.type != 'LIGHT' or obj.hide_get() or obj.hide_render or obj.hide_viewport:
+                continue
+            if obj.is_instancer:
                 obj.create_dupli_list(self.scene)
                 for obj_dupli in obj.dupli_list:
                     matrix = obj_dupli.matrix.copy()
-                    self.yaf_lamp.createLight(self.yi, obj_dupli.object, matrix)
+                    self.yaf_light.createLight(self.yi, obj_dupli.object, matrix)
 
                 if obj.dupli_list:
                     obj.free_dupli_list()
             else:
-                if obj.parent and obj.parent.is_duplicator:
+                if obj.parent and obj.parent.is_instancer:
                     continue
-                self.yaf_lamp.createLight(self.yi, obj, obj.matrix_world)
+                self.yaf_light.createLight(self.yi, obj, obj.matrix_world)
 
         self.yi.printInfo("Exporter: Processing Geometry...")
 
@@ -155,10 +164,16 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         baseIds = {}
         dupBaseIds = {}
 
-        for obj in [o for o in self.scene.objects if not o.hide_render and (o.is_visible(self.scene) or o.hide) \
-        and self.object_on_visible_layer(o) and (o.type in {'MESH', 'SURFACE', 'CURVE', 'FONT', 'EMPTY'})]:
+
+        for inst in self.depsgraph.object_instances:
+            obj = inst.object
+            #pprint(getmembers(obj))
+            #print("local_view_get", obj.local_view_get())
+            if obj.type not in {'MESH', 'SURFACE', 'CURVE', 'FONT', 'EMPTY'} or obj.hide_render or obj.hide_viewport:
+                continue
+            
             # Exporting dupliObjects as instances, also check for dupliObject type 'EMPTY' and don't export them as geometry
-            if obj.is_duplicator:
+            if obj.is_instancer:
                 self.yi.printVerbose("Processing duplis for: {0}".format(obj.name))
                 obj.dupli_list_create(self.scene)
 
@@ -260,7 +275,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         ymat = self.yi.createMaterial("defaultMat")
         self.materialMap["default"] = ymat
 
-        for obj in self.scene.objects:
+        for inst in self.depsgraph.object_instances:
+            obj = inst.object
             for mat_slot in obj.material_slots:
                 if mat_slot.material not in self.materials:
                     self.exportMaterial(mat_slot.material)
@@ -316,11 +332,13 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         return outputFile, output, filetype
 
     # callback to export the scene
-    def update(self, data, scene):
+    def update(self, data, depsgraph):
+        scene = depsgraph.scene
         self.update_stats("", "Setting up render")
         if not self.is_preview:
             scene.frame_set(scene.frame_current)
 
+        self.depsgraph = depsgraph
         self.scene = scene
         render = scene.render
 
@@ -348,10 +366,10 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         if scene.gs_type_render == "file":
             self.setInterface(yafaray_v3_interface.yafrayInterface_t())
             self.yi.startScene()
-            yaf_scene.exportRenderPassesSettings(self.yi, self.scene)
+            yaf_scene.exportRenderPassesSettings(self.yi, self.depsgraph)
             self.yi.setupRenderPasses()
             self.yi.setInteractive(False)
-            yaf_scene.setLoggingAndBadgeSettings(self.yi, self.scene)
+            yaf_scene.setLoggingAndBadgeSettings(self.yi, self.depsgraph)
             self.yi.setLoggingAndBadgeSettings()
             self.yi.setInputColorSpace("LinearRGB", 1.0)    #When rendering into Blender, color picker floating point data is already linear (linearized by Blender)
             self.outputFile, self.output, self.file_type = self.decideOutputFileName(fp, scene.img_output)
@@ -375,10 +393,10 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.outputFile, self.output, self.file_type = self.decideOutputFileName(fp, 'XML')
             self.yi.setOutfile(self.outputFile)
             self.yi.startScene()
-            yaf_scene.exportRenderPassesSettings(self.yi, self.scene)
+            yaf_scene.exportRenderPassesSettings(self.yi, self.depsgraph)
             self.yi.setupRenderPasses()
             self.yi.setInteractive(False)
-            yaf_scene.setLoggingAndBadgeSettings(self.yi, self.scene)
+            yaf_scene.setLoggingAndBadgeSettings(self.yi, self.depsgraph)
             self.yi.setLoggingAndBadgeSettings()
                         
             input_color_values_color_space = "sRGB"
@@ -403,10 +421,10 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         else:
             self.setInterface(yafaray_v3_interface.yafrayInterface_t())
             self.yi.startScene()
-            yaf_scene.exportRenderPassesSettings(self.yi, self.scene)
+            yaf_scene.exportRenderPassesSettings(self.yi, self.depsgraph)
             self.yi.setupRenderPasses()
             self.yi.setInteractive(True)
-            yaf_scene.setLoggingAndBadgeSettings(self.yi, self.scene)
+            yaf_scene.setLoggingAndBadgeSettings(self.yi, self.depsgraph)
             self.yi.setLoggingAndBadgeSettings()
             self.yi.setInputColorSpace("LinearRGB", 1.0)    #When rendering into Blender, color picker floating point data is already linear (linearized by Blender)
 
@@ -433,10 +451,11 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.yaf_integrator.exportVolumeIntegrator(self.scene)
 
         # must be called last as the params from here will be used by render()
-        yaf_scene.exportRenderSettings(self.yi, self.scene)
+        yaf_scene.exportRenderSettings(self.yi, self.depsgraph)
 
     # callback to render scene
-    def render(self, scene):
+    def render(self, depsgraph):
+        scene = depsgraph.scene
         self.bl_use_postprocess = False
         self.scene = scene
 
@@ -445,7 +464,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.update_stats("YafaRay Rendering:", "Rendering to {0}".format(self.outputFile))
             self.yi.render(self.co)
             result = self.begin_result(0, 0, self.resX, self.resY)
-            lay = result.layers[0] #if bpy.app.version < (2, 74, 4 ) else result.layers[0].passes[0] #FIXME?
+            lay = result.layers[0]
 
             lay.load_from_file(self.outputFile)
             #lay.passes["Depth"].load_from_file("{0} (Depth).{1}".format(self.output, self.file_type)) #FIXME? Unfortunately I cannot find a way to load the exported images back to the appropiate passes in Blender. Blender probably needs to improve their API to allow per-pass loading of files. Also, Blender does not allow opening multi layer EXR files with this function.
@@ -478,43 +497,28 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
                 try:
                     l = res.layers[0]
-                    if bpy.app.version < (2, 74, 4 ):
+                    if scene.render.use_multiview:
+                        #due to Blender limitations while drawing the tiles, I cannot use the view names properly and I have to repeat the currently drawing tile into all views so it shows correctly. Maybe there is a better way?
+                        for view_number,view in enumerate(scene.render.views):
+                            if view.use and not (scene.render.views_format == "STEREO_3D" and view.name != "left" and view.name != "right"):
+                                view_suffix = '.'+scene.render.views[view_number].name
+                            
+                                for tile in tiles:
+                                    view_name, tile_name, tile_bitmap = tile
+                                    try:
+                                        l.passes.find_by_name(tile_name, view.name).rect = tile_bitmap
+                                    except:
+                                        print("Exporter: Exception while rendering in drawAreaCallback function:")
+                                        traceback.print_exc()
+                                    
+                    else:
                         for tile in tiles:
                             view_name, tile_name, tile_bitmap = tile
                             try:
-                                if tile_name == "Combined":
-                                    l.rect = tile_bitmap
-                                else:
-                                    l.passes[tile_name].rect = tile_bitmap
+                                l.passes[tile_name].rect = tile_bitmap
                             except:
                                 print("Exporter: Exception while rendering in drawAreaCallback function:")
                                 traceback.print_exc()
-                    else:
-                        if scene.render.use_multiview:
-                            #due to Blender limitations while drawing the tiles, I cannot use the view names properly and I have to repeat the currently drawing tile into all views so it shows correctly. Maybe there is a better way?
-                            for view_number,view in enumerate(scene.render.views):
-                                if view.use and not (scene.render.views_format == "STEREO_3D" and view.name != "left" and view.name != "right"):
-                                    view_suffix = '.'+scene.render.views[view_number].name
-                                
-                                    for tile in tiles:
-                                        view_name, tile_name, tile_bitmap = tile
-                                        try:
-                                            if bpy.app.version < (2, 79, 0 ):
-                                                l.passes[tile_name+view_suffix].rect = tile_bitmap
-                                            else:
-                                                l.passes.find_by_name(tile_name, view.name).rect = tile_bitmap
-                                        except:
-                                            print("Exporter: Exception while rendering in drawAreaCallback function:")
-                                            traceback.print_exc()
-                                        
-                        else:
-                            for tile in tiles:
-                                view_name, tile_name, tile_bitmap = tile
-                                try:
-                                    l.passes[tile_name].rect = tile_bitmap
-                                except:
-                                    print("Exporter: Exception while rendering in drawAreaCallback function:")
-                                    traceback.print_exc()
 
                     self.end_result(res)
 
@@ -528,51 +532,33 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
                 try:
                     l = res.layers[0]
-                    if bpy.app.version < (2, 74, 4 ):
-                        for tile in tiles:
-                            view_name, tile_name, tile_bitmap = tile
-                            try:
-                                if tile_name == "Combined":
-                                    l.rect = tile_bitmap
-                                else:
-                                    l.passes[tile_name].rect = tile_bitmap
-                            except:
-                                print("Exporter: Exception while rendering in drawAreaCallback function:")
-                                traceback.print_exc()
-                    else:
-                        for tile in tiles:
-                            view_name, tile_name, tile_bitmap = tile
-                            if scene.render.use_multiview:
-                                if view_name == "":  #In case we use Render 3D vierpowrt with Views enabled, it will copy the result to all views
-                                    for view_number,view in enumerate(scene.render.views):
-                                        if view.use and not (scene.render.views_format == "STEREO_3D" and view.name != "left" and view.name != "right"):
-                                            full_tile_name = tile_name + "." + view.name
-                                            try:
-                                                if bpy.app.version < (2, 79, 0 ):
-                                                    l.passes[full_tile_name].rect = tile_bitmap
-                                                else:
-                                                    l.passes.find_by_name(tile_name, view.name).rect = tile_bitmap
-                                            except:
-                                                print("Exporter: Exception while rendering in flushCallback function:")
-                                                traceback.print_exc()
-                                else:
-                                    if scene.render.views[view_name].use and not (scene.render.views_format == "STEREO_3D" and view_name != "left" and view_name != "right"):
-                                        full_tile_name = tile_name + "." + view_name
+                    for tile in tiles:
+                        view_name, tile_name, tile_bitmap = tile
+                        if scene.render.use_multiview:
+                            if view_name == "":  #In case we use Render 3D vierpowrt with Views enabled, it will copy the result to all views
+                                for view_number,view in enumerate(scene.render.views):
+                                    if view.use and not (scene.render.views_format == "STEREO_3D" and view.name != "left" and view.name != "right"):
+                                        full_tile_name = tile_name + "." + view.name
                                         try:
-                                            if bpy.app.version < (2, 79, 0 ):
-                                                l.passes[full_tile_name].rect = tile_bitmap
-                                            else:
-                                                l.passes.find_by_name(tile_name, view_name).rect = tile_bitmap
+                                            l.passes.find_by_name(tile_name, view.name).rect = tile_bitmap
                                         except:
                                             print("Exporter: Exception while rendering in flushCallback function:")
                                             traceback.print_exc()
                             else:
-                                full_tile_name = tile_name
-                                try:
-                                    l.passes[full_tile_name].rect = tile_bitmap
-                                except:
-                                    print("Exporter: Exception while rendering in flushCallback function:")
-                                    traceback.print_exc()
+                                if scene.render.views[view_name].use and not (scene.render.views_format == "STEREO_3D" and view_name != "left" and view_name != "right"):
+                                    full_tile_name = tile_name + "." + view_name
+                                    try:
+                                        l.passes.find_by_name(tile_name, view_name).rect = tile_bitmap
+                                    except:
+                                        print("Exporter: Exception while rendering in flushCallback function:")
+                                        traceback.print_exc()
+                        else:
+                            full_tile_name = tile_name
+                            try:
+                                l.passes[full_tile_name].rect = tile_bitmap
+                            except:
+                                print("Exporter: Exception while rendering in flushCallback function:")
+                                traceback.print_exc()
 
                     self.end_result(res)
 
@@ -602,3 +588,23 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         del self.yi
         self.update_stats("", "Done!")
         self.bl_use_postprocess = True
+
+
+classes = (
+    YafaRayRenderEngine,
+)
+
+def register():
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+
+def unregister():
+    from bpy.utils import unregister_class
+    for cls in reversed(classes):
+        unregister_class(cls)
+
+        
+if __name__ == "__main__":  # only for live edit.
+    import bpy
+    bpy.utils.register_module(__name__)

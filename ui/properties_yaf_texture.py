@@ -19,7 +19,6 @@
 # <pep8 compliant>
 
 import bpy
-from bl_ui.properties_material import active_node_mat
 from bl_ui.properties_texture import context_tex_datablock
 from bpy.types import (Panel,
                        Texture,
@@ -97,7 +96,7 @@ class YAFA_V3_TEXTURE_PT_context_texture(YAFA_V3_TextureButtonsPanel, Panel):
                     row.template_ID(user, propname, new="texture.new")
 
                 if tex:
-                    split = layout.split(percentage=0.2)
+                    split = layout.split(factor=0.2)
                     if tex.use_nodes:
                         if slot:
                             split.label(text="Output:")
@@ -109,19 +108,16 @@ class YAFA_V3_TEXTURE_PT_context_texture(YAFA_V3_TextureButtonsPanel, Panel):
 
         tex_collection = (pin_id is None) and (node is None) and (not isinstance(idblock, Brush))
 
-        if tex_collection:
+        if tex_collection and False: #FIXME DAVID!
             row = layout.row()
-            if bpy.app.version < (2, 65, 3 ):
-                row.template_list(idblock, "texture_slots", idblock, "active_texture_index", rows=2)
-            else:
-                row.template_list("TEXTURE_UL_texslots", "", idblock, "texture_slots", idblock, "active_texture_index", rows=2)
+            row.template_list("TEXTURE_UL_texslots", "", idblock, "texture_slots", idblock, "active_texture_index", rows=2)
 
             col = row.column(align=True)
             col.operator("texture.slot_move", text="", icon='TRIA_UP').type = 'UP'
             col.operator("texture.slot_move", text="", icon='TRIA_DOWN').type = 'DOWN'
             col.menu("TEXTURE_MT_specials", icon='DOWNARROW_HLT', text="")
 
-        split = layout.split(percentage=0.65)
+        split = layout.split(factor=0.65)
         col = split.column()
 
         if tex_collection:
@@ -185,7 +181,7 @@ class YAFA_V3_PT_preview_texture_controls(YAFA_V3_TextureButtonsPanel, Panel):
             yaf_mat = active_node_mat(context.material)
             split = layout.split() 
             col = split.column()
-            col.label("Preview dynamic rotation/zoom")
+            col.label(text="Preview dynamic rotation/zoom")
             split = layout.split() 
             col = split.column()
             col.prop(context.scene.yafaray.preview, "camRot", text="")
@@ -195,12 +191,12 @@ class YAFA_V3_PT_preview_texture_controls(YAFA_V3_TextureButtonsPanel, Panel):
             col2 = row.column()
             col2.operator("preview.camzoomin", text='Zoom In', icon='ZOOM_IN')
             row = col.row()
-            row.label("")
+            row.label(text="")
             row = col.row()
             row.operator("preview.camrotreset", text='Reset dynamic rotation/zoom')
             split = layout.split() 
             col = split.column()
-            col.label("Preview object control")
+            col.label(text="Preview object control")
             split = layout.split()
             col = split.column()
             col.prop(context.scene.yafaray.preview, "objScale", text="Scale")
@@ -210,26 +206,26 @@ class YAFA_V3_PT_preview_texture_controls(YAFA_V3_TextureButtonsPanel, Panel):
             col.prop_search(context.scene.yafaray.preview, "previewObject", bpy.data, "objects", text="")
             split = layout.split() 
             col = split.column()
-            col.label("Preview lights control")
+            col.label(text="Preview lights control")
             col = split.column()
             col.prop(context.scene.yafaray.preview, "lightRotZ", text="lights Z Rotation")
             split = layout.split()
             col = split.column()
-            col.label("Key light:")
+            col.label(text="Key light:")
             col = split.column()
             col.prop(context.scene.yafaray.preview, "keyLightPowerFactor", text="Power factor")
             col = split.column()
             col.prop(context.scene.yafaray.preview, "keyLightColor", text="")
             split = layout.split() 
             col = split.column()
-            col.label("Fill lights:")
+            col.label(text="Fill lights:")
             col = split.column()
             col.prop(context.scene.yafaray.preview, "fillLightPowerFactor", text="Power factor")
             col = split.column()
             col.prop(context.scene.yafaray.preview, "fillLightColor", text="")
             split = layout.split() 
             col = split.column()
-            col.label("Preview scene control")
+            col.label(text="Preview scene control")
             split = layout.split()
             col = split.column()
             col.prop(context.scene.yafaray.preview, "previewRayDepth", text="Ray Depth")
@@ -254,12 +250,12 @@ class YAFA_V3_TEXTURE_PT_colors(YAFA_V3_TextureButtonsPanel, Panel):
             if tex.yaf_tex_type == "IMAGE":
                 split = layout.split()
                 row = split.row()
-                row.label("Color ramp is ignored by YafaRay when using image textures", icon="INFO")
+                row.label(text="Color ramp is ignored by YafaRay when using image textures", icon="INFO")
 
             if tex.color_ramp.color_mode == "RGB" and tex.color_ramp.interpolation != "CONSTANT" and tex.color_ramp.interpolation != "LINEAR":
                 split = layout.split()
                 row = split.row()
-                row.label("The ramp interpolation '" + tex.color_ramp.interpolation + "' is not supported. Using Linear instead", icon="ERROR")
+                row.label(text="The ramp interpolation '" + tex.color_ramp.interpolation + "' is not supported. Using Linear instead", icon="ERROR")
 
             layout.template_color_ramp(tex, "color_ramp", expand=True)
                 
@@ -656,14 +652,14 @@ class YAFA_V3_TEXTURE_PT_mapping(YAFA_V3_TextureSlotPanel, Panel):
 
         if not isinstance(idblock, Brush):
             if isinstance(idblock, World):
-                split = layout.split(percentage=0.3)
+                split = layout.split(factor=0.3)
                 col = split.column()
                 world = context.world
                 col.label(text="Coordinates:")
                 col = split.column()
                 col.prop(world, "yaf_mapworld_type", text="")
             else:
-                split = layout.split(percentage=0.3)
+                split = layout.split(factor=0.3)
                 col = split.column()
                 col.label(text="Coordinates:")
                 col = split.column()
@@ -674,7 +670,7 @@ class YAFA_V3_TEXTURE_PT_mapping(YAFA_V3_TextureSlotPanel, Panel):
                 pass
                 #### UV layers not supported in yafaray engine ###
                 """
-                split = layout.split(percentage=0.3)
+                split = layout.split(factor=0.3)
                 split.label(text="Layer:")
                 ob = context.object
                 if ob and ob.type == 'MESH':
@@ -684,7 +680,7 @@ class YAFA_V3_TEXTURE_PT_mapping(YAFA_V3_TextureSlotPanel, Panel):
                 """
 
             elif tex.texture_coords == 'OBJECT':
-                split = layout.split(percentage=0.3)
+                split = layout.split(factor=0.3)
                 split.label(text="Object:")
                 split.prop(tex, "object", text="")
 
@@ -698,7 +694,7 @@ class YAFA_V3_TEXTURE_PT_mapping(YAFA_V3_TextureSlotPanel, Panel):
                 row.prop(tex, "angle")
         else:
             if isinstance(idblock, Material):
-                split = layout.split(percentage=0.3)
+                split = layout.split(factor=0.3)
                 split.label(text="Projection:")
                 split.prop(tex, "mapping", text="")
 
@@ -822,6 +818,41 @@ class YAFA_V3_TEXTURE_PT_influence(YAFA_V3_TextureSlotPanel, Panel):
             layout.row().prop(tex, "default_value", text="Default Value", slider=True)
 
 
+classes = (
+#FIXME DAVID!
+    #YAFA_V3_TextureButtonsPanel,
+    #YAFA_V3_TEXTURE_PT_context_texture,
+    #YAFA_V3_TEXTURE_PT_preview,
+    #YAFA_V3_PT_preview_texture_controls,
+    #YAFA_V3_TEXTURE_PT_colors,
+    #YAFA_V3_TextureSlotPanel,
+    #YAFA_V3_TextureTypePanel,
+    #YAFA_V3_TEXTURE_PT_clouds,
+    #YAFA_V3_TEXTURE_PT_wood,
+    #YAFA_V3_TEXTURE_PT_marble,
+    #YAFA_V3_TEXTURE_PT_blend,
+    #YAFA_V3_TEXTURE_PT_image,
+    #YAFA_V3_TEXTURE_PT_image_sampling,
+    #YAFA_V3_TEXTURE_PT_image_mapping,
+    #YAFA_V3_TEXTURE_PT_musgrave,
+    #YAFA_V3_TEXTURE_PT_voronoi,
+    #YAFA_V3_TEXTURE_PT_distortednoise,
+    #YAFA_V3_TEXTURE_PT_ocean,
+    #YAFA_V3_TEXTURE_PT_mapping,
+    #YAFA_V3_TEXTURE_PT_influence,
+)
+
+def register():
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+
+def unregister():
+    from bpy.utils import unregister_class
+    for cls in reversed(classes):
+        unregister_class(cls)
+
+        
 if __name__ == "__main__":  # only for live edit.
     import bpy
     bpy.utils.register_module(__name__)
