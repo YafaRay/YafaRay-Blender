@@ -42,6 +42,7 @@ def register():
             ('perspective', "Perspective", ""),
             ('architect', "Architect", ""),
             ('angular', "Angular", ""),
+            ('equirectangular', "Equirectangular", ""),
             ('orthographic', "Ortho", "")
         ),
         update=call_camera_update,
