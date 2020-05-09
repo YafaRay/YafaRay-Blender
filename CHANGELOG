@@ -7,6 +7,11 @@ This is an abbreviated list of changes. The full/detailed list of changes can be
 * Blender Exporter (for Blender v2.7x): https://github.com/YafaRay/Blender-Exporter/commits/master
 
 
+YafaRay v3.4.4 (2020-05-09) for Blender 2.79:
+---------------------------------------------
+* Angular camera: modified to add several types of angular projections and to fix new ortographic calculations.  `[Blender Exporter + Core]`
+
+
 YafaRay v3.4.3 (2020-05-09) for Blender 2.79:
 ---------------------------------------------
 * Angular camera: added "Ortographic" projection.  `[Blender Exporter + Core]`

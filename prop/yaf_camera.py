@@ -66,9 +66,16 @@ def register():
         name="Circular",
         default=False)
 
-    Camera.orthographic = BoolProperty(
-        name="Orthographic projection",
-        default=False)
+    Camera.angular_projection = EnumProperty(
+        name="Angular projection",
+        items=(
+            ('equidistant', "Equidistant (default)", ""),
+            ('orthographic', "Orthographic (angle should be 90º or less)", ""),
+            ('stereographic', "Stereographic (angle should be less than 180º)", ""),
+            ('equisolid_angle', "Equisolid Angle", ""),
+            ('rectilinear', "Rectilinear (angle should be less than 90º)", ""),
+        ),
+        default='equidistant')
 
     Camera.use_clipping = BoolProperty(
         name="Use clipping",
@@ -113,7 +120,7 @@ def unregister():
     Camera.max_angle
     Camera.mirrored
     Camera.circular
-    Camera.orthographic
+    Camera.angular_projection
     Camera.use_clipping
     Camera.bokeh_type
     Camera.aperture
