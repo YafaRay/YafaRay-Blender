@@ -66,6 +66,10 @@ def register():
         name="Circular",
         default=False)
 
+    Camera.orthographic = BoolProperty(
+        name="Orthographic projection",
+        default=False)
+
     Camera.use_clipping = BoolProperty(
         name="Use clipping",
         default=False)
@@ -109,6 +113,7 @@ def unregister():
     Camera.max_angle
     Camera.mirrored
     Camera.circular
+    Camera.orthographic
     Camera.use_clipping
     Camera.bokeh_type
     Camera.aperture

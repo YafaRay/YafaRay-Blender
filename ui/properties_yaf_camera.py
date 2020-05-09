@@ -41,6 +41,7 @@ class YAFA_V3_PT_lens(CameraButtonsPanel, Panel):
             layout.prop(camera, "max_angle")
             layout.prop(camera, "mirrored")
             layout.prop(camera, "circular")
+            layout.prop(camera, "orthographic")
 
         elif camera.camera_type == 'orthographic':
             layout.prop(camera, "ortho_scale")

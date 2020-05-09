@@ -163,6 +163,7 @@ class yafObject(object):
 
                 elif camType == "angular":
                     yi.paramsSetBool("circular", camera.circular)
+                    yi.paramsSetBool("orthographic", camera.orthographic)
                     yi.paramsSetBool("mirrored", camera.mirrored)
                     yi.paramsSetFloat("max_angle", camera.max_angle)
                     yi.paramsSetFloat("angle", camera.angular_angle)
