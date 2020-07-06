@@ -191,8 +191,6 @@ class YAFA_V3_PT_output(RenderButtonsPanel, Panel):
             col.prop(sc, "gs_film_save_load")
             if sc.gs_film_save_load == "save" or sc.gs_film_save_load == "load-save":
                 row = layout.row()
-                col = row.column()            
-                col.prop(sc, "gs_film_save_binary_format")
                 col = row.column()
                 col.prop(sc, "gs_film_autosave_interval_type")
                 col = row.column()

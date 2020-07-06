@@ -213,7 +213,6 @@ def exportRenderSettings(yi, scene):
     yi.paramsSetFloat("images_autosave_interval_seconds", scene.gs_images_autosave_interval_seconds)
 
     yi.paramsSetString("film_save_load", scene.gs_film_save_load)
-    yi.paramsSetBool("film_save_binary_format", scene.gs_film_save_binary_format)
     yi.paramsSetString("film_autosave_interval_type", scene.gs_film_autosave_interval_type)
     yi.paramsSetInt("film_autosave_interval_passes", scene.gs_film_autosave_interval_passes)
     yi.paramsSetFloat("film_autosave_interval_seconds", scene.gs_film_autosave_interval_seconds)
