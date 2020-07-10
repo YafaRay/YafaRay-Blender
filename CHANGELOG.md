@@ -7,8 +7,8 @@ This is an abbreviated list of changes. The full/detailed list of changes can be
 * Blender Exporter (for Blender v2.7x): https://github.com/YafaRay/Blender-Exporter/commits/master
 
 
-YafaRay (git development)
--------------------------
+YafaRay v3.5.0 (2020-07-10) for Blender 2.79:
+---------------------------------------------
 * IMPORTANT: Removal of *all* Boost dependencies. I've implemented new Unicode File management and new ImageFilm/PhotonMap saving/loading system.  `[Core]`
    - All functionality depending on Boost has been rewritten from scratch to be able to remove Boost altogether.  `[Core]`
    - Implemented Unicode UTF8/UTF16 conversions for strings in POSIX and Windows systems  `[Core]`
@@ -23,9 +23,21 @@ YafaRay (git development)
         - Endianness could be an issue for non-Intel/AMD platforms like ARM, to be investigated in the future, but that's a problem for another day.  `[Core]`
    - Removed all SysInfo Boost code and replaced it by a "CMake-building" generation. Renamed sysinfo classes as build_info.  `[Core]`
         
+* IMPORTANT: CMake: made LibXML2 / ZLib optional. New CMake flag "WITH_XMLImport" to enable LibXML2. Now all the dependencies are finally optional and pure YafaRay library can be built without any dependencies.  `[Core]`
+* IMPORTANT: general header files de-coupling and cleanup, some old unused and broken code deleted  `[Core]`
+* Changing documentation extension to Markdown *.md  `[Blender Exporter + Core]`
+* Bidirectional integrator: adding integrator information to log and badge  `[Core]`
+* Bidirectional integrator: fixed transparent shadows, as requested in https://github.com/YafaRay/Blender-Exporter/issues/38  `[Core]`
+* SPPM: fixed memory corruption when using startx, starty not zero, as requested in https://github.com/YafaRay/Blender-Exporter/issues/41 and https://github.com/YafaRay/Blender-Exporter/issues/40  `[Core]`
+* XML Parser: added XML SAX parsing error diagnostic messages, as requested in https://github.com/YafaRay/Core/issues/121  `[Core]`
 * Added back -pthread flag for gcc/g++ compilation to fix FreeBSD builds To fix FreeBSD build as requested in https://github.com/YafaRay/Core/issues/113  `[Core]`
 * Removed some warnings for GCC. Also removed some Clang warnings as requested by https://github.com/YafaRay/Core/issues/110  `[Core]`
-* Fixed some source file comments license boilerplate to remove wrongly encoded characters that were confusing some IDEs*   `[Core]`
+* Fixed some source file comments license boilerplate to remove wrongly encoded characters that were confusing some IDEs  `[Core]`
+* CMake: unifying all cmake-generated headers, simplifying code. Threads: moved runtime detection to dedicated class  `[Core]`
+* OpenCV Denoise: better encapsulation and code reuse, at the expense of slower processing  `[Core]`
+* Renamed yafsystem/sharedlibrary_t by a (clearer) dynamic_library/dynamicLoadedLibrary_t  `[Core]`
+* Git: added .gitignore to ignore all "hidden" files starting with "." (i.e. IDE generated files)  `[Core]`
+* Swig Ruby: avoid -Wsign-compare warning.  `[Core]`
 
 
 
