@@ -7,6 +7,14 @@ This is an abbreviated list of changes. The full/detailed list of changes can be
 * Blender Exporter (for Blender v2.7x): https://github.com/YafaRay/Blender-Exporter/commits/master
 
 
+YafaRay v3.5.1 (2020-07-12) for Blender 2.79:
+---------------------------------------------
+* MacOS: found/fixed root cause of Blender python segfault 11 and ruby SketchUp Make 2017 "incompatible version" problems  `[Core]`
+* XML parser: fix build broken when XMLImport and XML Loader are disabled (and no dependencies on LibXML2/ZLib)  `[Core]`
+* Build info: made it less verbose (it was getting too long in some platforms) and added dash between platform and compiler when there is a platform (like MinGW)  `[Core]`
+* Logging: fixed HTML log display of jpg and png images  `[Core]`
+
+
 YafaRay v3.5.0 (2020-07-10) for Blender 2.79:
 ---------------------------------------------
 * IMPORTANT: Removal of *all* Boost dependencies. I've implemented new Unicode File management and new ImageFilm/PhotonMap saving/loading system.  `[Core]`
