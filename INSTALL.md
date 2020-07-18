@@ -1,4 +1,4 @@
-To install YafaRay v3 into Blender v2.7x:
+To install YafaRay into Blender:
 
 ** IMPORTANT **
 ----------------------------------------------
@@ -7,10 +7,10 @@ So, YafaRay-v3 *must* be enabled in Blender user preferences, and in your curren
 
 If you have several YafaRay versions together, *make sure* that you enable in Blender *first* the old and *later* the new v3 in that order. If you have problems, disable both, restart Blender and enable them in that order.
 
-YafaRay v3 has only limited support for multiple YafaRay versions and forks installed at the same time. Having several versions could cause in some cases:
+YafaRay has only limited support for multiple YafaRay versions and forks installed at the same time. Having several versions could cause in some cases:
 * Black renders
 * Random crashes
-* Inability to enable the YafaRay v3 plugin or all kinds of strange problems
+* Inability to enable the YafaRay plugin or all kinds of strange problems
 
 If you have any of these problems, remove any other yafaray folders (or derived forks) from the Blender addons folder and try again. This typically solves most of the problems stated above.
 
@@ -22,7 +22,7 @@ Also, YafaRay, by default, ** will change the output folder/file name ** so the 
 ----------------------------------------------
 
 Don't use the Blender from the distro repositories. Download the Blender official 2.79 builds from:
-https://www.blender.org/download/releases/2-79/
+https://download.blender.org/release/Blender2.79
 
 Once Blender is installed, locate the folder where it was installed. The paths given below are just examples, but they will probably be different in your system.
 
@@ -42,5 +42,4 @@ If you have any issues:
 * Check that you have downloaded the appropiate YafaRay build for your Operating System and Blender build (32/64 bit)
 * Check that you are using the official Blender build from www.blender.org and it's a version supported by YafaRay (see CHANGELOG)
 * In extreme cases (black renders, crashes, etc) remove all older YafaRay versions and other YafaRay derived forks, and try again.
-* If you still have problems, please post your bug reports and feature requests in the "Issues" tab of the corresponding GitHub Project
-NOTE: The old bugtracker in www.yafaray.org will *no longer* be used for bug tracking / feature requests.
+* If you still have problems, please send us your bug reports (see README.md file, "BUG REPORTS / FEATURE REQUESTS" section)

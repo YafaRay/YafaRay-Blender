@@ -5,10 +5,10 @@ YAFARAY AND DEPENDENCIES LICENSES
 YAFARAY LICENSES
 ================
 
-YafaRay Blender Exporter code
-------------------------------
-http://www.yafaray.org/
-https://github.com/YafaRay/Blender-Exporter
+YafaRay-Blender exporter code
+-----------------------------
+www.yafaray.org
+https://github.com/YafaRay/YafaRay-Blender
 
 		    GNU GENERAL PUBLIC LICENSE
 		       Version 2, June 1991
@@ -353,10 +353,10 @@ Public License instead of this License.
 
 
 
-YafaRay Core code
------------------
-http://www.yafaray.org/
-https://github.com/YafaRay/Core
+libYafaRay code
+----------------
+www.yafaray.org
+https://github.com/YafaRay/libYafaRay
 
 This program called YAFARAY was originally written by Alejandro Conty
 and Alfredo de Greef under the name YAFRAY in 2001 and it's under the LGPL

@@ -4,15 +4,15 @@ YafaRay is a free open-source montecarlo raytracing engine released under the LG
 
 Make sure that YafaRay is correctly installed in the appropiate place. See file "INSTALL" for installation details
 
-For more information, see: http://www.yafaray.org
+For more information, see: www.yafaray.org
 
 
 SOURCE CODE
 -----------
 YafaRay source code is hosted in GitHub.
 
-* YafaRay Core source code is available in: https://github.com/YafaRay/Core
-* YafaRay Blender-Exporter (for Blender v2.7x) source code is available in: https://github.com/YafaRay/Blender-Exporter
+* libYafaRay source code is available in: https://github.com/YafaRay/libYafaRay
+* YafaRay-Blender exporter source code is available in: https://github.com/YafaRay/YafaRay-Blender
 
 
 RELEASES
@@ -20,18 +20,21 @@ RELEASES
 There are two different types of YafaRay Releases:
 
 * Releases for Blender: they include the Blender-Exporter code and the YafaRay Core files, in a package ready to be installed in Blender.
-* Standalone Core Releases: they are intended to be used by 3rd party software and *not* to be used with Blender. 
+	- Available in https://github.com/YafaRay/YafaRay-Blender/releases
 
-For the latest YafaRay Releases check for builds here:
-* YafaRay Core: releases/binary files available in https://github.com/YafaRay/Core/releases
-* YafaRay Blender-Exporter (for Blender v2.7x): releases/binary files available in https://github.com/YafaRay/Blender-Exporter/releases
+* libYafaRay standalone releases: they are intended to be used by 3rd party software and *not* to be used with Blender. 
+	- Available in https://github.com/YafaRay/libYafaRay/releases
 
 
 BUG REPORTS / FEATURE REQUESTS
 ------------------------------
-Please post your bug reports and feature requests in the "Issues" tab of the corresponding GitHub Project
+Please use the GitHub bug tracking system to report bugs in libYafaRay instead of the YafaRay website bug tracking.
 
-NOTE: The old bugtracker in www.yafaray.org will *no longer* be used for bug tracking / feature requests.
+* GitHub bug tracking (preferred):
+    - Blender exporter related issues: https://github.com/YafaRay/YafaRay-Blender/issues
+    - libYafaRay related issues: https://github.com/YafaRay/libYafaRay/issues
+
+* YafaRay website bug tracking: http://www.yafaray.org/development/bugtracker/yafaray
 
 
 CURRENT LIMITATIONS
@@ -39,7 +42,7 @@ CURRENT LIMITATIONS
 * This Blender Exporter only works with Blender v2.7x
 
 * Don't use the Blender from the distro repositories. Download the Blender official 2.79 builds from:
-https://www.blender.org/download/releases/2-79/
+https://download.blender.org/release/Blender2.79
 
 * YafaRay only supports *one* scene in the .blend file. If you have more than one scene, it could cause unexpected results and problems in the new Material Preview Controls.
 
