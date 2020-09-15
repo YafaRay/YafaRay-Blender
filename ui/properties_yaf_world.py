@@ -24,18 +24,18 @@ from bl_ui.properties_world import WorldButtonsPanel
 
 # Inherit World data block
 from bl_ui.properties_world import WORLD_PT_context_world
-WORLD_PT_context_world.COMPAT_ENGINES.add('YAFA_V3_RENDER')
+WORLD_PT_context_world.COMPAT_ENGINES.add('YAFARAY4_RENDER')
 del WORLD_PT_context_world
 
 # Inherit World Preview Panel
 from bl_ui.properties_world import WORLD_PT_preview
-WORLD_PT_preview.COMPAT_ENGINES.add('YAFA_V3_RENDER')
+WORLD_PT_preview.COMPAT_ENGINES.add('YAFARAY4_RENDER')
 del WORLD_PT_preview
 
 
-class YAFA_V3_PT_world(WorldButtonsPanel, Panel):
+class YAFARAY4_PT_world(WorldButtonsPanel, Panel):
     bl_label = "Background Settings"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     ibl = True
 
     def draw(self, context):
@@ -267,10 +267,10 @@ class YAFA_V3_PT_world(WorldButtonsPanel, Panel):
 
 
 
-class YAFA_V3_PT_advanced(WorldButtonsPanel, Panel):
+class YAFARAY4_PT_advanced(WorldButtonsPanel, Panel):
     bl_label = "Advanced settings"
     bl_options = {'DEFAULT_CLOSED'}
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     
     def draw(self, context):
         layout = self.layout

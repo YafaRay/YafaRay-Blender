@@ -23,9 +23,9 @@ from bpy.types import Panel
 from bl_ui.properties_render import RenderButtonsPanel
 
 
-class YAFA_V3_PT_AA_settings(RenderButtonsPanel, Panel):
+class YAFARAY4_PT_AA_settings(RenderButtonsPanel, Panel):
     bl_label = "Anti-Aliasing / Noise control"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
 

@@ -223,7 +223,7 @@ def exportRenderSettings(yi, scene):
     yi.paramsSetFloat("adv_min_raydist_value", scene.adv_min_raydist_value)
     yi.paramsSetFloat("adv_min_raydist_value", scene.adv_min_raydist_value)
     yi.paramsSetInt("adv_base_sampling_offset", scene.adv_base_sampling_offset)
-    yi.paramsSetInt("adv_computer_node", bpy.context.user_preferences.addons["yafaray_v3"].preferences.yafaray_computer_node)
+    yi.paramsSetInt("adv_computer_node", bpy.context.user_preferences.addons["yafaray4"].preferences.yafaray_computer_node)
 
 
 def setLoggingAndBadgeSettings(yi, scene):
@@ -264,149 +264,92 @@ def exportRenderPassesSettings(yi, scene):
     yi.paramsSetFloat("toonPostSmooth", scene.yafaray.passes.toonPostSmooth)
     yi.paramsSetFloat("toonQuantization", scene.yafaray.passes.toonQuantization)
 
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_z:
-        yi.paramsSetString("pass_Depth", scene.yafaray.passes.pass_Depth)
-    else:
-        yi.paramsSetString("pass_Depth", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_vector:
-        yi.paramsSetString("pass_Vector", scene.yafaray.passes.pass_Vector)
-    else:
-        yi.paramsSetString("pass_Vector", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_normal:
-        yi.paramsSetString("pass_Normal", scene.yafaray.passes.pass_Normal)
-    else:
-        yi.paramsSetString("pass_Normal", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_uv:
-        yi.paramsSetString("pass_UV", scene.yafaray.passes.pass_UV)
-    else:
-        yi.paramsSetString("pass_UV", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_color:
-        yi.paramsSetString("pass_Color", scene.yafaray.passes.pass_Color)
-    else:
-        yi.paramsSetString("pass_Color", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_emit:
-        yi.paramsSetString("pass_Emit", scene.yafaray.passes.pass_Emit)
-    else:
-        yi.paramsSetString("pass_Emit", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_mist:
-        yi.paramsSetString("pass_Mist", scene.yafaray.passes.pass_Mist)
-    else:
-        yi.paramsSetString("pass_Mist", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_diffuse:
-        yi.paramsSetString("pass_Diffuse", scene.yafaray.passes.pass_Diffuse)
-    else:
-        yi.paramsSetString("pass_Diffuse", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_specular:
-        yi.paramsSetString("pass_Spec", scene.yafaray.passes.pass_Spec)
-    else:
-        yi.paramsSetString("pass_Spec", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_ambient_occlusion:
-        yi.paramsSetString("pass_AO", scene.yafaray.passes.pass_AO)
-    else:
-        yi.paramsSetString("pass_AO", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_environment:
-        yi.paramsSetString("pass_Env", scene.yafaray.passes.pass_Env)
-    else:
-        yi.paramsSetString("pass_Env", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_indirect:
-        yi.paramsSetString("pass_Indirect", scene.yafaray.passes.pass_Indirect)
-    else:
-        yi.paramsSetString("pass_Indirect", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_shadow:
-        yi.paramsSetString("pass_Shadow", scene.yafaray.passes.pass_Shadow)
-    else:
-        yi.paramsSetString("pass_Shadow", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_reflection:
-        yi.paramsSetString("pass_Reflect", scene.yafaray.passes.pass_Reflect)
-    else:
-        yi.paramsSetString("pass_Reflect", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_refraction:
-        yi.paramsSetString("pass_Refract", scene.yafaray.passes.pass_Refract)
-    else:
-        yi.paramsSetString("pass_Refract", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_object_index:
-        yi.paramsSetString("pass_IndexOB", scene.yafaray.passes.pass_IndexOB)
-    else:
-        yi.paramsSetString("pass_IndexOB", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_material_index:
-        yi.paramsSetString("pass_IndexMA", scene.yafaray.passes.pass_IndexMA)
-    else:
-        yi.paramsSetString("pass_IndexMA", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_diffuse_direct:
-        yi.paramsSetString("pass_DiffDir", scene.yafaray.passes.pass_DiffDir)
-    else:
-        yi.paramsSetString("pass_DiffDir", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_diffuse_indirect:
-        yi.paramsSetString("pass_DiffInd", scene.yafaray.passes.pass_DiffInd)
-    else:
-        yi.paramsSetString("pass_DiffInd", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_diffuse_color:
-        yi.paramsSetString("pass_DiffCol", scene.yafaray.passes.pass_DiffCol)
-    else:
-        yi.paramsSetString("pass_DiffCol", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_glossy_direct:
-        yi.paramsSetString("pass_GlossDir", scene.yafaray.passes.pass_GlossDir)
-    else:
-        yi.paramsSetString("pass_GlossDir", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_glossy_indirect:
-        yi.paramsSetString("pass_GlossInd", scene.yafaray.passes.pass_GlossInd)
-    else:
-        yi.paramsSetString("pass_GlossInd", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_glossy_color:
-        yi.paramsSetString("pass_GlossCol", scene.yafaray.passes.pass_GlossCol)
-    else:
-        yi.paramsSetString("pass_GlossCol", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_transmission_direct:
-        yi.paramsSetString("pass_TransDir", scene.yafaray.passes.pass_TransDir)
-    else:
-        yi.paramsSetString("pass_TransDir", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_transmission_indirect:
-        yi.paramsSetString("pass_TransInd", scene.yafaray.passes.pass_TransInd)
-    else:
-        yi.paramsSetString("pass_TransInd", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_transmission_color:
-        yi.paramsSetString("pass_TransCol", scene.yafaray.passes.pass_TransCol)
-    else:
-        yi.paramsSetString("pass_TransCol", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_subsurface_direct:
-        yi.paramsSetString("pass_SubsurfaceDir", scene.yafaray.passes.pass_SubsurfaceDir)
-    else:
-        yi.paramsSetString("pass_SubsurfaceDir", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_subsurface_indirect:
-        yi.paramsSetString("pass_SubsurfaceInd", scene.yafaray.passes.pass_SubsurfaceInd)
-    else:
-        yi.paramsSetString("pass_SubsurfaceInd", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and scene.render.layers[0].use_pass_subsurface_color:
-        yi.paramsSetString("pass_SubsurfaceCol", scene.yafaray.passes.pass_SubsurfaceCol)
-    else:
-        yi.paramsSetString("pass_SubsurfaceCol", "disabled")
-        
+    if scene.yafaray.passes.pass_enable:
+        if scene.render.layers[0].use_pass_z:
+            yi.createRenderPass("Depth", scene.yafaray.passes.pass_Depth, 1)
+            
+        if scene.render.layers[0].use_pass_vector:
+            yi.createRenderPass("Vector", scene.yafaray.passes.pass_Vector, 4)
+            
+        if scene.render.layers[0].use_pass_normal:
+            yi.createRenderPass("Normal", scene.yafaray.passes.pass_Normal, 3)
+            
+        if scene.render.layers[0].use_pass_uv:
+            yi.createRenderPass("UV", scene.yafaray.passes.pass_UV, 3)
+            
+        if scene.render.layers[0].use_pass_color:
+            yi.createRenderPass("Color", scene.yafaray.passes.pass_Color, 4)
+            
+        if scene.render.layers[0].use_pass_emit:
+            yi.createRenderPass("Emit", scene.yafaray.passes.pass_Emit, 3)
+            
+        if scene.render.layers[0].use_pass_mist:
+            yi.createRenderPass("Mist", scene.yafaray.passes.pass_Mist, 1)
+            
+        if scene.render.layers[0].use_pass_diffuse:
+            yi.createRenderPass("Diffuse", scene.yafaray.passes.pass_Diffuse, 3)
+            
+        if scene.render.layers[0].use_pass_specular:
+            yi.createRenderPass("Spec", scene.yafaray.passes.pass_Spec, 3)
+            
+        if scene.render.layers[0].use_pass_ambient_occlusion:
+            yi.createRenderPass("AO", scene.yafaray.passes.pass_AO, 3)
+            
+        if scene.render.layers[0].use_pass_environment:
+            yi.createRenderPass("Env", scene.yafaray.passes.pass_Env, 3)
+            
+        if scene.render.layers[0].use_pass_indirect:
+            yi.createRenderPass("Indirect", scene.yafaray.passes.pass_Indirect, 3)
+            
+        if scene.render.layers[0].use_pass_shadow:
+            yi.createRenderPass("Shadow", scene.yafaray.passes.pass_Shadow, 3)
+            
+        if scene.render.layers[0].use_pass_reflection:
+            yi.createRenderPass("Reflect", scene.yafaray.passes.pass_Reflect, 3)
+            
+        if scene.render.layers[0].use_pass_refraction:
+            yi.createRenderPass("Refract", scene.yafaray.passes.pass_Refract, 3)
+            
+        if scene.render.layers[0].use_pass_object_index:
+            yi.createRenderPass("IndexOB", scene.yafaray.passes.pass_IndexOB, 1)
+            
+        if scene.render.layers[0].use_pass_material_index:
+            yi.createRenderPass("IndexMA", scene.yafaray.passes.pass_IndexMA, 1)
+            
+        if scene.render.layers[0].use_pass_diffuse_direct:
+            yi.createRenderPass("DiffDir", scene.yafaray.passes.pass_DiffDir, 3)
+            
+        if scene.render.layers[0].use_pass_diffuse_indirect:
+            yi.createRenderPass("DiffInd", scene.yafaray.passes.pass_DiffInd, 3)
+            
+        if scene.render.layers[0].use_pass_diffuse_color:
+            yi.createRenderPass("DiffCol", scene.yafaray.passes.pass_DiffCol, 3)
+            
+        if scene.render.layers[0].use_pass_glossy_direct:
+            yi.createRenderPass("GlossDir", scene.yafaray.passes.pass_GlossDir, 3)
+            
+        if scene.render.layers[0].use_pass_glossy_indirect:
+            yi.createRenderPass("GlossInd", scene.yafaray.passes.pass_GlossInd, 3)
+            
+        if scene.render.layers[0].use_pass_glossy_color:
+            yi.createRenderPass("GlossCol", scene.yafaray.passes.pass_GlossCol, 3)
+            
+        if scene.render.layers[0].use_pass_transmission_direct:
+            yi.createRenderPass("TransDir", scene.yafaray.passes.pass_TransDir, 3)
+            
+        if scene.render.layers[0].use_pass_transmission_indirect:
+            yi.createRenderPass("TransInd", scene.yafaray.passes.pass_TransInd, 3)
+            
+        if scene.render.layers[0].use_pass_transmission_color:
+            yi.createRenderPass("TransCol", scene.yafaray.passes.pass_TransCol, 3)
+            
+        if scene.render.layers[0].use_pass_subsurface_direct:
+            yi.createRenderPass("SubsurfaceDir", scene.yafaray.passes.pass_SubsurfaceDir, 3)
+            
+        if scene.render.layers[0].use_pass_subsurface_indirect:
+            yi.createRenderPass("SubsurfaceInd", scene.yafaray.passes.pass_SubsurfaceInd, 3)
+            
+        if scene.render.layers[0].use_pass_subsurface_color:
+            yi.createRenderPass("SubsurfaceCol", scene.yafaray.passes.pass_SubsurfaceCol, 3)
+
     

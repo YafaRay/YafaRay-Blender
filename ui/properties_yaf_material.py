@@ -42,8 +42,8 @@ def blend_two_draw(layout, mat):
     return True
 
 
-class YAFA_V3_MaterialTypePanel(MaterialButtonsPanel):
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+class YAFARAY4_MaterialTypePanel(MaterialButtonsPanel):
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     @classmethod
     def poll(cls, context):
@@ -52,10 +52,10 @@ class YAFA_V3_MaterialTypePanel(MaterialButtonsPanel):
         return check_material(yaf_mat) and (yaf_mat.mat_type in cls.material_type) and (engine in cls.COMPAT_ENGINES)
 
 
-class YAFA_V3_PT_context_material(MaterialButtonsPanel, Panel):
+class YAFARAY4_PT_context_material(MaterialButtonsPanel, Panel):
     bl_label = ""
     bl_options = {'HIDE_HEADER'}
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     @classmethod
     def poll(cls, context):
@@ -112,16 +112,16 @@ class YAFA_V3_PT_context_material(MaterialButtonsPanel, Panel):
             layout.row().prop(yaf_mat, "clay_exclude")
 
 
-class YAFA_V3_MATERIAL_PT_preview(MaterialButtonsPanel, Panel):
+class YAFARAY4_MATERIAL_PT_preview(MaterialButtonsPanel, Panel):
     bl_label = "Preview"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
         self.layout.template_preview(context.material)
 
-class YAFA_V3_PT_preview_controls(MaterialButtonsPanel, Panel):
+class YAFARAY4_PT_preview_controls(MaterialButtonsPanel, Panel):
     bl_label = "Preview Controls"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     #bl_options = {'DEFAULT_CLOSED'}
 
     def draw_header(self, context):
@@ -202,7 +202,7 @@ def draw_generator(ior_n):
 submenus = []
 
 for ior_group, ior_n in ior_list:
-    submenu_idname = 'YAFA_V3_MT_presets_ior_list_cat%d' % len(submenus)
+    submenu_idname = 'YAFARAY4_MT_presets_ior_list_cat%d' % len(submenus)
     submenu = type(
         submenu_idname,
         (Menu,),
@@ -216,9 +216,9 @@ for ior_group, ior_n in ior_list:
     submenus.append(submenu)
 
 
-class YAFA_V3_MT_presets_ior_list(Menu):
+class YAFARAY4_MT_presets_ior_list(Menu):
     bl_label = "Glass"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
         sl = self.layout
@@ -226,9 +226,9 @@ class YAFA_V3_MT_presets_ior_list(Menu):
             sl.menu(sm.bl_idname)
 
 
-class YAFA_V3_PT_shinydiffuse_diffuse(YAFA_V3_MaterialTypePanel, Panel):
+class YAFARAY4_PT_shinydiffuse_diffuse(YAFARAY4_MaterialTypePanel, Panel):
     bl_label = "Diffuse reflection"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'shinydiffusemat'
 
     def draw(self, context):
@@ -261,9 +261,9 @@ class YAFA_V3_PT_shinydiffuse_diffuse(YAFA_V3_MaterialTypePanel, Panel):
         box.row().prop(yaf_mat, "transmit_filter", slider=True)
 
 
-class YAFA_V3_PT_shinydiffuse_specular(YAFA_V3_MaterialTypePanel, Panel):
+class YAFARAY4_PT_shinydiffuse_specular(YAFARAY4_MaterialTypePanel, Panel):
     bl_label = "Specular reflection"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'shinydiffusemat'
 
     def draw(self, context):
@@ -283,9 +283,9 @@ class YAFA_V3_PT_shinydiffuse_specular(YAFA_V3_MaterialTypePanel, Panel):
         layout.row().prop(yaf_mat, "specular_reflect", slider=True)
 
 
-class YAFA_V3_PT_glossy_diffuse(YAFA_V3_MaterialTypePanel, Panel):
+class YAFARAY4_PT_glossy_diffuse(YAFARAY4_MaterialTypePanel, Panel):
     bl_label = "Diffuse reflection"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'glossy', 'coated_glossy'
 
     def draw(self, context):
@@ -306,9 +306,9 @@ class YAFA_V3_PT_glossy_diffuse(YAFA_V3_MaterialTypePanel, Panel):
         layout.row().prop(yaf_mat, "diffuse_reflect", slider=True)
 
 
-class YAFA_V3_PT_glossy_specular(YAFA_V3_MaterialTypePanel, Panel):
+class YAFARAY4_PT_glossy_specular(YAFARAY4_MaterialTypePanel, Panel):
     bl_label = "Specular reflection"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'glossy', 'coated_glossy'
 
     def draw(self, context):
@@ -347,9 +347,9 @@ class YAFA_V3_PT_glossy_specular(YAFA_V3_MaterialTypePanel, Panel):
             layout.row().prop(yaf_mat, "specular_reflect", slider=True)
 
 
-class YAFA_V3_PT_glass_real(YAFA_V3_MaterialTypePanel, Panel):
+class YAFARAY4_PT_glass_real(YAFARAY4_MaterialTypePanel, Panel):
     bl_label = "Real glass settings"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'glass', 'rough_glass'
 
     def draw(self, context):
@@ -362,7 +362,7 @@ class YAFA_V3_PT_glass_real(YAFA_V3_MaterialTypePanel, Panel):
         col.prop(yaf_mat, "IOR_refraction")
 
         col = split.column()
-        col.menu("YAFA_V3_MT_presets_ior_list", text=bpy.types.YAFA_V3_MT_presets_ior_list.bl_label)
+        col.menu("YAFARAY4_MT_presets_ior_list", text=bpy.types.YAFARAY4_MT_presets_ior_list.bl_label)
 
         split = layout.split()
         col = split.column(align=True)
@@ -379,9 +379,9 @@ class YAFA_V3_PT_glass_real(YAFA_V3_MaterialTypePanel, Panel):
             box.row().prop(yaf_mat, "refr_roughness", slider=True)
         
 
-class YAFA_V3_PT_glass_fake(YAFA_V3_MaterialTypePanel, Panel):
+class YAFARAY4_PT_glass_fake(YAFARAY4_MaterialTypePanel, Panel):
     bl_label = "Fake glass settings"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'glass', 'rough_glass'
 
     def draw(self, context):
@@ -397,9 +397,9 @@ class YAFA_V3_PT_glass_fake(YAFA_V3_MaterialTypePanel, Panel):
         layout.row().prop(yaf_mat, "fake_shadows")
 
 
-class YAFA_V3_PT_blend_(YAFA_V3_MaterialTypePanel, Panel):
+class YAFARAY4_PT_blend_(YAFARAY4_MaterialTypePanel, Panel):
     bl_label = "Blend material settings"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'blend'
 
     def draw(self, context):
@@ -420,9 +420,9 @@ class YAFA_V3_PT_blend_(YAFA_V3_MaterialTypePanel, Panel):
         blend_two_draw(layout, yaf_mat)
 
 
-class YAFA_V3_PT_ZWireframe(MaterialButtonsPanel, Panel):
+class YAFARAY4_PT_ZWireframe(MaterialButtonsPanel, Panel):
     bl_label = "Wireframe shading options"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
     
     def draw(self, context):
@@ -438,9 +438,9 @@ class YAFA_V3_PT_ZWireframe(MaterialButtonsPanel, Panel):
         col.prop(yaf_mat, "wireframe_exponent", slider=True, text="Softness")
 
 
-class YAFA_V3_PT_ZAdvanced(MaterialButtonsPanel, Panel):
+class YAFARAY4_PT_ZAdvanced(MaterialButtonsPanel, Panel):
     bl_label = "Advanced settings"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
     
     def draw(self, context):

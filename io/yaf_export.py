@@ -24,15 +24,14 @@ import bpy
 import os
 import threading
 import time
-import yafaray_v3_interface
+import yafaray4_interface
 import traceback
 import datetime
 import platform
 import tempfile
 
-from .. import PLUGIN_PATH
 from .. import YAF_ID_NAME
-from .. import YAFARAY_EXPORTER_VERSION
+from .. import YAFARAY_BLENDER_VERSION
 from .yaf_object import yafObject
 from .yaf_light  import yafLight
 from .yaf_world  import yafWorld
@@ -48,7 +47,7 @@ from .. import yaf_global_vars
 class YafaRayRenderEngine(bpy.types.RenderEngine):
     bl_idname = YAF_ID_NAME
     bl_use_preview = True
-    bl_label = "YafaRay v3 Render"
+    bl_label = "YafaRay v4 Render"
     prog = 0.0
     tag = ""
     yaf_global_vars.useViewToRender = False
@@ -69,11 +68,10 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.yi.setParamsBadgePosition(self.scene.yafaray.logging.paramsBadgePosition)
             self.yi.setConsoleVerbosityLevel(self.scene.yafaray.logging.consoleVerbosity)
             self.yi.setLogVerbosityLevel(self.scene.yafaray.logging.logVerbosity)
-            self.yi.printInfo("YafaRay Blender-Exporter (" + YAFARAY_EXPORTER_VERSION + ")")
+            self.yi.printInfo("YafaRay-Blender (" + YAFARAY_BLENDER_VERSION + ")")
             self.yi.printInfo("Exporter: Blender version " + str(bpy.app.version[0]) + "."+ str(bpy.app.version[1]) + "."+ str(bpy.app.version[2]) + "."+ bpy.app.version_char + "  Build information: " + bpy.app.build_platform.decode("utf-8") + ", " + bpy.app.build_type.decode("utf-8") + ", branch: " + bpy.app.build_branch.decode("utf-8") + ", hash: " + bpy.app.build_hash.decode("utf-8"))
             self.yi.printInfo("Exporter: System information: " + platform.processor() + ", " + platform.platform())
 
-        self.yi.loadPlugins(PLUGIN_PATH)
         self.yaf_object = yafObject(self.yi, self.materialMap, self.is_preview)
         self.yaf_lamp = yafLight(self.yi, self.is_preview)
         self.yaf_world = yafWorld(self.yi)
@@ -346,7 +344,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.resY = self.sizeY
 
         if scene.gs_type_render == "file":
-            self.setInterface(yafaray_v3_interface.yafrayInterface_t())
+            self.setInterface(yafaray4_interface.Interface())
             self.yi.startScene()
             yaf_scene.exportRenderPassesSettings(self.yi, self.scene)
             self.yi.setupRenderPasses()
@@ -366,15 +364,14 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.yi.paramsSetInt("width", self.resX)
             self.yi.paramsSetInt("height", self.resY)
             self.ih = self.yi.createImageHandler("outFile")
-            self.co = yafaray_v3_interface.imageOutput_t(self.ih, str(self.outputFile), 0, 0)
+            self.co = yafaray4_interface.ImageOutput(self.ih, str(self.outputFile), 0, 0)
             if scene.yafaray.logging.savePreset:
                 yafaray_presets.YAF_AddPresetBase.export_to_file(yafaray_presets.YAFARAY_OT_presets_renderset, self.outputFile)
 
         elif scene.gs_type_render == "xml":
-            self.setInterface(yafaray_v3_interface.xmlInterface_t())
+            self.setInterface(yafaray4_interface.XmlInterface())
             self.outputFile, self.output, self.file_type = self.decideOutputFileName(fp, 'XML')
             self.yi.setOutfile(self.outputFile)
-            self.yi.startScene()
             yaf_scene.exportRenderPassesSettings(self.yi, self.scene)
             self.yi.setupRenderPasses()
             self.yi.setInteractive(False)
@@ -395,14 +392,13 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 input_color_values_gamma = scene.gs_gamma  #We only use the selected gamma if the output device is set to "None"
             
             self.yi.setInputColorSpace("LinearRGB", 1.0)    #Values from Blender, color picker floating point data are already linear (linearized by Blender)
-            self.yi.setXMLColorSpace(input_color_values_color_space, input_color_values_gamma)  #To set the XML interface to write the XML values with the correction included for the selected color space (and gamma if applicable)
+            self.yi.setXmlColorSpace(input_color_values_color_space, input_color_values_gamma)  #To set the XML interface to write the XML values with the correction included for the selected color space (and gamma if applicable)
             
             self.yi.paramsClearAll()
-            self.co = yafaray_v3_interface.imageOutput_t()
+            self.co = yafaray4_interface.ImageOutput()
 
         else:
-            self.setInterface(yafaray_v3_interface.yafrayInterface_t())
-            self.yi.startScene()
+            self.setInterface(yafaray4_interface.Interface())
             yaf_scene.exportRenderPassesSettings(self.yi, self.scene)
             self.yi.setupRenderPasses()
             self.yi.setInteractive(True)
@@ -423,7 +419,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                 self.yi.paramsSetInt("width", self.resX)
                 self.yi.paramsSetInt("height", self.resY)
                 self.ih = self.yi.createImageHandler("outFile")
-                self.co = yafaray_v3_interface.imageOutput_t(self.ih, str(self.outputFile), 0, 0)
+                self.co = yafaray4_interface.ImageOutput(self.ih, str(self.outputFile), 0, 0)
                 self.yi.setOutput2(self.co)
                 if scene.yafaray.logging.savePreset:
                     yafaray_presets.YAF_AddPresetBase.export_to_file(yafaray_presets.YAFARAY_OT_presets_renderset, self.outputFile)

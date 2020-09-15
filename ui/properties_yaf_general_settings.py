@@ -24,18 +24,18 @@ from bl_ui.properties_render import RenderButtonsPanel
 from bpy.types import Panel, Menu
 
 
-class YAFA_V3_MT_presets_render(Menu):
+class YAFARAY4_MT_presets_render(Menu):
     bl_label = "Yafaray Render Presets"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     
     preset_subdir = "render"
     preset_operator = "script.execute_preset"
     draw = yafaray_presets.Yafaray_Menu.draw_preset
 
 
-class YAFA_V3_PT_general_settings(RenderButtonsPanel, Panel):
+class YAFARAY4_PT_general_settings(RenderButtonsPanel, Panel):
     bl_label = "General Settings"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -43,7 +43,7 @@ class YAFA_V3_PT_general_settings(RenderButtonsPanel, Panel):
         render = scene.render
 
         row = layout.row(align=True)
-        row.menu("YAFA_V3_MT_presets_render", text=bpy.types.YAFA_V3_MT_presets_render.bl_label)
+        row.menu("YAFARAY4_MT_presets_render", text=bpy.types.YAFARAY4_MT_presets_render.bl_label)
         row.operator("yafaray.preset_add", text="", icon='ZOOMIN')
         #row.operator("yafaray.preset_add", text="", icon='ZOOMOUT').remove_active = True  #Does not work as expected, possibly better that the user deletes the presets manually himself to avoid deleting the wrong one by mistake anyway?
 
@@ -109,9 +109,9 @@ class YAFA_V3_PT_general_settings(RenderButtonsPanel, Panel):
         sub.prop(scene, "bg_transp_refract", toggle=True)
 
 
-class YAFA_V3_MT_logging(RenderButtonsPanel, Panel):
+class YAFARAY4_MT_logging(RenderButtonsPanel, Panel):
     bl_label = "Logging / Params Badge Settings"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -170,9 +170,9 @@ class YAFA_V3_MT_logging(RenderButtonsPanel, Panel):
                 col.prop(scene.yafaray.logging, "fontScale")
 
 
-class YAFA_V3_MT_clay_render(RenderButtonsPanel, Panel):
+class YAFARAY4_MT_clay_render(RenderButtonsPanel, Panel):
     bl_label = "Clay Render Settings"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
         layout = self.layout

@@ -181,7 +181,7 @@ class YAFARAY_OT_presets_renderset(YAF_AddPresetBase, Operator):
     '''To delete or modify presets, modify the .py files directly in that folder'''
     bl_idname = "yafaray.preset_add"
     bl_label = "Yafaray Render Presets"
-    preset_menu = "YAFA_V3_MT_presets_render"
+    preset_menu = "YAFARAY4_MT_presets_render"
     preset_defines = [
         "scene = bpy.context.scene"
     ]

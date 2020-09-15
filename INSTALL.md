@@ -26,7 +26,7 @@ https://download.blender.org/release/Blender2.79
 
 Once Blender is installed, locate the folder where it was installed. The paths given below are just examples, but they will probably be different in your system.
 
-Copy this entire folder "yafaray_v3" to (for example):
+Copy this entire folder "yafaray4" to (for example):
   - in Linux 64bit, for example: "$HOME/blender-2.79b-linux-glibc219-x86_64/2.79/scripts/addons" folder.
   - in Windows 64bit, for example: "C:\Program Files\Blender Foundation\Blender\2.79\scripts\addons" folder.
 
@@ -38,7 +38,7 @@ After it, start Blender, go to User Preferences, AddOns and try to enable Render
 
 If you have any issues:
 
-* Check that you have copied the "yafaray_v3" folder into the correct Blender addons folder.
+* Check that you have copied the "yafaray4" folder into the correct Blender addons folder.
 * Check that you have downloaded the appropiate YafaRay build for your Operating System and Blender build (32/64 bit)
 * Check that you are using the official Blender build from www.blender.org and it's a version supported by YafaRay (see CHANGELOG)
 * In extreme cases (black renders, crashes, etc) remove all older YafaRay versions and other YafaRay derived forks, and try again.

@@ -19,7 +19,7 @@
 # <pep8 compliant>
 
 import bpy
-import yafaray_v3_interface
+import yafaray4_interface
 
 
 def proj2int(val):
@@ -68,19 +68,19 @@ class yafMaterial:
         #mtex is an instance of MaterialTextureSlot class
 
         switchBlendMode = {
-            'MIX': 0,
-            'ADD': 1,
-            'MULTIPLY': 2,
-            'SUBTRACT': 3,
-            'SCREEN': 4,
-            'DIVIDE': 5,
-            'DIFFERENCE': 6,
-            'DARKEN': 7,
-            'LIGHTEN': 8,
+            'MIX': "mix",
+            'ADD': "add",
+            'MULTIPLY': "multiply",
+            'SUBTRACT': "subtract",
+            'SCREEN': "screen",
+            'DIVIDE': "divide",
+            'DIFFERENCE': "difference",
+            'DARKEN': "darken",
+            'LIGHTEN': "lighten",
         }
 
-        mode = switchBlendMode.get(mtex.blend_type, 0)  # set texture blend mode, if not a supported mode then set it to 'MIX'
-        yi.paramsSetInt("mode", mode)
+        mode = switchBlendMode.get(mtex.blend_type, 'MIX')  # set texture blend mode, if not a supported mode then set it to 'MIX'
+        yi.paramsSetString("blend_mode", mode)
         yi.paramsSetBool("stencil", mtex.use_stencil)
 
         negative = mtex.invert
@@ -169,14 +169,14 @@ class yafMaterial:
 
         if mtex.object:
             texmat = mtex.object.matrix_world.inverted()
-            rtmatrix = yafaray_v3_interface.new_floatArray(4 * 4)
+            rtmatrix = yafaray4_interface.new_floatArray(4 * 4)
 
             for x in range(4):
                 for y in range(4):
                     idx = (y + x * 4)
-                    yafaray_v3_interface.floatArray_setitem(rtmatrix, idx, texmat[x][y])
+                    yafaray4_interface.floatArray_setitem(rtmatrix, idx, texmat[x][y])
             yi.paramsSetMemMatrix("transform", rtmatrix, False)
-            yafaray_v3_interface.delete_floatArray(rtmatrix)
+            yafaray4_interface.delete_floatArray(rtmatrix)
 
         yi.paramsSetInt("proj_x", proj2int(mtex.mapping_x))
         yi.paramsSetInt("proj_y", proj2int(mtex.mapping_y))

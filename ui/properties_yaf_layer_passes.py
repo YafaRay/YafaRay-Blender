@@ -23,9 +23,9 @@ from bpy.types import Panel
 from bl_ui.properties_render_layer import RenderLayerButtonsPanel
 
 
-class YAFA_V3_PT_layers(RenderLayerButtonsPanel, Panel):
+class YAFARAY4_PT_layers(RenderLayerButtonsPanel, Panel):
     bl_label = "Layers"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 #    bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
@@ -60,9 +60,9 @@ class YAFA_V3_PT_layers(RenderLayerButtonsPanel, Panel):
         # TODO: Implement render layers
         #col.prop(rl, "layers", text="Layer")
 
-class YAFA_V3_PT_layer_passes(RenderLayerButtonsPanel, Panel):
+class YAFARAY4_PT_layer_passes(RenderLayerButtonsPanel, Panel):
     bl_label = "Render Passes"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw_header(self, context):
         scene = context.scene
@@ -302,9 +302,9 @@ class YAFA_V3_PT_layer_passes(RenderLayerButtonsPanel, Panel):
                 sub.prop(scene.yafaray.passes, "facesEdgeThreshold")                        
 
 
-class YAFA_V3_PT_views(RenderLayerButtonsPanel, Panel):
+class YAFARAY4_PT_views(RenderLayerButtonsPanel, Panel):
     bl_label = "Views"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     
     def draw_header(self, context):
         rd = context.scene.render
