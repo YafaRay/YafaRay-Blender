@@ -35,10 +35,7 @@ class YAFARAY4_PT_layers(RenderLayerButtonsPanel, Panel):
         rd = scene.render
 
         row = layout.row()
-        if bpy.app.version < (2, 65, 3 ):
-            row.template_list(rd, "layers", rd.layers, "active_index", rows=2)
-        else:
-            row.template_list("RENDERLAYER_UL_renderlayers", "", rd, "layers", rd.layers, "active_index", rows=2)
+        row.template_list("RENDERLAYER_UL_renderlayers", "", rd, "layers", rd.layers, "active_index", rows=2)
 
         col = row.column(align=True)
         col.operator("scene.render_layer_add", icon='ZOOMIN', text="")

@@ -88,7 +88,7 @@ def load_handler(dummy):
     if bpy.context.scene.render.image_settings.file_format is not bpy.context.scene.img_output:
         bpy.context.scene.img_output = bpy.context.scene.render.image_settings.file_format
 
-class YafaRay_Preferences(AddonPreferences):
+class YafaRay4Preferences(AddonPreferences):
     bl_idname = __name__
 
     yafaray_computer_node = IntProperty(
@@ -106,7 +106,7 @@ class YafaRay_Preferences(AddonPreferences):
         col.label("Click Save User Settings below to store the changes permanently in YafaRay!", icon="INFO")
 
 def register():
-    bpy.utils.register_class(YafaRay_Preferences)
+    bpy.utils.register_class(YafaRay4Preferences)
     prop.register()
     bpy.utils.register_module(__name__)
     bpy.app.handlers.load_post.append(load_handler)

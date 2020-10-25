@@ -44,7 +44,7 @@ from pprint import pprint
 from pprint import pformat
 from .. import yaf_global_vars
 
-class YafaRayRenderEngine(bpy.types.RenderEngine):
+class YafaRay4RenderEngine(bpy.types.RenderEngine):
     bl_idname = YAF_ID_NAME
     bl_use_preview = True
     bl_label = "YafaRay v4 Render"
@@ -59,13 +59,12 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         self.yi = yi
 
         if self.is_preview:
-            self.yi.setParamsBadgePosition("none")
             self.yi.setConsoleVerbosityLevel("mute")
             self.yi.setLogVerbosityLevel("mute")
             self.scene.bg_transp = False #to correct alpha problems in preview roughglass
             self.scene.bg_transp_refract = False #to correct alpha problems in preview roughglass
         else:
-            self.yi.setParamsBadgePosition(self.scene.yafaray.logging.paramsBadgePosition)
+            #FIXME self.yi.setParamsBadgePosition(self.scene.yafaray.logging.paramsBadgePosition)
             self.yi.setConsoleVerbosityLevel(self.scene.yafaray.logging.consoleVerbosity)
             self.yi.setLogVerbosityLevel(self.scene.yafaray.logging.logVerbosity)
             self.yi.printInfo("YafaRay-Blender (" + YAFARAY_BLENDER_VERSION + ")")
@@ -313,6 +312,26 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
 
         return outputFile, output, filetype
 
+    def defineImageOutput(self, output_name, fp, scene, render, color_space, gamma, alpha_premultiply):
+        self.outputFile, self.output, self.file_type = self.decideOutputFileName(fp, scene.img_output)
+        self.yi.paramsClearAll()
+        self.yi.paramsSetString("type", "image_output")
+        self.yi.paramsSetString("image_path", str(self.outputFile))
+        self.yi.paramsSetString("color_space", color_space)
+        self.yi.paramsSetFloat("gamma", gamma)
+        self.yi.paramsSetBool("alpha_premultiply", alpha_premultiply)
+        self.yi.paramsSetBool("img_multilayer", scene.img_multilayer)
+        self.yi.paramsSetBool("denoise_enabled", scene.img_denoise)
+        self.yi.paramsSetInt("denoise_h_lum", scene.img_denoiseHLum)
+        self.yi.paramsSetInt("denoise_h_col", scene.img_denoiseHCol)
+        self.yi.paramsSetFloat("denoise_mix", scene.img_denoiseMix)
+        print(render.image_settings.color_mode)
+        self.yi.paramsSetBool("alpha_channel", render.image_settings.color_mode == "RGBA")
+        self.yi.paramsSetInt("width", self.resX)
+        self.yi.paramsSetInt("height", self.resY)
+        yaf_scene.setLoggingAndBadgeSettings(self.yi, self.scene)
+        self.co = self.yi.createOutput(output_name)
+
     # callback to export the scene
     def update(self, data, scene):
         self.update_stats("", "Setting up render")
@@ -343,40 +362,24 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.resX = self.sizeX
             self.resY = self.sizeY
 
+        color_space = yaf_scene.calcColorSpace(scene)
+        gamma = yaf_scene.calcGamma(scene)
+        alpha_premultiply = yaf_scene.calcAlphaPremultiply(scene)
+
         if scene.gs_type_render == "file":
             self.setInterface(yafaray4_interface.Interface())
-            self.yi.startScene()
             yaf_scene.exportRenderPassesSettings(self.yi, self.scene)
-            self.yi.setupRenderPasses()
             self.yi.setInteractive(False)
-            yaf_scene.setLoggingAndBadgeSettings(self.yi, self.scene)
-            self.yi.setLoggingAndBadgeSettings()
             self.yi.setInputColorSpace("LinearRGB", 1.0)    #When rendering into Blender, color picker floating point data is already linear (linearized by Blender)
-            self.outputFile, self.output, self.file_type = self.decideOutputFileName(fp, scene.img_output)
-            self.yi.paramsClearAll()
-            self.yi.paramsSetString("type", self.file_type)
-            self.yi.paramsSetBool("img_multilayer", scene.img_multilayer)
-            self.yi.paramsSetBool("denoiseEnabled", scene.img_denoise)
-            self.yi.paramsSetInt("denoiseHLum", scene.img_denoiseHLum)
-            self.yi.paramsSetInt("denoiseHCol", scene.img_denoiseHCol)
-            self.yi.paramsSetFloat("denoiseMix", scene.img_denoiseMix)
-            self.yi.paramsSetBool("alpha_channel", render.image_settings.color_mode == "RGBA")
-            self.yi.paramsSetInt("width", self.resX)
-            self.yi.paramsSetInt("height", self.resY)
-            self.ih = self.yi.createImageHandler("outFile")
-            self.co = yafaray4_interface.ImageOutput(self.ih, str(self.outputFile), 0, 0)
+            self.defineImageOutput("blender_file_output", fp, scene, render, color_space.blender, gamma.blender, alpha_premultiply.blender)
             if scene.yafaray.logging.savePreset:
                 yafaray_presets.YAF_AddPresetBase.export_to_file(yafaray_presets.YAFARAY_OT_presets_renderset, self.outputFile)
 
         elif scene.gs_type_render == "xml":
-            self.setInterface(yafaray4_interface.XmlInterface())
             self.outputFile, self.output, self.file_type = self.decideOutputFileName(fp, 'XML')
-            self.yi.setOutfile(self.outputFile)
+            self.setInterface(yafaray4_interface.XmlExport(self.outputFile, 0)) #FIXME type=0?
             yaf_scene.exportRenderPassesSettings(self.yi, self.scene)
-            self.yi.setupRenderPasses()
             self.yi.setInteractive(False)
-            yaf_scene.setLoggingAndBadgeSettings(self.yi, self.scene)
-            self.yi.setLoggingAndBadgeSettings()
                         
             input_color_values_color_space = "sRGB"
             input_color_values_gamma = 1.0
@@ -393,34 +396,18 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             
             self.yi.setInputColorSpace("LinearRGB", 1.0)    #Values from Blender, color picker floating point data are already linear (linearized by Blender)
             self.yi.setXmlColorSpace(input_color_values_color_space, input_color_values_gamma)  #To set the XML interface to write the XML values with the correction included for the selected color space (and gamma if applicable)
-            
-            self.yi.paramsClearAll()
-            self.co = yafaray4_interface.ImageOutput()
+            self.defineImageOutput("output", fp, scene, render, color_space.blender, gamma.blender, alpha_premultiply.blender)
 
         else:
             self.setInterface(yafaray4_interface.Interface())
             yaf_scene.exportRenderPassesSettings(self.yi, self.scene)
-            self.yi.setupRenderPasses()
             self.yi.setInteractive(True)
-            yaf_scene.setLoggingAndBadgeSettings(self.yi, self.scene)
-            self.yi.setLoggingAndBadgeSettings()
             self.yi.setInputColorSpace("LinearRGB", 1.0)    #When rendering into Blender, color picker floating point data is already linear (linearized by Blender)
+            self.blender_output = yafaray4_interface.PythonOutput(self.resX, self.resY, self.bStartX, self.bStartY, self.is_preview, color_space.blender, gamma.blender, True, alpha_premultiply.blender)
+            self.yi.createOutput("blender_output", self.blender_output)
 
             if scene.gs_secondary_file_output and not self.is_preview:
-                self.outputFile, self.output, self.file_type = self.decideOutputFileName(fp, scene.img_output)
-                self.yi.paramsClearAll()
-                self.yi.paramsSetString("type", self.file_type)
-                self.yi.paramsSetBool("img_multilayer", scene.img_multilayer)
-                self.yi.paramsSetBool("denoiseEnabled", scene.img_denoise)
-                self.yi.paramsSetInt("denoiseHLum", scene.img_denoiseHLum)
-                self.yi.paramsSetInt("denoiseHCol", scene.img_denoiseHCol)
-                self.yi.paramsSetFloat("denoiseMix", scene.img_denoiseMix)
-                self.yi.paramsSetBool("alpha_channel", render.image_settings.color_mode == "RGBA")
-                self.yi.paramsSetInt("width", self.resX)
-                self.yi.paramsSetInt("height", self.resY)
-                self.ih = self.yi.createImageHandler("outFile")
-                self.co = yafaray4_interface.ImageOutput(self.ih, str(self.outputFile), 0, 0)
-                self.yi.setOutput2(self.co)
+                self.defineImageOutput("blender_secondary_output", fp, scene, render, color_space.secondary_output, gamma.secondary_output, alpha_premultiply.secondary_output)
                 if scene.yafaray.logging.savePreset:
                     yafaray_presets.YAF_AddPresetBase.export_to_file(yafaray_presets.YAFARAY_OT_presets_renderset, self.outputFile)
 
@@ -439,25 +426,17 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         if scene.gs_type_render == "file":
             self.yi.printInfo("Exporter: Rendering to file {0}".format(self.outputFile))
             self.update_stats("YafaRay Rendering:", "Rendering to {0}".format(self.outputFile))
-            self.yi.render(self.co)
+            self.yi.render()
             result = self.begin_result(0, 0, self.resX, self.resY)
-            lay = result.layers[0] #if bpy.app.version < (2, 74, 4 ) else result.layers[0].passes[0] #FIXME?
-
-            lay.load_from_file(self.outputFile)
+            result.layers[0].load_from_file(self.outputFile)
             #lay.passes["Depth"].load_from_file("{0} (Depth).{1}".format(self.output, self.file_type)) #FIXME? Unfortunately I cannot find a way to load the exported images back to the appropiate passes in Blender. Blender probably needs to improve their API to allow per-pass loading of files. Also, Blender does not allow opening multi layer EXR files with this function.
-
             self.end_result(result)
 
         elif scene.gs_type_render == "xml":
             self.yi.printInfo("Exporter: Writing XML to file {0}".format(self.outputFile))
-            self.yi.paramsSetBool("denoiseEnabled", scene.img_denoise)
-            self.yi.paramsSetInt("denoiseHLum", scene.img_denoiseHLum)
-            self.yi.paramsSetInt("denoiseHCol", scene.img_denoiseHCol)
-            self.yi.paramsSetFloat("denoiseMix", scene.img_denoiseMix)
-            self.yi.render(self.co)
+            self.yi.render()
 
         else:
-
             def progressCallback(command, *args):
                 if not self.test_break():
                     if command == "tag":
@@ -468,133 +447,50 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
                     # Now, Blender use same range to YafaRay
                     self.update_progress(self.prog)
 
+            def updateBlenderResult(x, y, w, h, view_name, tiles, callback_name):
+                if scene.render.use_multiview:
+                    blender_result_buffers = self.begin_result(x, y, w, h, "", view_name)
+                else:
+                    blender_result_buffers = self.begin_result(x, y, w, h)
+                for tile in tiles:
+                    tile_name, tile_bitmap = tile
+                    try:
+                        blender_result_buffers.layers[0].passes[tile_name].rect = tile_bitmap
+                    except:
+                        print("Exporter: Exception while rendering in " + callback_name + " function:")
+                        traceback.print_exc()
+                self.end_result(blender_result_buffers)
+
             def drawAreaCallback(*args):
-                x, y, w, h, view_number, tiles = args
-                res = self.begin_result(x, y, w, h)
-
-                try:
-                    l = res.layers[0]
-                    if bpy.app.version < (2, 74, 4 ):
-                        for tile in tiles:
-                            view_name, tile_name, tile_bitmap = tile
-                            try:
-                                if tile_name == "Combined":
-                                    l.rect = tile_bitmap
-                                else:
-                                    l.passes[tile_name].rect = tile_bitmap
-                            except:
-                                print("Exporter: Exception while rendering in drawAreaCallback function:")
-                                traceback.print_exc()
-                    else:
-                        if scene.render.use_multiview:
-                            #due to Blender limitations while drawing the tiles, I cannot use the view names properly and I have to repeat the currently drawing tile into all views so it shows correctly. Maybe there is a better way?
-                            for view_number,view in enumerate(scene.render.views):
-                                if view.use and not (scene.render.views_format == "STEREO_3D" and view.name != "left" and view.name != "right"):
-                                    view_suffix = '.'+scene.render.views[view_number].name
-                                
-                                    for tile in tiles:
-                                        view_name, tile_name, tile_bitmap = tile
-                                        try:
-                                            if bpy.app.version < (2, 79, 0 ):
-                                                l.passes[tile_name+view_suffix].rect = tile_bitmap
-                                            else:
-                                                l.passes.find_by_name(tile_name, view.name).rect = tile_bitmap
-                                        except:
-                                            print("Exporter: Exception while rendering in drawAreaCallback function:")
-                                            traceback.print_exc()
-                                        
-                        else:
-                            for tile in tiles:
-                                view_name, tile_name, tile_bitmap = tile
-                                try:
-                                    l.passes[tile_name].rect = tile_bitmap
-                                except:
-                                    print("Exporter: Exception while rendering in drawAreaCallback function:")
-                                    traceback.print_exc()
-
-                    self.end_result(res)
-
-                except:
-                    print("Exporter: Exception while rendering in drawAreaCallback function:")
-                    traceback.print_exc()
+                x, y, w, h, view_name, tiles = args
+                if view_name == "":  # In case we use Render 3D viewport with Views enabled, it will copy the result to all views
+                    for view in scene.render.views:
+                        updateBlenderResult(x, y, w, h, view.name, tiles, "drawAreaCallback")
+                else:  # Normal rendering
+                    updateBlenderResult(x, y, w, h, view_name, tiles, "drawAreaCallback")
 
             def flushCallback(*args):
-                w, h, view_number, tiles = args
-                res = self.begin_result(0, 0, w, h)
+                w, h, view_name, tiles = args
+                if view_name == "":  # In case we use Render 3D viewport with Views enabled, it will copy the result to all views
+                    for view in scene.render.views:
+                        updateBlenderResult(0, 0, w, h, view.name, tiles, "flushCallback")
+                else:  # Normal rendering
+                    updateBlenderResult(0, 0, w, h, view_name, tiles, "flushCallback")
 
-                try:
-                    l = res.layers[0]
-                    if bpy.app.version < (2, 74, 4 ):
-                        for tile in tiles:
-                            view_name, tile_name, tile_bitmap = tile
-                            try:
-                                if tile_name == "Combined":
-                                    l.rect = tile_bitmap
-                                else:
-                                    l.passes[tile_name].rect = tile_bitmap
-                            except:
-                                print("Exporter: Exception while rendering in drawAreaCallback function:")
-                                traceback.print_exc()
-                    else:
-                        for tile in tiles:
-                            view_name, tile_name, tile_bitmap = tile
-                            if scene.render.use_multiview:
-                                if view_name == "":  #In case we use Render 3D vierpowrt with Views enabled, it will copy the result to all views
-                                    for view_number,view in enumerate(scene.render.views):
-                                        if view.use and not (scene.render.views_format == "STEREO_3D" and view.name != "left" and view.name != "right"):
-                                            full_tile_name = tile_name + "." + view.name
-                                            try:
-                                                if bpy.app.version < (2, 79, 0 ):
-                                                    l.passes[full_tile_name].rect = tile_bitmap
-                                                else:
-                                                    l.passes.find_by_name(tile_name, view.name).rect = tile_bitmap
-                                            except:
-                                                print("Exporter: Exception while rendering in flushCallback function:")
-                                                traceback.print_exc()
-                                else:
-                                    if scene.render.views[view_name].use and not (scene.render.views_format == "STEREO_3D" and view_name != "left" and view_name != "right"):
-                                        full_tile_name = tile_name + "." + view_name
-                                        try:
-                                            if bpy.app.version < (2, 79, 0 ):
-                                                l.passes[full_tile_name].rect = tile_bitmap
-                                            else:
-                                                l.passes.find_by_name(tile_name, view_name).rect = tile_bitmap
-                                        except:
-                                            print("Exporter: Exception while rendering in flushCallback function:")
-                                            traceback.print_exc()
-                            else:
-                                full_tile_name = tile_name
-                                try:
-                                    l.passes[full_tile_name].rect = tile_bitmap
-                                except:
-                                    print("Exporter: Exception while rendering in flushCallback function:")
-                                    traceback.print_exc()
-
-                    self.end_result(res)
-
-                except BaseException as e:
-                    print("Exporter: Exception while rendering in flushCallback function:")
-                    traceback.print_exc()
-
-            t = threading.Thread(
-                                    target=self.yi.render,
-                                    args=(self.resX, self.resY, self.bStartX, self.bStartY,
-                                    self.is_preview,
-                                    drawAreaCallback,
-                                    flushCallback,
-                                    progressCallback)
-                                )
+            self.blender_output.setRenderCallbacks(drawAreaCallback, flushCallback)
+            t = threading.Thread(target=self.yi.render, args=(progressCallback,))
             t.start()
 
-            while t.isAlive() and not self.test_break():
+            while t.is_alive() and not self.test_break():
                 time.sleep(0.2)
 
-            if t.isAlive():
+            if t.is_alive():
                 self.update_stats("", "Aborting, please wait for all pending tasks to complete (progress in console log)...")
                 self.yi.abort()
                 t.join()
 
         self.yi.clearAll()
+        self.yi.clearOutputs()
         del self.yi
         self.update_stats("", "Done!")
         self.bl_use_postprocess = True

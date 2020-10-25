@@ -111,10 +111,7 @@ class YAFARAY4_TEXTURE_PT_context_texture(YAFARAY4_TextureButtonsPanel, Panel):
 
         if tex_collection:
             row = layout.row()
-            if bpy.app.version < (2, 65, 3 ):
-                row.template_list(idblock, "texture_slots", idblock, "active_texture_index", rows=2)
-            else:
-                row.template_list("TEXTURE_UL_texslots", "", idblock, "texture_slots", idblock, "active_texture_index", rows=2)
+            row.template_list("TEXTURE_UL_texslots", "", idblock, "texture_slots", idblock, "active_texture_index", rows=2)
 
             col = row.column(align=True)
             col.operator("texture.slot_move", text="", icon='TRIA_UP').type = 'UP'

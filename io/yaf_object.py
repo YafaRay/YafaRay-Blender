@@ -58,10 +58,7 @@ class yafObject(object):
         
         cameras = []
 
-        if bpy.app.version < (2, 74, 4 ):
-            render_use_multiview = False
-        else:
-            render_use_multiview = render.use_multiview
+        render_use_multiview = render.use_multiview
 
         if yaf_global_vars.useViewToRender or not render_use_multiview:
             cameras.append(CameraData(self.scene.camera, "cam", ""))
@@ -187,8 +184,10 @@ class yafObject(object):
             yi.paramsSetPoint("from", pos[0], pos[1], pos[2])
             yi.paramsSetPoint("up", up[0], up[1], up[2])
             yi.paramsSetPoint("to", to[0], to[1], to[2])
-            yi.paramsSetString("view_name", cam.view_name)
             yi.createCamera(cam.camera_name)
+            self.yi.paramsClearAll()
+            self.yi.paramsSetString("camera_name", cam.camera_name)
+            self.yi.createRenderView(cam.view_name)
 
 
     def getBBCorners(self, object):
@@ -415,10 +414,7 @@ class yafObject(object):
         yi.paramsSetFloat("maxZ", min(max(vec[2::3]), 1e10))
 
         yi.createVolumeRegion("VR.{0}-{1}".format(obj.name, str(obj.__hash__())))
-        if bpy.app.version < (2, 78, 0 ):
-            bpy.data.meshes.remove(mesh)
-        else:
-            bpy.data.meshes.remove(mesh, do_unlink=False)
+        bpy.data.meshes.remove(mesh, do_unlink=False)
 
     def writeGeometry(self, ID, obj, matrix, pass_index, obType=0, oMat=None):
 
@@ -438,18 +434,12 @@ class yafObject(object):
 
             if not mesh.tessfaces:
                 # if there are no faces, no need to write geometry, remove mesh data then...
-                if bpy.app.version < (2, 78, 0 ):
-                    bpy.data.meshes.remove(mesh)
-                else:
-                    bpy.data.meshes.remove(mesh, do_unlink=False)
+                bpy.data.meshes.remove(mesh, do_unlink=False)
                 return
         else:
             if not mesh.faces:
                 # if there are no faces, no need to write geometry, remove mesh data then...
-                if bpy.app.version < (2, 78, 0 ):
-                    bpy.data.meshes.remove(mesh)
-                else:
-                    bpy.data.meshes.remove(mesh, do_unlink=False)
+                bpy.data.meshes.remove(mesh, do_unlink=False)
                 return
 
         # Check if the object has an orco mapped texture
@@ -552,11 +542,7 @@ class yafObject(object):
             self.yi.smoothMesh("", 181)
 
         self.yi.endGeometry()
-
-        if bpy.app.version < (2, 78, 0 ):
-            bpy.data.meshes.remove(mesh)
-        else:
-            bpy.data.meshes.remove(mesh, do_unlink=False)
+        bpy.data.meshes.remove(mesh, do_unlink=False)
 
     def getFaceMaterial(self, meshMats, matIndex, matSlots):
 
