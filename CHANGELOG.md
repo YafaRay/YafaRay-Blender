@@ -1,17 +1,92 @@
-YafaRay + Blender Exporter for Blender v2.82 ChangeLog
+YafaRay + Blender Exporter for Blender v2.90 ChangeLog
 ======================================================
-Important: read the README file for installation instructions and important information about YafaRay
+Important: read the README.md file for installation instructions and important information about YafaRay
 
 This is an abbreviated list of changes. The full/detailed list of changes can be seen at:
-* YafaRay Core code: https://github.com/YafaRay/Core/commits/master
-* Blender Exporter (for Blender v2.82): https://github.com/YafaRay/Blender28-Exporter/commits/master
+* libYafaRay code: https://github.com/YafaRay/libYafaRay
+* Blender Exporter: https://github.com/YafaRay/YafaRay-Blender
 
-YafaRay v3.4.1-alpha1 (2020-04-10) for Blender 2.82:
+
+YafaRay v4.0.0-pre-alpha (devel) for Blender 2.90:
 ----------------------------------------------------
-* Initial changes for Blender v2.82. VERY EXPERIMENTAL. Many things are not working, or not working correctly. `[Blender Exporter]`
+* Initial changes for Blender v2.90 using libYafaRay v4.0.0-pre-alpha. VERY EXPERIMENTAL. Many things are not working, or not working correctly. `[Blender Exporter + Core]`
   - Nodes not implemented yet
   - Therefore, no textures available at the moment
   - World not working
+
+
+
+(2020-07-18) VERY IMPORTANT! CHANGED GITHUB REPOSITORIES!!
+----------------------------------------------------------
+In order to have proper official GitHub YafaRay repositories that do not show as "forked" from other projects, we have created new GitHub repositories.
+
+Those new GitHub repositories are copies of the previous ones, and preserve all the history, commits, and contributors information. They also preserve the versions tags, although not the binaries for previous versions.
+
+The old repositories will not be deleted, but marked as "Archived" in Github, meaning that they will no longer be updated there. The binaries of releases v3.5.1 or older will be preserved in those archived repos.
+
+Distro maintainers and any other users who were linking/forking the original repos should switch to the new ones.
+
+We hope this change helps further development, sorry for the inconveniences!
+
+
+
+YafaRay v3.5.1 (2020-07-13) for Blender 2.79:
+---------------------------------------------
+* MacOS: found/fixed root cause of Blender python segfault 11 and ruby SketchUp Make 2017 "incompatible version" problems  `[Core]`
+* MacOS: fixed Qt5 menus. Toolbar not fixed yet, hiding it for now.  `[Core]`
+* XML parser: fix build broken when XMLImport and XML Loader are disabled (and no dependencies on LibXML2/ZLib)  `[Core]`
+* Build info: made it less verbose (it was getting too long in some platforms) and added dash between platform and compiler when there is a platform (like MinGW)  `[Core]`
+* Logging: fixed HTML log display of jpg and png images  `[Core]`
+* Ruby Qt bindings: change name to avoid collisions in linux python "import yafqt" between yafqt.py and yafqt.so  `[Core]`
+
+
+YafaRay v3.5.0 (2020-07-10) for Blender 2.79:
+---------------------------------------------
+* IMPORTANT: Removal of *all* Boost dependencies. I've implemented new Unicode File management and new ImageFilm/PhotonMap saving/loading system.  `[Core]`
+   - All functionality depending on Boost has been rewritten from scratch to be able to remove Boost altogether.  `[Core]`
+   - Implemented Unicode UTF8/UTF16 conversions for strings in POSIX and Windows systems  `[Core]`
+   - Implemented Unicode UTF8/UTF16 file handling classes for Unicode paths in POSIX and Windows systems  `[Core]`
+   - In the process of that implementation I fixed some issues that were pending for a long time:
+        - Now almost all files (including logs) are handled with the new file_t interface, so all works when using Unicode paths (logs were not correctly saved sometimes in Windows)  `[Core]`
+        - No longer need for temporary files when using OpenEXR files with Unicode paths.  `[Core]`
+   - Implemented new system to save / load ImageFilm and Photon Maps. The files generated with previous versions of YafaRay are *no longer valid* for this new method.  `[Core]`
+        - I think the new system is faster and generates smaller files (still big, depending on the amount of info)  `[Core]`
+        - Only drawback for now, when loading photon maps it has to regenerate the photon search KD tree, which is no longer saved in the photon map file.  `[Core]`
+        - No longer need to have a separate binary/text format for portability. In principle it should work the same in Linux/Windows, etc.   `[Blender Exporter + Core]`
+        - Endianness could be an issue for non-Intel/AMD platforms like ARM, to be investigated in the future, but that's a problem for another day.  `[Core]`
+   - Removed all SysInfo Boost code and replaced it by a "CMake-building" generation. Renamed sysinfo classes as build_info.  `[Core]`
+        
+* IMPORTANT: CMake: made LibXML2 / ZLib optional. New CMake flag "WITH_XMLImport" to enable LibXML2. Now all the dependencies are finally optional and pure YafaRay library can be built without any dependencies.  `[Core]`
+* IMPORTANT: general header files de-coupling and cleanup, some old unused and broken code deleted  `[Core]`
+* Changing documentation extension to Markdown *.md  `[Blender Exporter + Core]`
+* Bidirectional integrator: adding integrator information to log and badge  `[Core]`
+* Bidirectional integrator: fixed transparent shadows, as requested in https://github.com/YafaRay/Blender-Exporter/issues/38  `[Core]`
+* SPPM: fixed memory corruption when using startx, starty not zero, as requested in https://github.com/YafaRay/Blender-Exporter/issues/41 and https://github.com/YafaRay/Blender-Exporter/issues/40  `[Core]`
+* XML Parser: added XML SAX parsing error diagnostic messages, as requested in https://github.com/YafaRay/Core/issues/121  `[Core]`
+* Added back -pthread flag for gcc/g++ compilation to fix FreeBSD builds To fix FreeBSD build as requested in https://github.com/YafaRay/Core/issues/113  `[Core]`
+* Removed some warnings for GCC. Also removed some Clang warnings as requested by https://github.com/YafaRay/Core/issues/110  `[Core]`
+* Fixed some source file comments license boilerplate to remove wrongly encoded characters that were confusing some IDEs  `[Core]`
+* CMake: unifying all cmake-generated headers, simplifying code. Threads: moved runtime detection to dedicated class  `[Core]`
+* OpenCV Denoise: better encapsulation and code reuse, at the expense of slower processing  `[Core]`
+* Renamed yafsystem/sharedlibrary_t by a (clearer) dynamic_library/dynamicLoadedLibrary_t  `[Core]`
+* Git: added .gitignore to ignore all "hidden" files starting with "." (i.e. IDE generated files)  `[Core]`
+* Swig Ruby: avoid -Wsign-compare warning.  `[Core]`
+
+
+
+YafaRay v3.4.4 (2020-05-09) for Blender 2.79:
+---------------------------------------------
+* Angular camera: modified to add several types of angular projections and to fix new ortographic calculations.  `[Blender Exporter + Core]`
+
+
+YafaRay v3.4.3 (2020-05-09) for Blender 2.79:
+---------------------------------------------
+* Angular camera: added "Ortographic" projection.  `[Blender Exporter + Core]`
+
+
+YafaRay v3.4.2 (2020-05-04) for Blender 2.79:
+---------------------------------------------
+* Added Equirectangular camera.  `[Blender Exporter + Core]`
 
 
 YafaRay v3.4.1a (2020-04-09) for Blender 2.79:

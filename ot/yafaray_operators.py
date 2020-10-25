@@ -139,7 +139,7 @@ class RENDER_OT_render_view(Operator):
     @classmethod
     def poll(cls, context):
 
-        return context.scene.render.engine == 'YAFA_V3_RENDER'
+        return context.scene.render.engine == 'YAFARAY4_RENDER'
 
     def execute(self, context):
         view3d = context.region_data
@@ -178,7 +178,7 @@ class RENDER_OT_render_animation(Operator):
     @classmethod
     def poll(cls, context):
 
-        return context.scene.render.engine == 'YAFA_V3_RENDER'
+        return context.scene.render.engine == 'YAFARAY4_RENDER'
 
     def execute(self, context):
         sceneLights = checkSceneLights()
@@ -201,7 +201,7 @@ class RENDER_OT_render_still(Operator):
     @classmethod
     def poll(cls, context):
 
-        return context.scene.render.engine == 'YAFA_V3_RENDER'
+        return context.scene.render.engine == 'YAFARAY4_RENDER'
 
     def execute(self, context):
         sceneLights = checkSceneLights()
@@ -229,7 +229,7 @@ class YAF_OT_presets_ior_list(Operator):
 
     def execute(self, context):
         yaf_mat = context.material
-        bpy.types.YAFA_V3_MT_presets_ior_list.bl_label = self.name
+        bpy.types.YAFARAY4_MT_presets_ior_list.bl_label = self.name
         yaf_mat.IOR_refraction = self.index
         return {'FINISHED'}
 

@@ -22,26 +22,25 @@ import sys
 import os
 import ctypes
 
-PLUGIN_NAME = "yafaray_v3"
-PLUGIN_PATH = os.path.join(__path__[0], 'bin', 'yafaray-plugins')
+PLUGIN_NAME = "yafaray_v4"
 BIN_PATH = os.path.join(__path__[0], 'bin')
-YAF_ID_NAME = "YAFA_V3_RENDER"
+YAF_ID_NAME = "YAFARAY4_RENDER"
 
 # Version to be automatically populated during the cmake build process, getting the version from git tags
-YAFARAY_EXPORTER_VERSION = "@YAFARAY_BLENDER_EXPORTER_VERSION@"
+YAFARAY_BLENDER_VERSION = "v4-pre-alpha (development)"
 
 sys.path.append(BIN_PATH)
 
 bl_info = {
-    "name": "YafaRay v3 Exporter",
+    "name": "YafaRay v4 Exporter",
     "description": "YafaRay integration for blender",
     "author": "Shuvro Sarker, Kim Skoglund (Kerbox), Pedro Alcaide (povmaniaco),"
               "Paulo Gomes (tuga3d), Michele Castigliego (subcomandante),"
               "Bert Buchholz, Rodrigo Placencia (DarkTide),"
               "Alexander Smirnov (Exvion), Olaf Arnold (olaf), David Bluecame",
 # Version to be automatically populated during the cmake build process, getting the version from git tags
-    "version": ("@YAFARAY_BLENDER_EXPORTER_VERSION@", ""),
-    "blender": (2, 82, 0),
+    "version": ("v4-pre-alpha (development)", ""),
+    "blender": (2, 90, 0),
     "location": "Info Header > Engine dropdown menu",
     "wiki_url": "http://www.yafaray.org/community/forum",
     "tracker_url": "http://www.yafaray.org/development/bugtracker/yafaray",

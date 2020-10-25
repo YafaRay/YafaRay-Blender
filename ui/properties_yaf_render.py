@@ -23,9 +23,9 @@ from bpy.types import Panel
 from bl_ui.properties_render import RenderButtonsPanel
 
 
-class YAFA_V3_PT_Render(RenderButtonsPanel, Panel):
+class YAFARAY4_PT_Render(RenderButtonsPanel, Panel):
     bl_label = "Render"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
 
@@ -48,9 +48,9 @@ class YAFA_V3_PT_Render(RenderButtonsPanel, Panel):
         layout.row().operator("render.render_view", text="Render 3D View", icon='VIEW3D')
         #FIXME DAVID! layout.prop(rd, "display_mode", text="Display")
 
-class YAFA_V3_PT_dimensions(RenderButtonsPanel, Panel):
+class YAFARAY4_PT_dimensions(RenderButtonsPanel, Panel):
     bl_label = "Dimensions"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
@@ -87,9 +87,9 @@ class YAFA_V3_PT_dimensions(RenderButtonsPanel, Panel):
         sub.prop(scene, "frame_step", text="Step")
 
 
-class YAFA_V3_PT_output(RenderButtonsPanel, Panel):
+class YAFARAY4_PT_output(RenderButtonsPanel, Panel):
     bl_label = "Output"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -187,8 +187,6 @@ class YAFA_V3_PT_output(RenderButtonsPanel, Panel):
             col.prop(sc, "gs_film_save_load")
             if sc.gs_film_save_load == "save" or sc.gs_film_save_load == "load-save":
                 row = layout.row()
-                col = row.column()            
-                col.prop(sc, "gs_film_save_binary_format")
                 col = row.column()
                 col.prop(sc, "gs_film_autosave_interval_type")
                 col = row.column()
@@ -204,9 +202,9 @@ class YAFA_V3_PT_output(RenderButtonsPanel, Panel):
                 row.label(text="If the loaded image Film does not match exactly the scene, crashes and/or incorrect renders may happen, USE WITH CARE!", icon="ERROR")
 
 
-class YAFA_V3_PT_post_processing(RenderButtonsPanel, Panel):
+class YAFARAY4_PT_post_processing(RenderButtonsPanel, Panel):
     bl_label = "Post Processing"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
@@ -224,18 +222,18 @@ class YAFA_V3_PT_post_processing(RenderButtonsPanel, Panel):
         col.prop(rd, "dither_intensity", text="Dither", slider=True)
 
 
-class YAFA_V3_PT_convert(RenderButtonsPanel, Panel):
+class YAFARAY4_PT_convert(RenderButtonsPanel, Panel):
     bl_label = "Convert old YafaRay Settings"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
         layout = self.layout
         layout.column().operator("data.convert_yafaray_properties", text="Convert data from 2.4x")
 
 
-class YAFA_V3_PT_Advanced(RenderButtonsPanel, Panel):
+class YAFARAY4_PT_Advanced(RenderButtonsPanel, Panel):
     bl_label = "Advanced Settings - only for experts"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
@@ -263,12 +261,12 @@ class YAFA_V3_PT_Advanced(RenderButtonsPanel, Panel):
             sub.prop(scene, "adv_min_raydist_value")
             
 classes = (
-    YAFA_V3_PT_Render,
-    YAFA_V3_PT_dimensions,
-    YAFA_V3_PT_output,
-    YAFA_V3_PT_post_processing,
-    YAFA_V3_PT_convert,
-    YAFA_V3_PT_Advanced,
+    YAFARAY4_PT_Render,
+    YAFARAY4_PT_dimensions,
+    YAFARAY4_PT_output,
+    YAFARAY4_PT_post_processing,
+    YAFARAY4_PT_convert,
+    YAFARAY4_PT_Advanced,
 )
 
 def register():

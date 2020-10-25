@@ -20,7 +20,7 @@
 
 import bpy
 import os
-from .. import PLUGIN_NAME
+from collections import namedtuple
 
 def computeSceneSize(render):
     sizeX = int(render.resolution_x * render.resolution_percentage * 0.01)
@@ -103,64 +103,12 @@ def exportAA(yi, scene):
 def exportRenderSettings(yi, depsgraph):
     yi.printVerbose("Exporting Render Settings")
     scene = depsgraph.scene
-
     render = scene.render
 
     [sizeX, sizeY, bStartX, bStartY, bsizeX, bsizeY, cam_data] = getRenderCoords(scene)
 
-    yi.paramsSetString("camera_name", "cam")
     yi.paramsSetString("integrator_name", "default")
     yi.paramsSetString("volintegrator_name", "volintegr")
-
-    output_device_color_space = "LinearRGB"
-    output_device_gamma = 1.0
-    output2_device_color_space = "sRGB"
-    output2_device_gamma = 1.0
-
-    if scene.gs_type_render == "file" or scene.gs_type_render == "xml":
-        output_device_color_space = "sRGB"
-
-        if scene.img_output == "OPEN_EXR" or scene.img_output == "HDR":  #If the output file is a HDR/EXR file, we force the render output to Linear
-            output_device_color_space = "LinearRGB"
-            
-        elif scene.display_settings.display_device == "sRGB":
-            output_device_color_space = "sRGB"
-            
-        elif scene.display_settings.display_device == "XYZ":
-            output_device_color_space = "XYZ"
-            
-        elif scene.display_settings.display_device == "None":
-            output_device_color_space = "Raw_Manual_Gamma"
-            output_device_gamma = scene.gs_gamma  #We only use the selected gamma if the output device is set to "None"
-
-    else:   #Render into Blender
-        output_device_color_space = "LinearRGB"    #Blender expects a linear output from YafaRay
-
-        if scene.display_settings.display_device == "sRGB" or scene.display_settings.display_device == "XYZ" or scene.display_settings.display_device == "Rec709":
-            output_device_color_space = "LinearRGB"  #If we render into Blender, YafaRay generates linear output and Blender does the conversion to the color space
-           
-        elif scene.display_settings.display_device == "None":
-            output_device_color_space = "Raw_Manual_Gamma"
-            output_device_gamma = scene.gs_gamma  #We only use the selected gamma if the output device is set to "None"
-
-        #Optional Secondary file output color space
-        if scene.img_output == "OPEN_EXR" or scene.img_output == "HDR":  #If the output file is a HDR/EXR file, we force the render output to Linear
-            output2_device_color_space = "LinearRGB"
-            
-        elif scene.display_settings.display_device == "sRGB":
-            output2_device_color_space = "sRGB"
-            
-        elif scene.display_settings.display_device == "XYZ":
-            output2_device_color_space = "XYZ"
-            
-        elif scene.display_settings.display_device == "None":
-            output2_device_color_space = "Raw_Manual_Gamma"
-            output2_device_gamma = scene.gs_gamma  #We only use the selected gamma if the output device is set to "None"
-
-    yi.paramsSetString("color_space", output_device_color_space)
-    yi.paramsSetFloat("gamma", output_device_gamma)
-    yi.paramsSetString("color_space2", output2_device_color_space)
-    yi.paramsSetFloat("gamma2", output2_device_gamma)
 
     exportAA(yi, scene)
 
@@ -180,24 +128,6 @@ def exportRenderSettings(yi, depsgraph):
     if scene.name == "preview" and bpy.data.scenes[0].yafaray.preview.enable:
         yi.paramsSetBool("show_sam_pix", False)
 
-    enable_premult = True
-    if scene.gs_premult == "auto":
-        if scene.img_output == "PNG" or scene.img_output == "JPEG":
-            enable_premult = False
-        else:
-            enable_premult = True
-    elif scene.gs_premult == "yes":
-        enable_premult = True
-    else:
-        enable_premult = False
-
-    if scene.gs_type_render == "file" or scene.gs_type_render == "xml":
-        yi.paramsSetBool("premult", enable_premult)
-
-    else:
-        yi.paramsSetBool("premult", True)   #We force alpha premultiply when rendering into Blender as it expects premultiplied input
-        yi.paramsSetBool("premult2", enable_premult)   #In case we use a secondary file output, we set the premultiply according to the Blender setting
-
     yi.paramsSetInt("tile_size", scene.gs_tile_size)
     yi.paramsSetString("tiles_order", scene.gs_tile_order)
 
@@ -215,7 +145,6 @@ def exportRenderSettings(yi, depsgraph):
     yi.paramsSetFloat("images_autosave_interval_seconds", scene.gs_images_autosave_interval_seconds)
 
     yi.paramsSetString("film_save_load", scene.gs_film_save_load)
-    yi.paramsSetBool("film_save_binary_format", scene.gs_film_save_binary_format)
     yi.paramsSetString("film_autosave_interval_type", scene.gs_film_autosave_interval_type)
     yi.paramsSetInt("film_autosave_interval_passes", scene.gs_film_autosave_interval_passes)
     yi.paramsSetFloat("film_autosave_interval_seconds", scene.gs_film_autosave_interval_seconds)
@@ -226,191 +155,204 @@ def exportRenderSettings(yi, depsgraph):
     yi.paramsSetFloat("adv_min_raydist_value", scene.adv_min_raydist_value)
     yi.paramsSetFloat("adv_min_raydist_value", scene.adv_min_raydist_value)
     yi.paramsSetInt("adv_base_sampling_offset", scene.adv_base_sampling_offset)
-    yi.paramsSetInt("adv_computer_node", bpy.context.preferences.addons[PLUGIN_NAME].preferences.yafaray_computer_node)
+    print(list(bpy.context.preferences.addons))
+    yi.paramsSetInt("adv_computer_node", bpy.context.preferences.addons["yafaray4"].preferences.yafaray_computer_node)
 
 
-def setLoggingAndBadgeSettings(yi, depsgraph):
+def setLoggingAndBadgeSettings(yi, scene):
     yi.printVerbose("Exporting Logging and Badge settings")
-    scene = depsgraph.scene
-    yi.paramsSetBool("logging_drawRenderSettings", scene.yafaray.logging.drawRenderSettings)
-    yi.paramsSetBool("logging_drawAANoiseSettings", scene.yafaray.logging.drawAANoiseSettings)
-    yi.paramsSetBool("logging_saveLog", scene.yafaray.logging.saveLog)
-    yi.paramsSetBool("logging_saveHTML", scene.yafaray.logging.saveHTML)
-    yi.paramsSetString("logging_paramsBadgePosition", scene.yafaray.logging.paramsBadgePosition)
-    yi.paramsSetString("logging_title", scene.yafaray.logging.title)
-    yi.paramsSetString("logging_author", scene.yafaray.logging.author)
-    yi.paramsSetString("logging_contact", scene.yafaray.logging.contact)
-    yi.paramsSetString("logging_comments", scene.yafaray.logging.comments)
+    yi.paramsSetBool("badge_draw_render_settings", scene.yafaray.logging.drawRenderSettings)
+    yi.paramsSetBool("badge_draw_aa_noise_settings", scene.yafaray.logging.drawAANoiseSettings)
+    yi.paramsSetBool("logging_save_txt", scene.yafaray.logging.saveLog)
+    yi.paramsSetBool("logging_save_html", scene.yafaray.logging.saveHTML)
+    yi.paramsSetString("badge_position", scene.yafaray.logging.paramsBadgePosition)
+    yi.paramsSetString("badge_title", scene.yafaray.logging.title)
+    yi.paramsSetString("badge_author", scene.yafaray.logging.author)
+    yi.paramsSetString("badge_contact", scene.yafaray.logging.contact)
+    yi.paramsSetString("badge_comment", scene.yafaray.logging.comments)
     if scene.yafaray.logging.customIcon != "":
-        yi.paramsSetString("logging_customIcon", os.path.abspath(bpy.path.abspath(scene.yafaray.logging.customIcon)))
-    yi.paramsSetString("logging_fontPath", scene.yafaray.logging.customFont)
-    yi.paramsSetFloat("logging_fontSizeFactor", scene.yafaray.logging.fontScale)
+        yi.paramsSetString("badge_icon_path", os.path.abspath(bpy.path.abspath(scene.yafaray.logging.customIcon)))
+    yi.paramsSetString("badge_font_path", scene.yafaray.logging.customFont)
+    yi.paramsSetFloat("badge_font_size_factor", scene.yafaray.logging.fontScale)
+
+
+def calcAlphaPremultiply(scene):
+    alpha_premult = namedtuple("alpha_premult", ["blender", "secondary_output"])
+    if scene.gs_premult == "auto":
+        if scene.img_output == "PNG" or scene.img_output == "JPEG":
+            enable_premult = False
+        else:
+            enable_premult = True
+    elif scene.gs_premult == "yes":
+        enable_premult = True
+    else:
+        enable_premult = False
+
+    if scene.gs_type_render == "into_blender":
+        # We force alpha premultiply when rendering into Blender as it expects premultiplied input
+        # In case we use a secondary file output, we set the premultiply according to the Blender setting
+        return alpha_premult(True, enable_premult)
+    else:
+        # In this case we use the calculated enable premult value, and leave the second value as False as there is no secondary output in this case
+        return alpha_premult(enable_premult, False)
+
+
+def calcGamma(scene):
+    gamma = namedtuple("gamma", ["blender", "secondary_output"])
+    gamma_1 = 1.0
+    gamma_2 = 1.0
+    if scene.gs_type_render == "into_blender" and scene.display_settings.display_device == "None":
+        gamma_1 = scene.gs_gamma  # We only use the selected gamma if the output device is set to "None"
+        if scene.display_settings.display_device == "None":
+            gamma_2 = scene.gs_gamma  #We only use the selected gamma if the output device is set to "None"
+    elif scene.display_settings.display_device == "None":
+        gamma_1 = scene.gs_gamma  # We only use the selected gamma if the output device is set to "None"
+
+    return gamma(gamma_1, gamma_2)
+
+
+def calcColorSpace(scene):
+    color_space = namedtuple("color_space", ["blender", "secondary_output"])
+    color_space_2 = "sRGB"
+
+    if scene.gs_type_render == "into_blender":
+        if scene.display_settings.display_device == "None":
+            color_space_1 = "Raw_Manual_Gamma"
+        else:
+            color_space_1 = "LinearRGB"  #For all other Blender display devices, it expects a linear output from YafaRay
+        #Optional Secondary file output color space
+        if scene.img_output == "OPEN_EXR" or scene.img_output == "HDR":  #If the output file is a HDR/EXR file, we force the render output to Linear
+            color_space_2 = "LinearRGB"
+        elif scene.display_settings.display_device == "sRGB":
+            color_space_2 = "sRGB"
+        elif scene.display_settings.display_device == "XYZ":
+            color_space_2 = "XYZ"
+        elif scene.display_settings.display_device == "None":
+            color_space_2 = "Raw_Manual_Gamma"
+    else:
+        if scene.img_output == "OPEN_EXR" or scene.img_output == "HDR":  # If the output file is a HDR/EXR file, we force the render output to Linear
+            color_space_1 = "LinearRGB"
+        elif scene.display_settings.display_device == "sRGB":
+            color_space_1 = "sRGB"
+        elif scene.display_settings.display_device == "XYZ":
+            color_space_1 = "XYZ"
+        elif scene.display_settings.display_device == "None":
+            color_space_1 = "Raw_Manual_Gamma"
+        else:
+            color_space_1 = "sRGB"
+
+    return color_space(color_space_1, color_space_2)
 
 
 def exportRenderPassesSettings(yi, depsgraph):
     yi.printVerbose("Exporting Render Passes settings")
     scene = depsgraph.scene
-    yi.paramsSetBool("pass_enable", scene.yafaray.passes.pass_enable)
-    
-    yi.paramsSetInt("pass_mask_obj_index", scene.yafaray.passes.pass_mask_obj_index)
-    yi.paramsSetInt("pass_mask_mat_index", scene.yafaray.passes.pass_mask_mat_index)
-    yi.paramsSetBool("pass_mask_invert", scene.yafaray.passes.pass_mask_invert)
-    yi.paramsSetBool("pass_mask_only", scene.yafaray.passes.pass_mask_only)
-    
-    yi.paramsSetInt("objectEdgeThickness", scene.yafaray.passes.objectEdgeThickness)
-    yi.paramsSetInt("facesEdgeThickness", scene.yafaray.passes.facesEdgeThickness)
-    yi.paramsSetFloat("objectEdgeThreshold", scene.yafaray.passes.objectEdgeThreshold)
-    yi.paramsSetFloat("facesEdgeThreshold", scene.yafaray.passes.facesEdgeThreshold)
-    yi.paramsSetFloat("objectEdgeSmoothness", scene.yafaray.passes.objectEdgeSmoothness)
-    yi.paramsSetFloat("facesEdgeSmoothness", scene.yafaray.passes.facesEdgeSmoothness)
-    yi.paramsSetColor("toonEdgeColor", scene.yafaray.passes.toonEdgeColor[0], scene.yafaray.passes.toonEdgeColor[1], scene.yafaray.passes.toonEdgeColor[2])
-    yi.paramsSetFloat("toonPreSmooth", scene.yafaray.passes.toonPreSmooth)
-    yi.paramsSetFloat("toonPostSmooth", scene.yafaray.passes.toonPostSmooth)
-    yi.paramsSetFloat("toonQuantization", scene.yafaray.passes.toonQuantization)
 
-    if scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_z:
-        yi.paramsSetString("pass_Depth", scene.yafaray.passes.pass_Depth)
-    else:
-        yi.paramsSetString("pass_Depth", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_vector:
-        yi.paramsSetString("pass_Vector", scene.yafaray.passes.pass_Vector)
-    else:
-        yi.paramsSetString("pass_Vector", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_normal:
-        yi.paramsSetString("pass_Normal", scene.yafaray.passes.pass_Normal)
-    else:
-        yi.paramsSetString("pass_Normal", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_uv:
-        yi.paramsSetString("pass_UV", scene.yafaray.passes.pass_UV)
-    else:
-        yi.paramsSetString("pass_UV", "disabled")
-        
-    if False and scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_color: #FIXME DAVID!
-        yi.paramsSetString("pass_Color", scene.yafaray.passes.pass_Color)
-    else:
-        yi.paramsSetString("pass_Color", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_emit:
-        yi.paramsSetString("pass_Emit", scene.yafaray.passes.pass_Emit)
-    else:
-        yi.paramsSetString("pass_Emit", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_mist:
-        yi.paramsSetString("pass_Mist", scene.yafaray.passes.pass_Mist)
-    else:
-        yi.paramsSetString("pass_Mist", "disabled")
-        
-    if False and scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_diffuse: #FIXME DAVID!
-        yi.paramsSetString("pass_Diffuse", scene.yafaray.passes.pass_Diffuse)
-    else:
-        yi.paramsSetString("pass_Diffuse", "disabled")
-        
-    if False and scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_specular: #FIXME DAVID!
-        yi.paramsSetString("pass_Spec", scene.yafaray.passes.pass_Spec)
-    else:
-        yi.paramsSetString("pass_Spec", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_ambient_occlusion:
-        yi.paramsSetString("pass_AO", scene.yafaray.passes.pass_AO)
-    else:
-        yi.paramsSetString("pass_AO", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_environment:
-        yi.paramsSetString("pass_Env", scene.yafaray.passes.pass_Env)
-    else:
-        yi.paramsSetString("pass_Env", "disabled")
-        
-    if False and scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_indirect: #FIXME DAVID!
-        yi.paramsSetString("pass_Indirect", scene.yafaray.passes.pass_Indirect)
-    else:
-        yi.paramsSetString("pass_Indirect", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_shadow:
-        yi.paramsSetString("pass_Shadow", scene.yafaray.passes.pass_Shadow)
-    else:
-        yi.paramsSetString("pass_Shadow", "disabled")
-        
-    if False and scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_reflection: #FIXME DAVID!
-        yi.paramsSetString("pass_Reflect", scene.yafaray.passes.pass_Reflect)
-    else:
-        yi.paramsSetString("pass_Reflect", "disabled")
-        
-    if False and scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_refraction: #FIXME DAVID!
-        yi.paramsSetString("pass_Refract", scene.yafaray.passes.pass_Refract)
-    else:
-        yi.paramsSetString("pass_Refract", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_object_index:
-        yi.paramsSetString("pass_IndexOB", scene.yafaray.passes.pass_IndexOB)
-    else:
-        yi.paramsSetString("pass_IndexOB", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_material_index:
-        yi.paramsSetString("pass_IndexMA", scene.yafaray.passes.pass_IndexMA)
-    else:
-        yi.paramsSetString("pass_IndexMA", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_diffuse_direct:
-        yi.paramsSetString("pass_DiffDir", scene.yafaray.passes.pass_DiffDir)
-    else:
-        yi.paramsSetString("pass_DiffDir", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_diffuse_indirect:
-        yi.paramsSetString("pass_DiffInd", scene.yafaray.passes.pass_DiffInd)
-    else:
-        yi.paramsSetString("pass_DiffInd", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_diffuse_color:
-        yi.paramsSetString("pass_DiffCol", scene.yafaray.passes.pass_DiffCol)
-    else:
-        yi.paramsSetString("pass_DiffCol", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_glossy_direct:
-        yi.paramsSetString("pass_GlossDir", scene.yafaray.passes.pass_GlossDir)
-    else:
-        yi.paramsSetString("pass_GlossDir", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_glossy_indirect:
-        yi.paramsSetString("pass_GlossInd", scene.yafaray.passes.pass_GlossInd)
-    else:
-        yi.paramsSetString("pass_GlossInd", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_glossy_color:
-        yi.paramsSetString("pass_GlossCol", scene.yafaray.passes.pass_GlossCol)
-    else:
-        yi.paramsSetString("pass_GlossCol", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_transmission_direct:
-        yi.paramsSetString("pass_TransDir", scene.yafaray.passes.pass_TransDir)
-    else:
-        yi.paramsSetString("pass_TransDir", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_transmission_indirect:
-        yi.paramsSetString("pass_TransInd", scene.yafaray.passes.pass_TransInd)
-    else:
-        yi.paramsSetString("pass_TransInd", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_transmission_color:
-        yi.paramsSetString("pass_TransCol", scene.yafaray.passes.pass_TransCol)
-    else:
-        yi.paramsSetString("pass_TransCol", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_subsurface_direct:
-        yi.paramsSetString("pass_SubsurfaceDir", scene.yafaray.passes.pass_SubsurfaceDir)
-    else:
-        yi.paramsSetString("pass_SubsurfaceDir", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_subsurface_indirect:
-        yi.paramsSetString("pass_SubsurfaceInd", scene.yafaray.passes.pass_SubsurfaceInd)
-    else:
-        yi.paramsSetString("pass_SubsurfaceInd", "disabled")
-        
-    if scene.yafaray.passes.pass_enable and depsgraph.view_layer.use_pass_subsurface_color:
-        yi.paramsSetString("pass_SubsurfaceCol", scene.yafaray.passes.pass_SubsurfaceCol)
-    else:
-        yi.paramsSetString("pass_SubsurfaceCol", "disabled")
-        
+    yi.paramsSetInt("layer_mask_obj_index", scene.yafaray.passes.pass_mask_obj_index)
+    yi.paramsSetInt("layer_mask_mat_index", scene.yafaray.passes.pass_mask_mat_index)
+    yi.paramsSetBool("layer_mask_invert", scene.yafaray.passes.pass_mask_invert)
+    yi.paramsSetBool("layer_mask_only", scene.yafaray.passes.pass_mask_only)
+    
+    yi.paramsSetInt("layer_object_edge_thickness", scene.yafaray.passes.objectEdgeThickness)
+    yi.paramsSetInt("layer_faces_edge_thickness", scene.yafaray.passes.facesEdgeThickness)
+    yi.paramsSetFloat("layer_object_edge_threshold", scene.yafaray.passes.objectEdgeThreshold)
+    yi.paramsSetFloat("layer_faces_edge_threshold", scene.yafaray.passes.facesEdgeThreshold)
+    yi.paramsSetFloat("layer_object_edge_smoothness", scene.yafaray.passes.objectEdgeSmoothness)
+    yi.paramsSetFloat("layer_faces_edge_smoothness", scene.yafaray.passes.facesEdgeSmoothness)
+    yi.paramsSetColor("layer_toon_edge_color", scene.yafaray.passes.toonEdgeColor[0], scene.yafaray.passes.toonEdgeColor[1], scene.yafaray.passes.toonEdgeColor[2])
+    yi.paramsSetFloat("layer_toon_pre_smooth", scene.yafaray.passes.toonPreSmooth)
+    yi.paramsSetFloat("layer_toon_post_smooth", scene.yafaray.passes.toonPostSmooth)
+    yi.paramsSetFloat("layer_toon_quantization", scene.yafaray.passes.toonQuantization)
+
+
+    # Possible image type names: "Gray", "GrayAlpha", "Color", "ColorAlpha"
+    yi.defineLayer("combined", "ColorAlpha", "Combined") #Must always be defined!
+    if scene.yafaray.passes.pass_enable:
+        if depsgraph.view_layer.use_pass_z:
+            yi.defineLayer(scene.yafaray.passes.pass_Depth, "Gray", "Depth")
+            
+        if depsgraph.view_layer.use_pass_vector:
+            yi.defineLayer(scene.yafaray.passes.pass_Vector, "ColorAlpha", "Vector")
+            
+        if depsgraph.view_layer.use_pass_normal:
+            yi.defineLayer(scene.yafaray.passes.pass_Normal, "Color", "Normal")
+            
+        if depsgraph.view_layer.use_pass_uv:
+            yi.defineLayer(scene.yafaray.passes.pass_UV, "Color", "UV")
+            
+        if depsgraph.view_layer.use_pass_color:
+            yi.defineLayer(scene.yafaray.passes.pass_Color, "ColorAlpha", "Color")
+            
+        if depsgraph.view_layer.use_pass_emit:
+            yi.defineLayer(scene.yafaray.passes.pass_Emit, "Color", "Emit")
+            
+        if depsgraph.view_layer.use_pass_mist:
+            yi.defineLayer(scene.yafaray.passes.pass_Mist, "Gray", "Mist")
+            
+        if depsgraph.view_layer.use_pass_diffuse:
+            yi.defineLayer(scene.yafaray.passes.pass_Diffuse, "Color", "Diffuse")
+            
+        if depsgraph.view_layer.use_pass_specular:
+            yi.defineLayer(scene.yafaray.passes.pass_Spec, "Color", "Spec")
+            
+        if depsgraph.view_layer.use_pass_ambient_occlusion:
+            yi.defineLayer(scene.yafaray.passes.pass_AO, "Color", "AO")
+            
+        if depsgraph.view_layer.use_pass_environment:
+            yi.defineLayer(scene.yafaray.passes.pass_Env, "Color", "Env")
+            
+        if depsgraph.view_layer.use_pass_indirect:
+            yi.defineLayer(scene.yafaray.passes.pass_Indirect, "Color", "Indirect")
+            
+        if depsgraph.view_layer.use_pass_shadow:
+            yi.defineLayer(scene.yafaray.passes.pass_Shadow, "Color", "Shadow")
+            
+        if depsgraph.view_layer.use_pass_reflection:
+            yi.defineLayer(scene.yafaray.passes.pass_Reflect, "Color", "Reflect")
+            
+        if depsgraph.view_layer.use_pass_refraction:
+            yi.defineLayer(scene.yafaray.passes.pass_Refract, "Color", "Refract")
+            
+        if depsgraph.view_layer.use_pass_object_index:
+            yi.defineLayer(scene.yafaray.passes.pass_IndexOB, "Gray", "IndexOB")
+            
+        if depsgraph.view_layer.use_pass_material_index:
+            yi.defineLayer(scene.yafaray.passes.pass_IndexMA, "Gray", "IndexMA")
+            
+        if depsgraph.view_layer.use_pass_diffuse_direct:
+            yi.defineLayer(scene.yafaray.passes.pass_Depth, "pass_DiffDir", "DiffDir")
+            
+        if depsgraph.view_layer.use_pass_diffuse_indirect:
+            yi.defineLayer(scene.yafaray.passes.pass_DiffInd, "Color", "DiffInd")
+            
+        if depsgraph.view_layer.use_pass_diffuse_color:
+            yi.defineLayer(scene.yafaray.passes.pass_DiffCol, "Color", "DiffCol")
+            
+        if depsgraph.view_layer.use_pass_glossy_direct:
+            yi.defineLayer(scene.yafaray.passes.pass_GlossDir, "Color", "GlossDir")
+            
+        if depsgraph.view_layer.use_pass_glossy_indirect:
+            yi.defineLayer(scene.yafaray.passes.pass_GlossInd, "Color", "GlossInd")
+            
+        if depsgraph.view_layer.use_pass_glossy_color:
+            yi.defineLayer(scene.yafaray.passes.pass_GlossCol, "Color", "GlossCol")
+            
+        if depsgraph.view_layer.use_pass_transmission_direct:
+            yi.defineLayer(scene.yafaray.passes.pass_TransDir, "Color", "TransDir")
+            
+        if depsgraph.view_layer.use_pass_transmission_indirect:
+            yi.defineLayer(scene.yafaray.passes.pass_TransInd, "Color", "TransInd")
+            
+        if depsgraph.view_layer.use_pass_transmission_color:
+            yi.defineLayer(scene.yafaray.passes.pass_TransCol, "Color", "TransCol")
+            
+        if depsgraph.view_layer.use_pass_subsurface_direct:
+            yi.defineLayer(scene.yafaray.passes.pass_SubsurfaceDir, "Color", "SubsurfaceDir")
+            
+        if depsgraph.view_layer.use_pass_subsurface_indirect:
+            yi.defineLayer(scene.yafaray.passes.pass_SubsurfaceInd, "Color", "SubsurfaceInd")
+            
+        if depsgraph.view_layer.use_pass_subsurface_color:
+            yi.defineLayer(scene.yafaray.passes.pass_SubsurfaceCol, "Color", "SubsurfaceCol")
+
     

@@ -23,9 +23,9 @@ from bpy.types import Panel
 from bl_ui.properties_render import RenderButtonsPanel
 
 
-class YAFA_V3_PT_render(RenderButtonsPanel, Panel):
+class YAFARAY4_PT_render(RenderButtonsPanel, Panel):
     bl_label = "Integrator"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -149,7 +149,7 @@ class YAFA_V3_PT_render(RenderButtonsPanel, Panel):
             col.label(text="Use at your own risk.")
 
 classes = (
-    YAFA_V3_PT_render,
+    YAFARAY4_PT_render,
 )
 
 def register():

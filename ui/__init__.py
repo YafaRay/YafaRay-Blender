@@ -68,9 +68,9 @@ for member in dir(properties_object):  # add all "object" panels from blender
     subclass = getattr(properties_object, member)
     try:
         if hasattr(subclass, 'COMPAT_ENGINES'):
-            subclass.COMPAT_ENGINES.add('YAFA_V3_RENDER')
+            subclass.COMPAT_ENGINES.add('YAFARAY4_RENDER')
         else:
-            subclass.COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+            subclass.COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     except:
         pass
 del properties_object
@@ -80,9 +80,9 @@ for member in dir(properties_particle):  # add all "particle" panels from blende
     subclass = getattr(properties_particle, member)
     try:
         if hasattr(subclass, 'COMPAT_ENGINES'):
-            subclass.COMPAT_ENGINES.add('YAFA_V3_RENDER')
+            subclass.COMPAT_ENGINES.add('YAFARAY4_RENDER')
         else:
-            subclass.COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+            subclass.COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     except:
         pass
 del properties_particle
@@ -92,9 +92,9 @@ for member in dir(properties_data_mesh):  # add all "object data" panels from bl
     subclass = getattr(properties_data_mesh, member)
     try:
         if hasattr(subclass, 'COMPAT_ENGINES'):
-            subclass.COMPAT_ENGINES.add('YAFA_V3_RENDER')
+            subclass.COMPAT_ENGINES.add('YAFARAY4_RENDER')
         else:
-            subclass.COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+            subclass.COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     except:
         pass
 del properties_data_mesh
@@ -104,9 +104,9 @@ for member in dir(properties_data_speaker):  # add all "speaker (SOC 2011, peppe
     subclass = getattr(properties_data_speaker, member)
     try:
         if hasattr(subclass, 'COMPAT_ENGINES'):
-            subclass.COMPAT_ENGINES.add('YAFA_V3_RENDER')
+            subclass.COMPAT_ENGINES.add('YAFARAY4_RENDER')
         else:
-            subclass.COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+            subclass.COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     except:
         pass
 del properties_data_speaker
@@ -120,9 +120,9 @@ for member in dir(properties_scene):
             subclass = getattr(properties_scene, member)
             try:
                 if hasattr(subclass, 'COMPAT_ENGINES'):
-                    subclass.COMPAT_ENGINES.add('YAFA_V3_RENDER')
+                    subclass.COMPAT_ENGINES.add('YAFARAY4_RENDER')
                 else:
-                    subclass.COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+                    subclass.COMPAT_ENGINES = {'YAFARAY4_RENDER'}
             except:
                 pass
 
@@ -133,9 +133,9 @@ for member in dir(properties_physics_cloth):  # add all "speaker (SOC 2011, pepp
     subclass = getattr(properties_physics_cloth, member)
     try:
         if hasattr(subclass, 'COMPAT_ENGINES'):
-            subclass.COMPAT_ENGINES.add('YAFA_V3_RENDER')
+            subclass.COMPAT_ENGINES.add('YAFARAY4_RENDER')
         else:
-            subclass.COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+            subclass.COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     except:
         pass
 del properties_physics_cloth
@@ -145,9 +145,9 @@ for member in dir(properties_physics_common):  # add all "speaker (SOC 2011, pep
     subclass = getattr(properties_physics_common, member)
     try:
         if hasattr(subclass, 'COMPAT_ENGINES'):
-            subclass.COMPAT_ENGINES.add('YAFA_V3_RENDER')
+            subclass.COMPAT_ENGINES.add('YAFARAY4_RENDER')
         else:
-            subclass.COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+            subclass.COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     except:
         pass
 del properties_physics_common
@@ -157,9 +157,9 @@ for member in dir(properties_physics_dynamicpaint):  # add all "speaker (SOC 201
     subclass = getattr(properties_physics_dynamicpaint, member)
     try:
         if hasattr(subclass, 'COMPAT_ENGINES'):
-            subclass.COMPAT_ENGINES.add('YAFA_V3_RENDER')
+            subclass.COMPAT_ENGINES.add('YAFARAY4_RENDER')
         else:
-            subclass.COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+            subclass.COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     except:
         pass
 del properties_physics_dynamicpaint
@@ -169,9 +169,9 @@ for member in dir(properties_physics_field):  # add all "speaker (SOC 2011, pepp
     subclass = getattr(properties_physics_field, member)
     try:
         if hasattr(subclass, 'COMPAT_ENGINES'):
-            subclass.COMPAT_ENGINES.add('YAFA_V3_RENDER')
+            subclass.COMPAT_ENGINES.add('YAFARAY4_RENDER')
         else:
-            subclass.COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+            subclass.COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     except:
         pass
 del properties_physics_field
@@ -181,9 +181,9 @@ for member in dir(properties_physics_fluid):  # add all "speaker (SOC 2011, pepp
     subclass = getattr(properties_physics_fluid, member)
     try:
         if hasattr(subclass, 'COMPAT_ENGINES'):
-            subclass.COMPAT_ENGINES.add('YAFA_V3_RENDER')
+            subclass.COMPAT_ENGINES.add('YAFARAY4_RENDER')
         else:
-            subclass.COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+            subclass.COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     except:
         pass
 del properties_physics_fluid
@@ -193,9 +193,9 @@ for member in dir(properties_physics_rigidbody):  # add all "speaker (SOC 2011, 
     subclass = getattr(properties_physics_rigidbody, member)
     try:
         if hasattr(subclass, 'COMPAT_ENGINES'):
-            subclass.COMPAT_ENGINES.add('YAFA_V3_RENDER')
+            subclass.COMPAT_ENGINES.add('YAFARAY4_RENDER')
         else:
-            subclass.COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+            subclass.COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     except:
         pass
 del properties_physics_rigidbody
@@ -205,9 +205,9 @@ for member in dir(properties_physics_rigidbody_constraint):  # add all "speaker 
     subclass = getattr(properties_physics_rigidbody_constraint, member)
     try:
         if hasattr(subclass, 'COMPAT_ENGINES'):
-            subclass.COMPAT_ENGINES.add('YAFA_V3_RENDER')
+            subclass.COMPAT_ENGINES.add('YAFARAY4_RENDER')
         else:
-            subclass.COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+            subclass.COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     except:
         pass
 del properties_physics_rigidbody_constraint
@@ -218,9 +218,9 @@ if False: #FIXME DAVID!
         subclass = getattr(properties_physics_smoke, member)
         try:
             if hasattr(subclass, 'COMPAT_ENGINES'):
-                subclass.COMPAT_ENGINES.add('YAFA_V3_RENDER')
+                subclass.COMPAT_ENGINES.add('YAFARAY4_RENDER')
             else:
-                subclass.COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+                subclass.COMPAT_ENGINES = {'YAFARAY4_RENDER'}
         except:
             pass
     del properties_physics_smoke
@@ -230,9 +230,9 @@ for member in dir(properties_physics_softbody):  # add all "speaker (SOC 2011, p
     subclass = getattr(properties_physics_softbody, member)
     try:
         if hasattr(subclass, 'COMPAT_ENGINES'):
-            subclass.COMPAT_ENGINES.add('YAFA_V3_RENDER')
+            subclass.COMPAT_ENGINES.add('YAFARAY4_RENDER')
         else:
-            subclass.COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+            subclass.COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     except:
         pass
 del properties_physics_softbody

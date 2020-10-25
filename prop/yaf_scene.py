@@ -45,10 +45,10 @@ def call_update_fileformat(self, context):
     if scene.img_output is not render.image_settings.file_format:
         render.image_settings.file_format = scene.img_output
 
-class YafaRayProperties(bpy.types.PropertyGroup):
+class YafaRay4Properties(bpy.types.PropertyGroup):
     pass
 
-class YafaRayLoggingProperties(bpy.types.PropertyGroup):
+class YafaRay4LoggingProperties(bpy.types.PropertyGroup):
     paramsBadgePosition : EnumProperty(
         name="Params Badge position",
         description="Choose the position of the params badge in the exported image file. Inside Blender it may appear incorrect or not at all",
@@ -150,7 +150,7 @@ class YafaRayLoggingProperties(bpy.types.PropertyGroup):
         default=1.0)
 
     
-class YafaRayNoiseControlProperties(bpy.types.PropertyGroup):
+class YafaRay4NoiseControlProperties(bpy.types.PropertyGroup):
     resampled_floor : FloatProperty(
         name="Resampled floor (%)",
         description=("Noise reduction: when resampled pixels go below this value (% of total pixels),"
@@ -228,7 +228,7 @@ class YafaRayNoiseControlProperties(bpy.types.PropertyGroup):
         default=True)
 
     
-class YafaRayRenderPassesProperties(bpy.types.PropertyGroup):
+class YafaRay4LayersProperties(bpy.types.PropertyGroup):
     pass_enable : BoolProperty(
         name="Enable render passes",
         default=False)
@@ -635,7 +635,7 @@ class YafaRayRenderPassesProperties(bpy.types.PropertyGroup):
         ),
         default="adv-subsurface-color")
 
-class YafaRayMaterialPreviewControlProperties(bpy.types.PropertyGroup):
+class YafaRay4MaterialPreviewControlProperties(bpy.types.PropertyGroup):
 
     enable : BoolProperty(
         update=update_preview,
@@ -782,7 +782,7 @@ class YafaRayMaterialPreviewControlProperties(bpy.types.PropertyGroup):
 
 
 def register():
-    ########### YafaRays general settings properties #############
+    ########### YafaRay's general settings properties #############
     Scene.gs_ray_depth = IntProperty(
         name="Ray depth",
         description="Maximum depth for recursive raytracing",
@@ -976,8 +976,8 @@ def register():
         name="Internal ImageFilm save/load",
         description="Option to save / load the imageFilm, may be useful to continue interrupted renders. The ImageFilm file can be BIG and SLOW, especially when enabling many render passes.",
         items=(
-            ('load-save', "Load and Save", "Loads the internal ImageFilm files at start (autodetecting binary/text format automatically). USE WITH CARE! It will also save the ImageFilm (in the selected binary or text format) with the images"),
-            ('save', "Save", "Saves the internal ImageFilm (in the selected binary or text format) with the images"),
+            ('load-save', "Load and Save", "Loads the internal ImageFilm files at start. USE WITH CARE! It will also save the ImageFilm with the images"),
+            ('save', "Save", "Saves the internal ImageFilm with the images"),
             ('none', "Disabled", "Image autosave will be disabled")
         ),
         default="none")
@@ -1002,11 +1002,6 @@ def register():
         ),
         default="none")
 
-    Scene.gs_film_save_binary_format = BoolProperty(
-        name="ImageFilm binary format",
-        description="If enabled, it will save the ImageFilm file in binary format (smaller and faster, but NOT portable among systems). By default this is enabled. This setting does not affect the Film loading, which autodetects the film format automatically.",
-        default=True)
-        
     ######### YafaRays own image output property ############
     Scene.img_output = EnumProperty(
         name="Image File Type",
@@ -1297,112 +1292,112 @@ def register():
             ('lanczos', "Lanczos", "AA filter type")
         ),
         default="gauss")
-        
-    bpy.utils.register_class(YafaRayProperties)
-    bpy.types.Scene.yafaray = PointerProperty(type=YafaRayProperties)
 
-    bpy.utils.register_class(YafaRayRenderPassesProperties)
-    YafaRayProperties.passes = PointerProperty(type=YafaRayRenderPassesProperties)
-    
-    bpy.utils.register_class(YafaRayNoiseControlProperties)
-    YafaRayProperties.noise_control = PointerProperty(type=YafaRayNoiseControlProperties)
+    bpy.utils.register_class(YafaRay4Properties)
+    bpy.types.Scene.yafaray = PointerProperty(type=YafaRay4Properties)
 
-    bpy.utils.register_class(YafaRayLoggingProperties)
-    YafaRayProperties.logging = PointerProperty(type=YafaRayLoggingProperties)
+    bpy.utils.register_class(YafaRay4LayersProperties)
+    YafaRay4Properties.passes = PointerProperty(type=YafaRay4LayersProperties)
 
-    bpy.utils.register_class(YafaRayMaterialPreviewControlProperties)
-    YafaRayProperties.preview = PointerProperty(type=YafaRayMaterialPreviewControlProperties)
+    bpy.utils.register_class(YafaRay4NoiseControlProperties)
+    YafaRay4Properties.noise_control = PointerProperty(type=YafaRay4NoiseControlProperties)
+
+    bpy.utils.register_class(YafaRay4LoggingProperties)
+    YafaRay4Properties.logging = PointerProperty(type=YafaRay4LoggingProperties)
+
+    bpy.utils.register_class(YafaRay4MaterialPreviewControlProperties)
+    YafaRay4Properties.preview = PointerProperty(type=YafaRay4MaterialPreviewControlProperties)
+
 
 def unregister():
-    Scene.gs_ray_depth
-    Scene.gs_shadow_depth
-    Scene.gs_threads
-    Scene.gs_gamma
-    Scene.gs_gamma_input
-    Scene.gs_tile_size
-    Scene.gs_tile_order
-    Scene.gs_auto_threads
-    Scene.gs_clay_render
-    Scene.gs_clay_render_keep_transparency
-    Scene.gs_clay_render_keep_normals
-    Scene.gs_clay_oren_nayar
-    Scene.gs_clay_sigma
-    Scene.gs_clay_col
-    Scene.gs_mask_render
-    Scene.bg_transp
-    Scene.bg_transp_refract
-    Scene.adv_auto_shadow_bias_enabled
-    Scene.adv_shadow_bias_value
-    Scene.adv_auto_min_raydist_enabled
-    Scene.adv_min_raydist_value
-    Scene.adv_base_sampling_offset
+    bpy.utils.unregister_class(YafaRay4MaterialPreviewControlProperties)
+    bpy.utils.unregister_class(YafaRay4LoggingProperties)
+    bpy.utils.unregister_class(YafaRay4NoiseControlProperties)
+    bpy.utils.unregister_class(YafaRay4LayersProperties)
+    bpy.utils.unregister_class(YafaRay4Properties)
+
+    del Scene.gs_ray_depth
+    del Scene.gs_shadow_depth
+    del Scene.gs_threads
+    del Scene.gs_gamma
+    del Scene.gs_gamma_input
+    del Scene.gs_tile_size
+    del Scene.gs_tile_order
+    del Scene.gs_auto_threads
+    del Scene.gs_clay_render
+    del Scene.gs_clay_render_keep_transparency
+    del Scene.gs_clay_render_keep_normals
+    del Scene.gs_clay_oren_nayar
+    del Scene.gs_clay_sigma
+    del Scene.gs_clay_col
+    del Scene.gs_mask_render
+    del Scene.bg_transp
+    del Scene.bg_transp_refract
+    del Scene.adv_auto_shadow_bias_enabled
+    del Scene.adv_shadow_bias_value
+    del Scene.adv_auto_min_raydist_enabled
+    del Scene.adv_min_raydist_value
+    del Scene.adv_base_sampling_offset
     
-    Scene.gs_premult
-    Scene.gs_transp_shad
-    Scene.gs_show_sam_pix
-    Scene.gs_type_render
-    Scene.gs_secondary_file_output
-    Scene.gs_tex_optimization
-    Scene.gs_images_autosave_interval_seconds
-    Scene.gs_images_autosave_interval_passes
-    Scene.gs_images_autosave_interval_type
-    Scene.gs_film_save_load
-    Scene.gs_film_autosave_interval_seconds
-    Scene.gs_film_autosave_interval_passes
-    Scene.gs_film_autosave_interval_type
-    Scene.gs_film_save_binary_format
+    del Scene.gs_premult
+    del Scene.gs_transp_shad
+    del Scene.gs_show_sam_pix
+    del Scene.gs_type_render
+    del Scene.gs_secondary_file_output
+    del Scene.gs_tex_optimization
+    del Scene.gs_images_autosave_interval_seconds
+    del Scene.gs_images_autosave_interval_passes
+    del Scene.gs_images_autosave_interval_type
+    del Scene.gs_film_save_load
+    del Scene.gs_film_autosave_interval_seconds
+    del Scene.gs_film_autosave_interval_passes
+    del Scene.gs_film_autosave_interval_type
 
-    Scene.img_output
-    Scene.img_multilayer
-    Scene.img_denoise
-    Scene.img_denoiseHLum
-    Scene.img_denoiseHCol
-    Scene.img_denoiseMix
-    Scene.img_save_with_blend_file
-    Scene.img_add_blend_name
-    Scene.img_add_datetime
+    del Scene.img_output
+    del Scene.img_multilayer
+    del Scene.img_denoise
+    del Scene.img_denoiseHLum
+    del Scene.img_denoiseHCol
+    del Scene.img_denoiseMix
+    del Scene.img_save_with_blend_file
+    del Scene.img_add_blend_name
+    del Scene.img_add_datetime
 
-    Scene.intg_light_method
-    Scene.intg_use_caustics
-    Scene.intg_photons
-    Scene.intg_caustic_mix
-    Scene.intg_caustic_depth
-    Scene.intg_caustic_radius
-    Scene.intg_use_AO
-    Scene.intg_AO_samples
-    Scene.intg_AO_distance
-    Scene.intg_AO_color
-    Scene.intg_photonmap_enable_caustics
-    Scene.intg_photonmap_enable_diffuse
-    Scene.intg_photon_maps_processing
-    Scene.intg_bounces
-    Scene.intg_russian_roulette_min_bounces
-    Scene.intg_diffuse_radius
-    Scene.intg_cPhotons
-    Scene.intg_search
-    Scene.intg_final_gather
-    Scene.intg_fg_bounces
-    Scene.intg_fg_samples
-    Scene.intg_show_map
-    Scene.intg_caustic_method
-    Scene.intg_path_samples
-    Scene.intg_no_recursion
-    Scene.intg_debug_type
-    Scene.intg_show_perturbed_normals
-    Scene.intg_pm_ire
-    Scene.intg_pass_num
-    Scene.intg_times
-    Scene.intg_photon_radius
+    del Scene.intg_light_method
+    del Scene.intg_use_caustics
+    del Scene.intg_photons
+    del Scene.intg_caustic_mix
+    del Scene.intg_caustic_depth
+    del Scene.intg_caustic_radius
+    del Scene.intg_use_AO
+    del Scene.intg_AO_samples
+    del Scene.intg_AO_distance
+    del Scene.intg_AO_color
+    del Scene.intg_photonmap_enable_caustics
+    del Scene.intg_photonmap_enable_diffuse
+    del Scene.intg_photon_maps_processing
+    del Scene.intg_bounces
+    del Scene.intg_russian_roulette_min_bounces
+    del Scene.intg_diffuse_radius
+    del Scene.intg_cPhotons
+    del Scene.intg_search
+    del Scene.intg_final_gather
+    del Scene.intg_fg_bounces
+    del Scene.intg_fg_samples
+    del Scene.intg_show_map
+    del Scene.intg_caustic_method
+    del Scene.intg_path_samples
+    del Scene.intg_no_recursion
+    del Scene.intg_debug_type
+    del Scene.intg_show_perturbed_normals
+    del Scene.intg_pm_ire
+    del Scene.intg_pass_num
+    del Scene.intg_times
+    del Scene.intg_photon_radius
 
-    Scene.AA_min_samples
-    Scene.AA_inc_samples
-    Scene.AA_passes
-    Scene.AA_threshold
-    Scene.AA_pixelwidth
-    Scene.AA_filter_type
-
-    bpy.utils.unregister_class(YafaRayLoggingProperties)
-    bpy.utils.unregister_class(YafaRayNoiseControlProperties)
-    bpy.utils.unregister_class(YafaRayRenderPassesProperties)
-    bpy.utils.unregister_class(YafaRayMaterialPreviewControlProperties)
-    bpy.utils.unregister_class(YafaRayProperties)
+    del Scene.AA_min_samples
+    del Scene.AA_inc_samples
+    del Scene.AA_passes
+    del Scene.AA_threshold
+    del Scene.AA_pixelwidth
+    del Scene.AA_filter_type

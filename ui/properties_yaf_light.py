@@ -23,15 +23,15 @@ from bl_ui.properties_data_light import DataButtonsPanel
 
 # Inherit Light data block
 from bl_ui.properties_data_light import DATA_PT_context_light
-DATA_PT_context_light.COMPAT_ENGINES.add('YAFA_V3_RENDER')
+DATA_PT_context_light.COMPAT_ENGINES.add('YAFARAY4_RENDER')
 del DATA_PT_context_light    
 
-class YAFA_V3_PT_preview(Panel):
+class YAFARAY4_PT_preview(Panel):
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "data"
     bl_label = "Preview"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     @classmethod
     def poll(cls, context):
@@ -42,9 +42,9 @@ class YAFA_V3_PT_preview(Panel):
         self.layout.template_preview(context.light)
 
 
-class YAFA_V3_PT_light(DataButtonsPanel, Panel):
+class YAFARAY4_PT_light(DataButtonsPanel, Panel):
     bl_label = "Light"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
         layout = self.layout
@@ -103,9 +103,9 @@ class YAFA_V3_PT_light(DataButtonsPanel, Panel):
                 layout.box().prop(light, "yaf_samples")
 
 # povman test
-class YAFA_V3_PT_area(DataButtonsPanel, Panel):
+class YAFARAY4_PT_area(DataButtonsPanel, Panel):
     bl_label = "Area Shape"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     @classmethod
     def poll(cls, context):
@@ -129,9 +129,9 @@ class YAFA_V3_PT_area(DataButtonsPanel, Panel):
             sub.prop(light, "size_y", text="Size Y")
 # end
 
-class YAFA_V3_PT_spot(DataButtonsPanel, Panel):
+class YAFARAY4_PT_spot(DataButtonsPanel, Panel):
     bl_label = "Spot Shape"
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     @classmethod
     def poll(cls, context):
@@ -160,10 +160,10 @@ class YAFA_V3_PT_spot(DataButtonsPanel, Panel):
             col.label(text="")
             col.prop(light, "shadow_buffer_clip_end", text=" Clip End")
 
-class YAFA_V3_PT_light_advanced(DataButtonsPanel, Panel):
+class YAFARAY4_PT_light_advanced(DataButtonsPanel, Panel):
     bl_label = "Advanced settings"
     bl_options = {'DEFAULT_CLOSED'}
-    COMPAT_ENGINES = {'YAFA_V3_RENDER'}
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     
     def draw(self, context):
         layout = self.layout
@@ -183,11 +183,11 @@ class YAFA_V3_PT_light_advanced(DataButtonsPanel, Panel):
 
 
 classes = (
-    YAFA_V3_PT_preview,
-    YAFA_V3_PT_light,
-    YAFA_V3_PT_area,
-    YAFA_V3_PT_spot,
-    YAFA_V3_PT_light_advanced,
+    YAFARAY4_PT_preview,
+    YAFARAY4_PT_light,
+    YAFARAY4_PT_area,
+    YAFARAY4_PT_spot,
+    YAFARAY4_PT_light_advanced,
 )
 
 def register():

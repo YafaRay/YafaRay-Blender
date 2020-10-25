@@ -414,7 +414,7 @@ class yafTexture:
             yi.printInfo("Exporter: Creating Texture: '{0}' type {1}: {2}. Texture Color Space: '{3}', gamma={4}. Texture optimization='{5}'".format(name, tex.yaf_tex_type, image_tex, texture_color_space, texture_gamma, texture_optimization))
 
             yi.paramsSetString("interpolate", tex.yaf_tex_interpolate)
-            yi.paramsSetString("texture_optimization", texture_optimization)
+            yi.paramsSetString("image_optimization", texture_optimization)
 
             # repeat
             repeat_x = 1

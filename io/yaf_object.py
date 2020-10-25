@@ -23,7 +23,7 @@ import time
 import math
 import mathutils
 from .. import yaf_global_vars
-import yafaray_v3_interface
+import yafaray4_interface
 
 def multiplyMatrix4x4Vector4(matrix, vector):
     result = mathutils.Vector((0.0, 0.0, 0.0, 0.0))
@@ -163,6 +163,7 @@ class yafObject(object):
                 elif camType == "angular":
                     yi.paramsSetBool("circular", camera.circular)
                     yi.paramsSetBool("mirrored", camera.mirrored)
+                    yi.paramsSetString("projection", camera.angular_projection)
                     yi.paramsSetFloat("max_angle", camera.max_angle)
                     yi.paramsSetFloat("angle", camera.angular_angle)
 
@@ -185,8 +186,10 @@ class yafObject(object):
             yi.paramsSetPoint("from", pos[0], pos[1], pos[2])
             yi.paramsSetPoint("up", up[0], up[1], up[2])
             yi.paramsSetPoint("to", to[0], to[1], to[2])
-            yi.paramsSetString("view_name", cam.view_name)
             yi.createCamera(cam.camera_name)
+            self.yi.paramsClearAll()
+            self.yi.paramsSetString("camera_name", cam.camera_name)
+            self.yi.createRenderView(cam.view_name)
 
 
     def getBBCorners(self, object):
@@ -206,7 +209,7 @@ class yafObject(object):
 
     def get4x4Matrix(self, matrix):
 
-        ret = yafaray_v3_interface.matrix4x4_t()
+        ret = yafaray4_interface.Matrix4()
 
         for i in range(4):
             for j in range(4):
@@ -243,7 +246,7 @@ class yafObject(object):
     def writeInstanceBase(self, obj):
 
         # Generate unique object ID
-        ID = self.yi.getNextFreeID()
+        ID = self.yi.getNextFreeId()
 
         self.yi.printInfo("Exporting Base Mesh: {0} with ID: {1:d}".format(obj.name, ID))
 
@@ -265,7 +268,7 @@ class yafObject(object):
 
         o2w = self.get4x4Matrix(mat4)
 
-        self.yi.addInstance(oID, o2w)
+        self.yi.addInstance(name, o2w)
         del mat4
         del o2w
 
@@ -274,7 +277,7 @@ class yafObject(object):
         self.yi.printInfo("Exporting Mesh: {0}".format(obj.name))
 
         # Generate unique object ID
-        ID = self.yi.getNextFreeID()
+        ID = self.yi.getNextFreeId()
         
         self.yi.paramsClearAll()
         self.yi.paramsSetInt("obj_pass_index", obj.pass_index)
@@ -304,14 +307,14 @@ class yafObject(object):
         self.yi.printInfo("Exporting Background Portal Light: {0}".format(obj.name))
 
         # Generate unique object ID
-        ID = self.yi.getNextFreeID()
+        ID = self.yi.getNextFreeId()
 
         self.yi.paramsClearAll()
         self.yi.paramsSetInt("obj_pass_index", obj.pass_index)
         self.yi.paramsSetString("type", "bgPortalLight")
         self.yi.paramsSetFloat("power", obj.bgp_power)
         self.yi.paramsSetInt("samples", obj.bgp_samples)
-        self.yi.paramsSetInt("object", ID)
+        self.yi.paramsSetString("object_name", obj.name)
         self.yi.paramsSetBool("with_caustic", obj.bgp_with_caustic)
         self.yi.paramsSetBool("with_diffuse", obj.bgp_with_diffuse)
         self.yi.paramsSetBool("photon_only", obj.bgp_photon_only)
@@ -326,7 +329,7 @@ class yafObject(object):
         self.yi.printInfo("Exporting Meshlight: {0}".format(obj.name))
 
         # Generate unique object ID
-        ID = self.yi.getNextFreeID()
+        ID = self.yi.getNextFreeId()
 
         ml_matname = "ML_"
         ml_matname += obj.name + "." + str(obj.__hash__())
@@ -351,7 +354,7 @@ class yafObject(object):
         self.yi.paramsSetColor("color", c[0], c[1], c[2])
         self.yi.paramsSetFloat("power", obj.ml_power)
         self.yi.paramsSetInt("samples", obj.ml_samples)
-        self.yi.paramsSetInt("object", ID)
+        self.yi.paramsSetString("object_name", obj.name)
         self.yi.createLight(obj.name)
 
         self.writeGeometry(ID, obj, matrix, obj.pass_index, 0, ml_mat)  # obType in 0, default, the object is rendered
@@ -490,7 +493,7 @@ class yafObject(object):
         self.yi.paramsClearAll()
         self.yi.startGeometry()
 
-        self.yi.startTriMesh(ID, len(mesh.vertices), len(getattr(mesh, face_attr)), hasOrco, hasUV, obType, pass_index)
+        self.yi.startTriMesh(obj.name, len(mesh.vertices), len(getattr(mesh, face_attr)), hasOrco, hasUV, obType, pass_index)
 
         for ind, v in enumerate(mesh.vertices):
             if hasOrco:
@@ -514,9 +517,9 @@ class yafObject(object):
                 else:
                     co = uv_texture.active.data[index].uv
 
-                uv0 = self.yi.addUV(co[0][0], co[0][1])
-                uv1 = self.yi.addUV(co[1][0], co[1][1])
-                uv2 = self.yi.addUV(co[2][0], co[2][1])
+                uv0 = self.yi.addUv(co[0][0], co[0][1])
+                uv1 = self.yi.addUv(co[1][0], co[1][1])
+                uv2 = self.yi.addUv(co[2][0], co[2][1])
 
                 self.yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2, ymaterial)
             else:
@@ -524,7 +527,7 @@ class yafObject(object):
 
             if len(f.vertices) == 4:
                 if hasUV:
-                    uv3 = self.yi.addUV(co[3][0], co[3][1])
+                    uv3 = self.yi.addUv(co[3][0], co[3][1])
                     self.yi.addTriangle(f.vertices[0], f.vertices[2], f.vertices[3], uv0, uv2, uv3, ymaterial)
                 else:
                     self.yi.addTriangle(f.vertices[0], f.vertices[2], f.vertices[3], ymaterial)
@@ -532,11 +535,11 @@ class yafObject(object):
         self.yi.endTriMesh()
 
         if isSmooth and mesh.use_auto_smooth:
-            self.yi.smoothMesh(0, math.degrees(mesh.auto_smooth_angle))
+            self.yi.smoothMesh("", math.degrees(mesh.auto_smooth_angle))
         elif isSmooth and obj.type == 'FONT':  # getting nicer result with smooth angle 60 degr. for text objects
-            self.yi.smoothMesh(0, 60)
+            self.yi.smoothMesh("", 60)
         elif isSmooth:
-            self.yi.smoothMesh(0, 181)
+            self.yi.smoothMesh("", 181)
 
         self.yi.endGeometry()
 
@@ -595,10 +598,10 @@ class yafObject(object):
                             p = True
                         else:
                             p = False
-                        CID = yi.getNextFreeID()
+                        CID = yi.getNextFreeId()
                         yi.paramsClearAll()
                         yi.startGeometry()
-                        yi.startCurveMesh(CID, p)
+                        yi.startCurveMesh(object.name, p)
                         for location in particle.hair_keys:
                             vertex = matrix * location.co  # use reverse vector multiply order, API changed with rev. 38674
                             yi.addVertex(vertex[0], vertex[1], vertex[2])

@@ -42,7 +42,7 @@ class yafLight:
         yi = self.yi
 
         # get next free id from interface
-        ID = yi.getNextFreeID()
+        ID = "SphereLight-" + str(yi.getNextFreeId())
 
         yi.startGeometry()
 
@@ -225,7 +225,7 @@ class yafLight:
             
             yi.paramsClearAll()
             if light.create_geometry:
-                ID = yi.getNextFreeID()
+                ID = "AreaLight-"+yi.getNextFreeId()
                 yi.startGeometry()
                 yi.startTriMesh(ID, 4, 2, False, False, 0)
 
@@ -237,7 +237,7 @@ class yafLight:
                 yi.addTriangle(0, 2, 3, self.lightMat)
                 yi.endTriMesh()
                 yi.endGeometry()
-                yi.paramsSetInt("object", ID)
+                yi.paramsSetString("object_name", ID)
 
             yi.paramsSetString("type", "arealight")
             yi.paramsSetInt("samples", light.yaf_samples)
