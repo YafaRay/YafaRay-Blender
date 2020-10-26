@@ -75,7 +75,7 @@ class YAFARAY4_PT_world(WorldButtonsPanel, Panel):
 
 
         elif world.bg_type == "Texture":
-
+            return #FIXME!
             tex = context.scene.world.active_texture
 
             if tex is not None:
