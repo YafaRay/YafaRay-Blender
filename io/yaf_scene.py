@@ -155,8 +155,8 @@ def exportRenderSettings(yi, depsgraph):
     yi.paramsSetFloat("adv_min_raydist_value", scene.adv_min_raydist_value)
     yi.paramsSetFloat("adv_min_raydist_value", scene.adv_min_raydist_value)
     yi.paramsSetInt("adv_base_sampling_offset", scene.adv_base_sampling_offset)
-    print(list(bpy.context.preferences.addons))
-    yi.paramsSetInt("adv_computer_node", bpy.context.preferences.addons["yafaray4"].preferences.yafaray_computer_node)
+    #print(list(bpy.context.preferences.addons))
+    #FIXME! yi.paramsSetInt("adv_computer_node", bpy.context.preferences.addons["yafaray4"].preferences.yafaray_computer_node)
 
 
 def setLoggingAndBadgeSettings(yi, scene):
