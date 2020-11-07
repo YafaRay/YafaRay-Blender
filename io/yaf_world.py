@@ -153,7 +153,7 @@ class yafWorld:
 
         elif bg_type == 'Sunsky1':
             f = world.bg_from
-            yi.paramsSetPoint("from", f[0], f[1], f[2])
+            yi.paramsSetVector("from", f[0], f[1], f[2])
             yi.paramsSetFloat("turbidity", world.bg_turbidity)
             yi.paramsSetFloat("a_var", world.bg_a_var)
             yi.paramsSetFloat("b_var", world.bg_b_var)
@@ -169,7 +169,7 @@ class yafWorld:
 
         elif bg_type == "Sunsky2":
             f = world.bg_from
-            yi.paramsSetPoint("from", f[0], f[1], f[2])
+            yi.paramsSetVector("from", f[0], f[1], f[2])
             yi.paramsSetFloat("turbidity", world.bg_ds_turbidity)
             yi.paramsSetFloat("altitude", world.bg_dsaltitude)
             yi.paramsSetFloat("a_var", world.bg_a_var)

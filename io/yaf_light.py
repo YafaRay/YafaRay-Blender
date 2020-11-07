@@ -164,7 +164,7 @@ class yafLight:
 
             yi.paramsSetFloat("cone_angle", angle)
             yi.paramsSetFloat("blend", lamp.spot_blend)
-            yi.paramsSetPoint("to", to[0], to[1], to[2])
+            yi.paramsSetVector("to", to[0], to[1], to[2])
             yi.paramsSetBool("soft_shadows", lamp.spot_soft_shadows)
             yi.paramsSetFloat("shadowFuzzyness", lamp.shadow_fuzzyness)
             yi.paramsSetInt("samples", lamp.yaf_samples)
@@ -175,23 +175,23 @@ class yafLight:
             yi.paramsSetString("type", "sunlight")
             yi.paramsSetInt("samples", lamp.yaf_samples)
             yi.paramsSetFloat("angle", lamp.angle)
-            yi.paramsSetPoint("direction", direct[0], direct[1], direct[2])
+            yi.paramsSetVector("direction", direct[0], direct[1], direct[2])
             yi.paramsSetBool("light_enabled", lamp.light_enabled)
             yi.paramsSetBool("cast_shadows", lamp.cast_shadows)
 
         elif lampType == "directional":
             yi.paramsSetString("type", "directional")
-            yi.paramsSetPoint("direction", direct[0], direct[1], direct[2])
+            yi.paramsSetVector("direction", direct[0], direct[1], direct[2])
             yi.paramsSetBool("infinite", lamp.infinite)
             if not lamp.infinite:
                 yi.paramsSetFloat("radius", lamp.shadow_soft_size)
-                yi.paramsSetPoint("from", pos[0], pos[1], pos[2])
+                yi.paramsSetVector("from", pos[0], pos[1], pos[2])
             yi.paramsSetBool("light_enabled", lamp.light_enabled)
             yi.paramsSetBool("cast_shadows", lamp.cast_shadows)
 
         elif lampType == "ies":
             yi.paramsSetString("type", "ieslight")
-            yi.paramsSetPoint("to", to[0], to[1], to[2])
+            yi.paramsSetVector("to", to[0], to[1], to[2])
             ies_file = abspath(lamp.ies_file)
             if not any(ies_file) and not os.path.exists(ies_file):
                 yi.printWarning("IES file not found for {0}".format(name))
@@ -241,15 +241,15 @@ class yafLight:
 
             yi.paramsSetString("type", "arealight")
             yi.paramsSetInt("samples", lamp.yaf_samples)
-            yi.paramsSetPoint("corner", point[0], point[1], point[2])
-            yi.paramsSetPoint("point1", corner1[0], corner1[1], corner1[2])
-            yi.paramsSetPoint("point2", corner3[0], corner3[1], corner3[2])
+            yi.paramsSetVector("corner", point[0], point[1], point[2])
+            yi.paramsSetVector("point1", corner1[0], corner1[1], corner1[2])
+            yi.paramsSetVector("point2", corner3[0], corner3[1], corner3[2])
             yi.paramsSetBool("light_enabled", lamp.light_enabled)
             yi.paramsSetBool("cast_shadows", lamp.cast_shadows)
 
         if lampType not in {"sun", "directional"}:
             # "from" is not used for sunlight and infinite directional light
-            yi.paramsSetPoint("from", pos[0], pos[1], pos[2])
+            yi.paramsSetVector("from", pos[0], pos[1], pos[2])
         if lampType in {"point", "spot"}:
             if getattr(lamp, "use_sphere", False) and lampType == "point":
                 power = 0.5 * power * power / (lamp.yaf_sphere_radius * lamp.yaf_sphere_radius)

@@ -191,8 +191,8 @@ class yafMaterial:
         mappingCoords = switchMappingCoords.get(mtex.mapping, 'plain')
         yi.paramsSetString("mapping", mappingCoords)
 
-        yi.paramsSetPoint("scale", mtex.scale[0], mtex.scale[1], mtex.scale[2])
-        yi.paramsSetPoint("offset", mtex.offset[0], mtex.offset[1], mtex.offset[2])
+        yi.paramsSetVector("scale", mtex.scale[0], mtex.scale[1], mtex.scale[2])
+        yi.paramsSetVector("offset", mtex.offset[0], mtex.offset[1], mtex.offset[2])
 
         if mtex.use_map_normal:  # || mtex->maptoneg & MAP_NORM )
             # scale up the normal factor, it resembles

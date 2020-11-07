@@ -181,9 +181,9 @@ class yafObject(object):
                     up = (0,0,1)
                     to = (0,0,0)
 
-            yi.paramsSetPoint("from", pos[0], pos[1], pos[2])
-            yi.paramsSetPoint("up", up[0], up[1], up[2])
-            yi.paramsSetPoint("to", to[0], to[1], to[2])
+            yi.paramsSetVector("from", pos[0], pos[1], pos[2])
+            yi.paramsSetVector("up", up[0], up[1], up[2])
+            yi.paramsSetVector("to", to[0], to[1], to[2])
             yi.createCamera(cam.camera_name)
             self.yi.paramsClearAll()
             self.yi.paramsSetString("camera_name", cam.camera_name)
