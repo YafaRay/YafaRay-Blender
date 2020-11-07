@@ -219,15 +219,15 @@ class yafTexture:
             yi.paramsSetString("type", "voronoi")
 
             if tex.color_mode == 'POSITION':
-                ts = "col1"
+                ts = "position"
             elif tex.color_mode == 'POSITION_OUTLINE':
-                ts = "col2"
+                ts = "position-outline"
             elif tex.color_mode == 'POSITION_OUTLINE_INTENSITY':
-                ts = "col3"
+                ts = "position-outline-intensity"
             else:
-                ts = "int"
+                ts = "intensity-without-color"
 
-            yi.paramsSetString("color_type", ts)
+            yi.paramsSetString("color_mode", ts)
 
             yi.paramsSetFloat("weight1", tex.weight_1)
             yi.paramsSetFloat("weight2", tex.weight_2)
