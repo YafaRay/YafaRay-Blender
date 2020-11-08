@@ -372,7 +372,7 @@ class YafaRay4LayersProperties(bpy.types.PropertyGroup):
         
     renderPassItemsDebug=sorted((
             ('debug-aa-samples', "Debug: AA sample count", "Debug: Adaptative AA sample count (estimation), normalized", 301),
-            ('debug-uv', "Debug: UV", "Debug: UV coordinates (black for objects with no UV mapping)", 302),
+            ('debug-uv', "Debug: UV", "Debug: UV coordinates", 302),
             ('debug-dsdv', "Debug: dSdV", "Debug: shading dSdV", 303),
             ('debug-dsdu', "Debug: dSdU", "Debug: shading dSdU", 304),
             ('debug-dpdv', "Debug: dPdV", "Debug: surface dPdV", 305),
@@ -395,6 +395,7 @@ class YafaRay4LayersProperties(bpy.types.PropertyGroup):
             ('debug-dudx-dvdx', "Debug: differential dUdx, dVdx", "For debugging mipmaps, etc, show differential dUdx and dVdx", 322),
             ('debug-dudy-dvdy', "Debug: differential dUdy, dVdy", "For debugging mipmaps, etc, show differential dUdy and dVdy", 323),
             ('debug-dudxy-dvdxy', "Debug: differential dUdx+dUdy, dVdx+dVdy", "For debugging mipmaps, etc, show differential dUdx+dUdy and dVdx+dVdy", 324),
+            ('debug-barycentric-uvw', "Debug: Barycentric UVW", "Debug: barycentric UVW coordinates", 325),
         ), key=lambda index: index[1])
 
     renderInternalPassAdvanced=sorted((
