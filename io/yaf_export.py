@@ -170,7 +170,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
                         self.yaf_object.writeMesh(obj_dupli.object, matrix)
                     else:
                         if obj_dupli.object.name not in dupBaseIds:
-                            dupBaseIds[obj_dupli.object.name] = self.yaf_object.writeInstanceBase(obj_dupli.object)
+                            dupBaseIds[obj_dupli.object.name] = self.yaf_object.writeInstanceBase(obj_dupli.object.name, obj_dupli.object)
                         matrix = obj_dupli.matrix.copy()
                         self.yaf_object.writeInstance(dupBaseIds[obj_dupli.object.name], matrix, obj_dupli.object.name)
 
@@ -193,11 +193,11 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
             elif obj.data.users > 1 and self.scene.render.use_instances:
                 self.yi.printVerbose("Processing shared mesh data node object: {0}".format(obj.name))
                 if obj.data.name not in baseIds:
-                    baseIds[obj.data.name] = self.yaf_object.writeInstanceBase(obj)
+                    baseIds[obj.data.name] = self.yaf_object.writeInstanceBase(obj.data.name, obj)
 
                 if obj.name not in dupBaseIds:
                     matrix = obj.matrix_world.copy()
-                    self.yaf_object.writeInstance(baseIds[obj.data.name], matrix, obj.data.name)
+                    self.yaf_object.writeInstance(obj.name, matrix, baseIds[obj.data.name])
 
             elif obj.data.name not in baseIds and obj.name not in dupBaseIds:
                 self.yaf_object.writeObject(obj)

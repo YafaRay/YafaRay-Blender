@@ -241,32 +241,20 @@ class yafObject(object):
             else:        
                 self.writeMesh(obj, matrix)
 
-    def writeInstanceBase(self, obj):
-
-        # Generate unique object ID
-        ID = self.yi.getNextFreeId()
-
-        self.yi.printInfo("Exporting Base Mesh: {0} with ID: {1:d}".format(obj.name, ID))
-
+    def writeInstanceBase(self, ID, obj):
+        self.yi.printInfo("Exporting Base Mesh: {0} with ID: {1}".format(obj.name, ID))
         obType = 512  # Create this geometry object as a base object for instances
-
         self.yi.paramsClearAll()
         self.yi.paramsSetInt("obj_pass_index", obj.pass_index)
-        
         self.writeGeometry(ID, obj, None, obj.pass_index, obType)  # We want the vertices in object space
-
         return ID
 
-    def writeInstance(self, oID, obj2WorldMatrix, name):
-
-        self.yi.printVerbose("Exporting Instance of {0} [ID = {1:d}]".format(name, oID))
-
+    def writeInstance(self, oID, obj2WorldMatrix, base_obj_name):
+        self.yi.printVerbose("Exporting Instance of {0} [ID = {1}]".format(base_obj_name, oID))
         mat4 = obj2WorldMatrix.to_4x4()
         # mat4.transpose() --> not needed anymore: matrix indexing changed with Blender rev.42816
-
         o2w = self.get4x4Matrix(mat4)
-
-        self.yi.addInstance(name, o2w)
+        self.yi.addInstance(base_obj_name, o2w)
         del mat4
         del o2w
 
@@ -275,7 +263,7 @@ class yafObject(object):
         self.yi.printInfo("Exporting Mesh: {0}".format(obj.name))
 
         # Generate unique object ID
-        ID = self.yi.getNextFreeId()
+        ID = obj.name #self.yi.getNextFreeId()
         
         self.yi.paramsClearAll()
         self.yi.paramsSetInt("obj_pass_index", obj.pass_index)
@@ -305,7 +293,7 @@ class yafObject(object):
         self.yi.printInfo("Exporting Background Portal Light: {0}".format(obj.name))
 
         # Generate unique object ID
-        ID = self.yi.getNextFreeId()
+        ID = obj.name #self.yi.getNextFreeId()
 
         self.yi.paramsClearAll()
         self.yi.paramsSetInt("obj_pass_index", obj.pass_index)
@@ -327,7 +315,7 @@ class yafObject(object):
         self.yi.printInfo("Exporting Meshlight: {0}".format(obj.name))
 
         # Generate unique object ID
-        ID = self.yi.getNextFreeId()
+        ID = obj.name #self.yi.getNextFreeId()
 
         ml_matname = "ML_"
         ml_matname += obj.name + "." + str(obj.__hash__())
@@ -492,7 +480,7 @@ class yafObject(object):
         self.yi.paramsClearAll()
         self.yi.startGeometry()
 
-        self.yi.startTriMesh(obj.name, len(mesh.vertices), len(getattr(mesh, face_attr)), hasOrco, hasUV, obType, pass_index)
+        self.yi.startTriMesh(str(ID), len(mesh.vertices), len(getattr(mesh, face_attr)), hasOrco, hasUV, obType, pass_index)
 
         for ind, v in enumerate(mesh.vertices):
             if hasOrco:
