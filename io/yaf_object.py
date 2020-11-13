@@ -258,13 +258,13 @@ class yafObject(object):
         del mat4
         del o2w
 
-    def writeMesh(self, obj, matrix):
+    def writeMesh(self, obj, matrix, ID=None):
 
-        self.yi.printInfo("Exporting Mesh: {0}".format(obj.name))
-
-        # Generate unique object ID
-        ID = obj.name #self.yi.getNextFreeId()
+        if ID is None:
+            # Generate unique object ID
+            ID = obj.name #self.yi.getNextFreeId()
         
+        self.yi.printInfo("Exporting Mesh: {0}".format(ID))
         self.yi.paramsClearAll()
         self.yi.paramsSetInt("obj_pass_index", obj.pass_index)
 
@@ -405,7 +405,6 @@ class yafObject(object):
         bpy.data.meshes.remove(mesh, do_unlink=False)
 
     def writeGeometry(self, ID, obj, matrix, pass_index, obType=0, oMat=None):
-
         mesh = obj.to_mesh(self.scene, True, 'RENDER')
         isSmooth = False
         hasOrco = False
@@ -480,7 +479,17 @@ class yafObject(object):
         self.yi.paramsClearAll()
         self.yi.startGeometry()
 
-        self.yi.startTriMesh(str(ID), len(mesh.vertices), len(getattr(mesh, face_attr)), hasOrco, hasUV, obType, pass_index)
+        self.yi.paramsSetString("type", "mesh")
+        self.yi.paramsSetInt("num_vertices", len(mesh.vertices))
+        self.yi.paramsSetInt("num_faces", len(getattr(mesh, face_attr)))
+        self.yi.paramsSetBool("has_orco", hasOrco)
+        self.yi.paramsSetBool("has_uv", hasUV)
+        if obType & 0x200:
+            self.yi.paramsSetBool("is_base_object", True)
+        if obType & 0x100:
+            self.yi.paramsSetString("visibility", "invisible")
+        self.yi.paramsSetInt("object_index", pass_index)
+        self.yi.createObject(str(ID))
 
         for ind, v in enumerate(mesh.vertices):
             if hasOrco:
@@ -496,7 +505,7 @@ class yafObject(object):
                 ymaterial = oMat
             else:
                 ymaterial = self.getFaceMaterial(mesh.materials, f.material_index, obj.material_slots)
-
+            self.yi.setCurrentMaterial(ymaterial)
             co = None
             if hasUV:
 
@@ -509,18 +518,18 @@ class yafObject(object):
                 uv1 = self.yi.addUv(co[1][0], co[1][1])
                 uv2 = self.yi.addUv(co[2][0], co[2][1])
 
-                self.yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2, ymaterial)
+                self.yi.addFace(f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2)
             else:
-                self.yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2], ymaterial)
+                self.yi.addFace(f.vertices[0], f.vertices[1], f.vertices[2])
 
             if len(f.vertices) == 4:
                 if hasUV:
                     uv3 = self.yi.addUv(co[3][0], co[3][1])
-                    self.yi.addTriangle(f.vertices[0], f.vertices[2], f.vertices[3], uv0, uv2, uv3, ymaterial)
+                    self.yi.addFace(f.vertices[0], f.vertices[2], f.vertices[3], uv0, uv2, uv3)
                 else:
-                    self.yi.addTriangle(f.vertices[0], f.vertices[2], f.vertices[3], ymaterial)
+                    self.yi.addFace(f.vertices[0], f.vertices[2], f.vertices[3])
 
-        self.yi.endTriMesh()
+        self.yi.endObject()
 
         if isSmooth and mesh.use_auto_smooth:
             self.yi.smoothMesh("", math.degrees(mesh.auto_smooth_angle))
@@ -587,15 +596,20 @@ class yafObject(object):
                         CID = yi.getNextFreeId()
                         yi.paramsClearAll()
                         yi.startGeometry()
-                        yi.startCurveMesh(object.name, p)
+                        if self.materialMap[pmaterial]:
+                            yi.setCurrentMaterial(self.materialMap[pmaterial])
+                        else:
+                            yi.setCurrentMaterial(self.materialMap["default"])
+                        self.yi.paramsSetString("type", "curve")
+                        self.yi.paramsSetFloat("strand_start", strandStart)
+                        self.yi.paramsSetFloat("strand_end", strandStart)
+                        self.yi.paramsSetFloat("strand_shape", strandStart)
+                        self.yi.paramsSetInt("num_vertices", len(particle.hair_keys))
+                        yi.createObject(object.name + "_strand_" + str(CID))
                         for location in particle.hair_keys:
                             vertex = matrix * location.co  # use reverse vector multiply order, API changed with rev. 38674
                             yi.addVertex(vertex[0], vertex[1], vertex[2])
-                        #this section will be changed after the material settings been exported
-                        if self.materialMap[pmaterial]:
-                            yi.endCurveMesh(self.materialMap[pmaterial], strandStart, strandEnd, strandShape)
-                        else:
-                            yi.endCurveMesh(self.materialMap["default"], strandStart, strandEnd, strandShape)
+                        yi.endObject()
                     # TODO: keep object smooth
                     #yi.smoothMesh(0, 60.0)
                         yi.endGeometry()

@@ -57,6 +57,9 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
         self.materialMap = {}
         self.materials = set()
         self.yi = yi
+        yi.paramsSetString("type", self.scene.adv_scene_type)
+        self.yi.createScene()
+        self.yi.paramsClearAll()
 
         if self.is_preview:
             self.yi.setConsoleVerbosityLevel("mute")
@@ -167,7 +170,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
 
                     if not self.scene.render.use_instances:
                         matrix = obj_dupli.matrix.copy()
-                        self.yaf_object.writeMesh(obj_dupli.object, matrix)
+                        self.yaf_object.writeMesh(obj_dupli.object, matrix, obj_dupli.object.name + "_" + str(self.yi.getNextFreeId()))
                     else:
                         if obj_dupli.object.name not in dupBaseIds:
                             dupBaseIds[obj_dupli.object.name] = self.yaf_object.writeInstanceBase(obj_dupli.object.name, obj_dupli.object)
@@ -377,7 +380,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
 
         elif scene.gs_type_render == "xml":
             self.outputFile, self.output, self.file_type = self.decideOutputFileName(fp, 'XML')
-            self.setInterface(yafaray4_interface.XmlExport(self.outputFile, 0)) #FIXME type=0?
+            self.setInterface(yafaray4_interface.XmlExport(self.outputFile))
             yaf_scene.exportRenderPassesSettings(self.yi, self.scene)
             self.yi.setInteractive(False)
                         

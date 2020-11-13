@@ -909,6 +909,14 @@ def register():
         min=0, max=2000000000,
         default=0)
 
+    Scene.adv_scene_type = EnumProperty(
+        name="Scene Type/Renderer",
+        description="Selects the scene type/renderer, 'yafaray' by default. Other scene types/renderers might be added in the future.",
+        items=(
+            ('yafaray', "yafaray", "(default) YafaRay scene type/renderer will be used."),
+        ),
+        default='yafaray')
+
     Scene.gs_premult = EnumProperty(
         name="Premultiply",
         description="Premultipy Alpha channel for renders with transparent background",
@@ -1340,7 +1348,8 @@ def unregister():
     del Scene.adv_auto_min_raydist_enabled
     del Scene.adv_min_raydist_value
     del Scene.adv_base_sampling_offset
-    
+    del Scene.adv_scene_type
+
     del Scene.gs_premult
     del Scene.gs_transp_shad
     del Scene.gs_show_sam_pix

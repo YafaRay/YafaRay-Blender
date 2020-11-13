@@ -40,14 +40,17 @@ class yafLight:
 
     def makeSphere(self, nu, nv, x, y, z, rad, mat):
         yi = self.yi
+        yi.setCurrentMaterial(mat)
 
         # get next free id from interface
         ID = "SphereLight-" + str(yi.getNextFreeId())
 
         yi.startGeometry()
-
-        if not yi.startTriMesh(ID, 2 + (nu - 1) * nv, 2 * (nu - 1) * nv, False, False):
-            yi.printError("Couldn't start trimesh!")
+        self.yi.paramsSetString("type", "mesh")
+        self.yi.paramsSetInt("num_vertices", 2 + (nu - 1) * nv)
+        self.yi.paramsSetInt("num_faces", 2 * (nu - 1) * nv)
+        if not yi.createObject(ID):
+            yi.printError("Couldn't start YafaRay object!")
 
         yi.addVertex(x, y, z + rad)
         yi.addVertex(x, y, z - rad)
@@ -62,13 +65,13 @@ class yafLight:
                 yi.addVertex(x + cos_v * sin_u * rad, y + sin_v * sin_u * rad, z + cos_u * rad)
 
         for v in range(0, nv):
-            yi.addTriangle(0, 2 + v * (nu - 1), 2 + ((v + 1) % nv) * (nu - 1), mat)
-            yi.addTriangle(1, ((v + 1) % nv) * (nu - 1) + nu, v * (nu - 1) + nu, mat)
+            yi.addFace(0, 2 + v * (nu - 1), 2 + ((v + 1) % nv) * (nu - 1))
+            yi.addFace(1, ((v + 1) % nv) * (nu - 1) + nu, v * (nu - 1) + nu)
             for u in range(0, nu - 2):
-                yi.addTriangle(2 + v * (nu - 1) + u, 2 + v * (nu - 1) + u + 1, 2 + ((v + 1) % nv) * (nu - 1) + u, mat)
-                yi.addTriangle(2 + v * (nu - 1) + u + 1, 2 + ((v + 1) % nv) * (nu - 1) + u + 1, 2 + ((v + 1) % nv) * (nu - 1) + u, mat)
+                yi.addFace(2 + v * (nu - 1) + u, 2 + v * (nu - 1) + u + 1, 2 + ((v + 1) % nv) * (nu - 1) + u)
+                yi.addFace(2 + v * (nu - 1) + u + 1, 2 + ((v + 1) % nv) * (nu - 1) + u + 1, 2 + ((v + 1) % nv) * (nu - 1) + u)
 
-        yi.endTriMesh()
+        yi.endObject()
         yi.endGeometry()
 
         return ID
@@ -227,15 +230,18 @@ class yafLight:
             if lamp.create_geometry:
                 ID = "AreaLight-"+yi.getNextFreeId()
                 yi.startGeometry()
-                yi.startTriMesh(ID, 4, 2, False, False, 0)
-
+                self.yi.paramsSetString("type", "mesh")
+                self.yi.paramsSetInt("num_vertices", 4)
+                self.yi.paramsSetInt("num_faces", 2)
+                yi.createObject(ID)
+                yi.setCurrentMaterial(self.lightMat)
                 yi.addVertex(point[0], point[1], point[2])
                 yi.addVertex(corner1[0], corner1[1], corner1[2])
                 yi.addVertex(corner2[0], corner2[1], corner2[2])
                 yi.addVertex(corner3[0], corner3[1], corner3[2])
-                yi.addTriangle(0, 1, 2, self.lightMat)
-                yi.addTriangle(0, 2, 3, self.lightMat)
-                yi.endTriMesh()
+                yi.addFace(0, 1, 2)
+                yi.addFace(0, 2, 3)
+                yi.endObject()
                 yi.endGeometry()
                 yi.paramsSetString("object_name", ID)
 

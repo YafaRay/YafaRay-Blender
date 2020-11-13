@@ -263,7 +263,11 @@ class YAFARAY4_PT_Advanced(RenderButtonsPanel, Panel):
             col = split.column()
             sub = col.column()
             sub.prop(scene, "adv_min_raydist_value")
-            
+
+        split = layout.split()
+        col = split.column()
+        col.prop(scene, "adv_scene_type")
+
 if __name__ == "__main__":  # only for live edit.
     import bpy
     bpy.utils.register_module(__name__)
