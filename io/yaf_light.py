@@ -228,7 +228,7 @@ class yafLight:
             
             yi.paramsClearAll()
             if lamp.create_geometry:
-                ID = "AreaLight-"+yi.getNextFreeId()
+                ID = "AreaLight-"+str(yi.getNextFreeId())
                 yi.startGeometry()
                 self.yi.paramsSetString("type", "mesh")
                 self.yi.paramsSetInt("num_vertices", 4)
