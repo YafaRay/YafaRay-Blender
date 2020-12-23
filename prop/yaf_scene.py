@@ -85,6 +85,11 @@ class YafaRay4LoggingProperties(bpy.types.PropertyGroup):
             ('debug', "Debug", "Prints debug messages (if any)", 6),
         ), key=lambda index: index[3])
 
+    logPrintDateTime = BoolProperty(
+        name="Log Date/Time",
+        description="Print Date/Time in the logs (enabled by default)",
+        default=True)
+
     consoleVerbosity = EnumProperty(
         name="Console Verbosity",
         description="Select the desired verbosity level for console log output",

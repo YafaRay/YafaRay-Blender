@@ -67,7 +67,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
             self.scene.bg_transp = False #to correct alpha problems in preview roughglass
             self.scene.bg_transp_refract = False #to correct alpha problems in preview roughglass
         else:
-            #FIXME self.yi.setParamsBadgePosition(self.scene.yafaray.logging.paramsBadgePosition)
+            self.yi.enablePrintDateTime(self.scene.yafaray.logging.logPrintDateTime)
             self.yi.setConsoleVerbosityLevel(self.scene.yafaray.logging.consoleVerbosity)
             self.yi.setLogVerbosityLevel(self.scene.yafaray.logging.logVerbosity)
             self.yi.printInfo("YafaRay-Blender (" + YAFARAY_BLENDER_VERSION + ")")

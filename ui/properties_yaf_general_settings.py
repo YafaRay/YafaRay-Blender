@@ -128,6 +128,8 @@ class YAFARAY4_MT_logging(RenderButtonsPanel, Panel):
 
         split = layout.split()
         col = split.column()
+        col.prop(scene.yafaray.logging, "logPrintDateTime")
+        col = split.column()
         col.prop(scene.yafaray.logging, "consoleVerbosity")
         col = split.column()
         col.prop(scene.yafaray.logging, "logVerbosity")
