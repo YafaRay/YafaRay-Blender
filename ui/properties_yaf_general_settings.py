@@ -108,6 +108,18 @@ class YAFARAY4_PT_general_settings(RenderButtonsPanel, Panel):
         sub.enabled = scene.bg_transp
         sub.prop(scene, "bg_transp_refract", toggle=True)
 
+class YAFARAY4_MT_accelerator(RenderButtonsPanel, Panel):
+    bl_label = "Scene accelerator settings"
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        render = scene.render
+
+        split = layout.split(percentage=0.43)
+        col = split.column()
+        col.prop(scene, "gs_accelerator")
 
 class YAFARAY4_MT_logging(RenderButtonsPanel, Panel):
     bl_label = "Logging / Params Badge Settings"

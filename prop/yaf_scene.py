@@ -790,6 +790,16 @@ class YafaRay4MaterialPreviewControlProperties(bpy.types.PropertyGroup):
 
 def register():
     ########### YafaRay's general settings properties #############
+    Scene.gs_accelerator = EnumProperty(
+        name="Scene accelerator",
+        description="Selects the scene accelerator algorithm",
+        items=(
+            ('yafaray-kdtree-original', "KDTree single-thread", "KDTree single-thread (original/default, faster but single threaded)"),
+            ('yafaray-kdtree-multi-thread', "KDTree multi-thread", "KDTree multi-thread (slower per thread, but might be faster for >= 8 cores)"),
+            ('yafaray-simpletest', "Simple/Test", "Simple (for development TESTING ONLY, very slow renders!)"),
+        ),
+        default='yafaray-kdtree-original')
+
     Scene.gs_ray_depth = IntProperty(
         name="Ray depth",
         description="Maximum depth for recursive raytracing",
@@ -1331,6 +1341,7 @@ def unregister():
     bpy.utils.unregister_class(YafaRay4LayersProperties)
     bpy.utils.unregister_class(YafaRay4Properties)
 
+    del Scene.gs_accelerator
     del Scene.gs_ray_depth
     del Scene.gs_shadow_depth
     del Scene.gs_threads

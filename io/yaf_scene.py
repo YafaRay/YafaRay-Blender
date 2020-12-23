@@ -107,6 +107,7 @@ def exportRenderSettings(yi, scene):
 
     [sizeX, sizeY, bStartX, bStartY, bsizeX, bsizeY, cam_data] = getRenderCoords(scene)
 
+    yi.paramsSetString("scene_accelerator", scene.gs_accelerator)
     yi.paramsSetString("integrator_name", "default")
     yi.paramsSetString("volintegrator_name", "volintegr")
 
