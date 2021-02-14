@@ -54,7 +54,6 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
     yaf_global_vars.viewMatrix = None
 
     def setInterface(self, yi):
-        self.materialMap = {}
         self.materials = set()
         self.yi = yi
         yi.paramsSetString("type", self.scene.adv_scene_type)
@@ -74,12 +73,12 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
             self.yi.printInfo("Exporter: Blender version " + str(bpy.app.version[0]) + "."+ str(bpy.app.version[1]) + "."+ str(bpy.app.version[2]) + "."+ bpy.app.version_char + "  Build information: " + bpy.app.build_platform.decode("utf-8") + ", " + bpy.app.build_type.decode("utf-8") + ", branch: " + bpy.app.build_branch.decode("utf-8") + ", hash: " + bpy.app.build_hash.decode("utf-8"))
             self.yi.printInfo("Exporter: System information: " + platform.processor() + ", " + platform.platform())
 
-        self.yaf_object = yafObject(self.yi, self.materialMap, self.is_preview)
+        self.yaf_object = yafObject(self.yi, self.is_preview)
         self.yaf_lamp = yafLight(self.yi, self.is_preview)
         self.yaf_world = yafWorld(self.yi)
         self.yaf_integrator = yafIntegrator(self.yi)
         self.yaf_texture = yafTexture(self.yi)
-        self.yaf_material = yafMaterial(self.yi, self.materialMap, self.yaf_texture.loadedTextures)
+        self.yaf_material = yafMaterial(self.yi, self.yaf_texture.loadedTextures)
 
     def exportScene(self):
         for obj in self.scene.objects:
@@ -258,7 +257,6 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
         self.yi.paramsSetColor("color", cCol[0], cCol[1], cCol[2])
         self.yi.printInfo("Exporter: Creating Material \"defaultMat\"")
         ymat = self.yi.createMaterial("defaultMat")
-        self.materialMap["default"] = ymat
 
         for obj in self.scene.objects:
             for mat_slot in obj.material_slots:

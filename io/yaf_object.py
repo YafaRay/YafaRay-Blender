@@ -34,9 +34,8 @@ def multiplyMatrix4x4Vector4(matrix, vector):
 
 
 class yafObject(object):
-    def __init__(self, yi, mMap, preview):
+    def __init__(self, yi, preview):
         self.yi = yi
-        self.materialMap = mMap
         self.is_preview = preview
 
     def setScene(self, scene):
@@ -269,7 +268,7 @@ class yafObject(object):
         self.yi.paramsSetInt("obj_pass_index", obj.pass_index)
 
         if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable and "preview" in obj.name:
-            ymat = self.materialMap[obj.active_material]
+            ymat = obj.active_material.name
             
             if bpy.data.scenes[0].yafaray.preview.previewObject != "" and bpy.data.scenes[0].objects[bpy.data.scenes[0].yafaray.preview.previewObject].type=="MESH":
                     customObj = bpy.data.scenes[0].objects[bpy.data.scenes[0].yafaray.preview.previewObject]
@@ -327,9 +326,7 @@ class yafObject(object):
         c = obj.ml_color
         self.yi.paramsSetColor("color", c[0], c[1], c[2])
         self.yi.paramsSetFloat("power", obj.ml_power)
-        ml_mat = self.yi.createMaterial(ml_matname)
-
-        self.materialMap[ml_matname] = ml_mat
+        self.yi.createMaterial(ml_matname)
 
         # Export mesh light
         self.yi.paramsClearAll()
@@ -343,7 +340,7 @@ class yafObject(object):
         self.yi.paramsSetString("object_name", obj.name)
         self.yi.createLight(obj.name)
 
-        self.writeGeometry(ID, obj, matrix, obj.pass_index, 0, ml_mat)  # obType in 0, default, the object is rendered
+        self.writeGeometry(ID, obj, matrix, obj.pass_index, 0, ml_matname)  # obType in 0, default, the object is rendered
 
     def writeVolumeObject(self, obj, matrix):
 
@@ -543,17 +540,16 @@ class yafObject(object):
 
     def getFaceMaterial(self, meshMats, matIndex, matSlots):
 
-        ymaterial = self.materialMap["default"]
+        ymaterial = "default"
 
         #if self.scene.gs_clay_render:
         #    ymaterial = self.materialMap["clay"]
         if len(meshMats) and meshMats[matIndex]:
             mat = meshMats[matIndex]
-            if mat in self.materialMap:
-                ymaterial = self.materialMap[mat]
+            ymaterial = mat.name
         else:
-            for mat_slots in [ms for ms in matSlots if ms.material in self.materialMap]:
-                ymaterial = self.materialMap[mat_slots.material]
+            for mat_slots in [ms for ms in matSlots]:
+                ymaterial = mat_slots.material.name
 
         return ymaterial
 

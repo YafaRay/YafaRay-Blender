@@ -34,14 +34,9 @@ def proj2int(val):
 
 
 class yafMaterial:
-    def __init__(self, interface, mMap, texMap):
+    def __init__(self, interface, texMap):
         self.yi = interface
-        self.materialMap = mMap
         self.textureMap = texMap
-
-    def namehash(self, obj):
-        nh = obj.name + "-" + str(obj.__hash__())
-        return nh
 
     def getUsedTextures(self, material):
         used_textures = []
@@ -299,7 +294,7 @@ class yafMaterial:
             yi.paramsSetString("wireframe_shader", WireframeRoot)
         if len(roughnessRoot) > 0:
             yi.paramsSetString("roughness_shader", roughnessRoot)   
-        return yi.createMaterial(self.namehash(mat))
+        return yi.createMaterial(mat.name)
 
     def writeGlossyShader(self, mat, scene, coated):  # mat : instance of material class
         yi = self.yi
@@ -439,7 +434,7 @@ class yafMaterial:
             yi.paramsSetString("diffuse_brdf", "Oren-Nayar")
             yi.paramsSetFloat("sigma", mat.sigma)
 
-        return yi.createMaterial(self.namehash(mat))
+        return yi.createMaterial(mat.name)
 
 
     def writeShinyDiffuseShader(self, mat, scene):
@@ -611,7 +606,7 @@ class yafMaterial:
             yi.paramsSetString("diffuse_brdf", "oren_nayar")
             yi.paramsSetFloat("sigma", mat.sigma)
 
-        return yi.createMaterial(self.namehash(mat))
+        return yi.createMaterial(mat.name)
 
     def writeBlendShader(self, mat, scene):
         yi = self.yi
@@ -619,8 +614,8 @@ class yafMaterial:
 
         yi.printInfo("Exporter: Blend material with: [" + mat.material1name + "] [" + mat.material2name + "]")
         yi.paramsSetString("type", "blend_mat")
-        yi.paramsSetString("material1", self.namehash(bpy.data.materials[mat.material1name]))
-        yi.paramsSetString("material2", self.namehash(bpy.data.materials[mat.material2name]))
+        yi.paramsSetString("material1", mat.material1name)
+        yi.paramsSetString("material2", mat.material2name)
         
         yi.paramsSetFloat("wireframe_amount", mat.wireframe_amount)
         yi.paramsSetColor("wireframe_color", mat.wireframe_color[0], mat.wireframe_color[1], mat.wireframe_color[2])
@@ -674,23 +669,23 @@ class yafMaterial:
         yi.paramsSetInt("additionaldepth", mat.additionaldepth)
         yi.paramsSetFloat("samplingfactor", mat.samplingfactor)
 
-        return yi.createMaterial(self.namehash(mat))
+        return yi.createMaterial(mat.name)
 
     def writeMatteShader(self, mat, scene):
         yi = self.yi
         yi.paramsClearAll()
         yi.paramsSetString("type", "shadow_mat")
-        return yi.createMaterial(self.namehash(mat))
+        return yi.createMaterial(mat.name)
 
     def writeNullMat(self, mat, scene):
         yi = self.yi
         yi.paramsClearAll()
         yi.paramsSetString("type", "null")
-        return yi.createMaterial(self.namehash(mat))
+        return yi.createMaterial(mat.name)
 
     def writeMaterial(self, mat, scene, preview=False):
         self.preview = preview
-        self.yi.printInfo("Exporter: Creating Material: \"" + self.namehash(mat) + "\"")
+        self.yi.printInfo("Exporter: Creating Material: \"" + mat.name + "\"")
         ymat = None
         if mat.name == "y_null":
             ymat = self.writeNullMat(mat, scene)
@@ -712,5 +707,3 @@ class yafMaterial:
                 #We cannot exclude just the blended material from the Clay render, the individual materials that are used to make the blend also have to be excluded
         else:
             ymat = self.writeNullMat(mat, scene)
-
-        self.materialMap[mat] = ymat
