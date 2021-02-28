@@ -35,7 +35,7 @@ def multiplyMatrix4x4Vector4(matrix, vector):
 class yafLight:
     def __init__(self, interface, preview):
         self.yi = interface
-        self.lightMat = None
+        self.lightMatName = None
         self.preview = preview
 
     def makeSphere(self, nu, nv, x, y, z, rad, mat):
@@ -139,7 +139,8 @@ class yafLight:
             power_sphere = power / lamp.yaf_sphere_radius
             yi.paramsSetFloat("power", power_sphere)
         
-            self.lightMat = self.yi.createMaterial(name)
+            self.yi.createMaterial(name)
+            self.lightMatName = name
             self.yi.paramsClearAll()
             #yi.paramsSetBool("light_enabled", lamp.light_enabled)
 
@@ -147,7 +148,7 @@ class yafLight:
             yi.paramsSetString("type", "pointlight")
             if getattr(lamp, "use_sphere", False):
                 if lamp.create_geometry:
-                    ID = self.makeSphere(24, 48, pos[0], pos[1], pos[2], lamp.yaf_sphere_radius, self.lightMat)
+                    ID = self.makeSphere(24, 48, pos[0], pos[1], pos[2], lamp.yaf_sphere_radius, self.lightMatName)
                     yi.paramsSetString("object_name", ID)
                 yi.paramsSetString("type", "spherelight")
                 yi.paramsSetInt("samples", lamp.yaf_samples)
@@ -234,7 +235,7 @@ class yafLight:
                 self.yi.paramsSetInt("num_vertices", 4)
                 self.yi.paramsSetInt("num_faces", 2)
                 yi.createObject(ID)
-                yi.setCurrentMaterial(self.lightMat)
+                yi.setCurrentMaterial(self.lightMatName)
                 yi.addVertex(point[0], point[1], point[2])
                 yi.addVertex(corner1[0], corner1[1], corner1[2])
                 yi.addVertex(corner2[0], corner2[1], corner2[2])
