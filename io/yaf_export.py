@@ -24,7 +24,7 @@ import bpy
 import os
 import threading
 import time
-import yafaray4_interface
+import libyafaray4_bindings
 import traceback
 import datetime
 import platform
@@ -56,19 +56,24 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
     def setInterface(self, yi):
         self.materials = set()
         self.yi = yi
+
+        if self.is_preview:
+            self.yi.setConsoleVerbosityLevel(yi.logLevelFromString("mute"))
+            self.yi.setLogVerbosityLevel(yi.logLevelFromString("mute"))
+
         yi.paramsSetString("type", self.scene.adv_scene_type)
         self.yi.createScene()
         self.yi.paramsClearAll()
 
         if self.is_preview:
-            self.yi.setConsoleVerbosityLevel("mute")
-            self.yi.setLogVerbosityLevel("mute")
+            self.yi.setConsoleVerbosityLevel(yi.logLevelFromString("mute"))
+            self.yi.setLogVerbosityLevel(yi.logLevelFromString("mute"))
             self.scene.bg_transp = False #to correct alpha problems in preview roughglass
             self.scene.bg_transp_refract = False #to correct alpha problems in preview roughglass
         else:
             self.yi.enablePrintDateTime(self.scene.yafaray.logging.logPrintDateTime)
-            self.yi.setConsoleVerbosityLevel(self.scene.yafaray.logging.consoleVerbosity)
-            self.yi.setLogVerbosityLevel(self.scene.yafaray.logging.logVerbosity)
+            self.yi.setConsoleVerbosityLevel(yi.logLevelFromString(self.scene.yafaray.logging.consoleVerbosity))
+            self.yi.setLogVerbosityLevel(yi.logLevelFromString(self.scene.yafaray.logging.logVerbosity))
             self.yi.printInfo("YafaRay-Blender (" + YAFARAY_BLENDER_VERSION + ")")
             self.yi.printInfo("Exporter: Blender version " + str(bpy.app.version[0]) + "."+ str(bpy.app.version[1]) + "."+ str(bpy.app.version[2]) + "."+ bpy.app.version_char + "  Build information: " + bpy.app.build_platform.decode("utf-8") + ", " + bpy.app.build_type.decode("utf-8") + ", branch: " + bpy.app.build_branch.decode("utf-8") + ", hash: " + bpy.app.build_hash.decode("utf-8"))
             self.yi.printInfo("Exporter: System information: " + platform.processor() + ", " + platform.platform())
@@ -342,17 +347,26 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
         self.scene = scene
         render = scene.render
 
-        if scene.img_save_with_blend_file:
-            if bpy.data.filepath == "":
-                fp = tempfile.gettempdir() + "/temp_render"
-            else:
-                fp = "//"+os.path.splitext(os.path.basename(bpy.data.filepath))[0]+"_render/"
-            render.filepath = fp
-            fp = bpy.path.abspath(fp)
+        if bpy.data.filepath == "":
+            render_filename = "render"
+            render_path = tempfile.gettempdir() + "/temp_render/"
         else:
-            fp = bpy.path.abspath(render.filepath)
-        fp = os.path.realpath(fp)
-        fp = os.path.normpath(fp)
+            render_filename = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
+            render_path = "//" + render_filename + "_render/"
+
+        render_filename += " - " + str(self.scene.frame_current)
+
+        if scene.img_save_with_blend_file:
+            render.filepath = render_path
+            render_path = bpy.path.abspath(render_path)
+        else:
+            render_path = bpy.path.abspath(render.filepath)
+
+        render_path = os.path.realpath(render_path)
+        render_path = os.path.normpath(render_path)
+
+        if not os.path.exists(render_path):
+            os.mkdir(render_path)
 
         [self.sizeX, self.sizeY, self.bStartX, self.bStartY, self.bsizeX, self.bsizeY, camDummy] = yaf_scene.getRenderCoords(scene)
 
@@ -368,18 +382,16 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
         alpha_premultiply = yaf_scene.calcAlphaPremultiply(scene)
 
         if scene.gs_type_render == "file":
-            self.setInterface(yafaray4_interface.Interface())
-            yaf_scene.exportRenderPassesSettings(self.yi, self.scene)
+            self.setInterface(libyafaray4_bindings.Interface())
             self.yi.setInteractive(False)
             self.yi.setInputColorSpace("LinearRGB", 1.0)    #When rendering into Blender, color picker floating point data is already linear (linearized by Blender)
-            self.defineImageOutput("blender_file_output", fp, scene, render, color_space.blender, gamma.blender, alpha_premultiply.blender)
+            self.defineImageOutput("blender_file_output", render_path, scene, render, color_space.blender, gamma.blender, alpha_premultiply.blender)
             if scene.yafaray.logging.savePreset:
                 yafaray_presets.YAF_AddPresetBase.export_to_file(yafaray_presets.YAFARAY_OT_presets_renderset, self.outputFile)
 
         elif scene.gs_type_render == "xml":
-            self.outputFile, self.output, self.file_type = self.decideOutputFileName(fp, 'XML')
-            self.setInterface(yafaray4_interface.XmlExport(self.outputFile))
-            yaf_scene.exportRenderPassesSettings(self.yi, self.scene)
+            self.outputFile, self.output, self.file_type = self.decideOutputFileName(render_path, 'XML')
+            self.setInterface(libyafaray4_bindings.Interface(self.outputFile))
             self.yi.setInteractive(False)
                         
             input_color_values_color_space = "sRGB"
@@ -396,28 +408,23 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
                 input_color_values_gamma = scene.gs_gamma  #We only use the selected gamma if the output device is set to "None"
             
             self.yi.setInputColorSpace("LinearRGB", 1.0)    #Values from Blender, color picker floating point data are already linear (linearized by Blender)
-            self.yi.setXmlColorSpace(input_color_values_color_space, input_color_values_gamma)  #To set the XML interface to write the XML values with the correction included for the selected color space (and gamma if applicable)
-            self.defineImageOutput("output", fp, scene, render, color_space.blender, gamma.blender, alpha_premultiply.blender)
+            #FIXME! self.yi.setXmlColorSpace(input_color_values_color_space, input_color_values_gamma)  #To set the XML interface to write the XML values with the correction included for the selected color space (and gamma if applicable)
 
         else:
-            self.setInterface(yafaray4_interface.Interface())
-            yaf_scene.exportRenderPassesSettings(self.yi, self.scene)
+            self.setInterface(libyafaray4_bindings.Interface())
             self.yi.setInteractive(True)
             self.yi.setInputColorSpace("LinearRGB", 1.0)    #When rendering into Blender, color picker floating point data is already linear (linearized by Blender)
-            self.blender_output = yafaray4_interface.PythonOutput(self.resX, self.resY, self.bStartX, self.bStartY, self.is_preview, color_space.blender, gamma.blender, True, alpha_premultiply.blender)
-            self.yi.createOutput("blender_output", self.blender_output)
-
             if scene.gs_secondary_file_output and not self.is_preview:
-                self.defineImageOutput("blender_secondary_output", fp, scene, render, color_space.secondary_output, gamma.secondary_output, alpha_premultiply.secondary_output)
+                self.defineImageOutput("blender_secondary_output", render_path, scene, render, color_space.secondary_output, gamma.secondary_output, alpha_premultiply.secondary_output)
                 if scene.yafaray.logging.savePreset:
                     yafaray_presets.YAF_AddPresetBase.export_to_file(yafaray_presets.YAFARAY_OT_presets_renderset, self.outputFile)
 
         self.exportScene()
         self.yaf_integrator.exportIntegrator(self.scene)
         self.yaf_integrator.exportVolumeIntegrator(self.scene)
-
-        # must be called last as the params from here will be used by render()
-        yaf_scene.exportRenderSettings(self.yi, self.scene)
+        yaf_scene.defineLayers(self.yi, self.scene)
+        yaf_scene.exportRenderSettings(self.yi, self.scene, render_path, render_filename)
+        self.yi.setupRender()
 
     # callback to render scene
     def render(self, scene):
@@ -438,15 +445,14 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
             self.yi.render()
 
         else:
-            def progressCallback(command, *args):
-                if not self.test_break():
-                    if command == "tag":
-                        self.tag = args[0]
-                    elif command == "progress":
-                        self.prog = args[0]
-                    self.update_stats("YafaRay Render: ", "{0}".format(self.tag))
-                    # Now, Blender use same range to YafaRay
-                    self.update_progress(self.prog)
+            def progressCallback(*args):
+                steps_total, steps_done, tag = args
+                self.update_stats("YafaRay Render: ", "{0}".format(tag))
+                # Now, Blender use same range to YafaRay
+                if steps_total > 0:
+                    self.update_progress(steps_done / steps_total)
+                else:
+                    self.update_progress(0.0)
 
             def updateBlenderResult(x, y, w, h, view_name, tiles, callback_name):
                 if scene.render.use_multiview:
@@ -462,23 +468,37 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
                         traceback.print_exc()
                 self.end_result(blender_result_buffers)
 
-            def drawAreaCallback(*args):
-                x, y, w, h, view_name, tiles = args
+            def highlightCallback(*args):
+                view_name, area_id, x_0, y_0, x_1, y_1, tiles = args
+                w = x_1 - x_0
+                h = y_1 - y_0
                 if view_name == "":  # In case we use Render 3D viewport with Views enabled, it will copy the result to all views
                     for view in scene.render.views:
-                        updateBlenderResult(x, y, w, h, view.name, tiles, "drawAreaCallback")
+                        updateBlenderResult(x_0, y_0, w, h, view.name, tiles, "highlightCallback")
                 else:  # Normal rendering
-                    updateBlenderResult(x, y, w, h, view_name, tiles, "drawAreaCallback")
+                    updateBlenderResult(x_0, y_0, w, h, view_name, tiles, "highlightCallback")
+
+            def flushAreaCallback(*args):
+                view_name, area_id, x_0, y_0, x_1, y_1, tiles = args
+                w = x_1 - x_0
+                h = y_1 - y_0
+                if view_name == "":  # In case we use Render 3D viewport with Views enabled, it will copy the result to all views
+                    for view in scene.render.views:
+                        updateBlenderResult(x_0, y_0, w, h, view.name, tiles, "flushAreaCallback")
+                else:  # Normal rendering
+                    updateBlenderResult(x_0, y_0, w, h, view_name, tiles, "flushAreaCallback")
 
             def flushCallback(*args):
-                w, h, view_name, tiles = args
+                view_name, w, h, tiles = args
                 if view_name == "":  # In case we use Render 3D viewport with Views enabled, it will copy the result to all views
                     for view in scene.render.views:
                         updateBlenderResult(0, 0, w, h, view.name, tiles, "flushCallback")
                 else:  # Normal rendering
                     updateBlenderResult(0, 0, w, h, view_name, tiles, "flushCallback")
 
-            self.blender_output.setRenderCallbacks(drawAreaCallback, flushCallback)
+            self.yi.setRenderFlushAreaCallback(flushAreaCallback)
+            self.yi.setRenderFlushCallback(flushCallback)
+            self.yi.setRenderHighlightAreaCallback(highlightCallback)
             t = threading.Thread(target=self.yi.render, args=(progressCallback,))
             t.start()
 
@@ -487,7 +507,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
 
             if t.is_alive():
                 self.update_stats("", "Aborting, please wait for all pending tasks to complete (progress in console log)...")
-                self.yi.abort()
+                self.yi.cancelRendering()
                 t.join()
 
         self.yi.clearAll()

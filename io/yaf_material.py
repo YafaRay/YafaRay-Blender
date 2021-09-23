@@ -19,7 +19,7 @@
 # <pep8 compliant>
 
 import bpy
-import yafaray4_interface
+import libyafaray4_bindings
 
 
 def proj2int(val):

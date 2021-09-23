@@ -102,7 +102,12 @@ class yafWorld:
                 
                     yi.paramsSetString("color_space", texture_color_space)
                     yi.paramsSetFloat("gamma", texture_gamma)
-                    
+
+                    image_name = "world_texture_image"
+                    yi.createImage(image_name)
+                    yi.paramsSetString("image_name", image_name)
+                    yi.paramsSetString("type", "image")
+
                     yi.createTexture("world_texture")
 
                     # Export the actual background

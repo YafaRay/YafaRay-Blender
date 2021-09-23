@@ -49,8 +49,7 @@ class yafLight:
         self.yi.paramsSetString("type", "mesh")
         self.yi.paramsSetInt("num_vertices", 2 + (nu - 1) * nv)
         self.yi.paramsSetInt("num_faces", 2 * (nu - 1) * nv)
-        if not yi.createObject(ID):
-            yi.printError("Couldn't start YafaRay object!")
+        yi.createObject(ID)
 
         yi.addVertex(x, y, z + rad)
         yi.addVertex(x, y, z - rad)
@@ -65,11 +64,11 @@ class yafLight:
                 yi.addVertex(x + cos_v * sin_u * rad, y + sin_v * sin_u * rad, z + cos_u * rad)
 
         for v in range(0, nv):
-            yi.addFace(0, 2 + v * (nu - 1), 2 + ((v + 1) % nv) * (nu - 1))
-            yi.addFace(1, ((v + 1) % nv) * (nu - 1) + nu, v * (nu - 1) + nu)
+            yi.addTriangle(0, 2 + v * (nu - 1), 2 + ((v + 1) % nv) * (nu - 1))
+            yi.addTriangle(1, ((v + 1) % nv) * (nu - 1) + nu, v * (nu - 1) + nu)
             for u in range(0, nu - 2):
-                yi.addFace(2 + v * (nu - 1) + u, 2 + v * (nu - 1) + u + 1, 2 + ((v + 1) % nv) * (nu - 1) + u)
-                yi.addFace(2 + v * (nu - 1) + u + 1, 2 + ((v + 1) % nv) * (nu - 1) + u + 1, 2 + ((v + 1) % nv) * (nu - 1) + u)
+                yi.addTriangle(2 + v * (nu - 1) + u, 2 + v * (nu - 1) + u + 1, 2 + ((v + 1) % nv) * (nu - 1) + u)
+                yi.addTriangle(2 + v * (nu - 1) + u + 1, 2 + ((v + 1) % nv) * (nu - 1) + u + 1, 2 + ((v + 1) % nv) * (nu - 1) + u)
 
         yi.endObject()
         yi.endGeometry()
@@ -240,8 +239,8 @@ class yafLight:
                 yi.addVertex(corner1[0], corner1[1], corner1[2])
                 yi.addVertex(corner2[0], corner2[1], corner2[2])
                 yi.addVertex(corner3[0], corner3[1], corner3[2])
-                yi.addFace(0, 1, 2)
-                yi.addFace(0, 2, 3)
+                yi.addTriangle(0, 1, 2)
+                yi.addTriangle(0, 2, 3)
                 yi.endObject()
                 yi.endGeometry()
                 yi.paramsSetString("object_name", ID)

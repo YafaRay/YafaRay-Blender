@@ -57,12 +57,34 @@ class YAFARAY4_PT_general_settings(RenderButtonsPanel, Panel):
         sub = col.column()
         sub.enabled = scene.gs_type_render == "into_blender"
         sub.prop(scene, "gs_secondary_file_output")
-        
+
+        row = layout.row()
+        row.enabled = scene.gs_type_render == "into_blender"
+        col = row.column()
+        col.prop(scene, "gs_film_save_load")
+        if scene.gs_film_save_load == "save" or scene.gs_film_save_load == "load-save":
+            row = layout.row()
+            col = row.column()
+            col.prop(scene, "gs_film_autosave_interval_type")
+            col = row.column()
+            if scene.gs_film_autosave_interval_type == "pass-interval":
+                col.prop(scene, "gs_film_autosave_interval_passes")
+            elif scene.gs_film_autosave_interval_type == "time-interval":
+                col.prop(scene, "gs_film_autosave_interval_seconds")
+            else:
+                col.label("")
+
+        if scene.gs_film_save_load == "load-save":
+            row = layout.row()
+            row.label(
+                "If the loaded image Film does not match exactly the sceneene, crashes and/or incorrect renders may happen, USE WITH CARE!",
+                icon="INFO")
+
         if (scene.yafaray.logging.saveLog or scene.yafaray.logging.saveHTML or scene.yafaray.logging.savePreset or scene.yafaray.logging.paramsBadgePosition == "top" or scene.yafaray.logging.paramsBadgePosition == "bottom") and scene.gs_type_render == "into_blender" and not scene.gs_secondary_file_output:
                 row = layout.row()
-                row.label("Params badge and saving log/html/preset files only works when exporting to image file.", icon='ERROR')
+                row.label("Params badge and saving log/html/preset files only works when exporting to image file.", icon='INFO')
                 row = layout.row()
-                row.label("To get the badge/logs, render to image or render into Blender+enable Secondary File Output.", icon='ERROR')
+                row.label("To get the badge/logs, render to image or render into Blender+enable Secondary File Output.", icon='INFO')
                 row = layout.row()
 
         if scene.yafaray.logging.paramsBadgePosition == "bottom" and scene.gs_type_render == "file":

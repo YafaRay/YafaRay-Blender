@@ -451,7 +451,12 @@ class yafTexture:
             
             yi.paramsSetBool("mirror_x", tex.use_mirror_x)
             yi.paramsSetBool("mirror_y", tex.use_mirror_y)
-            
+
+            image_name = name + "_image"
+            yi.createImage(image_name)
+            yi.paramsSetString("image_name", image_name)
+            yi.paramsSetString("type", "image")
+
             textureConfigured = True
 
         if textureConfigured:

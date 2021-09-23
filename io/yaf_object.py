@@ -23,7 +23,7 @@ import time
 import math
 import mathutils
 from .. import yaf_global_vars
-import yafaray4_interface
+import libyafaray4_bindings
 
 def multiplyMatrix4x4Vector4(matrix, vector):
     result = mathutils.Vector((0.0, 0.0, 0.0, 0.0))
@@ -250,12 +250,17 @@ class yafObject(object):
 
     def writeInstance(self, oID, obj2WorldMatrix, base_obj_name):
         self.yi.printVerbose("Exporting Instance of {0} [ID = {1}]".format(base_obj_name, oID))
-        mat4 = obj2WorldMatrix.to_4x4()
+        obj_to_world = obj2WorldMatrix.to_4x4()
         # mat4.transpose() --> not needed anymore: matrix indexing changed with Blender rev.42816
-        o2w = self.get4x4Matrix(mat4)
-        self.yi.addInstance(base_obj_name, o2w)
-        del mat4
-        del o2w
+        #o2w = self.get4x4Matrix(mat4)
+        #self.yi.addInstance(base_obj_name, o2w)
+        self.yi.addInstance(base_obj_name,
+                            obj_to_world[0][0], obj_to_world[0][1], obj_to_world[0][2], obj_to_world[0][3],
+                            obj_to_world[1][0], obj_to_world[1][1], obj_to_world[1][2], obj_to_world[1][3],
+                            obj_to_world[2][0], obj_to_world[2][1], obj_to_world[2][2], obj_to_world[2][3],
+                            obj_to_world[3][0], obj_to_world[3][1], obj_to_world[3][2], obj_to_world[3][3])
+        del obj_to_world
+        #del o2w
 
     def writeMesh(self, obj, matrix, ID=None):
 
@@ -490,7 +495,7 @@ class yafObject(object):
 
         for ind, v in enumerate(mesh.vertices):
             if hasOrco:
-                self.yi.addVertex(v.co[0], v.co[1], v.co[2], ov[ind][0], ov[ind][1], ov[ind][2])
+                self.yi.addVertexWithOrco(v.co[0], v.co[1], v.co[2], ov[ind][0], ov[ind][1], ov[ind][2])
             else:
                 self.yi.addVertex(v.co[0], v.co[1], v.co[2])
 
@@ -515,16 +520,16 @@ class yafObject(object):
                 uv1 = self.yi.addUv(co[1][0], co[1][1])
                 uv2 = self.yi.addUv(co[2][0], co[2][1])
 
-                self.yi.addFace(f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2)
+                self.yi.addTriangleWithUv(f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2)
             else:
-                self.yi.addFace(f.vertices[0], f.vertices[1], f.vertices[2])
+                self.yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2])
 
             if len(f.vertices) == 4:
                 if hasUV:
                     uv3 = self.yi.addUv(co[3][0], co[3][1])
-                    self.yi.addFace(f.vertices[0], f.vertices[2], f.vertices[3], uv0, uv2, uv3)
+                    self.yi.addTriangleWithUv(f.vertices[0], f.vertices[2], f.vertices[3], uv0, uv2, uv3)
                 else:
-                    self.yi.addFace(f.vertices[0], f.vertices[2], f.vertices[3])
+                    self.yi.addTriangle(f.vertices[0], f.vertices[2], f.vertices[3])
 
         self.yi.endObject()
 
@@ -540,7 +545,7 @@ class yafObject(object):
 
     def getFaceMaterial(self, meshMats, matIndex, matSlots):
 
-        ymaterial = "default"
+        ymaterial = "defaultMat"
 
         #if self.scene.gs_clay_render:
         #    ymaterial = self.materialMap["clay"]
@@ -549,7 +554,8 @@ class yafObject(object):
             ymaterial = mat.name
         else:
             for mat_slots in [ms for ms in matSlots]:
-                ymaterial = mat_slots.material.name
+                if mat_slots.material is not None:
+                    ymaterial = mat_slots.material.name
 
         return ymaterial
 

@@ -186,26 +186,6 @@ class YAFARAY4_PT_output(RenderButtonsPanel, Panel):
                     col = split.column()
                     col.label("Denoise will not appear in Blender, only in saved image files", icon="INFO")
 
-            row = layout.row()
-            col = row.column()
-            col.prop(sc, "gs_film_save_load")
-            if sc.gs_film_save_load == "save" or sc.gs_film_save_load == "load-save":
-                row = layout.row()
-                col = row.column()
-                col.prop(sc, "gs_film_autosave_interval_type")
-                col = row.column()
-                if sc.gs_film_autosave_interval_type == "pass-interval":
-                    col.prop(sc, "gs_film_autosave_interval_passes")
-                elif sc.gs_film_autosave_interval_type == "time-interval":
-                    col.prop(sc, "gs_film_autosave_interval_seconds")
-                else:
-                    col.label("")
-            
-            if sc.gs_film_save_load == "load-save":
-                row = layout.row()
-                row.label("If the loaded image Film does not match exactly the scene, crashes and/or incorrect renders may happen, USE WITH CARE!", icon="ERROR")
-
-
 class YAFARAY4_PT_post_processing(RenderButtonsPanel, Panel):
     bl_label = "Post Processing"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}

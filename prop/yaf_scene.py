@@ -34,7 +34,7 @@ from bpy.props import (IntProperty,
 Scene = bpy.types.Scene
 
 def update_preview(self, context):
-    if hasattr(context, "material"):
+    if hasattr(context, "material") and context.material is not None:
         context.material.preview_render_type = context.material.preview_render_type
     elif len(bpy.data.materials) > 0:
         bpy.data.materials[0].preview_render_type = bpy.data.materials[0].preview_render_type
