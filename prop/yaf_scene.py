@@ -958,7 +958,9 @@ def register():
         items=(
             ('file', "Image file", "Render the Scene and write it to an Image File when finished"),
             ('into_blender', "Into Blender", "Render the Scene into Blenders Renderbuffer"),
-            ('xml', "XML file", "Export the Scene to a XML File")
+            ('xml', "Export to XML file", "Export the Scene to a XML File"),
+            ('c', "Export to C file", "Export the Scene to an ANSI C89/C90 File"),
+            ('python', "Export to Python file", "Export the Scene to a Python3 File"),
         ),
         default='into_blender')
 

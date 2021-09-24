@@ -287,7 +287,9 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
             'JPEG': 'jpg',
             'HDR': 'hdr',
             'OPEN_EXR': 'exr',
-            'XML': 'xml',
+            'xml': 'xml',
+            'c': 'c',
+            'python': 'py',
         }
         filetype = switchFileType.get(filetype, 'png')
         # write image or XML-File with filename from framenumber
@@ -389,8 +391,8 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
             if scene.yafaray.logging.savePreset:
                 yafaray_presets.YAF_AddPresetBase.export_to_file(yafaray_presets.YAFARAY_OT_presets_renderset, self.outputFile)
 
-        elif scene.gs_type_render == "xml":
-            self.outputFile, self.output, self.file_type = self.decideOutputFileName(render_path, 'XML')
+        elif scene.gs_type_render == "xml" or scene.gs_type_render == "c" or scene.gs_type_render == "python":
+            self.outputFile, self.output, self.file_type = self.decideOutputFileName(render_path, scene.gs_type_render)
             self.setInterface(libyafaray4_bindings.Interface(self.outputFile))
             self.yi.setInteractive(False)
                         

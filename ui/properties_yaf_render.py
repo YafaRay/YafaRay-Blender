@@ -138,7 +138,7 @@ class YAFARAY4_PT_output(RenderButtonsPanel, Panel):
 
             if sc.img_output == "OPEN_EXR" or sc.img_output == "HDR":  #If the output file is a HDR/EXR file, we force the render output to Linear
                     pass
-            elif sc.gs_type_render == "file" or sc.gs_type_render == "xml":
+            elif sc.gs_type_render == "file" or sc.gs_type_render == "xml" or sc.gs_type_render == "c" or sc.gs_type_render == "python":
                     split = layout.split(percentage=0.6)
                     col = split.column()
                     col.prop(sc.display_settings, "display_device")
