@@ -501,7 +501,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
             self.yi.setRenderFlushAreaCallback(flushAreaCallback)
             self.yi.setRenderFlushCallback(flushCallback)
             self.yi.setRenderHighlightAreaCallback(highlightCallback)
-            t = threading.Thread(target=self.yi.render, args=(progressCallback,))
+            t = threading.Thread(target=self.yi.render, args=(self.bStartX, self.bStartY, progressCallback,))
             t.start()
 
             while t.is_alive() and not self.test_break():
