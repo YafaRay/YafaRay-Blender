@@ -164,14 +164,7 @@ class yafMaterial:
 
         if mtex.object:
             texmat = mtex.object.matrix_world.inverted()
-            rtmatrix = yafaray4_interface.new_floatArray(4 * 4)
-
-            for x in range(4):
-                for y in range(4):
-                    idx = (y + x * 4)
-                    yafaray4_interface.floatArray_setitem(rtmatrix, idx, texmat[x][y])
-            yi.paramsSetMemMatrix("transform", rtmatrix, False)
-            yafaray4_interface.delete_floatArray(rtmatrix)
+            yi.paramsSetMatrix("transform", texmat[0][0], texmat[0][1], texmat[0][2], texmat[0][3], texmat[1][0], texmat[1][1], texmat[1][2], texmat[1][3], texmat[2][0], texmat[2][1], texmat[2][2], texmat[2][3], texmat[3][0], texmat[3][1], texmat[3][2], texmat[3][3], False)
 
         yi.paramsSetInt("proj_x", proj2int(mtex.mapping_x))
         yi.paramsSetInt("proj_y", proj2int(mtex.mapping_y))

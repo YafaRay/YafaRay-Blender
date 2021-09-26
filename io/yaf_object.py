@@ -204,16 +204,6 @@ class yafObject(object):
 
         return min, max
 
-    def get4x4Matrix(self, matrix):
-
-        ret = yafaray4_interface.Matrix4()
-
-        for i in range(4):
-            for j in range(4):
-                ret.setVal(i, j, matrix[i][j])
-
-        return ret
-
     def writeObject(self, obj, matrix=None):
 
         if not matrix:
