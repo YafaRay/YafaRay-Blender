@@ -436,7 +436,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
         if scene.gs_type_render == "file":
             self.yi.printInfo("Exporter: Rendering to file {0}".format(self.outputFile))
             self.update_stats("YafaRay Rendering:", "Rendering to {0}".format(self.outputFile))
-            self.yi.render()
+            self.yi.render(0, 0)
             result = self.begin_result(0, 0, self.resX, self.resY)
             result.layers[0].load_from_file(self.outputFile)
             #lay.passes["Depth"].load_from_file("{0} (Depth).{1}".format(self.output, self.file_type)) #FIXME? Unfortunately I cannot find a way to load the exported images back to the appropiate passes in Blender. Blender probably needs to improve their API to allow per-pass loading of files. Also, Blender does not allow opening multi layer EXR files with this function.
@@ -444,7 +444,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
 
         elif scene.gs_type_render == "xml":
             self.yi.printInfo("Exporter: Writing XML to file {0}".format(self.outputFile))
-            self.yi.render()
+            self.yi.render(0, 0)
 
         else:
             def progressCallback(*args):
