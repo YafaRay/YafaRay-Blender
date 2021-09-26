@@ -242,10 +242,8 @@ class yafObject(object):
 
     def writeInstanceBase(self, ID, obj):
         self.yi.printInfo("Exporting Base Mesh: {0} with ID: {1}".format(obj.name, ID))
-        obType = 512  # Create this geometry object as a base object for instances
-        self.yi.paramsClearAll()
-        self.yi.paramsSetInt("obj_pass_index", obj.pass_index)
-        self.writeGeometry(ID, obj, None, obj.pass_index, obType)  # We want the vertices in object space
+        # Create this geometry object as a base object for instances
+        self.writeGeometry(ID, obj, None, obj.pass_index, None, "visible", True)  # We want the vertices in object space
         return ID
 
     def writeInstance(self, oID, obj2WorldMatrix, base_obj_name):
@@ -269,8 +267,6 @@ class yafObject(object):
             ID = obj.name #self.yi.getNextFreeId()
         
         self.yi.printInfo("Exporting Mesh: {0}".format(ID))
-        self.yi.paramsClearAll()
-        self.yi.paramsSetInt("obj_pass_index", obj.pass_index)
 
         if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable and "preview" in obj.name:
             ymat = obj.active_material.name
@@ -281,7 +277,7 @@ class yafObject(object):
                     previewMatrix[0][3]=0
                     previewMatrix[1][3]=0
                     previewMatrix[2][3]=0
-                    self.writeGeometry(ID, customObj, previewMatrix, obj.pass_index, 0, ymat)
+                    self.writeGeometry(ID, customObj, previewMatrix, obj.pass_index, ymat)
             else:
                     previewMatrix = obj.matrix_world.copy()
                     previewMatrix[0][3]=0
@@ -290,7 +286,7 @@ class yafObject(object):
                     
                     self.writeGeometry(ID, obj, previewMatrix, obj.pass_index)
         else:
-            self.writeGeometry(ID, obj, matrix, obj.pass_index)  # obType in 0, default, the object is rendered
+            self.writeGeometry(ID, obj, matrix, obj.pass_index)
 
     def writeBGPortal(self, obj, matrix):
 
@@ -310,9 +306,8 @@ class yafObject(object):
         self.yi.paramsSetBool("photon_only", obj.bgp_photon_only)
         self.yi.createLight(obj.name)
 
-        obType = 256  # Makes object invisible to the renderer (doesn't enter the kdtree)
-
-        self.writeGeometry(ID, obj, matrix, obj.pass_index, obType)
+        # Makes object invisible to the renderer (doesn't enter the kdtree)
+        self.writeGeometry(ID, obj, matrix, obj.pass_index, None, "invisible")
 
     def writeMeshLight(self, obj, matrix):
 
@@ -345,7 +340,7 @@ class yafObject(object):
         self.yi.paramsSetString("object_name", obj.name)
         self.yi.createLight(obj.name)
 
-        self.writeGeometry(ID, obj, matrix, obj.pass_index, 0, ml_matname)  # obType in 0, default, the object is rendered
+        self.writeGeometry(ID, obj, matrix, obj.pass_index, ml_matname)
 
     def writeVolumeObject(self, obj, matrix):
 
@@ -406,7 +401,7 @@ class yafObject(object):
         yi.createVolumeRegion("VR.{0}-{1}".format(obj.name, str(obj.__hash__())))
         bpy.data.meshes.remove(mesh, do_unlink=False)
 
-    def writeGeometry(self, ID, obj, matrix, pass_index, obType=0, oMat=None):
+    def writeGeometry(self, ID, obj, matrix, pass_index, oMat=None, visibility="visible", is_base_object=False):
         mesh = obj.to_mesh(self.scene, True, 'RENDER')
         isSmooth = False
         hasOrco = False
@@ -486,10 +481,8 @@ class yafObject(object):
         self.yi.paramsSetInt("num_faces", len(getattr(mesh, face_attr)))
         self.yi.paramsSetBool("has_orco", hasOrco)
         self.yi.paramsSetBool("has_uv", hasUV)
-        if obType & 0x200:
-            self.yi.paramsSetBool("is_base_object", True)
-        if obType & 0x100:
-            self.yi.paramsSetString("visibility", "invisible")
+        self.yi.paramsSetBool("is_base_object", is_base_object)
+        self.yi.paramsSetString("visibility", visibility)
         self.yi.paramsSetInt("object_index", pass_index)
         self.yi.createObject(str(ID))
 
