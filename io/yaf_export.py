@@ -385,7 +385,6 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
 
         if scene.gs_type_render == "file":
             self.setInterface(libyafaray4_bindings.Interface())
-            self.yi.setInteractive(False)
             self.yi.setInputColorSpace("LinearRGB", 1.0)    #When rendering into Blender, color picker floating point data is already linear (linearized by Blender)
             self.defineImageOutput("blender_file_output", render_path, scene, render, color_space.blender, gamma.blender, alpha_premultiply.blender)
             if scene.yafaray.logging.savePreset:
@@ -394,8 +393,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
         elif scene.gs_type_render == "xml" or scene.gs_type_render == "c" or scene.gs_type_render == "python":
             self.outputFile, self.output, self.file_type = self.decideOutputFileName(render_path, scene.gs_type_render)
             self.setInterface(libyafaray4_bindings.Interface(self.outputFile))
-            self.yi.setInteractive(False)
-                        
+
             input_color_values_color_space = "sRGB"
             input_color_values_gamma = 1.0
 
@@ -414,7 +412,6 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
 
         else:
             self.setInterface(libyafaray4_bindings.Interface())
-            self.yi.setInteractive(True)
             self.yi.setInputColorSpace("LinearRGB", 1.0)    #When rendering into Blender, color picker floating point data is already linear (linearized by Blender)
             if scene.gs_secondary_file_output and not self.is_preview:
                 self.defineImageOutput("blender_secondary_output", render_path, scene, render, color_space.secondary_output, gamma.secondary_output, alpha_premultiply.secondary_output)
