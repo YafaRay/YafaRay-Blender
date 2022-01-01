@@ -463,7 +463,7 @@ Bug fixes in v3.0.0:
 
 * Clay material default color changed to "real" middle gray. See: http://www.yafaray.org/community/forum/viewtopic.php?f=23&t=5152&start=0#p31497 `[Blender Exporter]`
 
-* Fixed incorrect updating of lamp preview when lamp parameters are modified `[Blender Exporter]`
+* Fixed incorrect updating of light preview when light parameters are modified `[Blender Exporter]`
 
 * Fix AO Clay pass self shadow problem, reported by RioFranco (Olivier) `[Core]`
 

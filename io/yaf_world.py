@@ -19,6 +19,7 @@
 # <pep8 compliant>
 
 import math
+import bpy
 from bpy.path import abspath
 from os.path import realpath, normpath
 

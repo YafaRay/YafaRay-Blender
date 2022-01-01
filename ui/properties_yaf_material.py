@@ -19,11 +19,10 @@
 # <pep8 compliant>
 
 import bpy
-from ..ui.ior_values import ior_list
+from ..util.ui_utils import icon_add, icon_remove, ui_split, material_from_context, material_check
+from .ior_values import ior_list
 from bpy.types import Panel, Menu
-from bl_ui.properties_material import (MaterialButtonsPanel,
-                                       active_node_mat,
-                                       check_material)
+from bl_ui.properties_material import MaterialButtonsPanel
 
 
 def blend_one_draw(layout, mat):
@@ -42,14 +41,16 @@ def blend_two_draw(layout, mat):
     return True
 
 
-class YAFARAY4_MaterialTypePanel(MaterialButtonsPanel):
+class YAFARAY4_PT_MaterialTypePanel(MaterialButtonsPanel, Panel):
+    bl_label = ""
+    bl_options = {'HIDE_HEADER'}
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     @classmethod
     def poll(cls, context):
         yaf_mat = context.material
         engine = context.scene.render.engine
-        return check_material(yaf_mat) and (yaf_mat.mat_type in cls.material_type) and (engine in cls.COMPAT_ENGINES)
+        return material_check(yaf_mat) and (yaf_mat.mat_type in cls.material_type) and (engine in cls.COMPAT_ENGINES)
 
 
 class YAFARAY4_PT_context_material(MaterialButtonsPanel, Panel):
@@ -77,8 +78,8 @@ class YAFARAY4_PT_context_material(MaterialButtonsPanel, Panel):
             row.template_list("MATERIAL_UL_matslots", "", ob, "material_slots", ob, "active_material_index", rows=2)
 
             col = row.column(align=True)
-            col.operator("object.material_slot_add", icon='ZOOMIN', text="")
-            col.operator("object.material_slot_remove", icon='ZOOMOUT', text="")
+            col.operator("object.material_slot_add", icon=icon_add, text="")
+            col.operator("object.material_slot_remove", icon=icon_remove, text="")
 
             # TODO: code own operators to copy yaf material settings...
             col.menu("MATERIAL_MT_specials", icon='DOWNARROW_HLT', text="")
@@ -89,7 +90,7 @@ class YAFARAY4_PT_context_material(MaterialButtonsPanel, Panel):
                 row.operator("object.material_slot_select", text="Select")
                 row.operator("object.material_slot_deselect", text="Deselect")
 
-        split = layout.split(percentage=0.75)
+        split = ui_split(layout, 0.75)
 
         if ob:
             split.template_ID(ob, "active_material", new="material.new")
@@ -128,10 +129,10 @@ class YAFARAY4_PT_preview_controls(MaterialButtonsPanel, Panel):
     def draw(self, context):
         if context.scene.yafaray.preview.enable:
             layout = self.layout
-            yaf_mat = active_node_mat(context.material)
+            yaf_mat = material_from_context(context)
             split = layout.split() 
             col = split.column()
-            col.label("Preview dynamic rotation/zoom")
+            col.label(text="Preview dynamic rotation/zoom")
             split = layout.split() 
             col = split.column()
             col.prop(context.scene.yafaray.preview, "camRot", text="")
@@ -141,12 +142,12 @@ class YAFARAY4_PT_preview_controls(MaterialButtonsPanel, Panel):
             col2 = row.column()
             col2.operator("preview.camzoomin", text='Zoom In', icon='ZOOM_IN')
             row = col.row()
-            row.label("")
+            row.label(text="")
             row = col.row()
             row.operator("preview.camrotreset", text='Reset dynamic rotation/zoom')
             split = layout.split() 
             col = split.column()
-            col.label("Preview object control")
+            col.label(text="Preview object control")
             split = layout.split()
             col = split.column()
             col.prop(context.scene.yafaray.preview, "objScale", text="Scale")
@@ -156,26 +157,26 @@ class YAFARAY4_PT_preview_controls(MaterialButtonsPanel, Panel):
             col.prop_search(context.scene.yafaray.preview, "previewObject", bpy.data, "objects", text="")
             split = layout.split() 
             col = split.column()
-            col.label("Preview lights control")
+            col.label(text="Preview lights control")
             col = split.column()
             col.prop(context.scene.yafaray.preview, "lightRotZ", text="lights Z Rotation")
             split = layout.split()
             col = split.column()
-            col.label("Key light:")
+            col.label(text="Key light:")
             col = split.column()
             col.prop(context.scene.yafaray.preview, "keyLightPowerFactor", text="Power factor")
             col = split.column()
             col.prop(context.scene.yafaray.preview, "keyLightColor", text="")
             split = layout.split() 
             col = split.column()
-            col.label("Fill lights:")
+            col.label(text="Fill lights:")
             col = split.column()
             col.prop(context.scene.yafaray.preview, "fillLightPowerFactor", text="Power factor")
             col = split.column()
             col.prop(context.scene.yafaray.preview, "fillLightColor", text="")
             split = layout.split() 
             col = split.column()
-            col.label("Preview scene control")
+            col.label(text="Preview scene control")
             split = layout.split()
             col = split.column()
             col.prop(context.scene.yafaray.preview, "previewRayDepth", text="Ray Depth")
@@ -223,14 +224,14 @@ class YAFARAY4_MT_presets_ior_list(Menu):
             sl.menu(sm.bl_idname)
 
 
-class YAFARAY4_PT_shinydiffuse_diffuse(YAFARAY4_MaterialTypePanel, Panel):
+class YAFARAY4_PT_shinydiffuse_diffuse(YAFARAY4_PT_MaterialTypePanel):
     bl_label = "Diffuse reflection"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'shinydiffusemat'
 
     def draw(self, context):
         layout = self.layout
-        yaf_mat = active_node_mat(context.material)
+        yaf_mat = material_from_context(context)
 
         split = layout.split()
         col = split.column()
@@ -258,14 +259,14 @@ class YAFARAY4_PT_shinydiffuse_diffuse(YAFARAY4_MaterialTypePanel, Panel):
         box.row().prop(yaf_mat, "transmit_filter", slider=True)
 
 
-class YAFARAY4_PT_shinydiffuse_specular(YAFARAY4_MaterialTypePanel, Panel):
+class YAFARAY4_PT_shinydiffuse_specular(YAFARAY4_PT_MaterialTypePanel):
     bl_label = "Specular reflection"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'shinydiffusemat'
 
     def draw(self, context):
         layout = self.layout
-        yaf_mat = active_node_mat(context.material)
+        yaf_mat = material_from_context(context)
 
         split = layout.split()
         col = split.column()
@@ -280,14 +281,14 @@ class YAFARAY4_PT_shinydiffuse_specular(YAFARAY4_MaterialTypePanel, Panel):
         layout.row().prop(yaf_mat, "specular_reflect", slider=True)
 
 
-class YAFARAY4_PT_glossy_diffuse(YAFARAY4_MaterialTypePanel, Panel):
+class YAFARAY4_PT_glossy_diffuse(YAFARAY4_PT_MaterialTypePanel):
     bl_label = "Diffuse reflection"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'glossy', 'coated_glossy'
 
     def draw(self, context):
         layout = self.layout
-        yaf_mat = active_node_mat(context.material)
+        yaf_mat = material_from_context(context)
 
         split = layout.split()
         col = split.column()
@@ -303,14 +304,14 @@ class YAFARAY4_PT_glossy_diffuse(YAFARAY4_MaterialTypePanel, Panel):
         layout.row().prop(yaf_mat, "diffuse_reflect", slider=True)
 
 
-class YAFARAY4_PT_glossy_specular(YAFARAY4_MaterialTypePanel, Panel):
+class YAFARAY4_PT_glossy_specular(YAFARAY4_PT_MaterialTypePanel):
     bl_label = "Specular reflection"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'glossy', 'coated_glossy'
 
     def draw(self, context):
         layout = self.layout
-        yaf_mat = active_node_mat(context.material)
+        yaf_mat = material_from_context(context)
 
         split = layout.split()
         col = split.column()
@@ -344,14 +345,14 @@ class YAFARAY4_PT_glossy_specular(YAFARAY4_MaterialTypePanel, Panel):
             layout.row().prop(yaf_mat, "specular_reflect", slider=True)
 
 
-class YAFARAY4_PT_glass_real(YAFARAY4_MaterialTypePanel, Panel):
+class YAFARAY4_PT_glass_real(YAFARAY4_PT_MaterialTypePanel):
     bl_label = "Real glass settings"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'glass', 'rough_glass'
 
     def draw(self, context):
         layout = self.layout
-        yaf_mat = active_node_mat(context.material)
+        yaf_mat = material_from_context(context)
 
         layout.label(text="Refraction and Reflections:")
         split = layout.split()
@@ -376,14 +377,14 @@ class YAFARAY4_PT_glass_real(YAFARAY4_MaterialTypePanel, Panel):
             box.row().prop(yaf_mat, "refr_roughness", slider=True)
         
 
-class YAFARAY4_PT_glass_fake(YAFARAY4_MaterialTypePanel, Panel):
+class YAFARAY4_PT_glass_fake(YAFARAY4_PT_MaterialTypePanel):
     bl_label = "Fake glass settings"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'glass', 'rough_glass'
 
     def draw(self, context):
         layout = self.layout
-        yaf_mat = active_node_mat(context.material)
+        yaf_mat = material_from_context(context)
 
         split = layout.split()
         col = split.column()
@@ -394,14 +395,14 @@ class YAFARAY4_PT_glass_fake(YAFARAY4_MaterialTypePanel, Panel):
         layout.row().prop(yaf_mat, "fake_shadows")
 
 
-class YAFARAY4_PT_blend_(YAFARAY4_MaterialTypePanel, Panel):
+class YAFARAY4_PT_blend(YAFARAY4_PT_MaterialTypePanel):
     bl_label = "Blend material settings"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'blend'
 
     def draw(self, context):
         layout = self.layout
-        yaf_mat = active_node_mat(context.material)
+        yaf_mat = material_from_context(context)
 
         split = layout.split()
         col = split.column()
@@ -424,7 +425,7 @@ class YAFARAY4_PT_ZWireframe(MaterialButtonsPanel, Panel):
     
     def draw(self, context):
         layout = self.layout
-        yaf_mat = active_node_mat(context.material)
+        yaf_mat = material_from_context(context)
 
         split = layout.split()
         col = split.column()
@@ -442,7 +443,7 @@ class YAFARAY4_PT_ZAdvanced(MaterialButtonsPanel, Panel):
     
     def draw(self, context):
         layout = self.layout
-        yaf_mat = active_node_mat(context.material)
+        yaf_mat = material_from_context(context)
 
         layout.prop(yaf_mat, "pass_index")
 
@@ -473,6 +474,35 @@ class YAFARAY4_PT_ZAdvanced(MaterialButtonsPanel, Panel):
         split = layout.split()
         col = split.column()
         layout.row().prop(yaf_mat, "samplingfactor")
+
+
+
+classes = (
+    YAFARAY4_PT_context_material,
+    YAFARAY4_MATERIAL_PT_preview,
+    YAFARAY4_PT_preview_controls,
+    YAFARAY4_MT_presets_ior_list,
+    YAFARAY4_PT_shinydiffuse_diffuse,
+    YAFARAY4_PT_shinydiffuse_specular,
+    YAFARAY4_PT_glossy_diffuse,
+    YAFARAY4_PT_glossy_specular,
+    YAFARAY4_PT_glass_real,
+    YAFARAY4_PT_glass_fake,
+    YAFARAY4_PT_blend,
+    YAFARAY4_PT_ZWireframe,
+    YAFARAY4_PT_ZAdvanced,
+)
+
+def register():
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+
+def unregister():
+    from bpy.utils import unregister_class
+    for cls in reversed(classes):
+        unregister_class(cls)
+
 
 if __name__ == "__main__":  # only for live edit.
     import bpy

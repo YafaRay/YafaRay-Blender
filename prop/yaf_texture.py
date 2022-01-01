@@ -116,13 +116,13 @@ def register():
         default=False)
 
 def unregister():
-    Texture.yaf_tex_type
-    Texture.yaf_is_normal_map
-    Texture.yaf_use_alpha
-    Texture.yaf_gamma_input
-    Texture.yaf_tex_interpolate
-    Texture.yaf_tex_optimization
-    Texture.yaf_adj_hue
-    Texture.yaf_trilinear_level_bias
-    Texture.yaf_ewa_max_anisotropy
-    Texture.yaf_img_grayscale
+    del Texture.yaf_tex_type
+    del Texture.yaf_is_normal_map
+    del Texture.yaf_use_alpha
+    del Texture.yaf_gamma_input
+    del Texture.yaf_tex_interpolate
+    del Texture.yaf_tex_optimization
+    del Texture.yaf_adj_hue
+    del Texture.yaf_trilinear_level_bias
+    del Texture.yaf_ewa_max_anisotropy
+    del Texture.yaf_img_grayscale

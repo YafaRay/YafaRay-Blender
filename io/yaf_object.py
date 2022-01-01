@@ -22,13 +22,17 @@ import bpy
 import time
 import math
 import mathutils
+from ..util.io_utils import scene_from_depsgraph
 from .. import yaf_global_vars
-import libyafaray4_bindings
 
 def multiplyMatrix4x4Vector4(matrix, vector):
     result = mathutils.Vector((0.0, 0.0, 0.0, 0.0))
-    for i in range(4):
-        result[i] = vector * matrix[i]  # use reverse vector multiply order, API changed with rev. 38674
+    if bpy.app.version >= (2, 80, 0):
+        for i in range(4):
+            result[i] = vector @ matrix[i]  # use reverse vector multiply order, API changed with rev. 38674
+    else:
+        for i in range(4):
+            result[i] = vector * matrix[i]  # use reverse vector multiply order, API changed with rev. 38674
 
     return result
 
@@ -38,9 +42,9 @@ class yafObject(object):
         self.yi = yi
         self.is_preview = preview
 
-    def setScene(self, scene):
-
-        self.scene = scene
+    def setDepsgraph(self, depsgraph):
+        self.depsgraph = depsgraph
+        self.scene = scene_from_depsgraph(depsgraph)
 
     def createCameras(self):
 
@@ -143,15 +147,18 @@ class yafObject(object):
 
                     # DOF params, only valid for real camera
                     # use DOF object distance if present or fixed DOF
-                    if camera.dof_object is not None:
-                        # use DOF object distance
-                        dist = (pos.xyz - camera.dof_object.location.xyz).length
-                        dof_distance = dist
+                    if bpy.app.version >= (2, 80, 0):
+                        pass  # FIXME BLENDER 2.80-3.00
                     else:
-                        # use fixed DOF distance
-                        dof_distance = camera.dof_distance
+                        if camera.dof_object is not None:
+                            # use DOF object distance
+                            dist = (pos.xyz - camera.dof_object.location.xyz).length
+                            dof_distance = dist
+                        else:
+                            # use fixed DOF distance
+                            dof_distance = camera.dof_distance
+                        yi.paramsSetFloat("dof_distance", dof_distance)
 
-                    yi.paramsSetFloat("dof_distance", dof_distance)
                     yi.paramsSetFloat("aperture", camera.aperture)
                     # bokeh params
                     yi.paramsSetString("bokeh_type", camera.bokeh_type)
@@ -392,38 +399,65 @@ class yafObject(object):
         bpy.data.meshes.remove(mesh, do_unlink=False)
 
     def writeGeometry(self, ID, obj, matrix, pass_index, oMat=None, visibility="visible", is_base_object=False):
-        mesh = obj.to_mesh(self.scene, True, 'RENDER')
         isSmooth = False
         hasOrco = False
-        # test for UV Map after BMesh API changes
-        uv_texture = mesh.tessface_uv_textures if 'tessface_uv_textures' in dir(mesh) else mesh.uv_textures
-        # test for faces after BMesh API changes
-        face_attr = 'faces' if 'faces' in dir(mesh) else 'tessfaces'
-        hasUV = len(uv_texture) > 0  # check for UV's
 
-        if face_attr == 'tessfaces':
-            if not mesh.tessfaces and mesh.polygons:
-                # BMesh API update, check for tessellated faces, if needed calculate them...
-                mesh.update(calc_tessface=True)
+        if bpy.app.version >= (2, 80, 0):
+            mesh = obj.to_mesh(preserve_all_data_layers=True, depsgraph=self.depsgraph)
+            # test for UV Map after BMesh API changes
+            uv_texture = mesh.uv_layers if 'uv_layers' in dir(mesh) else mesh.uv_textures
+            # test for faces after BMesh API changes
+            face_attr = 'polygons' if 'polygons' in dir(mesh) else 'loop_triangles'
+            hasUV = False  # FIXME BLENDER 2.80-3.00 #len(uv_texture) > 0  # check for UV's
 
-            if not mesh.tessfaces:
-                # if there are no faces, no need to write geometry, remove mesh data then...
-                bpy.data.meshes.remove(mesh, do_unlink=False)
-                return
+            if face_attr == 'loop_triangles':
+                if not mesh.loop_triangles and mesh.polygons:
+                    # BMesh API update, check for tessellated faces, if needed calculate them...
+                    mesh.update(calc_edges=False, calc_edges_loose=False, calc_loop_triangles=True)
+
+                if not mesh.loop_triangles:
+                    # if there are no faces, no need to write geometry, remove mesh data then...
+                    bpy.data.meshes.remove(mesh, do_unlink=False)
+                    return
+            else:
+                if not mesh.polygons:
+                    # if there are no faces, no need to write geometry, remove mesh data then...
+                    bpy.data.meshes.remove(mesh, do_unlink=False)
+                    return
         else:
-            if not mesh.faces:
-                # if there are no faces, no need to write geometry, remove mesh data then...
-                bpy.data.meshes.remove(mesh, do_unlink=False)
-                return
+            mesh = obj.to_mesh(self.scene, True, 'RENDER')
+            # test for UV Map after BMesh API changes
+            uv_texture = mesh.tessface_uv_textures if 'tessface_uv_textures' in dir(mesh) else mesh.uv_textures
+            # test for faces after BMesh API changes
+            face_attr = 'faces' if 'faces' in dir(mesh) else 'tessfaces'
+            hasUV = len(uv_texture) > 0  # check for UV's
 
-        # Check if the object has an orco mapped texture
-        for mat in [mmat for mmat in mesh.materials if mmat is not None]:
-            for m in [mtex for mtex in mat.texture_slots if mtex is not None]:
-                if m.texture_coords == 'ORCO':
-                    hasOrco = True
+            if face_attr == 'tessfaces':
+                if not mesh.tessfaces and mesh.polygons:
+                    # BMesh API update, check for tessellated faces, if needed calculate them...
+                    mesh.update(calc_tessface=True)
+
+                if not mesh.tessfaces:
+                    # if there are no faces, no need to write geometry, remove mesh data then...
+                    bpy.data.meshes.remove(mesh, do_unlink=False)
+                    return
+            else:
+                if not mesh.faces:
+                    # if there are no faces, no need to write geometry, remove mesh data then...
+                    bpy.data.meshes.remove(mesh, do_unlink=False)
+                    return
+
+        if bpy.app.version >= (2, 80, 0):
+            pass  # FIXME BLENDER 2.80-3.00
+        else:
+            # Check if the object has an orco mapped texture
+            for mat in [mmat for mmat in mesh.materials if mmat is not None]:
+                for m in [mtex for mtex in mat.texture_slots if mtex is not None]:
+                    if m.texture_coords == 'ORCO':
+                        hasOrco = True
+                        break
+                if hasOrco:
                     break
-            if hasOrco:
-                break
 
         # normalized vertex positions for orco mapping
         ov = []
@@ -524,7 +558,11 @@ class yafObject(object):
             self.yi.smoothMesh("", 181)
 
         self.yi.endGeometry()
-        bpy.data.meshes.remove(mesh, do_unlink=False)
+
+        if bpy.app.version >= (2, 80, 0):
+            pass  # FIXME BLENDER 2.80-3.00
+        else:
+            bpy.data.meshes.remove(mesh, do_unlink=False)
 
     def getFaceMaterial(self, meshMats, matIndex, matSlots):
 
@@ -551,6 +589,8 @@ class yafObject(object):
 
         # Check for hair particles:
         for pSys in object.particle_systems:
+            if bpy.app.version >= (2, 80, 0):
+                continue  # FIXME BLENDER 2.80-3.00
             for mod in [m for m in object.modifiers if (m is not None) and (m.type == 'PARTICLE_SYSTEM')]:
                 if (pSys.settings.render_type == 'PATH') and mod.show_render and (pSys.name == mod.particle_system.name):
                     yi.printInfo("Exporter: Creating Hair Particle System {!r}".format(pSys.name))

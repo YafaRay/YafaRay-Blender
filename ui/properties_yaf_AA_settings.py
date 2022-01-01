@@ -69,7 +69,7 @@ class YAFARAY4_PT_AA_settings(RenderButtonsPanel, Panel):
         row.prop(scene.yafaray.noise_control, "dark_detection_type")
         col = row.column()
         if scene.yafaray.noise_control.dark_detection_type == "curve":
-            col.label("")
+            col.label(text="")
         elif scene.yafaray.noise_control.dark_detection_type == "linear":
             col.prop(scene, "AA_threshold")
             col.prop(scene.yafaray.noise_control, "dark_threshold_factor")                
@@ -92,6 +92,21 @@ class YAFARAY4_PT_AA_settings(RenderButtonsPanel, Panel):
         col.prop(scene.yafaray.noise_control, "resampled_floor")
         col.prop(scene.yafaray.noise_control, "variance_edge_size")
         col.prop(scene.yafaray.noise_control, "variance_pixels")
+
+classes = (
+    YAFARAY4_PT_AA_settings,
+)
+
+def register():
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+
+def unregister():
+    from bpy.utils import unregister_class
+    for cls in reversed(classes):
+        unregister_class(cls)
+
 
 if __name__ == "__main__":  # only for live edit.
     import bpy

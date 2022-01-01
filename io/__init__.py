@@ -18,11 +18,21 @@
 
 # <pep8 compliant>
 
-import yafaray4
 from . import yaf_export
-from . import yaf_world
-from . import yaf_integrator
-from . import yaf_texture
-from . import yaf_object
-from . import yaf_light
-from . import yaf_material
+
+modules = (
+    yaf_export,
+)
+
+def register():
+    for module in modules:
+        module.register()
+
+def unregister():
+    for module in reversed(modules):
+        module.unregister()
+
+
+if __name__ == "__main__":  # only for live edit.
+    import bpy
+    bpy.utils.register_module(__name__)

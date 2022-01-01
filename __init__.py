@@ -22,6 +22,7 @@ import sys
 import os
 import ctypes
 
+PLUGIN_NAME = "yafaray_v4"
 BIN_PATH = os.path.join(__path__[0], 'bin')
 YAF_ID_NAME = "YAFARAY4_RENDER"
 
@@ -39,7 +40,7 @@ bl_info = {
               "Alexander Smirnov (Exvion), Olaf Arnold (olaf), David Bluecame",
 # Version to be automatically populated during the cmake build process, getting the version from git tags
     "version": ("v4-pre-alpha (development)", ""),
-    "blender": (2, 7, 9),
+    "blender": (3, 0, 0),
     "location": "Info Header > Engine dropdown menu",
     "wiki_url": "http://www.yafaray.org/community/forum",
     "tracker_url": "http://www.yafaray.org/development/bugtracker/yafaray",
@@ -51,22 +52,12 @@ if sys.platform == 'win32':   #I think this is the easiest and most flexible way
     os.environ['PATH'] = os.path.dirname(__file__) + '\\bin;' + os.environ['PATH']
 # For Linux and MacOSX, set the RPATH in all the .so and .dylib libraries to relative paths respect to their location 
 
-
-if "bpy" in locals():
-    import imp
-    imp.reload(prop)
-    imp.reload(io)
-    imp.reload(ui)
-    imp.reload(ot)
-else:
-    import bpy
-    from bpy.app.handlers import persistent
-    from . import prop
-    from . import io
-    from . import ui
-    from . import ot
-    from bpy.types import AddonPreferences
-    from bpy.props import IntProperty
+import bpy
+from bpy.app.handlers import persistent
+from . import prop
+from . import io
+from . import ui
+from . import ot
 
 @persistent
 def load_handler(dummy):
@@ -88,6 +79,8 @@ def load_handler(dummy):
     if bpy.context.scene.render.image_settings.file_format is not bpy.context.scene.img_output:
         bpy.context.scene.img_output = bpy.context.scene.render.image_settings.file_format
 
+from bpy.types import AddonPreferences
+from bpy.props import IntProperty
 class YafaRay4Preferences(AddonPreferences):
     bl_idname = __name__
 
@@ -103,23 +96,28 @@ class YafaRay4Preferences(AddonPreferences):
         col = split.column()
         col.prop(self, "yafaray_computer_node")
         col = col.column()
-        col.label("Click Save User Settings below to store the changes permanently in YafaRay!", icon="INFO")
+        col.label(text="Click Save User Settings below to store the changes permanently in YafaRay!", icon="INFO")
+
+modules = (
+    prop,
+    io,
+    ui,
+    ot,
+)
 
 def register():
     bpy.utils.register_class(YafaRay4Preferences)
-    prop.register()
-    bpy.utils.register_module(__name__)
+    for module in modules:
+        module.register()
     bpy.app.handlers.load_post.append(load_handler)
     # register keys for 'render 3d view', 'render still' and 'render animation'
     if bpy.context.window_manager.keyconfigs.addon is not None:
         km = bpy.context.window_manager.keyconfigs.addon.keymaps.new(name='Screen')
-        kmi = km.keymap_items.new('render.render_view', 'F12', 'PRESS', False, False, False, True)
-        kmi = km.keymap_items.new('render.render_animation', 'F12', 'PRESS', False, False, True, False)
-        kmi = km.keymap_items.new('render.render_still', 'F12', 'PRESS', False, False, False, False)
-
+        kmi = km.keymap_items.new(idname='render.render_view', type='F12', value='PRESS', any=False, shift=False, ctrl=False, alt=True)
+        kmi = km.keymap_items.new(idname='render.render_animation', type='F12', value='PRESS', any=False, shift=False, ctrl=True, alt=False)
+        kmi = km.keymap_items.new(idname='render.render_still', type='F12', value='PRESS', any=False, shift=False, ctrl=False, alt=False)
 
 def unregister():
-    prop.unregister()
     # unregister keys for 'render 3d view', 'render still' and 'render animation'
     if bpy.context.window_manager.keyconfigs.addon is not None:
         kma = bpy.context.window_manager.keyconfigs.addon.keymaps['Screen']
@@ -127,9 +125,7 @@ def unregister():
             if kmi.idname == 'render.render_view' or kmi.idname == 'render.render_animation' \
             or kmi.idname == 'render.render_still':
                 kma.keymap_items.remove(kmi)
-    bpy.utils.unregister_module(__name__)
     bpy.app.handlers.load_post.remove(load_handler)
-
-
-if __name__ == '__main__':
-    register()
+    for module in reversed(modules):
+        module.unregister()
+    bpy.utils.unregister_class(YafaRay4Preferences)

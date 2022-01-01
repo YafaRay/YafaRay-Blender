@@ -115,14 +115,14 @@ def register():
 
 
 def unregister():
-    Camera.camera_type
-    Camera.angular_angle
-    Camera.max_angle
-    Camera.mirrored
-    Camera.circular
-    Camera.angular_projection
-    Camera.use_clipping
-    Camera.bokeh_type
-    Camera.aperture
-    Camera.bokeh_rotation
-    Camera.bokeh_bias
+    del Camera.camera_type
+    del Camera.angular_angle
+    del Camera.max_angle
+    del Camera.mirrored
+    del Camera.circular
+    del Camera.angular_projection
+    del Camera.use_clipping
+    del Camera.bokeh_type
+    del Camera.aperture
+    del Camera.bokeh_rotation
+    del Camera.bokeh_bias

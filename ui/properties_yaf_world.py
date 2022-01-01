@@ -20,7 +20,8 @@
 
 from bpy.types import Panel
 from bl_ui.properties_world import WorldButtonsPanel
-
+import bpy
+from ..util.ui_utils import ui_split
 
 # Inherit World data block
 from bl_ui.properties_world import WORLD_PT_context_world
@@ -28,9 +29,12 @@ WORLD_PT_context_world.COMPAT_ENGINES.add('YAFARAY4_RENDER')
 del WORLD_PT_context_world
 
 # Inherit World Preview Panel
-from bl_ui.properties_world import WORLD_PT_preview
-WORLD_PT_preview.COMPAT_ENGINES.add('YAFARAY4_RENDER')
-del WORLD_PT_preview
+if bpy.app.version >= (2, 80, 0):
+    pass  # FIXME BLENDER 2.80-3.00
+else:
+    from bl_ui.properties_world import WORLD_PT_preview
+    WORLD_PT_preview.COMPAT_ENGINES.add('YAFARAY4_RENDER')
+    del WORLD_PT_preview
 
 
 class YAFARAY4_PT_world(WorldButtonsPanel, Panel):
@@ -48,7 +52,7 @@ class YAFARAY4_PT_world(WorldButtonsPanel, Panel):
 
         if world.bg_type == "Gradient":
 
-            split = layout.split(percentage=0.40)
+            split = ui_split(layout, 0.40)
             col = split.column()
             col.label(text="Zenith:")
             col.label(text="Horizon:")
@@ -62,7 +66,7 @@ class YAFARAY4_PT_world(WorldButtonsPanel, Panel):
             col.prop(world, "bg_zenith_ground_color", text="")
             col.prop(world, "bg_power")          
 
-            split = layout.split(percentage=0.40)
+            split = ui_split(layout, 0.40)
             col = split.column()
             col.prop(world, "bg_use_ibl")
             col.label(text=" ")
@@ -74,9 +78,10 @@ class YAFARAY4_PT_world(WorldButtonsPanel, Panel):
 
 
         elif world.bg_type == "Texture":
+            if bpy.app.version >= (2, 80, 0):
+                return  # FIXME BLENDER 2.80-3.00
 
             tex = context.scene.world.active_texture
-
             if tex is not None:
                 #
                 layout.template_ID(context.world, "active_texture")
@@ -117,7 +122,7 @@ class YAFARAY4_PT_world(WorldButtonsPanel, Panel):
             layout.separator()
             layout.prop(world, "bg_power")
             
-            split = layout.split(percentage=0.33)
+            split = ui_split(layout, 0.33)
             col = split.column()
             col.prop(world, "bg_use_ibl")
             col = split.column()
@@ -156,7 +161,7 @@ class YAFARAY4_PT_world(WorldButtonsPanel, Panel):
             sub = col.column(align=True)
             sub.operator("world.get_position", text="Get from Location")
             sub.operator("world.get_angle", text="Get from Angle")
-            sub.operator("world.update_sun", text="Update Lamp in 3D View")
+            sub.operator("world.update_sun", text="Update Light in 3D View")
 
             layout.separator()
 
@@ -203,7 +208,7 @@ class YAFARAY4_PT_world(WorldButtonsPanel, Panel):
             sub = col.column(align=True)
             sub.operator("world.get_position", text="Get from Location")
             sub.operator("world.get_angle", text="Get from Angle")
-            sub.operator("world.update_sun", text="Update Lamp in 3D View")
+            sub.operator("world.update_sun", text="Update Light in 3D View")
             col.prop(world, "bg_dsaltitude")
 
             layout.separator()
@@ -242,15 +247,15 @@ class YAFARAY4_PT_world(WorldButtonsPanel, Panel):
 
         elif world.bg_type == "Single Color":
 
-            split = layout.split(percentage=0.33)
+            split = ui_split(layout, 0.33)
 
             col = split.column()
-            col.label("Color:")
+            col.label(text="Color:")
             col = split.column()
             col.prop(world, "bg_single_color", text="")
             col.prop(world, "bg_power", text="Power")
             
-            split = layout.split(percentage=0.33)
+            split = ui_split(layout, 0.33)
             col = split.column()
             col.prop(world, "bg_use_ibl")
             col.label(text=" ")
@@ -284,7 +289,21 @@ class YAFARAY4_PT_advanced(WorldButtonsPanel, Panel):
             col.prop(world, "bg_cast_shadows_sun")
 
 
-from . import properties_yaf_volume_integrator
+classes = (
+    YAFARAY4_PT_world,
+    YAFARAY4_PT_advanced,
+)
+
+def register():
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+
+def unregister():
+    from bpy.utils import unregister_class
+    for cls in reversed(classes):
+        unregister_class(cls)
+
 
 
 if __name__ == "__main__":  # only for live edit.

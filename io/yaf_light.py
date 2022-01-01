@@ -27,9 +27,12 @@ from bpy.path import abspath
 
 def multiplyMatrix4x4Vector4(matrix, vector):
     result = mathutils.Vector((0.0, 0.0, 0.0, 0.0))
-    for i in range(4):
-        result[i] = vector * matrix[i]  # use reverse vector multiply order, API changed with rev. 38674
-
+    if bpy.app.version >= (2, 80, 0):
+        for i in range(4):
+            result[i] = vector @ matrix[i]  # use reverse vector multiply order, API changed with rev. 38674
+    else:
+        for i in range(4):
+            result[i] = vector * matrix[i]  # use reverse vector multiply order, API changed with rev. 38674
     return result
 
 class yafLight:
@@ -75,13 +78,13 @@ class yafLight:
 
         return ID
 
-    def createLight(self, yi, lamp_object, matrix=None):
+    def createLight(self, yi, light_object, matrix=None):
 
-        lamp = lamp_object.data
-        name = lamp_object.name
+        light = light_object.data
+        name = light_object.name
 
         if matrix is None:
-            matrix = lamp_object.matrix_world.copy()
+            matrix = light_object.matrix_world.copy()
         # matrix indexing (row, colums) changed in Blender rev.42816, for explanation see also:
         # http://wiki.blender.org/index.php/User:TrumanBlending/Matrix_Indexing
         pos = matrix.col[3]
@@ -89,26 +92,26 @@ class yafLight:
         # up = matrix[1]  /* UNUSED */
         to = pos - direct
 
-        lampType = lamp.lamp_type
-        power = lamp.yaf_energy
-        color = lamp.color
+        lightType = light.light_type
+        power = light.yaf_energy
+        color = light.color
 
         if self.preview:
-            if name == "Lamp":
+            if name == "Light" or name == "Lamp":
                 pos = (-6, -4, 8, 1.0)
                 power = 5
                 if bpy.data.scenes[0].yafaray.preview.enable:
                     power *= bpy.data.scenes[0].yafaray.preview.fillLightPowerFactor
                     color = bpy.data.scenes[0].yafaray.preview.fillLightColor
 
-            elif name == "Lamp.001":
+            elif name == "Light.001" or name == "Lamp.001":
                 pos = (6, -6, -2, 1.0)
                 power = 6
                 if bpy.data.scenes[0].yafaray.preview.enable:
                     power *= bpy.data.scenes[0].yafaray.preview.fillLightPowerFactor
                     color = bpy.data.scenes[0].yafaray.preview.fillLightColor
                     
-            elif name == "Lamp.002":
+            elif name == "Light.002" or name == "Lamp.002":
                 pos = (-2.9123109, -7.270790733, 4.439187765, 1.0)
                 to = (-0.0062182024121284485, 0.6771485209465027, 1.8015732765197754, 1.0)
                 power = 5
@@ -116,8 +119,8 @@ class yafLight:
                     power *= bpy.data.scenes[0].yafaray.preview.keyLightPowerFactor
                     color = bpy.data.scenes[0].yafaray.preview.keyLightColor
                     
-            elif name == "Lamp.008":
-                lampType = "sun"
+            elif name == "Light.008" or name == "Lamp.008":
+                lightType = "sun"
                 power = 0.8
                 if bpy.data.scenes[0].yafaray.preview.enable:
                     power *= bpy.data.scenes[0].yafaray.preview.keyLightPowerFactor
@@ -129,88 +132,88 @@ class yafLight:
 
         yi.paramsClearAll()
 
-        yi.printInfo("Exporting Lamp: {0} [{1}]".format(name, lampType))
+        yi.printInfo("Exporting Light: {0} [{1}]".format(name, lightType))
 
-        if lamp.create_geometry:  # and not self.lightMat:
+        if light.create_geometry:  # and not self.lightMat:
             yi.paramsClearAll()
             yi.paramsSetColor("color", color[0], color[1], color[2])  # color for spherelight and area light geometry
             yi.paramsSetString("type", "light_mat")
-            power_sphere = power / lamp.yaf_sphere_radius
+            power_sphere = power / light.yaf_sphere_radius
             yi.paramsSetFloat("power", power_sphere)
         
             self.yi.createMaterial(name)
             self.lightMatName = name
             self.yi.paramsClearAll()
-            #yi.paramsSetBool("light_enabled", lamp.light_enabled)
+            #yi.paramsSetBool("light_enabled", light.light_enabled)
 
-        if lampType == "point":
+        if lightType == "point":
             yi.paramsSetString("type", "pointlight")
-            if getattr(lamp, "use_sphere", False):
-                if lamp.create_geometry:
-                    ID = self.makeSphere(24, 48, pos[0], pos[1], pos[2], lamp.yaf_sphere_radius, self.lightMatName)
+            if getattr(light, "use_sphere", False):
+                if light.create_geometry:
+                    ID = self.makeSphere(24, 48, pos[0], pos[1], pos[2], light.yaf_sphere_radius, self.lightMatName)
                     yi.paramsSetString("object_name", ID)
                 yi.paramsSetString("type", "spherelight")
-                yi.paramsSetInt("samples", lamp.yaf_samples)
-                yi.paramsSetFloat("radius", lamp.yaf_sphere_radius)
-                yi.paramsSetBool("light_enabled", lamp.light_enabled)
-                yi.paramsSetBool("cast_shadows", lamp.cast_shadows)
+                yi.paramsSetInt("samples", light.yaf_samples)
+                yi.paramsSetFloat("radius", light.yaf_sphere_radius)
+                yi.paramsSetBool("light_enabled", light.light_enabled)
+                yi.paramsSetBool("cast_shadows", light.cast_shadows)
 
-        elif lampType == "spot":
-            if self.preview and name == "Lamp.002":
+        elif lightType == "spot":
+            if self.preview and name == "Light.002":
                 angle = 50
             else:
                 # Blender reports the angle of the full cone in radians
                 # and we need half of the apperture angle in degrees
-                angle = degrees(lamp.spot_size) * 0.5
+                angle = degrees(light.spot_size) * 0.5
 
             yi.paramsSetString("type", "spotlight")
 
             yi.paramsSetFloat("cone_angle", angle)
-            yi.paramsSetFloat("blend", lamp.spot_blend)
+            yi.paramsSetFloat("blend", light.spot_blend)
             yi.paramsSetVector("to", to[0], to[1], to[2])
-            yi.paramsSetBool("soft_shadows", lamp.spot_soft_shadows)
-            yi.paramsSetFloat("shadowFuzzyness", lamp.shadow_fuzzyness)
-            yi.paramsSetInt("samples", lamp.yaf_samples)
-            yi.paramsSetBool("light_enabled", lamp.light_enabled)
-            yi.paramsSetBool("cast_shadows", lamp.cast_shadows)
+            yi.paramsSetBool("soft_shadows", light.spot_soft_shadows)
+            yi.paramsSetFloat("shadowFuzzyness", light.shadow_fuzzyness)
+            yi.paramsSetInt("samples", light.yaf_samples)
+            yi.paramsSetBool("light_enabled", light.light_enabled)
+            yi.paramsSetBool("cast_shadows", light.cast_shadows)
 
-        elif lampType == "sun":
+        elif lightType == "sun":
             yi.paramsSetString("type", "sunlight")
-            yi.paramsSetInt("samples", lamp.yaf_samples)
-            yi.paramsSetFloat("angle", lamp.angle)
+            yi.paramsSetInt("samples", light.yaf_samples)
+            yi.paramsSetFloat("angle", light.angle)
             yi.paramsSetVector("direction", direct[0], direct[1], direct[2])
-            yi.paramsSetBool("light_enabled", lamp.light_enabled)
-            yi.paramsSetBool("cast_shadows", lamp.cast_shadows)
+            yi.paramsSetBool("light_enabled", light.light_enabled)
+            yi.paramsSetBool("cast_shadows", light.cast_shadows)
 
-        elif lampType == "directional":
+        elif lightType == "directional":
             yi.paramsSetString("type", "directional")
             yi.paramsSetVector("direction", direct[0], direct[1], direct[2])
-            yi.paramsSetBool("infinite", lamp.infinite)
-            if not lamp.infinite:
-                yi.paramsSetFloat("radius", lamp.shadow_soft_size)
+            yi.paramsSetBool("infinite", light.infinite)
+            if not light.infinite:
+                yi.paramsSetFloat("radius", light.shadow_soft_size)
                 yi.paramsSetVector("from", pos[0], pos[1], pos[2])
-            yi.paramsSetBool("light_enabled", lamp.light_enabled)
-            yi.paramsSetBool("cast_shadows", lamp.cast_shadows)
+            yi.paramsSetBool("light_enabled", light.light_enabled)
+            yi.paramsSetBool("cast_shadows", light.cast_shadows)
 
-        elif lampType == "ies":
+        elif lightType == "ies":
             yi.paramsSetString("type", "ieslight")
             yi.paramsSetVector("to", to[0], to[1], to[2])
-            ies_file = abspath(lamp.ies_file)
+            ies_file = abspath(light.ies_file)
             if not any(ies_file) and not os.path.exists(ies_file):
                 yi.printWarning("IES file not found for {0}".format(name))
                 return False
             yi.paramsSetString("file", ies_file)
-            yi.paramsSetInt("samples", lamp.yaf_samples)
-            yi.paramsSetBool("soft_shadows", lamp.ies_soft_shadows)
-            yi.paramsSetBool("light_enabled", lamp.light_enabled)
-            yi.paramsSetBool("cast_shadows", lamp.cast_shadows)
+            yi.paramsSetInt("samples", light.yaf_samples)
+            yi.paramsSetBool("soft_shadows", light.ies_soft_shadows)
+            yi.paramsSetBool("light_enabled", light.light_enabled)
+            yi.paramsSetBool("cast_shadows", light.cast_shadows)
 
-        elif lampType == "area":
-            sizeX = lamp.size
-            sizeY = lamp.size
-            if lamp.shape == 'RECTANGLE':
-                sizeY = lamp.size_y                       
-            matrix = lamp_object.matrix_world.copy()           
+        elif lightType == "area":
+            sizeX = light.size
+            sizeY = light.size
+            if light.shape == 'RECTANGLE':
+                sizeY = light.size_y
+            matrix = light_object.matrix_world.copy()
             
 
             # generate an untransformed rectangle in the XY plane with
@@ -227,7 +230,7 @@ class yafLight:
             corner3 = matrix * corner3  # use reverse vector multiply order, API changed with rev. 38674
             
             yi.paramsClearAll()
-            if lamp.create_geometry:
+            if light.create_geometry:
                 ID = "AreaLight-"+str(yi.getNextFreeId())
                 yi.startGeometry()
                 self.yi.paramsSetString("type", "mesh")
@@ -246,29 +249,29 @@ class yafLight:
                 yi.paramsSetString("object_name", ID)
 
             yi.paramsSetString("type", "arealight")
-            yi.paramsSetInt("samples", lamp.yaf_samples)
+            yi.paramsSetInt("samples", light.yaf_samples)
             yi.paramsSetVector("corner", point[0], point[1], point[2])
             yi.paramsSetVector("point1", corner1[0], corner1[1], corner1[2])
             yi.paramsSetVector("point2", corner3[0], corner3[1], corner3[2])
-            yi.paramsSetBool("light_enabled", lamp.light_enabled)
-            yi.paramsSetBool("cast_shadows", lamp.cast_shadows)
+            yi.paramsSetBool("light_enabled", light.light_enabled)
+            yi.paramsSetBool("cast_shadows", light.cast_shadows)
 
-        if lampType not in {"sun", "directional"}:
+        if lightType not in {"sun", "directional"}:
             # "from" is not used for sunlight and infinite directional light
             yi.paramsSetVector("from", pos[0], pos[1], pos[2])
-        if lampType in {"point", "spot"}:
-            if getattr(lamp, "use_sphere", False) and lampType == "point":
-                power = 0.5 * power * power / (lamp.yaf_sphere_radius * lamp.yaf_sphere_radius)
+        if lightType in {"point", "spot"}:
+            if getattr(light, "use_sphere", False) and lightType == "point":
+                power = 0.5 * power * power / (light.yaf_sphere_radius * light.yaf_sphere_radius)
             else:
                 power = 0.5 * power * power
 
         yi.paramsSetColor("color", color[0], color[1], color[2])
         yi.paramsSetFloat("power", power)
-        yi.paramsSetBool("light_enabled", lamp.light_enabled)
-        yi.paramsSetBool("cast_shadows", lamp.cast_shadows)
-        yi.paramsSetBool("with_caustic", lamp.caustic_photons)
-        yi.paramsSetBool("with_diffuse", lamp.diffuse_photons)
-        yi.paramsSetBool("photon_only", lamp.photon_only)
+        yi.paramsSetBool("light_enabled", light.light_enabled)
+        yi.paramsSetBool("cast_shadows", light.cast_shadows)
+        yi.paramsSetBool("with_caustic", light.caustic_photons)
+        yi.paramsSetBool("with_diffuse", light.diffuse_photons)
+        yi.paramsSetBool("photon_only", light.photon_only)
         yi.createLight(name)
 
         return True

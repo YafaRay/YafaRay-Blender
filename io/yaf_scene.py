@@ -21,6 +21,7 @@
 import bpy
 import os
 from collections import namedtuple
+from ..util.io_utils import scene_from_depsgraph
 
 def computeSceneSize(render):
     sizeX = int(render.resolution_x * render.resolution_percentage * 0.01)
@@ -58,7 +59,7 @@ def getRenderCoords(scene):
         shiftY = int(cam_data.shift_y * maxsize)
 
     # no border when rendering to view
-    if render.use_border and  cam_data:
+    if render.use_border and cam_data:
         minX = render.border_min_x * sizeX
         minY = render.border_min_y * sizeY
         maxX = render.border_max_x * sizeX
@@ -100,9 +101,9 @@ def exportAA(yi, scene):
         yi.paramsSetFloat("AA_threshold", 0.01)
 
 
-def exportRenderSettings(yi, scene, render_path, render_filename):
+def exportRenderSettings(yi, depsgraph, render_path, render_filename):
     yi.printVerbose("Exporting Render Settings")
-
+    scene = scene_from_depsgraph(depsgraph)
     render = scene.render
 
     [sizeX, sizeY, bStartX, bStartY, bsizeX, bsizeY, cam_data] = getRenderCoords(scene)
@@ -157,7 +158,10 @@ def exportRenderSettings(yi, scene, render_path, render_filename):
     yi.paramsSetFloat("adv_min_raydist_value", scene.adv_min_raydist_value)
     yi.paramsSetFloat("adv_min_raydist_value", scene.adv_min_raydist_value)
     yi.paramsSetInt("adv_base_sampling_offset", scene.adv_base_sampling_offset)
-    yi.paramsSetInt("adv_computer_node", bpy.context.user_preferences.addons["yafaray4"].preferences.yafaray_computer_node)
+    if bpy.app.version >= (2, 80, 0):
+        pass   # FIXME BLENDER 2.80-3.00
+    else:
+        yi.paramsSetInt("adv_computer_node", bpy.context.user_preferences.addons["yafaray4"].preferences.yafaray_computer_node)
 
     yi.paramsSetInt("layer_mask_obj_index", scene.yafaray.passes.pass_mask_obj_index)
     yi.paramsSetInt("layer_mask_mat_index", scene.yafaray.passes.pass_mask_mat_index)
@@ -261,7 +265,10 @@ def calcColorSpace(scene):
 
     return color_space(color_space_1, color_space_2)
 
-def defineLayers(yi, scene):
+def defineLayers(yi, depsgraph):
+    yi.printVerbose("Exporting Render Passes settings")
+    scene = scene_from_depsgraph(depsgraph)
+
     def defineLayer(layer_type, exported_image_type, exported_image_name):
         yi.paramsSetString("type", layer_type)
         yi.paramsSetString("image_type", exported_image_type)

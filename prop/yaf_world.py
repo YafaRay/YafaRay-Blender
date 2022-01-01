@@ -312,50 +312,50 @@ def register():
 
 
 def unregister():
-    World.bg_type
-    World.bg_color_space
-    World.bg_zenith_color
-    World.bg_horizon_color
-    World.bg_zenith_ground_color
-    World.bg_horizon_ground_color
-    World.bg_single_color
-    World.bg_use_ibl
-    World.bg_smartibl_blur
-    World.ibl_clamp_sampling
-    World.bg_with_caustic
-    World.bg_with_diffuse
-    World.bg_ibl_samples
-    World.bg_rotation
-    World.bg_turbidity
-    World.bg_ds_turbidity
-    World.bg_a_var
-    World.bg_b_var
-    World.bg_c_var
-    World.bg_d_var
-    World.bg_e_var
-    World.bg_from
-    World.bg_add_sun
-    World.bg_sun_power
-    World.bg_background_light
-    World.bg_light_samples
-    World.bg_dsaltitude
-    World.bg_dsnight
-    World.bg_dsbright
-    World.bg_exposure
-    World.bg_power
-    World.bg_clamp_rgb
-    World.bg_gamma_enc
-    World.bg_cast_shadows
-    World.bg_cast_shadows_sun
+    del World.bg_type
+    del World.bg_color_space
+    del World.bg_zenith_color
+    del World.bg_horizon_color
+    del World.bg_zenith_ground_color
+    del World.bg_horizon_ground_color
+    del World.bg_single_color
+    del World.bg_use_ibl
+    del World.bg_smartibl_blur
+    del World.ibl_clamp_sampling
+    del World.bg_with_caustic
+    del World.bg_with_diffuse
+    del World.bg_ibl_samples
+    del World.bg_rotation
+    del World.bg_turbidity
+    del World.bg_ds_turbidity
+    del World.bg_a_var
+    del World.bg_b_var
+    del World.bg_c_var
+    del World.bg_d_var
+    del World.bg_e_var
+    del World.bg_from
+    del World.bg_add_sun
+    del World.bg_sun_power
+    del World.bg_background_light
+    del World.bg_light_samples
+    del World.bg_dsaltitude
+    del World.bg_dsnight
+    del World.bg_dsbright
+    del World.bg_exposure
+    del World.bg_power
+    del World.bg_clamp_rgb
+    del World.bg_gamma_enc
+    del World.bg_cast_shadows
+    del World.bg_cast_shadows_sun
 
-    World.v_int_type
-    World.v_int_step_size
-    World.v_int_adaptive
-    World.v_int_optimize
-    World.v_int_attgridres
-    World.v_int_scale
-    World.v_int_alpha
-    World.v_int_dsturbidity
+    del World.v_int_type
+    del World.v_int_step_size
+    del World.v_int_adaptive
+    del World.v_int_optimize
+    del World.v_int_attgridres
+    del World.v_int_scale
+    del World.v_int_alpha
+    del World.v_int_dsturbidity
     
     # povman test --->
-    World.yaf_mapworld_type
+    del World.yaf_mapworld_type

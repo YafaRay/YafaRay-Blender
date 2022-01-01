@@ -18,10 +18,10 @@
 
 # <pep8 compliant>
 
-import bpy
 from ..ot import yafaray_presets
 from bl_ui.properties_render import RenderButtonsPanel
 from bpy.types import Panel, Menu
+from ..util.ui_utils import icon_add, ui_split
 
 
 class YAFARAY4_MT_presets_render(Menu):
@@ -43,13 +43,16 @@ class YAFARAY4_PT_general_settings(RenderButtonsPanel, Panel):
         render = scene.render
 
         row = layout.row(align=True)
-        row.menu("YAFARAY4_MT_presets_render", text=bpy.types.YAFARAY4_MT_presets_render.bl_label)
-        row.operator("yafaray.preset_add", text="", icon='ZOOMIN')
-        #row.operator("yafaray.preset_add", text="", icon='ZOOMOUT').remove_active = True  #Does not work as expected, possibly better that the user deletes the presets manually himself to avoid deleting the wrong one by mistake anyway?
+        if bpy.app.version >= (2, 80, 0):
+            pass  # FIXME BLENDER 2.80-3.00
+        else:
+            row.menu("YAFARAY4_MT_presets_render", text=bpy.types.YAFARAY4_MT_presets_render.bl_label)
+            row.operator("yafaray.preset_add", text="", icon=icon_add)
+            #row.operator("yafaray.preset_add", text="", icon=icon_remove).remove_active = True  #Does not work as expected, possibly better that the user deletes the presets manually himself to avoid deleting the wrong one by mistake anyway?
 
         layout.separator()
 
-        split = layout.split(percentage=0.58)
+        split = ui_split(layout, 0.58)
         col = split.column()
         col.prop(scene, "gs_ray_depth")
         col.prop(scene, "gs_type_render")
@@ -72,7 +75,7 @@ class YAFARAY4_PT_general_settings(RenderButtonsPanel, Panel):
             elif scene.gs_film_autosave_interval_type == "time-interval":
                 col.prop(scene, "gs_film_autosave_interval_seconds")
             else:
-                col.label("")
+                col.label(text="")
 
         if scene.gs_film_save_load == "load-save":
             row = layout.row()
@@ -82,16 +85,16 @@ class YAFARAY4_PT_general_settings(RenderButtonsPanel, Panel):
 
         if (scene.yafaray.logging.saveLog or scene.yafaray.logging.saveHTML or scene.yafaray.logging.savePreset or scene.yafaray.logging.paramsBadgePosition == "top" or scene.yafaray.logging.paramsBadgePosition == "bottom") and scene.gs_type_render == "into_blender" and not scene.gs_secondary_file_output:
                 row = layout.row()
-                row.label("Params badge and saving log/html/preset files only works when exporting to image file.", icon='INFO')
+                row.label(text="Params badge and saving log/html/preset files only works when exporting to image file.", icon='INFO')
                 row = layout.row()
-                row.label("To get the badge/logs, render to image or render into Blender+enable Secondary File Output.", icon='INFO')
+                row.label(text="To get the badge/logs, render to image or render into Blender+enable Secondary File Output.", icon='INFO')
                 row = layout.row()
 
         if scene.yafaray.logging.paramsBadgePosition == "bottom" and scene.gs_type_render == "file":
                 row = layout.row()
-                row.label("Image with Params Badge at bottom will appear CROPPED in Blender,", icon='INFO')
+                row.label(text="Image with Params Badge at bottom will appear CROPPED in Blender,", icon='INFO')
                 row = layout.row()
-                row.label("  but will be CORRECT in the exported image file.", icon='INFO')
+                row.label(text="  but will be CORRECT in the exported image file.", icon='INFO')
 
         col = split.column()
         sub = col.column()
@@ -118,11 +121,14 @@ class YAFARAY4_PT_general_settings(RenderButtonsPanel, Panel):
         if not scene.gs_auto_threads:
                 sub.prop(scene, "gs_threads")
         else:
-                sub.label("")
+                sub.label(text="")
         col.prop(scene, "gs_show_sam_pix", toggle=True)
-        col.prop(render, "use_instances", text="Use instances", toggle=True)
+        if bpy.app.version >= (2, 80, 0):
+            pass  # FIXME BLENDER 2.80-3.00
+        else:
+            col.prop(render, "use_instances", text="Use instances", toggle=True)
 
-        split = layout.split(percentage=0.5)
+        split = ui_split(layout, 0.5)
         col = split.column()
         col.prop(scene, "bg_transp", toggle=True)
         col = split.column()
@@ -130,7 +136,7 @@ class YAFARAY4_PT_general_settings(RenderButtonsPanel, Panel):
         sub.enabled = scene.bg_transp
         sub.prop(scene, "bg_transp_refract", toggle=True)
 
-class YAFARAY4_MT_accelerator(RenderButtonsPanel, Panel):
+class YAFARAY4_PT_accelerator(RenderButtonsPanel, Panel):
     bl_label = "Scene accelerator settings"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -139,11 +145,11 @@ class YAFARAY4_MT_accelerator(RenderButtonsPanel, Panel):
         scene = context.scene
         render = scene.render
 
-        split = layout.split(percentage=0.43)
+        split = ui_split(layout, 0.43)
         col = split.column()
         col.prop(scene, "gs_accelerator")
 
-class YAFARAY4_MT_logging(RenderButtonsPanel, Panel):
+class YAFARAY4_PT_logging(RenderButtonsPanel, Panel):
     bl_label = "Logging / Params Badge Settings"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -152,7 +158,7 @@ class YAFARAY4_MT_logging(RenderButtonsPanel, Panel):
         scene = context.scene
         render = scene.render
 
-        split = layout.split(percentage=0.43)
+        split = ui_split(layout, 0.43)
         col = split.column()
         col.prop(scene.yafaray.logging, "paramsBadgePosition")
         col = split.column()
@@ -179,15 +185,15 @@ class YAFARAY4_MT_logging(RenderButtonsPanel, Panel):
         if scene.yafaray.logging.saveLog or scene.yafaray.logging.saveHTML or scene.yafaray.logging.savePreset or scene.yafaray.logging.paramsBadgePosition == "top" or scene.yafaray.logging.paramsBadgePosition == "bottom":
                 if scene.gs_type_render == "into_blender" and not scene.gs_secondary_file_output:
                         row = layout.row()
-                        row.label("Params badge and saving log/html/preset files only works when exporting to image file.", icon='ERROR')
+                        row.label(text="Params badge and saving log/html/preset files only works when exporting to image file.", icon='ERROR')
                         row = layout.row()
-                        row.label("To get the badge/logs, render to image or render into Blender+enable Secondary File Output.", icon='ERROR')
+                        row.label(text="To get the badge/logs, render to image or render into Blender+enable Secondary File Output.", icon='ERROR')
 
                 if scene.yafaray.logging.paramsBadgePosition == "bottom" and scene.gs_type_render == "file":
                         row = layout.row()
-                        row.label("Image with Params Badge at bottom will appear CROPPED in Blender,", icon='INFO')
+                        row.label(text="Image with Params Badge at bottom will appear CROPPED in Blender,", icon='INFO')
                         row = layout.row()
-                        row.label("  but will be CORRECT in the exported image file.", icon='INFO')
+                        row.label(text="  but will be CORRECT in the exported image file.", icon='INFO')
 
                 row = layout.row()
                 row.prop(scene.yafaray.logging, "title")
@@ -206,7 +212,7 @@ class YAFARAY4_MT_logging(RenderButtonsPanel, Panel):
                 col.prop(scene.yafaray.logging, "fontScale")
 
 
-class YAFARAY4_MT_clay_render(RenderButtonsPanel, Panel):
+class YAFARAY4_PT_clay_render(RenderButtonsPanel, Panel):
     bl_label = "Clay Render Settings"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -216,7 +222,7 @@ class YAFARAY4_MT_clay_render(RenderButtonsPanel, Panel):
         render = scene.render
 
         row = layout.row(align=True)
-        split = layout.split(percentage=0.5)
+        split = ui_split(layout, 0.5)
         col = split.column()
         col.prop(scene, "gs_clay_render", toggle=True)
         if scene.gs_clay_render:
@@ -234,6 +240,25 @@ class YAFARAY4_MT_clay_render(RenderButtonsPanel, Panel):
             #col = split.column()
             col.prop(scene, "gs_clay_render_keep_normals")
 
+
+
+classes = (
+    YAFARAY4_MT_presets_render,
+    YAFARAY4_PT_general_settings,
+    YAFARAY4_PT_accelerator,
+    YAFARAY4_PT_logging,
+    YAFARAY4_PT_clay_render,
+)
+
+def register():
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+
+def unregister():
+    from bpy.utils import unregister_class
+    for cls in reversed(classes):
+        unregister_class(cls)
 
 
 if __name__ == "__main__":  # only for live edit.

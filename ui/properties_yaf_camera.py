@@ -51,7 +51,7 @@ class YAFARAY4_PT_lens(CameraButtonsPanel, Panel):
 
             layout.separator()
 
-            layout.label("Depth of Field:")
+            layout.label(text="Depth of Field:")
             layout.prop(camera, "aperture")
             split = layout.split()
             split.prop(camera, "dof_object", text="")
@@ -90,9 +90,12 @@ class YAFARAY4_PT_camera(CameraButtonsPanel, Panel):
 
         row = layout.row(align=True)
 
-        row.menu("CAMERA_MT_presets", text=bpy.types.CAMERA_MT_presets.bl_label)
-        row.operator("camera.preset_add", text="", icon="ZOOMIN")
-        row.operator("camera.preset_add", text="", icon="ZOOMOUT").remove_active = True
+        if bpy.app.version >= (2, 80, 0):
+            pass  # FIXME BLENDER 2.80-3.00
+        else:
+            row.menu("CAMERA_MT_presets", text=bpy.types.CAMERA_MT_presets.bl_label)
+            row.operator("camera.preset_add", text="", icon="ZOOMIN")
+            row.operator("camera.preset_add", text="", icon="ZOOMOUT").remove_active = True
 
         layout.label(text="Sensor:")
 
@@ -122,17 +125,38 @@ class YAFARAY4_PT_camera_display(CameraButtonsPanel, Panel):
 
         col = split.column()
         col.prop(camera, "show_limits", text="Limits")
-        #col.prop(camera, "show_title_safe", text="Title Safe") #FIXME DAVID: Disabled it as it's causing error messages "rna_uiItemR: property not found: Camera.show_title_safe". This line should probably have to be removed
+        #col.prop(camera, "show_title_safe", text="Title Safe") #FIXME: Disabled it as it's causing error messages "rna_uiItemR: property not found: Camera.show_title_safe". This line should probably have to be removed
         col.prop(camera, "show_sensor", text="Sensor")
         col.prop(camera, "show_name", text="Name")
 
         col = split.column()
-        col.prop_menu_enum(camera, "show_guide")
-        col.prop(camera, "draw_size", text="Size")
+        if bpy.app.version >= (2, 80, 0):
+            pass  # FIXME BLENDER 2.80-3.00
+        else:
+            col.prop_menu_enum(camera, "show_guide")
+            col.prop(camera, "draw_size", text="Size")
         col.prop(camera, "show_passepartout", text="Passepartout")
         sub = col.column()
         sub.active = camera.show_passepartout
         sub.prop(camera, "passepartout_alpha", text="Alpha", slider=True)
+
+
+
+classes = (
+    YAFARAY4_PT_lens,
+    YAFARAY4_PT_camera,
+    YAFARAY4_PT_camera_display,
+)
+
+def register():
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+
+def unregister():
+    from bpy.utils import unregister_class
+    for cls in reversed(classes):
+        unregister_class(cls)
 
 
 if __name__ == "__main__":  # only for live edit.

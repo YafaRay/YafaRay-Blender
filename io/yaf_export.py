@@ -19,7 +19,6 @@
 # <pep8 compliant>
 
 #TODO: Use Blender enumerators if any
-import copy
 import bpy
 import os
 import threading
@@ -33,15 +32,16 @@ import tempfile
 from .. import YAF_ID_NAME
 from .. import YAFARAY_BLENDER_VERSION
 from .yaf_object import yafObject
-from .yaf_light  import yafLight
-from .yaf_world  import yafWorld
+from .yaf_light import yafLight
+from .yaf_world import yafWorld
 from .yaf_integrator import yafIntegrator
 from . import yaf_scene
 from .yaf_texture import yafTexture
 from .yaf_material import yafMaterial
 from ..ot import yafaray_presets
-from pprint import pprint
-from pprint import pformat
+# from pprint import pprint
+# from pprint import pformat
+from ..util.io_utils import scene_from_depsgraph
 from .. import yaf_global_vars
 
 class YafaRay4RenderEngine(bpy.types.RenderEngine):
@@ -68,28 +68,33 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
         if self.is_preview:
             self.yi.setConsoleVerbosityLevel(yi.logLevelFromString("mute"))
             self.yi.setLogVerbosityLevel(yi.logLevelFromString("mute"))
-            self.scene.bg_transp = False #to correct alpha problems in preview roughglass
-            self.scene.bg_transp_refract = False #to correct alpha problems in preview roughglass
+            self.scene.bg_transp = False  #to correct alpha problems in preview roughglass
+            self.scene.bg_transp_refract = False  #to correct alpha problems in preview roughglass
         else:
             self.yi.enablePrintDateTime(self.scene.yafaray.logging.logPrintDateTime)
             self.yi.setConsoleVerbosityLevel(yi.logLevelFromString(self.scene.yafaray.logging.consoleVerbosity))
             self.yi.setLogVerbosityLevel(yi.logLevelFromString(self.scene.yafaray.logging.logVerbosity))
             self.yi.printInfo("YafaRay-Blender (" + YAFARAY_BLENDER_VERSION + ")")
-            self.yi.printInfo("Exporter: Blender version " + str(bpy.app.version[0]) + "."+ str(bpy.app.version[1]) + "."+ str(bpy.app.version[2]) + "."+ bpy.app.version_char + "  Build information: " + bpy.app.build_platform.decode("utf-8") + ", " + bpy.app.build_type.decode("utf-8") + ", branch: " + bpy.app.build_branch.decode("utf-8") + ", hash: " + bpy.app.build_hash.decode("utf-8"))
+            self.yi.printInfo("Exporter: Blender version " + str(bpy.app.version[0]) + "." + str(bpy.app.version[1]) + "." + str(bpy.app.version[2]) + "." + bpy.app.version_char + "  Build information: " + bpy.app.build_platform.decode("utf-8") + ", " + bpy.app.build_type.decode("utf-8") + ", branch: " + bpy.app.build_branch.decode("utf-8") + ", hash: " + bpy.app.build_hash.decode("utf-8"))
             self.yi.printInfo("Exporter: System information: " + platform.processor() + ", " + platform.platform())
 
         self.yaf_object = yafObject(self.yi, self.is_preview)
-        self.yaf_lamp = yafLight(self.yi, self.is_preview)
+        self.yaf_light = yafLight(self.yi, self.is_preview)
         self.yaf_world = yafWorld(self.yi)
         self.yaf_integrator = yafIntegrator(self.yi)
         self.yaf_texture = yafTexture(self.yi)
         self.yaf_material = yafMaterial(self.yi, self.yaf_texture.loadedTextures)
 
     def exportScene(self):
-        for obj in self.scene.objects:
-            self.exportTexture(obj)
+        if bpy.app.version >= (2, 80, 0):
+            for inst in self.depsgraph.object_instances:
+                obj = inst.object
+                self.exportTexture(obj)
+        else:
+            for obj in self.scene.objects:
+                self.exportTexture(obj)
         self.exportMaterials()
-        self.yaf_object.setScene(self.scene)
+        self.yaf_object.setDepsgraph(self.depsgraph)
         self.exportObjects()
         self.yaf_object.createCameras()
         
@@ -99,6 +104,8 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
             self.yaf_world.exportWorld(self.scene, self.is_preview)
 
     def exportTexture(self, obj):
+        if bpy.app.version >= (2, 80, 0):
+            return None   # FIXME BLENDER 2.80-3.00
         # First export the textures of the materials type 'blend'
         for mat_slot in [m for m in obj.material_slots if m.material is not None]:
             if mat_slot.material.mat_type == 'blend':
@@ -106,12 +113,12 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
                 try:
                     mat1 = bpy.data.materials[mat_slot.material.material1name]
                 except:
-                    self.yi.printWarning("Exporter: Problem with blend material:\"{0}\". Could not find the first material:\"{1}\"".format(mat_slot.material.name,mat_slot.material.material1name))
+                    self.yi.printWarning("Exporter: Problem with blend material:\"{0}\". Could not find the first material:\"{1}\"".format(mat_slot.material.name, mat_slot.material.material1name))
                     blendmat_error = True
                 try:
                     mat2 = bpy.data.materials[mat_slot.material.material2name]
                 except:
-                    self.yi.printWarning("Exporter: Problem with blend material:\"{0}\". Could not find the second material:\"{1}\"".format(mat_slot.material.name,mat_slot.material.material2name))
+                    self.yi.printWarning("Exporter: Problem with blend material:\"{0}\". Could not find the second material:\"{1}\"".format(mat_slot.material.name, mat_slot.material.material2name))
                     blendmat_error = True
                 if blendmat_error:
                     continue
@@ -130,28 +137,43 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
                 self.yaf_texture.writeTexture(self.scene, tex.texture)
 
     def object_on_visible_layer(self, obj):
+        if bpy.app.version >= (2, 80, 0):
+            return None   # FIXME BLENDER 2.80-3.00
         obj_visible = False
         for layer_visible in [object_layers and scene_layers for object_layers, scene_layers in zip(obj.layers, self.scene.layers)]:
             obj_visible |= layer_visible
         return obj_visible
 
     def exportObjects(self):
-        self.yi.printInfo("Exporter: Processing Lamps...")
+        self.yi.printInfo("Exporter: Processing Lights...")
 
-        # export only visible lamps
-        for obj in [o for o in self.scene.objects if not o.hide_render and o.is_visible(self.scene) and o.type == 'LAMP']:
-            if obj.is_duplicator:
+        # export only visible lights
+        if bpy.app.version >= (2, 80, 0):
+            visible_lights = [o.object for o in self.depsgraph.object_instances if not (o.object.hide_get() or o.object.hide_render or o.object.hide_viewport) and o.object.type == 'LIGHT']
+        else:
+            visible_lights = [o for o in self.scene.objects if not o.hide_render and o.is_visible(self.scene) and o.type == 'LAMP']
+        for obj in visible_lights:
+            if bpy.app.version >= (2, 80, 0):
+                obj_is_instancer = obj.is_instancer
+            else:
+                obj_is_instancer = obj.is_duplicator
+            if obj_is_instancer:
                 obj.create_dupli_list(self.scene)
                 for obj_dupli in obj.dupli_list:
                     matrix = obj_dupli.matrix.copy()
-                    self.yaf_lamp.createLight(self.yi, obj_dupli.object, matrix)
+                    self.yaf_light.createLight(self.yi, obj_dupli.object, matrix)
 
                 if obj.dupli_list:
                     obj.free_dupli_list()
             else:
-                if obj.parent and obj.parent.is_duplicator:
-                    continue
-                self.yaf_lamp.createLight(self.yi, obj, obj.matrix_world)
+                if obj.parent:
+                    if bpy.app.version >= (2, 80, 0):
+                        obj_parent_is_instancer = obj.parent.is_instancer
+                    else:
+                        obj_parent_is_instancer = obj.parent.is_duplicator
+                    if obj_parent_is_instancer:
+                        continue
+                self.yaf_light.createLight(self.yi, obj, obj.matrix_world)
 
         self.yi.printInfo("Exporter: Processing Geometry...")
 
@@ -159,10 +181,17 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
         baseIds = {}
         dupBaseIds = {}
 
-        for obj in [o for o in self.scene.objects if not o.hide_render and (o.is_visible(self.scene) or o.hide) \
-        and self.object_on_visible_layer(o) and (o.type in {'MESH', 'SURFACE', 'CURVE', 'FONT', 'EMPTY'})]:
+        if bpy.app.version >= (2, 80, 0):
+            visible_objects = [o.object for o in self.depsgraph.object_instances if not (o.object.hide_get() or o.object.hide_render or o.object.hide_viewport) and o.object.type in {'MESH', 'SURFACE', 'CURVE', 'FONT', 'EMPTY'}]
+        else:
+            visible_objects = [o for o in self.scene.objects if not o.hide_render and (o.is_visible(self.scene) or o.hide) and self.object_on_visible_layer(o) and (o.type in {'MESH', 'SURFACE', 'CURVE', 'FONT', 'EMPTY'})]
+        for obj in visible_objects:
             # Exporting dupliObjects as instances, also check for dupliObject type 'EMPTY' and don't export them as geometry
-            if obj.is_duplicator:
+            if bpy.app.version >= (2, 80, 0):
+                obj_is_instancer = obj.is_instancer
+            else:
+                obj_is_instancer = obj.is_duplicator
+            if obj_is_instancer:
                 self.yi.printVerbose("Processing duplis for: {0}".format(obj.name))
                 obj.dupli_list_create(self.scene)
 
@@ -210,43 +239,43 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
                 self.yaf_object.writeObject(obj)
 
     def handleBlendMat(self, mat):
-            blendmat_error = False
-            try:
-                mat1 = bpy.data.materials[mat.material1name]
-            except:
-                self.yi.printWarning("Exporter: Problem with blend material:\"{0}\". Could not find the first material:\"{1}\"".format(mat.name,mat.material1name))
-                blendmat_error = True
-            try:
-                mat2 = bpy.data.materials[mat.material2name]
-            except:
-                self.yi.printWarning("Exporter: Problem with blend material:\"{0}\". Could not find the second material:\"{1}\"".format(mat.name,mat.material2name))
-                blendmat_error = True
+        blendmat_error = False
+        try:
+            mat1 = bpy.data.materials[mat.material1name]
+        except:
+            self.yi.printWarning("Exporter: Problem with blend material:\"{0}\". Could not find the first material:\"{1}\"".format(mat.name, mat.material1name))
+            blendmat_error = True
+        try:
+            mat2 = bpy.data.materials[mat.material2name]
+        except:
+            self.yi.printWarning("Exporter: Problem with blend material:\"{0}\". Could not find the second material:\"{1}\"".format(mat.name, mat.material2name))
+            blendmat_error = True
+        if blendmat_error:
+            return blendmat_error
+        if mat1.name == mat2.name:
+            self.yi.printWarning("Exporter: Problem with blend material \"{0}\". \"{1}\" and \"{2}\" to blend are the same materials".format(mat.name, mat1.name, mat2.name))
+
+        if mat1.mat_type == 'blend':
+            blendmat_error = self.handleBlendMat(mat1)
             if blendmat_error:
-                return blendmat_error
-            if mat1.name == mat2.name:
-                self.yi.printWarning("Exporter: Problem with blend material \"{0}\". \"{1}\" and \"{2}\" to blend are the same materials".format(mat.name, mat1.name, mat2.name))
+                return
 
-            if mat1.mat_type == 'blend':
-                blendmat_error = self.handleBlendMat(mat1)
-                if blendmat_error:
-                    return
-                    
-            elif mat1 not in self.materials:
-                self.materials.add(mat1)
-                self.yaf_material.writeMaterial(mat1, self.scene)
+        elif mat1 not in self.materials:
+            self.materials.add(mat1)
+            self.yaf_material.writeMaterial(mat1, self.scene)
 
-            if mat2.mat_type == 'blend':
-                blendmat_error = self.handleBlendMat(mat2)
-                if blendmat_error:
-                    return
-                    
-            elif mat2 not in self.materials:
-                self.materials.add(mat2)
-                self.yaf_material.writeMaterial(mat2, self.scene)
+        if mat2.mat_type == 'blend':
+            blendmat_error = self.handleBlendMat(mat2)
+            if blendmat_error:
+                return
 
-            if mat not in self.materials:
-                self.materials.add(mat)
-                self.yaf_material.writeMaterial(mat, self.scene)
+        elif mat2 not in self.materials:
+            self.materials.add(mat2)
+            self.yaf_material.writeMaterial(mat2, self.scene)
+
+        if mat not in self.materials:
+            self.materials.add(mat)
+            self.yaf_material.writeMaterial(mat, self.scene)
 
     def exportMaterials(self):
         self.yi.printInfo("Exporter: Processing Materials...")
@@ -261,7 +290,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
             cCol = (0.8, 0.8, 0.8)
         self.yi.paramsSetColor("color", cCol[0], cCol[1], cCol[2])
         self.yi.printInfo("Exporter: Creating Material \"defaultMat\"")
-        ymat = self.yi.createMaterial("defaultMat")
+        self.yi.createMaterial("defaultMat")
 
         for obj in self.scene.objects:
             for mat_slot in obj.material_slots:
@@ -341,7 +370,9 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
         self.co = self.yi.createOutput(output_name)
 
     # callback to export the scene
-    def update(self, data, scene):
+    def update(self, data, depsgraph):
+        self.depsgraph = depsgraph
+        scene = scene_from_depsgraph(depsgraph)
         self.update_stats("", "Setting up render")
         if not self.is_preview:
             scene.frame_set(scene.frame_current)
@@ -421,12 +452,14 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
         self.exportScene()
         self.yaf_integrator.exportIntegrator(self.scene)
         self.yaf_integrator.exportVolumeIntegrator(self.scene)
-        yaf_scene.defineLayers(self.yi, self.scene)
-        yaf_scene.exportRenderSettings(self.yi, self.scene, render_path, render_filename)
+        yaf_scene.defineLayers(self.yi, self.depsgraph)
+        yaf_scene.exportRenderSettings(self.yi, self.depsgraph, render_path, render_filename)
         self.yi.setupRender()
 
     # callback to render scene
-    def render(self, scene):
+    def render(self, depsgraph):
+        self.depsgraph = depsgraph
+        scene = scene_from_depsgraph(depsgraph)
         self.bl_use_postprocess = False
         self.scene = scene
 
@@ -514,3 +547,23 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
         del self.yi
         self.update_stats("", "Done!")
         self.bl_use_postprocess = True
+
+
+classes = (
+    YafaRay4RenderEngine,
+)
+
+def register():
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+
+def unregister():
+    from bpy.utils import unregister_class
+    for cls in reversed(classes):
+        unregister_class(cls)
+
+
+if __name__ == "__main__":  # only for live edit.
+    import bpy
+    bpy.utils.register_module(__name__)

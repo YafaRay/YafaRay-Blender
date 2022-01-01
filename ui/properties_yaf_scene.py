@@ -54,6 +54,21 @@ class YAFARAY4_PT_color_management(SceneButtonsPanel, Panel):
         col.template_colormanaged_view_settings(scene, "view_settings")
 
 
+classes = (
+    YAFARAY4_PT_color_management,
+)
+
+def register():
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+
+def unregister():
+    from bpy.utils import unregister_class
+    for cls in reversed(classes):
+        unregister_class(cls)
+
+
 if __name__ == "__main__":  # only for live edit.
     import bpy
     bpy.utils.register_module(__name__)

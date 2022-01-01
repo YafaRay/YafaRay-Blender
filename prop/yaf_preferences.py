@@ -19,39 +19,31 @@
 # <pep8 compliant>
 
 import bpy
-from bpy.types import Panel
-from bl_ui.properties_world import WorldButtonsPanel
+from bpy.types import AddonPreferences
+from bpy.props import IntProperty
+from .. import PLUGIN_NAME
 
+class YafaRay_Preferences(AddonPreferences):
+    bl_idname = PLUGIN_NAME
 
-class YAFARAY4_PT_vol_integrator(WorldButtonsPanel, Panel):
-    bl_label = "YafaRay Volume Integrator"
-    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
+    yafaray_computer_node = IntProperty(
+        name="YafaRay computer node",
+        description='Computer node number in multi-computer render environments / render farms',
+        default=0, min=0, max=1000
+    )
 
     def draw(self, context):
         layout = self.layout
-        world = context.world
-
-        layout.prop(world, "v_int_type")
-        layout.separator()
-
-        if world.v_int_type == "Single Scatter":
-            layout.prop(world, "v_int_step_size")
-            layout.prop(world, "v_int_adaptive")
-            layout.prop(world, "v_int_optimize")
-            if world.v_int_optimize:
-                layout.prop(world, "v_int_attgridres")
-
-        if world.v_int_type == "Sky":
-            layout.prop(world, "v_int_step_size")
-            layout.prop(world, "v_int_dsturbidity")
-            split = layout.split()
-            split.prop(world, "v_int_scale")
-            split.prop(world, "v_int_alpha")
-
+        split = layout.split()
+        col = split.column()
+        col.prop(self, "yafaray_computer_node")
+        col = col.column()
+        col.label(text="Click bottom left \"Save & Load\"->\"Save Preferences\" to apply changes permanently!", icon="INFO")
 
 classes = (
-    YAFARAY4_PT_vol_integrator,
+    YafaRay_Preferences,
 )
+
 
 def register():
     from bpy.utils import register_class
@@ -63,8 +55,7 @@ def unregister():
     for cls in reversed(classes):
         unregister_class(cls)
 
-
-
+        
 if __name__ == "__main__":  # only for live edit.
     import bpy
     bpy.utils.register_module(__name__)

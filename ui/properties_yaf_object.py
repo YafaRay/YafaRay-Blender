@@ -80,6 +80,21 @@ class YAFARAY4_PT_object_light(Panel):
 
         #layout.prop(ob, "pass_index")  #no need for this, there is a pass_index field by default in the object properties panel, but just in case I'm leaving this here.
 
+classes = (
+    YAFARAY4_PT_object_light,
+)
+
+def register():
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+
+def unregister():
+    from bpy.utils import unregister_class
+    for cls in reversed(classes):
+        unregister_class(cls)
+
+
 if __name__ == "__main__":  # only for live edit.
     import bpy
     bpy.utils.register_module(__name__)

@@ -367,6 +367,27 @@ def register():
         min=1.0,
         default=1.0)
 
+    if bpy.app.version >= (2, 80, 0):
+        Material.translucency = FloatProperty(
+            update=update_preview, name="Translucency",
+            description="Material translucency",
+            min=0.0, max=1.0,
+            step=1, precision=3,
+            soft_min=0.0, soft_max=1.0,
+            default=0.000)
+
+        Material.mirror_color = FloatVectorProperty(
+            update=update_preview, name="Mirror color",
+            description="Mirror Color",
+            subtype='COLOR',
+            min=0.0, max=1.0,
+            default=(1.0, 1.0, 1.0))
+
+        Material.emit = BoolProperty(
+            update=update_preview, name="emit",
+            description="",
+            default=False)
+
 def unregister():
     del Material.mat_type
     del Material.diffuse_reflect
@@ -413,3 +434,7 @@ def unregister():
     del Material.wireframe_exponent
     del Material.wireframe_color
     del Material.samplingfactor
+    if bpy.app.version >= (2, 80, 0):
+        del Material.emit
+        del Material.translucency
+        del Material.mirror_color

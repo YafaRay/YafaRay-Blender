@@ -40,7 +40,7 @@ class YAFARAY4_PT_render(RenderButtonsPanel, Panel):
                 col.prop(scene, "intg_photon_maps_processing")
                 if scene.intg_photon_maps_processing == "load" or scene.intg_photon_maps_processing == "reuse-previous":
                     row = layout.row()
-                    row.label("If the loaded/reused maps do not match exactly the scene, crashes and/or incorrect renders may happen, USE WITH CARE!", icon="ERROR")
+                    row.label(text="If the loaded/reused maps do not match exactly the scene, crashes and/or incorrect renders may happen, USE WITH CARE!", icon="ERROR")
             
             row = layout.row()
             col = row.column(align=True)
@@ -70,7 +70,7 @@ class YAFARAY4_PT_render(RenderButtonsPanel, Panel):
                 col.prop(scene, "intg_photon_maps_processing")
                 if scene.intg_photon_maps_processing == "load" or scene.intg_photon_maps_processing == "reuse-previous":
                     row = layout.row()
-                    row.label("If the loaded/reused maps do not match exactly the scene, crashes and/or incorrect renders may happen, USE WITH CARE!", icon="ERROR")
+                    row.label(text="If the loaded/reused maps do not match exactly the scene, crashes and/or incorrect renders may happen, USE WITH CARE!", icon="ERROR")
                         
             row = layout.row()
             col = row.column(align=True)
@@ -109,7 +109,7 @@ class YAFARAY4_PT_render(RenderButtonsPanel, Panel):
                 col.prop(scene, "intg_photon_maps_processing")
                 if scene.intg_photon_maps_processing == "load" or scene.intg_photon_maps_processing == "reuse-previous":
                     row = layout.row()
-                    row.label("If the loaded/reused maps do not match exactly the scene, crashes and/or incorrect renders may happen, USE WITH CARE!", icon="ERROR")
+                    row.label(text="If the loaded/reused maps do not match exactly the scene, crashes and/or incorrect renders may happen, USE WITH CARE!", icon="ERROR")
 
                 col.prop(scene, "intg_photons", text="Photons")
                 col.prop(scene, "intg_caustic_mix", text="Caus. Mix")
@@ -144,9 +144,24 @@ class YAFARAY4_PT_render(RenderButtonsPanel, Panel):
 
         elif scene.intg_light_method == "Bidirectional":
             col = layout.column()
-            col.label("The Bidirectional integrator is UNSTABLE.", icon="ERROR")
-            col.label("It might give unexpected and perhaps even incorrect render results.")
-            col.label("Use at your own risk.")
+            col.label(text="The Bidirectional integrator is UNSTABLE.", icon="ERROR")
+            col.label(text="It might give unexpected and perhaps even incorrect render results.")
+            col.label(text="Use at your own risk.")
+
+classes = (
+    YAFARAY4_PT_render,
+)
+
+def register():
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+
+def unregister():
+    from bpy.utils import unregister_class
+    for cls in reversed(classes):
+        unregister_class(cls)
+
 
 if __name__ == "__main__":  # only for live edit.
     import bpy
