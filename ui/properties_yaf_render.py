@@ -18,6 +18,7 @@
 
 # <pep8 compliant>
 
+import bpy
 from bpy.types import Panel
 from bl_ui.properties_render import RenderButtonsPanel
 from ..util.ui_utils import icon_add, icon_remove, ui_split

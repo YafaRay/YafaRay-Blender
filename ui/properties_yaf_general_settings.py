@@ -18,6 +18,7 @@
 
 # <pep8 compliant>
 
+import bpy
 from ..ot import yafaray_presets
 from bl_ui.properties_render import RenderButtonsPanel
 from bpy.types import Panel, Menu

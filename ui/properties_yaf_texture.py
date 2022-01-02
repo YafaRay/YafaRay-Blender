@@ -18,6 +18,7 @@
 
 # <pep8 compliant>
 
+import bpy
 from ..util.ui_utils import ui_split, material_from_context
 from bl_ui.properties_texture import context_tex_datablock
 from bpy.types import (Panel,
