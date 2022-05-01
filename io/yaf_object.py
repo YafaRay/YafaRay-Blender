@@ -383,7 +383,10 @@ class yafObject(object):
         # and the up corner (maxx, maxy, maxz) then apply object scale,
         # also clamp the values to min: -1e10 and max: 1e10
 
-        mesh = obj.to_mesh(self.scene, True, 'RENDER')
+        if bpy.app.version >= (2, 80, 0):
+            mesh = obj.to_mesh(preserve_all_data_layers=True, depsgraph=self.depsgraph)
+        else:
+            mesh = obj.to_mesh(self.scene, True, 'RENDER')
         mesh.transform(matrix)
 
         vec = [j for v in mesh.vertices for j in v.co]
@@ -396,7 +399,10 @@ class yafObject(object):
         yi.paramsSetFloat("maxZ", min(max(vec[2::3]), 1e10))
 
         yi.createVolumeRegion("VR.{0}-{1}".format(obj.name, str(obj.__hash__())))
-        bpy.data.meshes.remove(mesh, do_unlink=False)
+        if bpy.app.version >= (2, 80, 0):
+            pass  # FIXME BLENDER 2.80-3.00
+        else:
+            bpy.data.meshes.remove(mesh, do_unlink=False)
 
     def writeGeometry(self, ID, obj, matrix, pass_index, oMat=None, visibility="visible", is_base_object=False):
         isSmooth = False
