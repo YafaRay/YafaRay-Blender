@@ -45,7 +45,7 @@ def call_lighttype_update(self, context):
         light = context.lamp
     if light is not None:
         switchLightType = {'area': 'AREA', 'spot': 'SPOT', 'sun': 'SUN', 'point': 'POINT', 'ies': 'SPOT', 'directional': 'SUN'}
-        light.type = switchLightType.get(light.light_type)
+        light.type = switchLightType.get(light.lamp_type)
 
 
 def set_shadow_method(self, context):
@@ -71,7 +71,7 @@ def sync_with_distance(self, context):
 
 
 def register():
-    Light.light_type = EnumProperty(
+    Light.lamp_type = EnumProperty(
         name="Light type",
         description="Type of light",
         items=(
@@ -177,7 +177,7 @@ def register():
         default=True)
 
 def unregister():
-    del Light.light_type
+    del Light.lamp_type
     del Light.yaf_energy
     del Light.yaf_sphere_radius
     del Light.directional

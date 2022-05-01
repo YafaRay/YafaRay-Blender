@@ -61,16 +61,16 @@ class YAFARAY4_PT_light(DataButtonsPanel, Panel):
 
         light = light_from_context(context)
 
-        layout.prop(light, "light_type", expand=True)
+        layout.prop(light, "lamp_type", expand=True)
         layout.prop(light, "light_enabled")
 
-        if light.light_type == "area":
+        if light.lamp_type == "area":
             layout.prop(light, "color")
             layout.prop(light, "yaf_energy", text="Power")
             layout.prop(light, "yaf_samples")
             layout.prop(light, "create_geometry")
 
-        elif light.light_type == "spot":
+        elif light.lamp_type == "spot":
             layout.prop(light, "color")
             layout.prop(light, "yaf_energy", text="Power")
             layout.prop(light, "spot_soft_shadows", toggle=True)
@@ -80,20 +80,20 @@ class YAFARAY4_PT_light(DataButtonsPanel, Panel):
                 box.prop(light, "yaf_samples")
                 box.prop(light, "shadow_fuzzyness")
 
-        elif light.light_type == "sun":
+        elif light.lamp_type == "sun":
             layout.prop(light, "color")
             layout.prop(light, "yaf_energy", text="Power")
             layout.prop(light, "yaf_samples")
             layout.prop(light, "angle")
 
-        elif light.light_type == "directional":
+        elif light.lamp_type == "directional":
             layout.prop(light, "color")
             layout.prop(light, "yaf_energy", text="Power")
             layout.prop(light, "infinite")
             if not light.infinite:
                 layout.prop(light, "shadow_soft_size", text="Radius of directional cone")
 
-        elif light.light_type == "point":
+        elif light.lamp_type == "point":
             layout.prop(light, "color")
             layout.prop(light, "yaf_energy", text="Power")
             if hasattr(light, "use_sphere"):
@@ -104,7 +104,7 @@ class YAFARAY4_PT_light(DataButtonsPanel, Panel):
                     box.prop(light, "yaf_samples")
                     box.prop(light, "create_geometry")
 
-        elif light.light_type == "ies":
+        elif light.lamp_type == "ies":
             layout.prop(light, "color")
             layout.prop(light, "yaf_energy", text="Power")
             layout.prop(light, "ies_file")
@@ -146,7 +146,7 @@ class YAFARAY4_PT_spot(DataButtonsPanel, Panel):
     def poll(cls, context):
         light = light_from_context(context)
         engine = context.scene.render.engine
-        return (light and light.light_type == "spot") and (engine in cls.COMPAT_ENGINES)
+        return (light and light.lamp_type == "spot") and (engine in cls.COMPAT_ENGINES)
 
     def draw(self, context):
         layout = self.layout

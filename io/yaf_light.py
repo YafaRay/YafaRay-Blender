@@ -92,7 +92,7 @@ class yafLight:
         # up = matrix[1]  /* UNUSED */
         to = pos - direct
 
-        lightType = light.light_type
+        lightType = light.lamp_type
         power = light.yaf_energy
         color = light.color
 

@@ -152,7 +152,7 @@ def convertLight(lightObj):
 
     switchLightType = {"Area": "area", "Spot": "spot", "Sun": "sun", "Point": "point", \
                       "IES LIGHT": "ies", "Directional": "sun", "Sphere": "point"}
-    light.light_type = switchLightType.get(props["type"], "point")
+    light.lamp_type = switchLightType.get(props["type"], "point")
 
     variableDict = dict(
         samples="yaf_samples",
