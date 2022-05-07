@@ -543,16 +543,16 @@ class yafObject(object):
                 uv1 = self.yi.addUv(co[1][0], co[1][1])
                 uv2 = self.yi.addUv(co[2][0], co[2][1])
 
-                self.yi.addTriangleWithUv(f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2)
-            else:
-                self.yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2])
-
-            if len(f.vertices) == 4:
-                if hasUV:
+                if len(f.vertices) == 4:
                     uv3 = self.yi.addUv(co[3][0], co[3][1])
-                    self.yi.addTriangleWithUv(f.vertices[0], f.vertices[2], f.vertices[3], uv0, uv2, uv3)
+                    self.yi.addQuadWithUv(f.vertices[0], f.vertices[1], f.vertices[2], f.vertices[3], uv0, uv1, uv2, uv3)
                 else:
-                    self.yi.addTriangle(f.vertices[0], f.vertices[2], f.vertices[3])
+                    self.yi.addTriangleWithUv(f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2)
+            else:
+                if len(f.vertices) == 4:
+                    self.yi.addQuad(f.vertices[0], f.vertices[1], f.vertices[2], f.vertices[3])
+                else:
+                    self.yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2])
 
         self.yi.endObject()
 
