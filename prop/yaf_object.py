@@ -30,6 +30,11 @@ Object = bpy.types.Object
 
 
 def register():
+    Object.motion_blur_bezier = BoolProperty(
+        name="Enable Motion Blur (Bezier curve)",
+        description="Uses the Blender subframes 0.0, 0.5 and 1.0 to generate a mesh_bezier with motion blur",
+        default=False)
+
     Object.ml_enable = BoolProperty(
         name="Enable meshlight",
         description="Makes the mesh emit light",
@@ -158,6 +163,7 @@ def register():
 
 
 def unregister():
+    del Object.motion_blur_bezier
     del Object.ml_enable
     del Object.ml_color
     del Object.ml_power

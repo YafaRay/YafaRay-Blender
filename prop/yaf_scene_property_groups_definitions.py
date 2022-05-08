@@ -394,6 +394,7 @@ class YafaRay4LayersPropertiesDefinitions():
         ('debug-dudxy-dvdxy', "Debug: differential dUdx+dUdy, dVdx+dVdy",
          "For debugging mipmaps, etc, show differential dUdx+dUdy and dVdx+dVdy", 324),
         ('debug-barycentric-uvw', "Debug: Barycentric UVW", "Debug: barycentric UVW coordinates", 325),
+        ('debug-object-time', "Debug: Object Time", "Debug: Time of Object samples. Samples of non-motion blur objects are green. Samples of motion blur objects are blue for t=0.0 towards red for t=1.0", 326),
     ), key=lambda index: index[1])
 
     renderInternalPassAdvanced = sorted((

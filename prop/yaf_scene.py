@@ -409,6 +409,17 @@ def register():
         min=0.0, max=1.0,
         default=(0.9, 0.9, 0.9))
 
+    Scene.intg_motion_blur_time_forced = BoolProperty(
+        name="Force time for testing Motion Blur",
+        description="For testing purposes only, for testing Motion Blur",
+        default=False)
+
+    Scene.intg_motion_blur_time_forced_value = FloatProperty(
+        name="Forced time value for testing Motion Blur",
+        description="For testing purposes only, for testing Motion Blur",
+        min=0.0, max=1.0,
+        default=0.0)
+
     Scene.intg_photonmap_enable_caustics = BoolProperty(
         name="Caustic Photons",
         description="Enable caustic photons processing in Photon Map integrator",
@@ -662,6 +673,8 @@ def unregister():
     del Scene.intg_AO_samples
     del Scene.intg_AO_distance
     del Scene.intg_AO_color
+    del Scene.intg_motion_blur_time_forced
+    del Scene.intg_motion_blur_time_forced_value
     del Scene.intg_photonmap_enable_caustics
     del Scene.intg_photonmap_enable_diffuse
     del Scene.intg_photon_maps_processing

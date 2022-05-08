@@ -246,6 +246,11 @@ class YAFARAY4_PT_Advanced(RenderButtonsPanel, Panel):
             sub = col.column()
             sub.prop(scene, "adv_min_raydist_value")
 
+        col = layout.column(align=True)
+        col.prop(scene, "intg_motion_blur_time_forced", toggle=True)
+        if scene.intg_motion_blur_time_forced:
+            col.prop(scene, "intg_motion_blur_time_forced_value")
+
 classes = (
     YAFARAY4_PT_Render,
     YAFARAY4_PT_dimensions,

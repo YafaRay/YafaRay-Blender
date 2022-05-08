@@ -514,6 +514,7 @@ class yafObject(object):
         self.yi.paramsSetBool("is_base_object", is_base_object)
         self.yi.paramsSetString("visibility", visibility)
         self.yi.paramsSetInt("object_index", pass_index)
+        self.yi.paramsSetBool("motion_blur_bezier", obj.motion_blur_bezier)
         self.yi.createObject(str(ID))
 
         for ind, v in enumerate(mesh.vertices):
@@ -553,6 +554,40 @@ class yafObject(object):
                     self.yi.addQuad(f.vertices[0], f.vertices[1], f.vertices[2], f.vertices[3])
                 else:
                     self.yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2])
+
+
+        if obj.motion_blur_bezier:
+            if bpy.app.version >= (2, 80, 0):
+                pass  # FIXME BLENDER 2.80-3.00
+            else:
+                bpy.data.meshes.remove(mesh, do_unlink=False)
+            frame_current = self.scene.frame_current
+            self.scene.frame_set(frame_current, 0.5)
+            mesh = self.scene.objects[obj.name].to_mesh(self.scene, True, 'RENDER')
+            mesh.update(calc_tessface=True)
+            if obj.matrix_world is not None:
+                mesh.transform(obj.matrix_world)
+            for ind, v in enumerate(mesh.vertices):
+                if hasOrco:
+                    self.yi.addVertexWithOrcoTimeStep(v.co[0], v.co[1], v.co[2], ov[ind][0], ov[ind][1], ov[ind][2], 1)
+                else:
+                    self.yi.addVertexTimeStep(v.co[0], v.co[1], v.co[2], 1)
+
+            if bpy.app.version >= (2, 80, 0):
+                pass  # FIXME BLENDER 2.80-3.00
+            else:
+                bpy.data.meshes.remove(mesh, do_unlink=False)
+            self.scene.frame_set(frame_current, 1.0)
+            mesh = self.scene.objects[obj.name].to_mesh(self.scene, True, 'RENDER')
+            mesh.update(calc_tessface=True)
+            if obj.matrix_world is not None:
+                mesh.transform(obj.matrix_world)
+            for ind, v in enumerate(mesh.vertices):
+                if hasOrco:
+                    self.yi.addVertexWithOrcoTimeStep(v.co[0], v.co[1], v.co[2], ov[ind][0], ov[ind][1], ov[ind][2], 2)
+                else:
+                    self.yi.addVertexTimeStep(v.co[0], v.co[1], v.co[2], 2)
+            self.scene.frame_set(frame_current, 0.0)
 
         self.yi.endObject()
 

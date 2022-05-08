@@ -38,8 +38,8 @@ class YAFARAY4_PT_object_light(Panel):
         layout = self.layout
         ob = context.object
 
+        layout.prop(ob, "motion_blur_bezier", toggle=True)
         layout.prop(ob, "ml_enable", toggle=True)
-
         if ob.ml_enable:
             col = layout.column(align=True)
             col.prop(ob, "ml_color")

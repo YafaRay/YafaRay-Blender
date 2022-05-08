@@ -49,6 +49,8 @@ class yafIntegrator:
         yi.paramsSetFloat("AO_distance", scene.intg_AO_distance)
         c = scene.intg_AO_color
         yi.paramsSetColor("AO_color", c[0], c[1], c[2])
+        self.yi.paramsSetBool("time_forced", scene.intg_motion_blur_time_forced)
+        self.yi.paramsSetFloat("time_forced_value", scene.intg_motion_blur_time_forced_value)
 
         if light_type == "Direct Lighting":
             yi.paramsSetString("type", "directlighting")
