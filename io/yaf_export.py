@@ -193,25 +193,40 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
                 obj_is_instancer = obj.is_duplicator
             if obj_is_instancer:
                 self.yi.printVerbose("Processing duplis for: {0}".format(obj.name))
-                obj.dupli_list_create(self.scene)
+                frame_current = self.scene.frame_current
+                if self.scene.render.use_instances:
+                    time_steps = 3
+                else:
+                    time_steps = 1
+                instance_ids = []
+                for time_step in range(0, time_steps):
+                    self.scene.frame_set(frame_current, 0.5 * time_step)
+                    obj.dupli_list_create(self.scene)
+                    idx = 0
+                    for obj_dupli in [od for od in obj.dupli_list if not od.object.type == 'EMPTY']:
+                        self.exportTexture(obj_dupli.object)
+                        for mat_slot in obj_dupli.object.material_slots:
+                            if mat_slot.material not in self.materials:
+                                self.exportMaterial(mat_slot.material)
 
-                for obj_dupli in [od for od in obj.dupli_list if not od.object.type == 'EMPTY']:
-                    self.exportTexture(obj_dupli.object)
-                    for mat_slot in obj_dupli.object.material_slots:
-                        if mat_slot.material not in self.materials:
-                            self.exportMaterial(mat_slot.material)
+                        if not self.scene.render.use_instances:
+                            matrix = obj_dupli.matrix.copy()
+                            self.yaf_object.writeMesh(obj_dupli.object, matrix, obj_dupli.object.name + "_" + str(self.yi.getNextFreeId()))
+                        else:
+                            if obj_dupli.object.name not in dupBaseIds:
+                                dupBaseIds[obj_dupli.object.name] = self.yaf_object.writeInstanceBase(obj_dupli.object.name, obj_dupli.object)
+                            matrix = obj_dupli.matrix.copy()
+                            if time_step == 0:
+                                instance_id = self.yaf_object.writeInstance(dupBaseIds[obj_dupli.object.name], matrix, obj_dupli.object.name)
+                                instance_ids.append(instance_id)
+                            elif obj.motion_blur_bezier:
+                                self.yaf_object.addInstanceMatrix(instance_ids[idx], matrix, 0.5 * time_step)
+                                idx += 1
 
-                    if not self.scene.render.use_instances:
-                        matrix = obj_dupli.matrix.copy()
-                        self.yaf_object.writeMesh(obj_dupli.object, matrix, obj_dupli.object.name + "_" + str(self.yi.getNextFreeId()))
-                    else:
-                        if obj_dupli.object.name not in dupBaseIds:
-                            dupBaseIds[obj_dupli.object.name] = self.yaf_object.writeInstanceBase(obj_dupli.object.name, obj_dupli.object)
-                        matrix = obj_dupli.matrix.copy()
-                        self.yaf_object.writeInstance(dupBaseIds[obj_dupli.object.name], matrix, obj_dupli.object.name)
+                    if obj.dupli_list is not None:
+                        obj.dupli_list_clear()
 
-                if obj.dupli_list is not None:
-                    obj.dupli_list_clear()
+                self.scene.frame_set(frame_current, 0.0)
 
                 # check if object has particle system and uses the option for 'render emitter'
                 if hasattr(obj, 'particle_systems'):
@@ -233,7 +248,16 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
 
                 if obj.name not in dupBaseIds:
                     matrix = obj.matrix_world.copy()
-                    self.yaf_object.writeInstance(obj.name, matrix, baseIds[obj.data.name])
+                    instance_id = self.yaf_object.writeInstance(obj.name, matrix, baseIds[obj.data.name])
+                    if obj.motion_blur_bezier:
+                        frame_current = self.scene.frame_current
+                        self.scene.frame_set(frame_current, 0.5)
+                        matrix = obj.matrix_world.copy()
+                        self.yaf_object.addInstanceMatrix(instance_id, matrix, 0.5)
+                        self.scene.frame_set(frame_current, 1.0)
+                        matrix = obj.matrix_world.copy()
+                        self.yaf_object.addInstanceMatrix(instance_id, matrix, 1.0)
+                        self.scene.frame_set(frame_current, 0.0)
 
             elif obj.data.name not in baseIds and obj.name not in dupBaseIds:
                 self.yaf_object.writeObject(obj)

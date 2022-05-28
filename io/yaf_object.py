@@ -244,18 +244,27 @@ class yafObject(object):
         return ID
 
     def writeInstance(self, oID, obj2WorldMatrix, base_obj_name):
-        self.yi.printVerbose("Exporting Instance of {0} [ID = {1}]".format(base_obj_name, oID))
         obj_to_world = obj2WorldMatrix.to_4x4()
         # mat4.transpose() --> not needed anymore: matrix indexing changed with Blender rev.42816
         #o2w = self.get4x4Matrix(mat4)
         #self.yi.addInstance(base_obj_name, o2w)
-        self.yi.addInstance(base_obj_name,
+        instance_id = self.yi.createInstance()
+        self.yi.printVerbose("Exporting Instance ID={0} of {1} [ID = {2}]".format(instance_id, base_obj_name, oID))
+        self.yi.addInstanceObject(instance_id, base_obj_name)
+        self.addInstanceMatrix(instance_id, obj_to_world, 0.0)
+        return instance_id
+
+    def addInstanceMatrix(self, instance_id, obj2WorldMatrix, time):
+        self.yi.printVerbose("Adding matrix to Instance ID={0} at time {1}".format(instance_id, time))
+        #print(obj2WorldMatrix)
+        obj_to_world = obj2WorldMatrix.to_4x4()
+        self.yi.addInstanceMatrix(instance_id,
                             obj_to_world[0][0], obj_to_world[0][1], obj_to_world[0][2], obj_to_world[0][3],
                             obj_to_world[1][0], obj_to_world[1][1], obj_to_world[1][2], obj_to_world[1][3],
                             obj_to_world[2][0], obj_to_world[2][1], obj_to_world[2][2], obj_to_world[2][3],
-                            obj_to_world[3][0], obj_to_world[3][1], obj_to_world[3][2], obj_to_world[3][3])
+                            obj_to_world[3][0], obj_to_world[3][1], obj_to_world[3][2], obj_to_world[3][3],
+                                  time)
         del obj_to_world
-        #del o2w
 
     def writeMesh(self, obj, matrix, ID=None):
 
@@ -534,7 +543,6 @@ class yafObject(object):
             self.yi.setCurrentMaterial(ymaterial)
             co = None
             if hasUV:
-
                 if self.is_preview:
                     co = uv_texture[0].data[index].uv
                 else:
@@ -555,55 +563,44 @@ class yafObject(object):
                 else:
                     self.yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2])
 
-
-        if obj.motion_blur_bezier:
-            if bpy.app.version >= (2, 80, 0):
-                pass  # FIXME BLENDER 2.80-3.00
-            else:
-                bpy.data.meshes.remove(mesh, do_unlink=False)
-            frame_current = self.scene.frame_current
-            self.scene.frame_set(frame_current, 0.5)
-            mesh = self.scene.objects[obj.name].to_mesh(self.scene, True, 'RENDER')
-            mesh.update(calc_tessface=True)
-            if obj.matrix_world is not None:
-                mesh.transform(obj.matrix_world)
-            for ind, v in enumerate(mesh.vertices):
-                if hasOrco:
-                    self.yi.addVertexWithOrcoTimeStep(v.co[0], v.co[1], v.co[2], ov[ind][0], ov[ind][1], ov[ind][2], 1)
-                else:
-                    self.yi.addVertexTimeStep(v.co[0], v.co[1], v.co[2], 1)
-
-            if bpy.app.version >= (2, 80, 0):
-                pass  # FIXME BLENDER 2.80-3.00
-            else:
-                bpy.data.meshes.remove(mesh, do_unlink=False)
-            self.scene.frame_set(frame_current, 1.0)
-            mesh = self.scene.objects[obj.name].to_mesh(self.scene, True, 'RENDER')
-            mesh.update(calc_tessface=True)
-            if obj.matrix_world is not None:
-                mesh.transform(obj.matrix_world)
-            for ind, v in enumerate(mesh.vertices):
-                if hasOrco:
-                    self.yi.addVertexWithOrcoTimeStep(v.co[0], v.co[1], v.co[2], ov[ind][0], ov[ind][1], ov[ind][2], 2)
-                else:
-                    self.yi.addVertexTimeStep(v.co[0], v.co[1], v.co[2], 2)
-            self.scene.frame_set(frame_current, 0.0)
-
-        self.yi.endObject()
-
-        if isSmooth and mesh.use_auto_smooth:
-            self.yi.smoothMesh("", math.degrees(mesh.auto_smooth_angle))
-        elif isSmooth and obj.type == 'FONT':  # getting nicer result with smooth angle 60 degr. for text objects
-            self.yi.smoothMesh("", 60)
-        elif isSmooth:
-            self.yi.smoothMesh("", 181)
-
-        self.yi.endGeometry()
+        auto_smooth_enabled = mesh.use_auto_smooth
+        auto_smooth_angle = mesh.auto_smooth_angle
+        print("auto_smooth1:", auto_smooth_enabled, auto_smooth_angle)
 
         if bpy.app.version >= (2, 80, 0):
             pass  # FIXME BLENDER 2.80-3.00
         else:
             bpy.data.meshes.remove(mesh, do_unlink=False)
+
+        if obj.motion_blur_bezier:
+            frame_current = self.scene.frame_current
+            for time_step in range(1, 3):
+                self.scene.frame_set(frame_current, 0.5 * time_step)
+                mesh = self.scene.objects[obj.name].to_mesh(self.scene, True, 'RENDER')
+                mesh.update(calc_tessface=True)
+                if obj.matrix_world is not None:
+                    mesh.transform(obj.matrix_world)
+                for ind, v in enumerate(mesh.vertices):
+                    if hasOrco:
+                        self.yi.addVertexWithOrcoTimeStep(v.co[0], v.co[1], v.co[2], ov[ind][0], ov[ind][1], ov[ind][2], time_step)
+                    else:
+                        self.yi.addVertexTimeStep(v.co[0], v.co[1], v.co[2], time_step)
+                if bpy.app.version >= (2, 80, 0):
+                    pass  # FIXME BLENDER 2.80-3.00
+                else:
+                    bpy.data.meshes.remove(mesh, do_unlink=False)
+            self.scene.frame_set(frame_current, 0.0)
+
+        print("auto_smooth2:", auto_smooth_enabled, auto_smooth_angle)
+        if isSmooth and auto_smooth_enabled:
+            self.yi.smoothMesh(obj.name, math.degrees(auto_smooth_angle))
+        elif isSmooth and obj.type == 'FONT':  # getting nicer result with smooth angle 60 degr. for text objects
+            self.yi.smoothMesh(obj.name, 60)
+        elif isSmooth:
+            self.yi.smoothMesh(obj.name, 181)
+
+        self.yi.endObject()
+        self.yi.endGeometry()
 
     def getFaceMaterial(self, meshMats, matIndex, matSlots):
 
