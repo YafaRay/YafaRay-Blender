@@ -565,7 +565,6 @@ class yafObject(object):
 
         auto_smooth_enabled = mesh.use_auto_smooth
         auto_smooth_angle = mesh.auto_smooth_angle
-        print("auto_smooth1:", auto_smooth_enabled, auto_smooth_angle)
 
         if bpy.app.version >= (2, 80, 0):
             pass  # FIXME BLENDER 2.80-3.00
@@ -590,8 +589,9 @@ class yafObject(object):
                 else:
                     bpy.data.meshes.remove(mesh, do_unlink=False)
             self.scene.frame_set(frame_current, 0.0)
+        self.yi.endObject()
+        self.yi.endGeometry()
 
-        print("auto_smooth2:", auto_smooth_enabled, auto_smooth_angle)
         if isSmooth and auto_smooth_enabled:
             self.yi.smoothMesh(obj.name, math.degrees(auto_smooth_angle))
         elif isSmooth and obj.type == 'FONT':  # getting nicer result with smooth angle 60 degr. for text objects
@@ -599,8 +599,6 @@ class yafObject(object):
         elif isSmooth:
             self.yi.smoothMesh(obj.name, 181)
 
-        self.yi.endObject()
-        self.yi.endGeometry()
 
     def getFaceMaterial(self, meshMats, matIndex, matSlots):
 

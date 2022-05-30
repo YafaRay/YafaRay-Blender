@@ -463,6 +463,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
                 input_color_values_gamma = scene.gs_gamma  #We only use the selected gamma if the output device is set to "None"
             
             self.yi.setInputColorSpace("LinearRGB", 1.0)    #Values from Blender, color picker floating point data are already linear (linearized by Blender)
+            self.defineImageOutput("xml_file_output", render_path, scene, render, color_space.blender, gamma.blender, alpha_premultiply.blender)
             #FIXME! self.yi.setXmlColorSpace(input_color_values_color_space, input_color_values_gamma)  #To set the XML interface to write the XML values with the correction included for the selected color space (and gamma if applicable)
 
         else:
