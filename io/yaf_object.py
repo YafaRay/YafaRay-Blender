@@ -654,19 +654,15 @@ class yafObject(object):
                             p = True
                         else:
                             p = False
-                        CID = yi.getNextFreeId()
                         yi.paramsClearAll()
                         yi.startGeometry()
-                        if self.materialMap[pmaterial]:
-                            yi.setCurrentMaterial(self.materialMap[pmaterial])
-                        else:
-                            yi.setCurrentMaterial(self.materialMap["default"])
+                        yi.setCurrentMaterial(pmaterial.name)
                         self.yi.paramsSetString("type", "curve")
                         self.yi.paramsSetFloat("strand_start", strandStart)
                         self.yi.paramsSetFloat("strand_end", strandStart)
                         self.yi.paramsSetFloat("strand_shape", strandStart)
                         self.yi.paramsSetInt("num_vertices", len(particle.hair_keys))
-                        yi.createObject(object.name + "_strand_" + str(CID))
+                        yi.createObject(object.name + "_strand_" + str(yi.getNextFreeId()))
                         for location in particle.hair_keys:
                             vertex = matrix * location.co  # use reverse vector multiply order, API changed with rev. 38674
                             yi.addVertex(vertex[0], vertex[1], vertex[2])
