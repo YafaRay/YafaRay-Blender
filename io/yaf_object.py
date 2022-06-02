@@ -211,24 +211,22 @@ class yafObject(object):
 
         return min, max
 
-    def writeObject(self, obj, matrix=None):
-
-        if not matrix:
-            matrix = obj.matrix_world.copy()
+    def writeObject(self, obj):
 
         if obj.vol_enable:  # Volume region
-            self.writeVolumeObject(obj, matrix)
+            self.writeVolumeObject(obj)
 
         elif obj.ml_enable:  # Meshlight
-            self.writeMeshLight(obj, matrix)
+            self.writeMeshLight(obj)
 
         elif obj.bgp_enable:  # BGPortal Light
-            self.writeBGPortal(obj, matrix)
+            self.writeBGPortal(obj)
 
         elif obj.particle_systems:  # Particle Hair system
-            self.writeParticleStrands(obj, matrix)
+            self.writeParticleStrands(obj)
 
         else:  # The rest of the object types
+            matrix = obj.matrix_world.copy()
             if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable:
                 if "checkers" in obj.name and bpy.data.scenes[0].yafaray.preview.previewBackground == "checker":
                         self.writeMesh(obj, matrix)
@@ -294,7 +292,7 @@ class yafObject(object):
         else:
             self.writeGeometry(ID, obj, matrix, obj.pass_index)
 
-    def writeBGPortal(self, obj, matrix):
+    def writeBGPortal(self, obj):
 
         self.yi.printInfo("Exporting Background Portal Light: {0}".format(obj.name))
 
@@ -311,11 +309,11 @@ class yafObject(object):
         self.yi.paramsSetBool("with_diffuse", obj.bgp_with_diffuse)
         self.yi.paramsSetBool("photon_only", obj.bgp_photon_only)
         self.yi.createLight(obj.name)
-
+        matrix = obj.matrix_world.copy()
         # Makes object invisible to the renderer (doesn't enter the kdtree)
         self.writeGeometry(ID, obj, matrix, obj.pass_index, None, "invisible")
 
-    def writeMeshLight(self, obj, matrix):
+    def writeMeshLight(self, obj):
 
         self.yi.printInfo("Exporting Meshlight: {0}".format(obj.name))
 
@@ -346,9 +344,10 @@ class yafObject(object):
         self.yi.paramsSetString("object_name", obj.name)
         self.yi.createLight(obj.name)
 
+        matrix = obj.matrix_world.copy()
         self.writeGeometry(ID, obj, matrix, obj.pass_index, ml_matname)
 
-    def writeVolumeObject(self, obj, matrix):
+    def writeVolumeObject(self, obj):
 
         self.yi.printInfo("Exporting Volume Region: {0}".format(obj.name))
 
@@ -396,6 +395,7 @@ class yafObject(object):
             mesh = obj.to_mesh(preserve_all_data_layers=True, depsgraph=self.depsgraph)
         else:
             mesh = obj.to_mesh(self.scene, True, 'RENDER')
+        matrix = obj.matrix_world.copy()
         mesh.transform(matrix)
 
         vec = [j for v in mesh.vertices for j in v.co]
@@ -616,7 +616,7 @@ class yafObject(object):
 
         return ymaterial
 
-    def writeParticleStrands(self, object, matrix):
+    def writeParticleStrands(self, object):
 
         yi = self.yi
         renderEmitter = False
@@ -649,23 +649,33 @@ class yafObject(object):
                         strandEnd = 0.01
                         strandShape = 0.0
 
+                    matrix = object.matrix_world.copy()
                     for particle in pSys.particles:
-                        if particle.is_exist and particle.is_visible:
-                            p = True
-                        else:
-                            p = False
                         yi.paramsClearAll()
                         yi.startGeometry()
                         yi.setCurrentMaterial(pmaterial.name)
                         self.yi.paramsSetString("type", "curve")
                         self.yi.paramsSetFloat("strand_start", strandStart)
-                        self.yi.paramsSetFloat("strand_end", strandStart)
-                        self.yi.paramsSetFloat("strand_shape", strandStart)
+                        self.yi.paramsSetFloat("strand_end", strandEnd)
+                        self.yi.paramsSetFloat("strand_shape", strandShape)
                         self.yi.paramsSetInt("num_vertices", len(particle.hair_keys))
+                        self.yi.paramsSetBool("motion_blur_bezier", object.motion_blur_bezier)
                         yi.createObject(object.name + "_strand_" + str(yi.getNextFreeId()))
                         for location in particle.hair_keys:
                             vertex = matrix * location.co  # use reverse vector multiply order, API changed with rev. 38674
                             yi.addVertex(vertex[0], vertex[1], vertex[2])
+
+                        if object.motion_blur_bezier:
+                            frame_current = self.scene.frame_current
+                            for time_step in range(1, 3):
+                                self.scene.frame_set(frame_current, 0.5 * time_step)
+                                matrix = object.matrix_world.copy()
+                                for particle in pSys.particles:
+                                    for location in particle.hair_keys:
+                                        vertex = matrix * location.co  # use reverse vector multiply order, API changed with rev. 38674
+                                        yi.addVertexTimeStep(vertex[0], vertex[1], vertex[2], time_step)
+                            self.scene.frame_set(frame_current, 0.0)
+
                         yi.endObject()
                     # TODO: keep object smooth
                     #yi.smoothMesh(0, 60.0)
@@ -675,9 +685,9 @@ class yafObject(object):
                     if pSys.settings.use_render_emitter:
                         renderEmitter = True
                 else:
-                    self.writeMesh(object, matrix)
+                    self.writeMesh(object, object.matrix_world.copy())
 
         # We only need to render emitter object once
         if renderEmitter:
             # ymat = self.materialMap["default"]  /* UNUSED */
-            self.writeMesh(object, matrix)
+            self.writeMesh(object, object.matrix_world.copy())
