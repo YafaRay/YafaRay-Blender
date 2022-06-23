@@ -192,6 +192,15 @@ def register():
         ),
         default='yafaray')
 
+    Scene.adv_scene_mesh_tesselation = EnumProperty(
+        name="Mesh Tesselation",
+        description="Selects the way that meshes are tesselated before being rendered by YafaRay.",
+        items=(
+            ('triangles_quads', "Triangles + Quads", "(default) Meshes are internally tesselated as a mix of triangles and quads."),
+            ('triangles_only', "Triangles Only",  "Meshes are internally tesselated as triangles only."),
+        ),
+        default='triangles_quads')
+
     Scene.gs_premult = EnumProperty(
         name="Premultiply",
         description="Premultipy Alpha channel for renders with transparent background",
@@ -638,6 +647,7 @@ def unregister():
     del Scene.adv_min_raydist_value
     del Scene.adv_base_sampling_offset
     del Scene.adv_scene_type
+    del Scene.adv_scene_mesh_tesselation
 
     del Scene.gs_premult
     del Scene.gs_transp_shad

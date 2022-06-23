@@ -532,6 +532,11 @@ class yafObject(object):
             else:
                 self.yi.addVertex(v.co[0], v.co[1], v.co[2])
 
+        if self.scene.adv_scene_mesh_tesselation == "triangles_only":
+            triangles_only = True
+        else:
+            triangles_only = False
+
         for index, f in enumerate(getattr(mesh, face_attr)):
             if f.use_smooth:
                 isSmooth = True
@@ -554,12 +559,20 @@ class yafObject(object):
 
                 if len(f.vertices) == 4:
                     uv3 = self.yi.addUv(co[3][0], co[3][1])
-                    self.yi.addQuadWithUv(f.vertices[0], f.vertices[1], f.vertices[2], f.vertices[3], uv0, uv1, uv2, uv3)
+                    if triangles_only:
+                        self.yi.addTriangleWithUv(f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2)
+                        self.yi.addTriangleWithUv(f.vertices[0], f.vertices[2], f.vertices[3], uv0, uv2, uv3)
+                    else:
+                        self.yi.addQuadWithUv(f.vertices[0], f.vertices[1], f.vertices[2], f.vertices[3], uv0, uv1, uv2, uv3)
                 else:
                     self.yi.addTriangleWithUv(f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2)
             else:
                 if len(f.vertices) == 4:
-                    self.yi.addQuad(f.vertices[0], f.vertices[1], f.vertices[2], f.vertices[3])
+                    if triangles_only:
+                        self.yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2])
+                        self.yi.addTriangle(f.vertices[0], f.vertices[2], f.vertices[3])
+                    else:
+                        self.yi.addQuad(f.vertices[0], f.vertices[1], f.vertices[2], f.vertices[3])
                 else:
                     self.yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2])
 

@@ -225,6 +225,10 @@ class YAFARAY4_PT_Advanced(RenderButtonsPanel, Panel):
     def draw(self, context):
         scene = context.scene
         layout = self.layout
+
+        split = layout.split()
+        col = split.column()
+        col.prop(scene, "adv_scene_mesh_tesselation")
         
         split = layout.split()
         col = split.column()
