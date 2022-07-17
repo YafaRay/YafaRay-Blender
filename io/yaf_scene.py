@@ -109,8 +109,6 @@ def exportRenderSettings(yi, depsgraph, render_path, render_filename):
     [sizeX, sizeY, bStartX, bStartY, bsizeX, bsizeY, cam_data] = getRenderCoords(scene)
 
     yi.paramsSetString("scene_accelerator", scene.gs_accelerator)
-    yi.paramsSetString("integrator_name", "default")
-    yi.paramsSetString("volintegrator_name", "volintegr")
 
     exportAA(yi, scene)
 
@@ -140,8 +138,6 @@ def exportRenderSettings(yi, depsgraph, render_path, render_filename):
         yi.paramsSetInt("threads", scene.gs_threads)
         yi.paramsSetInt("threads_photons", scene.gs_threads)
 
-    yi.paramsSetString("background_name", "world_background")
-    
     yi.paramsSetString("images_autosave_interval_type", scene.gs_images_autosave_interval_type)
     yi.paramsSetInt("images_autosave_interval_passes", scene.gs_images_autosave_interval_passes)
     yi.paramsSetFloat("images_autosave_interval_seconds", scene.gs_images_autosave_interval_seconds)

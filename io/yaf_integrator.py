@@ -59,7 +59,7 @@ class yafIntegrator:
             yi.paramsSetString("photon_maps_processing", scene.intg_photon_maps_processing)
 
             if scene.intg_use_caustics:
-                yi.paramsSetInt("photons", scene.intg_photons)
+                yi.paramsSetInt("caustic_photons", scene.intg_photons)
                 yi.paramsSetInt("caustic_mix", scene.intg_caustic_mix)
                 yi.paramsSetInt("caustic_depth", scene.intg_caustic_depth)
                 yi.paramsSetFloat("caustic_radius", scene.intg_caustic_radius)
@@ -71,11 +71,11 @@ class yafIntegrator:
             yi.paramsSetString("photon_maps_processing", scene.intg_photon_maps_processing)
             
             yi.paramsSetInt("bounces", scene.intg_bounces)
-            yi.paramsSetInt("photons", scene.intg_photons)
-            yi.paramsSetInt("cPhotons", scene.intg_cPhotons)
-            yi.paramsSetFloat("diffuseRadius", scene.intg_diffuse_radius)
-            yi.paramsSetFloat("causticRadius", scene.intg_caustic_radius)
-            yi.paramsSetInt("search", scene.intg_search)
+            yi.paramsSetInt("diffuse_photons", scene.intg_photons)
+            yi.paramsSetInt("caustic_photons", scene.intg_cPhotons)
+            yi.paramsSetFloat("diffuse_radius", scene.intg_diffuse_radius)
+            yi.paramsSetFloat("caustic_radius", scene.intg_caustic_radius)
+            yi.paramsSetInt("diffuse_search", scene.intg_search)
             yi.paramsSetInt("caustic_mix", scene.intg_caustic_mix)
             #
             yi.paramsSetBool("finalGather", scene.intg_final_gather)            
@@ -107,7 +107,7 @@ class yafIntegrator:
             yi.paramsSetString("caustic_type", causticType)
 
             if causticType not in {'none', 'path'}:
-                yi.paramsSetInt("photons", scene.intg_photons)
+                yi.paramsSetInt("caustic_photons", scene.intg_photons)
                 yi.paramsSetInt("caustic_mix", scene.intg_caustic_mix)
                 yi.paramsSetInt("caustic_depth", scene.intg_caustic_depth)
                 yi.paramsSetFloat("caustic_radius", scene.intg_caustic_radius)
@@ -117,20 +117,7 @@ class yafIntegrator:
 
         elif light_type == "Debug":
             yi.paramsSetString("type", "DebugIntegrator")
-
-            debugTypeStr = scene.intg_debug_type
-            switchDebugType = {
-                'N': 1,
-                'dPdU': 2,
-                'dPdV': 3,
-                'NU': 4,
-                'NV': 5,
-                'dSdU': 6,
-                'dSdV': 7,
-            }
-
-            debugType = switchDebugType.get(debugTypeStr)
-            yi.paramsSetInt("debugType", debugType)
+            yi.paramsSetString("debugType", scene.intg_debug_type)
             yi.paramsSetBool("showPN", scene.intg_show_perturbed_normals)
 
         elif light_type == "SPPM":
@@ -143,7 +130,7 @@ class yafIntegrator:
             yi.paramsSetInt("passNums", scene.intg_pass_num)
             yi.paramsSetBool("pmIRE", scene.intg_pm_ire)
 
-        yi.createIntegrator("default")
+        yi.defineSurfaceIntegrator()
         return True
 
     def exportVolumeIntegrator(self, scene):
@@ -174,5 +161,5 @@ class yafIntegrator:
         else:
             yi.paramsSetString("type", "none")
 
-        yi.createIntegrator("volintegr")
+        yi.defineVolumeIntegrator()
         return True

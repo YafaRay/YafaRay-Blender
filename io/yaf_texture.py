@@ -58,47 +58,22 @@ class yafTexture:
 
         textureConfigured = False
         
-        yi.paramsSetBool("img_grayscale", tex.yaf_img_grayscale)
-        yi.paramsSetFloat("adj_mult_factor_red", tex.factor_red)
-        yi.paramsSetFloat("adj_mult_factor_green", tex.factor_green)
-        yi.paramsSetFloat("adj_mult_factor_blue", tex.factor_blue)
-        yi.paramsSetFloat("adj_intensity", tex.intensity)
-        yi.paramsSetFloat("adj_contrast", tex.contrast)
-        yi.paramsSetFloat("adj_saturation", tex.saturation)
-        yi.paramsSetFloat("adj_hue", math.degrees(tex.yaf_adj_hue))
-        yi.paramsSetFloat("trilinear_level_bias", tex.yaf_trilinear_level_bias)
-        yi.paramsSetFloat("ewa_max_anisotropy", tex.yaf_ewa_max_anisotropy)
-        yi.paramsSetBool("adj_clamp", tex.use_clamp)
-
-        if tex.use_color_ramp:
-            yi.paramsSetBool("use_color_ramp", tex.use_color_ramp)
-            yi.paramsSetString("ramp_color_mode", tex.color_ramp.color_mode)
-            yi.paramsSetString("ramp_hue_interpolation", tex.color_ramp.hue_interpolation)
-            yi.paramsSetString("ramp_interpolation", tex.color_ramp.interpolation)
-            i = 0
-            for item in tex.color_ramp.elements:
-                yi.paramsSetColor("ramp_item_%x_color" % i, item.color[0], item.color[1], item.color[2], item.color[3])
-                yi.paramsSetFloat("ramp_item_%x_alpha" % i, item.alpha)
-                yi.paramsSetFloat("ramp_item_%x_position" % i, item.position)
-                i += 1
-            yi.paramsSetInt("ramp_num_items", i)
-        
         if tex.yaf_tex_type == 'BLEND':
             yi.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
             yi.paramsSetString("type", "blend")
 
             switchBlendType = {
-                'LINEAR': 'lin',
-                'QUADRATIC': 'quad',
-                'EASING': 'ease',
-                'DIAGONAL': 'diag',
+                'LINEAR': 'linear',
+                'QUADRATIC': 'quadratic',
+                'EASING': 'easing',
+                'DIAGONAL': 'diagonal',
                 'SPHERICAL': 'sphere',
-                'QUADRATIC_SPHERE': 'halo',
+                'QUADRATIC_SPHERE': 'quad_sphere',
                 'RADIAL': 'radial',
             }
 
-            stype = switchBlendType.get(tex.progression, 'lin')  # set blend type for blend texture, default is 'lin'
-            yi.paramsSetString("stype", stype)
+            blend_type = switchBlendType.get(tex.progression, 'linear')  # set blend type for blend texture, default is linear
+            yi.paramsSetString("blend_type", blend_type)
             
             if tex.use_flip_axis == "HORIZONTAL":
                 yi.paramsSetBool("use_flip_axis", False)
@@ -379,30 +354,18 @@ class yafTexture:
             image_tex = os.path.realpath(image_tex)
             image_tex = os.path.normpath(image_tex)
 
-            yi.paramsSetString("type", "image")
-            yi.paramsSetString("filename", image_tex)
-
-            yi.paramsSetBool("use_alpha", tex.yaf_use_alpha)
-            yi.paramsSetBool("calc_alpha", tex.use_calculate_alpha)
-            yi.paramsSetBool("normalmap", tex.yaf_is_normal_map)
-            yi.paramsSetString("fileformat", fileformat.upper())
-            
             texture_color_space = "sRGB"
             texture_gamma = 1.0
 
             if tex.image.colorspace_settings.name == "sRGB" or tex.image.colorspace_settings.name == "VD16":
                 texture_color_space = "sRGB"
-                
             elif tex.image.colorspace_settings.name == "XYZ":
                 texture_color_space = "XYZ"
-                
             elif tex.image.colorspace_settings.name == "Linear" or tex.image.colorspace_settings.name == "Linear ACES" or tex.image.colorspace_settings.name == "Non-Color":
                 texture_color_space = "LinearRGB"
-                
             elif tex.image.colorspace_settings.name == "Raw":
                 texture_color_space = "Raw_Manual_Gamma"
                 texture_gamma = tex.yaf_gamma_input  #We only use the selected gamma if the color space is set to "Raw"
-                
             yi.paramsSetString("color_space", texture_color_space)
             yi.paramsSetFloat("gamma", texture_gamma)
 
@@ -410,11 +373,24 @@ class yafTexture:
                 texture_optimization = scene.gs_tex_optimization
             else:
                 texture_optimization = tex.yaf_tex_optimization
+            yi.paramsSetString("image_optimization", texture_optimization)
+
+            yi.paramsSetString("type", "(does not matter)") #FIXME DAVID: this should not be necessary, fix API
+            yi.paramsSetString("filename", image_tex)
+            image_name = name + "_image"
+            yi.createImage(image_name)
+            yi.paramsClearAll()
 
             yi.printInfo("Exporter: Creating Texture: '{0}' type {1}: {2}. Texture Color Space: '{3}', gamma={4}. Texture optimization='{5}'".format(name, tex.yaf_tex_type, image_tex, texture_color_space, texture_gamma, texture_optimization))
 
+            yi.paramsSetString("type", "image")
+            yi.paramsSetString("image_name", image_name)
+
             yi.paramsSetString("interpolate", tex.yaf_tex_interpolate)
-            yi.paramsSetString("image_optimization", texture_optimization)
+
+            yi.paramsSetBool("use_alpha", tex.yaf_use_alpha)
+            yi.paramsSetBool("calc_alpha", tex.use_calculate_alpha)
+            yi.paramsSetBool("normalmap", tex.yaf_is_normal_map)
 
             # repeat
             repeat_x = 1
@@ -452,15 +428,36 @@ class yafTexture:
             yi.paramsSetBool("mirror_x", tex.use_mirror_x)
             yi.paramsSetBool("mirror_y", tex.use_mirror_y)
 
-            image_name = name + "_image"
-            yi.createImage(image_name)
-            yi.paramsSetString("image_name", image_name)
-            yi.paramsSetString("type", "image")
-
             textureConfigured = True
+
+        #yi.paramsSetBool("img_grayscale", tex.yaf_img_grayscale)
+        yi.paramsSetFloat("adj_mult_factor_red", tex.factor_red)
+        yi.paramsSetFloat("adj_mult_factor_green", tex.factor_green)
+        yi.paramsSetFloat("adj_mult_factor_blue", tex.factor_blue)
+        yi.paramsSetFloat("adj_intensity", tex.intensity)
+        yi.paramsSetFloat("adj_contrast", tex.contrast)
+        yi.paramsSetFloat("adj_saturation", tex.saturation)
+        yi.paramsSetFloat("adj_hue", math.degrees(tex.yaf_adj_hue))
+        yi.paramsSetFloat("trilinear_level_bias", tex.yaf_trilinear_level_bias)
+        yi.paramsSetFloat("ewa_max_anisotropy", tex.yaf_ewa_max_anisotropy)
+        yi.paramsSetBool("adj_clamp", tex.use_clamp)
+
+        if tex.use_color_ramp:
+            yi.paramsSetBool("use_color_ramp", tex.use_color_ramp)
+            yi.paramsSetString("ramp_color_mode", tex.color_ramp.color_mode)
+            yi.paramsSetString("ramp_hue_interpolation", tex.color_ramp.hue_interpolation)
+            yi.paramsSetString("ramp_interpolation", tex.color_ramp.interpolation)
+            i = 0
+            for item in tex.color_ramp.elements:
+                yi.paramsSetColor("ramp_item_%x_color" % i, item.color[0], item.color[1], item.color[2], item.color[3])
+                yi.paramsSetFloat("ramp_item_%x_alpha" % i, item.alpha)
+                yi.paramsSetFloat("ramp_item_%x_position" % i, item.position)
+                i += 1
+            yi.paramsSetInt("ramp_num_items", i)
 
         if textureConfigured:
             yi.createTexture(name)
+            yi.paramsClearAll()
             self.loadedTextures.add(name)
 
         return textureConfigured

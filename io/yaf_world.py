@@ -172,6 +172,7 @@ class yafWorld:
             yi.paramsSetInt("light_samples", world.bg_light_samples)
             yi.paramsSetFloat("power", world.bg_power)
             yi.paramsSetString("type", "sunsky")
+            yi.paramsSetBool("cast_shadows_sun", world.bg_cast_shadows_sun)
 
         elif bg_type == "Sunsky2":
             f = world.bg_from
@@ -197,6 +198,7 @@ class yafWorld:
             yi.paramsSetBool("gamma_enc", world.bg_gamma_enc)
             yi.paramsSetString("color_space", world.bg_color_space)
             yi.paramsSetString("type", "darksky")
+            yi.paramsSetBool("cast_shadows_sun", world.bg_cast_shadows_sun)
 
         else:
             yi.paramsSetColor("color", c[0], c[1], c[2])
@@ -208,10 +210,9 @@ class yafWorld:
                     
         if world is not None:
             yi.paramsSetBool("cast_shadows", world.bg_cast_shadows)
-            yi.paramsSetBool("cast_shadows_sun", world.bg_cast_shadows_sun)
             yi.paramsSetBool("with_caustic", world.bg_with_caustic)
             yi.paramsSetBool("with_diffuse", world.bg_with_diffuse)
             
-        yi.createBackground("world_background")
+        yi.defineBackground()
 
         return True

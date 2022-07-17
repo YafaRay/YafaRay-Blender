@@ -238,7 +238,7 @@ class yafObject(object):
     def writeInstanceBase(self, ID, obj):
         self.yi.printInfo("Exporting Base Mesh: {0} with ID: {1}".format(obj.name, ID))
         # Create this geometry object as a base object for instances
-        self.writeGeometry(ID, obj, None, obj.pass_index, None, "visible", True)  # We want the vertices in object space
+        self.writeGeometry(ID, obj, None, obj.pass_index, None, "normal", True)  # We want the vertices in object space
         return ID
 
     def writeInstance(self, oID, obj2WorldMatrix, base_obj_name):
@@ -413,7 +413,7 @@ class yafObject(object):
         else:
             bpy.data.meshes.remove(mesh, do_unlink=False)
 
-    def writeGeometry(self, ID, obj, matrix, pass_index, oMat=None, visibility="visible", is_base_object=False):
+    def writeGeometry(self, ID, obj, matrix, pass_index, oMat=None, visibility="normal", is_base_object=False):
         isSmooth = False
         hasOrco = False
 
