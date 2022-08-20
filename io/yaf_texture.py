@@ -420,11 +420,11 @@ class yafTexture:
             yi.paramsSetFloat("cropmin_y", tex.crop_min_y)
             yi.paramsSetFloat("cropmax_x", tex.crop_max_x)
             yi.paramsSetFloat("cropmax_y", tex.crop_max_y)
-
             yi.paramsSetBool("rot90", tex.use_flip_axis)
-            
             yi.paramsSetBool("mirror_x", tex.use_mirror_x)
             yi.paramsSetBool("mirror_y", tex.use_mirror_y)
+            yi.paramsSetFloat("trilinear_level_bias", tex.yaf_trilinear_level_bias)
+            yi.paramsSetFloat("ewa_max_anisotropy", tex.yaf_ewa_max_anisotropy)
 
             textureConfigured = True
 
@@ -436,8 +436,6 @@ class yafTexture:
         yi.paramsSetFloat("adj_contrast", tex.contrast)
         yi.paramsSetFloat("adj_saturation", tex.saturation)
         yi.paramsSetFloat("adj_hue", math.degrees(tex.yaf_adj_hue))
-        yi.paramsSetFloat("trilinear_level_bias", tex.yaf_trilinear_level_bias)
-        yi.paramsSetFloat("ewa_max_anisotropy", tex.yaf_ewa_max_anisotropy)
         yi.paramsSetBool("adj_clamp", tex.use_clamp)
 
         if tex.use_color_ramp:
