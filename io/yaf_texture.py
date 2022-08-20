@@ -374,8 +374,6 @@ class yafTexture:
             else:
                 texture_optimization = tex.yaf_tex_optimization
             yi.paramsSetString("image_optimization", texture_optimization)
-
-            yi.paramsSetString("type", "(does not matter)") #FIXME DAVID: this should not be necessary, fix API
             yi.paramsSetString("filename", image_tex)
             image_name = name + "_image"
             yi.createImage(image_name)
