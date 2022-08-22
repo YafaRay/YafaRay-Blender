@@ -431,7 +431,7 @@ class yafMaterial:
             yi.paramsSetString("mirror_shader", mirrorRoot)
                                
         if mat.brdf_type == "oren-nayar":  # oren-nayar fix for glossy
-            yi.paramsSetString("diffuse_brdf", "Oren-Nayar")
+            yi.paramsSetString("diffuse_brdf", "oren_nayar")
             yi.paramsSetFloat("sigma", mat.sigma)
 
         return yi.createMaterial(mat.name)
@@ -655,7 +655,7 @@ class yafMaterial:
 
         # if we have a blending map, disable the blend_value
         if len(diffRoot) > 0:
-            yi.paramsSetString("mask", diffRoot)
+            yi.paramsSetString("blend_shader", diffRoot)
             yi.paramsSetFloat("blend_value", 0)
         else:
             yi.paramsSetFloat("blend_value", mat.blend_value)

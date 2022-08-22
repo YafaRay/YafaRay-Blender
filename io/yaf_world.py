@@ -56,34 +56,14 @@ class yafWorld:
                 worldTex = None
 
             if worldTex is not None:
-        
-                yi.paramsSetFloat("adj_mult_factor_red", worldTex.factor_red)
-                yi.paramsSetFloat("adj_mult_factor_green", worldTex.factor_green)
-                yi.paramsSetFloat("adj_mult_factor_blue", worldTex.factor_blue)
-                yi.paramsSetFloat("adj_intensity", worldTex.intensity)
-                yi.paramsSetFloat("adj_contrast", worldTex.contrast)
-                yi.paramsSetFloat("adj_saturation", worldTex.saturation)
-                yi.paramsSetFloat("adj_hue", math.degrees(worldTex.yaf_adj_hue))
-                yi.paramsSetBool("adj_clamp", worldTex.use_clamp)
 
                 if worldTex.type == "IMAGE" and (worldTex.image is not None):
-
-                    yi.paramsSetString("type", "image")
 
                     image_file = abspath(worldTex.image.filepath)
                     image_file = realpath(image_file)
                     image_file = normpath(image_file)
 
                     yi.paramsSetString("filename", image_file)
-
-                    # exposure_adjust not restricted to integer range anymore
-                    #yi.paramsSetFloat("exposure_adjust", world.exposure) #bg_exposure)
-
-                    interpolate = 'none'
-                    if worldTex.use_interpolation == True:
-                        interpolate = 'bilinear'
-                    #
-                    yi.paramsSetString("interpolate", interpolate)
 
                     texture_color_space = "sRGB"
                     texture_gamma = 1.0
@@ -106,15 +86,32 @@ class yafWorld:
 
                     image_name = "world_texture_image"
                     yi.createImage(image_name)
+                    yi.paramsClearAll()
+
                     yi.paramsSetString("image_name", image_name)
                     yi.paramsSetString("type", "image")
+                    # exposure_adjust not restricted to integer range anymore
+                    #yi.paramsSetFloat("exposure_adjust", world.exposure) #bg_exposure)
+                    interpolate = 'none'
+                    if worldTex.use_interpolation == True:
+                        interpolate = 'bilinear'
+                    yi.paramsSetString("interpolate", interpolate)
 
+                    # FIXME DAVID color adjustments and texture params for non-image textures??
+                    yi.paramsSetFloat("adj_mult_factor_red", worldTex.factor_red)
+                    yi.paramsSetFloat("adj_mult_factor_green", worldTex.factor_green)
+                    yi.paramsSetFloat("adj_mult_factor_blue", worldTex.factor_blue)
+                    yi.paramsSetFloat("adj_intensity", worldTex.intensity)
+                    yi.paramsSetFloat("adj_contrast", worldTex.contrast)
+                    yi.paramsSetFloat("adj_saturation", worldTex.saturation)
+                    yi.paramsSetFloat("adj_hue", math.degrees(worldTex.yaf_adj_hue))
+                    yi.paramsSetBool("adj_clamp", worldTex.use_clamp)
                     yi.createTexture("world_texture")
+                    yi.paramsClearAll()
 
                     # Export the actual background
                     #texco = world.texture_slots[world.active_texture_index].texture_coords
                     textcoord = world.yaf_mapworld_type
-                    yi.paramsClearAll()
                     #
                     mappingType = {'ANGMAP': 'angular',
                                    'SPHERE': 'sphere'}                    

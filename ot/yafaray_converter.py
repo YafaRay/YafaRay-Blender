@@ -251,7 +251,7 @@ def convertMaterial(mat):
         if p in variableDict:
             p = variableDict[p]
 
-        if p in {"type", "mask", ""}:
+        if p in {"type", "blend_shader", ""}:
             continue
 
         if p in {"brdf_type", "brdfType"}:

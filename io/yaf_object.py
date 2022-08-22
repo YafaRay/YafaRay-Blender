@@ -335,7 +335,7 @@ class yafObject(object):
         # Export mesh light
         self.yi.paramsClearAll()
         self.yi.paramsSetInt("obj_pass_index", obj.pass_index)
-        self.yi.paramsSetString("type", "meshlight")
+        self.yi.paramsSetString("type", "objectlight")
         self.yi.paramsSetBool("double_sided", obj.ml_double_sided)
         c = obj.ml_color
         self.yi.paramsSetColor("color", c[0], c[1], c[2])
