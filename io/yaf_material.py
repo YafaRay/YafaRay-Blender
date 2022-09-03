@@ -302,17 +302,19 @@ class yafMaterial:
 
         yi.paramsSetInt("mat_pass_index", mat.pass_index)
 
+        bSpecr = mat.specular_reflect
+
         if coated:  # create bool property
             yi.paramsSetString("type", "coated_glossy")
             yi.paramsSetFloat("IOR", mat.IOR_reflection)  # IOR for reflection
             mir_col = mat.coat_mir_col  # added mirror color for coated glossy
             yi.paramsSetColor("mirror_color", mir_col[0], mir_col[1], mir_col[2])
+            yi.paramsSetFloat("specular_reflect", bSpecr)
         else:
             yi.paramsSetString("type", "glossy")
             mir_col = mat.diffuse_color
 
         diffuse_color = mat.diffuse_color
-        bSpecr = mat.specular_reflect
         color = mat.glossy_color
 
         yi.paramsSetColor("diffuse_color", diffuse_color[0], diffuse_color[1], diffuse_color[2])
@@ -324,7 +326,6 @@ class yafMaterial:
         yi.paramsSetBool("anisotropic", mat.anisotropic)
         yi.paramsSetFloat("exp_u", mat.exp_u)
         yi.paramsSetFloat("exp_v", mat.exp_v)
-        yi.paramsSetFloat("specular_reflect", bSpecr)
         yi.paramsSetString("visibility", mat.visibility)
         yi.paramsSetBool("receive_shadows", mat.receive_shadows)
         yi.paramsSetBool("flat_material", False)
@@ -392,16 +393,17 @@ class yafMaterial:
             if self.writeTexLayer(lname, mappername, diffReflectRoot, mtex, mtex.use_map_diffuse, [0], mtex.diffuse_factor):
                 used = True
                 diffReflectRoot = lname
-            lname = "mircol_layer%x" % i
-            if self.writeTexLayer(lname, mappername, mcolRoot, mtex, mtex.use_map_mirror, mir_col, mtex.mirror_factor):
-                used = True
-                mcolRoot = lname
-            lname = "mirr_layer%x" % i
-            if self.writeTexLayer(lname, mappername, mirrorRoot, mtex, mtex.use_map_raymir, [bSpecr], mtex.raymir_factor):
-                used = True
-                mirrorRoot = lname
 
-                
+            if coated:
+                lname = "mircol_layer%x" % i
+                if self.writeTexLayer(lname, mappername, mcolRoot, mtex, mtex.use_map_mirror, mir_col, mtex.mirror_factor):
+                    used = True
+                    mcolRoot = lname
+                lname = "mirr_layer%x" % i
+                if self.writeTexLayer(lname, mappername, mirrorRoot, mtex, mtex.use_map_raymir, [bSpecr], mtex.raymir_factor):
+                    used = True
+                    mirrorRoot = lname
+
             if used:
                 self.writeMappingNode(mappername, mtex.texture.name, mtex)
             i += 1
@@ -425,10 +427,11 @@ class yafMaterial:
             yi.paramsSetString("wireframe_shader", WireframeRoot)
         if len(diffReflectRoot) > 0:
             yi.paramsSetString("diffuse_refl_shader", diffReflectRoot)       
-        if len(mcolRoot) > 0:
-            yi.paramsSetString("mirror_color_shader", mcolRoot)
-        if len(mirrorRoot) > 0:
-            yi.paramsSetString("mirror_shader", mirrorRoot)
+        if coated:
+            if len(mcolRoot) > 0:
+                yi.paramsSetString("mirror_color_shader", mcolRoot)
+            if len(mirrorRoot) > 0:
+                yi.paramsSetString("mirror_shader", mirrorRoot)
                                
         if mat.brdf_type == "oren-nayar":  # oren-nayar fix for glossy
             yi.paramsSetString("diffuse_brdf", "oren_nayar")
