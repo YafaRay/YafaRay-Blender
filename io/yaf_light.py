@@ -256,8 +256,8 @@ class yafLight:
             yi.paramsSetBool("light_enabled", light.light_enabled)
             yi.paramsSetBool("cast_shadows", light.cast_shadows)
 
-        if lightType not in {"sun", "directional"}:
-            # "from" is not used for sunlight and infinite directional light
+        if lightType not in {"area", "sun", "directional"}:
+            # "from" is not used for area, sunlight and infinite directional light
             yi.paramsSetVector("from", pos[0], pos[1], pos[2])
         if lightType in {"point", "spot"}:
             if getattr(light, "use_sphere", False) and lightType == "point":
