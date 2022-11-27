@@ -247,8 +247,9 @@ class yafObject(object):
         #o2w = self.get4x4Matrix(mat4)
         #self.yi.addInstance(base_obj_name, o2w)
         instance_id = self.yi.createInstance()
-        self.yi.printVerbose("Exporting Instance ID={0} of {1} [ID = {2}]".format(instance_id, base_obj_name, oID))
-        self.yi.addInstanceObject(instance_id, base_obj_name)
+        object_id = self.yi.getObjectId(base_obj_name)
+        self.yi.printVerbose("Exporting Instance ID={0} of {1} [ID = {2}]".format(instance_id, base_obj_name, object_id))
+        self.yi.addInstanceObject(instance_id, object_id)
         self.addInstanceMatrix(instance_id, obj_to_world, 0.0)
         return instance_id
 
@@ -268,7 +269,7 @@ class yafObject(object):
 
         if ID is None:
             # Generate unique object ID
-            ID = obj.name #self.yi.getNextFreeId()
+            ID = obj.name
         
         self.yi.printInfo("Exporting Mesh: {0}".format(ID))
 
@@ -293,12 +294,7 @@ class yafObject(object):
             self.writeGeometry(ID, obj, matrix, obj.pass_index)
 
     def writeBGPortal(self, obj):
-
         self.yi.printInfo("Exporting Background Portal Light: {0}".format(obj.name))
-
-        # Generate unique object ID
-        ID = obj.name #self.yi.getNextFreeId()
-
         self.yi.paramsClearAll()
         self.yi.paramsSetInt("obj_pass_index", obj.pass_index)
         self.yi.paramsSetString("type", "bgPortalLight")
@@ -311,15 +307,11 @@ class yafObject(object):
         self.yi.createLight(obj.name)
         matrix = obj.matrix_world.copy()
         # Makes object invisible to the renderer (doesn't enter the kdtree)
-        self.writeGeometry(ID, obj, matrix, obj.pass_index, None, "invisible")
+        self.writeGeometry(obj.name, obj, matrix, obj.pass_index, None, "invisible")
 
     def writeMeshLight(self, obj):
 
         self.yi.printInfo("Exporting Meshlight: {0}".format(obj.name))
-
-        # Generate unique object ID
-        ID = obj.name #self.yi.getNextFreeId()
-
         ml_matname = "ML_"
         ml_matname += obj.name + "." + str(obj.__hash__())
 
@@ -345,7 +337,7 @@ class yafObject(object):
         self.yi.createLight(obj.name)
 
         matrix = obj.matrix_world.copy()
-        self.writeGeometry(ID, obj, matrix, obj.pass_index, ml_matname)
+        self.writeGeometry(obj.name, obj, matrix, obj.pass_index, ml_matname)
 
     def writeVolumeObject(self, obj):
 
@@ -513,7 +505,6 @@ class yafObject(object):
             pass
 
         self.yi.paramsClearAll()
-        self.yi.startGeometry()
 
         self.yi.paramsSetString("type", "mesh")
         self.yi.paramsSetInt("num_vertices", len(mesh.vertices))
@@ -524,13 +515,13 @@ class yafObject(object):
         self.yi.paramsSetString("visibility", visibility)
         self.yi.paramsSetInt("object_index", pass_index)
         self.yi.paramsSetBool("motion_blur_bezier", obj.motion_blur_bezier)
-        self.yi.createObject(str(ID))
+        object_id = self.yi.createObject(str(ID))
 
         for ind, v in enumerate(mesh.vertices):
             if hasOrco:
-                self.yi.addVertexWithOrco(v.co[0], v.co[1], v.co[2], ov[ind][0], ov[ind][1], ov[ind][2])
+                self.yi.addVertexWithOrco(object_id, v.co[0], v.co[1], v.co[2], ov[ind][0], ov[ind][1], ov[ind][2])
             else:
-                self.yi.addVertex(v.co[0], v.co[1], v.co[2])
+                self.yi.addVertex(object_id, v.co[0], v.co[1], v.co[2])
 
         if self.scene.adv_scene_mesh_tesselation == "triangles_only":
             triangles_only = True
@@ -545,7 +536,7 @@ class yafObject(object):
                 ymaterial = oMat
             else:
                 ymaterial = self.getFaceMaterial(mesh.materials, f.material_index, obj.material_slots)
-            self.yi.setCurrentMaterial(ymaterial)
+            material_id = self.yi.getMaterialId(ymaterial)
             co = None
             if hasUV:
                 if self.is_preview:
@@ -553,28 +544,28 @@ class yafObject(object):
                 else:
                     co = uv_texture.active.data[index].uv
 
-                uv0 = self.yi.addUv(co[0][0], co[0][1])
-                uv1 = self.yi.addUv(co[1][0], co[1][1])
-                uv2 = self.yi.addUv(co[2][0], co[2][1])
+                uv0 = self.yi.addUv(object_id, co[0][0], co[0][1])
+                uv1 = self.yi.addUv(object_id, co[1][0], co[1][1])
+                uv2 = self.yi.addUv(object_id, co[2][0], co[2][1])
 
                 if len(f.vertices) == 4:
-                    uv3 = self.yi.addUv(co[3][0], co[3][1])
+                    uv3 = self.yi.addUv(object_id, co[3][0], co[3][1])
                     if triangles_only:
-                        self.yi.addTriangleWithUv(f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2)
-                        self.yi.addTriangleWithUv(f.vertices[0], f.vertices[2], f.vertices[3], uv0, uv2, uv3)
+                        self.yi.addTriangleWithUv(object_id, f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2, material_id)
+                        self.yi.addTriangleWithUv(object_id, f.vertices[0], f.vertices[2], f.vertices[3], uv0, uv2, uv3, material_id)
                     else:
-                        self.yi.addQuadWithUv(f.vertices[0], f.vertices[1], f.vertices[2], f.vertices[3], uv0, uv1, uv2, uv3)
+                        self.yi.addQuadWithUv(object_id, f.vertices[0], f.vertices[1], f.vertices[2], f.vertices[3], uv0, uv1, uv2, uv3, material_id)
                 else:
-                    self.yi.addTriangleWithUv(f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2)
+                    self.yi.addTriangleWithUv(object_id, f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2, material_id)
             else:
                 if len(f.vertices) == 4:
                     if triangles_only:
-                        self.yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2])
-                        self.yi.addTriangle(f.vertices[0], f.vertices[2], f.vertices[3])
+                        self.yi.addTriangle(object_id, f.vertices[0], f.vertices[1], f.vertices[2], material_id)
+                        self.yi.addTriangle(object_id, f.vertices[0], f.vertices[2], f.vertices[3], material_id)
                     else:
-                        self.yi.addQuad(f.vertices[0], f.vertices[1], f.vertices[2], f.vertices[3])
+                        self.yi.addQuad(object_id, f.vertices[0], f.vertices[1], f.vertices[2], f.vertices[3], material_id)
                 else:
-                    self.yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2])
+                    self.yi.addTriangle(object_id, f.vertices[0], f.vertices[1], f.vertices[2], material_id)
 
         auto_smooth_enabled = mesh.use_auto_smooth
         auto_smooth_angle = mesh.auto_smooth_angle
@@ -594,23 +585,22 @@ class yafObject(object):
                     mesh.transform(obj.matrix_world)
                 for ind, v in enumerate(mesh.vertices):
                     if hasOrco:
-                        self.yi.addVertexWithOrcoTimeStep(v.co[0], v.co[1], v.co[2], ov[ind][0], ov[ind][1], ov[ind][2], time_step)
+                        self.yi.addVertexWithOrcoTimeStep(object_id, v.co[0], v.co[1], v.co[2], ov[ind][0], ov[ind][1], ov[ind][2], time_step)
                     else:
-                        self.yi.addVertexTimeStep(v.co[0], v.co[1], v.co[2], time_step)
+                        self.yi.addVertexTimeStep(object_id, v.co[0], v.co[1], v.co[2], time_step)
                 if bpy.app.version >= (2, 80, 0):
                     pass  # FIXME BLENDER 2.80-3.00
                 else:
                     bpy.data.meshes.remove(mesh, do_unlink=False)
             self.scene.frame_set(frame_current, 0.0)
-        self.yi.endObject()
-        self.yi.endGeometry()
+        self.yi.initObject(object_id, 0)
 
         if isSmooth and auto_smooth_enabled:
-            self.yi.smoothMesh(obj.name, math.degrees(auto_smooth_angle))
+            self.yi.smoothObjectMesh(object_id, math.degrees(auto_smooth_angle))
         elif isSmooth and obj.type == 'FONT':  # getting nicer result with smooth angle 60 degr. for text objects
-            self.yi.smoothMesh(obj.name, 60)
+            self.yi.smoothObjectMesh(object_id, 60)
         elif isSmooth:
-            self.yi.smoothMesh(obj.name, 181)
+            self.yi.smoothObjectMesh(object_id, 181)
 
 
     def getFaceMaterial(self, meshMats, matIndex, matSlots):
@@ -665,7 +655,6 @@ class yafObject(object):
                     matrix = object.matrix_world.copy()
                     for particle in pSys.particles:
                         yi.paramsClearAll()
-                        yi.startGeometry()
                         yi.setCurrentMaterial(pmaterial.name)
                         self.yi.paramsSetString("type", "curve")
                         self.yi.paramsSetFloat("strand_start", strandStart)
@@ -692,7 +681,6 @@ class yafObject(object):
                         yi.endObject()
                     # TODO: keep object smooth
                     #yi.smoothMesh(0, 60.0)
-                        yi.endGeometry()
                     yi.printInfo("Exporter: Particle creation time: {0:.3f}".format(time.time() - tstart))
 
                     if pSys.settings.use_render_emitter:

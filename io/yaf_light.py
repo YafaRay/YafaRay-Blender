@@ -48,7 +48,6 @@ class yafLight:
         # get next free id from interface
         ID = "SphereLight-" + str(yi.getNextFreeId())
 
-        yi.startGeometry()
         self.yi.paramsSetString("type", "mesh")
         self.yi.paramsSetInt("num_vertices", 2 + (nu - 1) * nv)
         self.yi.paramsSetInt("num_faces", 2 * (nu - 1) * nv)
@@ -74,7 +73,6 @@ class yafLight:
                 yi.addTriangle(2 + v * (nu - 1) + u + 1, 2 + ((v + 1) % nv) * (nu - 1) + u + 1, 2 + ((v + 1) % nv) * (nu - 1) + u)
 
         yi.endObject()
-        yi.endGeometry()
 
         return ID
 
@@ -232,7 +230,6 @@ class yafLight:
             yi.paramsClearAll()
             if light.create_geometry:
                 ID = "AreaLight-"+str(yi.getNextFreeId())
-                yi.startGeometry()
                 self.yi.paramsSetString("type", "mesh")
                 self.yi.paramsSetInt("num_vertices", 4)
                 self.yi.paramsSetInt("num_faces", 2)
@@ -245,7 +242,6 @@ class yafLight:
                 yi.addTriangle(0, 1, 2)
                 yi.addTriangle(0, 2, 3)
                 yi.endObject()
-                yi.endGeometry()
                 yi.paramsSetString("object_name", ID)
 
             yi.paramsSetString("type", "arealight")
