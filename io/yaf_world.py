@@ -28,7 +28,7 @@ class yafWorld:
         self.yi = interface
 
     def exportWorld(self, scene, is_preview):
-        yi = self.yi
+        
 
         world = scene.world
 
@@ -45,13 +45,13 @@ class yafWorld:
             iblSamples = 16
             bgPower = 1
 
-        self.yi.printInfo("Exporting World, type: {0}".format(bg_type))
-        yi.paramsClearAll()
+        self.logger.printInfo("Exporting World, type: {0}".format(bg_type))
+        param_map = libyafaray4_bindings.ParamMap()
 
         if bg_type == 'Texture':
             if world.active_texture is not None:
                 worldTex = world.active_texture
-                self.yi.printInfo("World Texture, name: {0}".format(worldTex.name))
+                self.logger.printInfo("World Texture, name: {0}".format(worldTex.name))
             else:
                 worldTex = None
 
@@ -63,7 +63,7 @@ class yafWorld:
                     image_file = realpath(image_file)
                     image_file = normpath(image_file)
 
-                    yi.paramsSetString("filename", image_file)
+                    param_map.setString("filename", image_file)
 
                     texture_color_space = "sRGB"
                     texture_gamma = 1.0
@@ -81,33 +81,33 @@ class yafWorld:
                         texture_color_space = "Raw_manualGamma"
                         texture_gamma = worldTex.yaf_gamma_input  #We only use the selected gamma if the color space is set to "Raw"
                 
-                    yi.paramsSetString("color_space", texture_color_space)
-                    yi.paramsSetFloat("gamma", texture_gamma)
+                    param_map.setString("color_space", texture_color_space)
+                    param_map.setFloat("gamma", texture_gamma)
 
                     image_name = "world_texture_image"
-                    yi.createImage(image_name)
-                    yi.paramsClearAll()
+                    self.yaf_scene.createImage(image_name)
+                    param_map = libyafaray4_bindings.ParamMap()
 
-                    yi.paramsSetString("image_name", image_name)
-                    yi.paramsSetString("type", "image")
+                    param_map.setString("image_name", image_name)
+                    param_map.setString("type", "image")
                     # exposure_adjust not restricted to integer range anymore
-                    #yi.paramsSetFloat("exposure_adjust", world.exposure) #bg_exposure)
+                    #param_map.setFloat("exposure_adjust", world.exposure) #bg_exposure)
                     interpolate = 'none'
                     if worldTex.use_interpolation == True:
                         interpolate = 'bilinear'
-                    yi.paramsSetString("interpolate", interpolate)
+                    param_map.setString("interpolate", interpolate)
 
                     # FIXME DAVID color adjustments and texture params for non-image textures??
-                    yi.paramsSetFloat("adj_mult_factor_red", worldTex.factor_red)
-                    yi.paramsSetFloat("adj_mult_factor_green", worldTex.factor_green)
-                    yi.paramsSetFloat("adj_mult_factor_blue", worldTex.factor_blue)
-                    yi.paramsSetFloat("adj_intensity", worldTex.intensity)
-                    yi.paramsSetFloat("adj_contrast", worldTex.contrast)
-                    yi.paramsSetFloat("adj_saturation", worldTex.saturation)
-                    yi.paramsSetFloat("adj_hue", math.degrees(worldTex.yaf_adj_hue))
-                    yi.paramsSetBool("adj_clamp", worldTex.use_clamp)
-                    yi.createTexture("world_texture")
-                    yi.paramsClearAll()
+                    param_map.setFloat("adj_mult_factor_red", worldTex.factor_red)
+                    param_map.setFloat("adj_mult_factor_green", worldTex.factor_green)
+                    param_map.setFloat("adj_mult_factor_blue", worldTex.factor_blue)
+                    param_map.setFloat("adj_intensity", worldTex.intensity)
+                    param_map.setFloat("adj_contrast", worldTex.contrast)
+                    param_map.setFloat("adj_saturation", worldTex.saturation)
+                    param_map.setFloat("adj_hue", math.degrees(worldTex.yaf_adj_hue))
+                    param_map.setBool("adj_clamp", worldTex.use_clamp)
+                    self.yaf_scene.createTexture("world_texture")
+                    param_map = libyafaray4_bindings.ParamMap()
 
                     # Export the actual background
                     #texco = world.texture_slots[world.active_texture_index].texture_coords
@@ -116,99 +116,99 @@ class yafWorld:
                     mappingType = {'ANGMAP': 'angular',
                                    'SPHERE': 'sphere'}                    
                     texco = mappingType.get(textcoord, "angular")
-                    yi.paramsSetString("mapping", texco)
+                    param_map.setString("mapping", texco)
                     
                     # now, this msg is not need , but....
                     if textcoord not in {'ANGMAP', 'SPHERE'}:
-                        yi.printWarning("World texture mapping neither Sphere or AngMap, set it to AngMap now by default!")
+                        self.logger.printWarning("World texture mapping neither Sphere or AngMap, set it to AngMap now by default!")
                         
-                    yi.paramsSetString("type", "textureback")
-                    yi.paramsSetString("texture", "world_texture")
-                    yi.paramsSetBool("ibl", useIBL)
-                    #yi.paramsSetFloat("ibl_clamp_sampling", world.ibl_clamp_sampling) #No longer needed after this issue was solved in Core (http://www.yafaray.org/node/752#comment-1621), but I will leave it here for now just in case...
+                    param_map.setString("type", "textureback")
+                    param_map.setString("texture", "world_texture")
+                    param_map.setBool("ibl", useIBL)
+                    #param_map.setFloat("ibl_clamp_sampling", world.ibl_clamp_sampling) #No longer needed after this issue was solved in Core (http://www.yafaray.org/node/752#comment-1621), but I will leave it here for now just in case...
                     if is_preview:
-                        yi.paramsSetFloat("smartibl_blur", 0.0) #To avoid causing Blender UI freezing while waiting for the blur process to complete in the material/world previews
+                        param_map.setFloat("smartibl_blur", 0.0) #To avoid causing Blender UI freezing while waiting for the blur process to complete in the material/world previews
                     else:
-                        yi.paramsSetFloat("smartibl_blur", world.bg_smartibl_blur)
+                        param_map.setFloat("smartibl_blur", world.bg_smartibl_blur)
                     # 'with_caustic' and 'with_diffuse' settings gets checked in textureback.cc,
                     # so if IBL enabled when they are used...
-                    yi.paramsSetInt("ibl_samples", iblSamples)
-                    yi.paramsSetFloat("power", bgPower)
-                    yi.paramsSetFloat("rotation", world.bg_rotation)
+                    param_map.setInt("ibl_samples", iblSamples)
+                    param_map.setFloat("power", bgPower)
+                    param_map.setFloat("rotation", world.bg_rotation)
 
         elif bg_type == 'Gradient':
             c = world.bg_horizon_color
-            yi.paramsSetColor("horizon_color", c[0], c[1], c[2])
+            param_map.setColor("horizon_color", c[0], c[1], c[2])
 
             c = world.bg_zenith_color
-            yi.paramsSetColor("zenith_color", c[0], c[1], c[2])
+            param_map.setColor("zenith_color", c[0], c[1], c[2])
 
             c = world.bg_horizon_ground_color
-            yi.paramsSetColor("horizon_ground_color", c[0], c[1], c[2])
+            param_map.setColor("horizon_ground_color", c[0], c[1], c[2])
 
             c = world.bg_zenith_ground_color
-            yi.paramsSetColor("zenith_ground_color", c[0], c[1], c[2])
+            param_map.setColor("zenith_ground_color", c[0], c[1], c[2])
 
-            yi.paramsSetFloat("power", bgPower)
-            yi.paramsSetBool("ibl", useIBL)
-            yi.paramsSetInt("ibl_samples", iblSamples)
-            yi.paramsSetString("type", "gradientback")
+            param_map.setFloat("power", bgPower)
+            param_map.setBool("ibl", useIBL)
+            param_map.setInt("ibl_samples", iblSamples)
+            param_map.setString("type", "gradientback")
 
         elif bg_type == 'Sunsky1':
             f = world.bg_from
-            yi.paramsSetVector("from", f[0], f[1], f[2])
-            yi.paramsSetFloat("turbidity", world.bg_turbidity)
-            yi.paramsSetFloat("a_var", world.bg_a_var)
-            yi.paramsSetFloat("b_var", world.bg_b_var)
-            yi.paramsSetFloat("c_var", world.bg_c_var)
-            yi.paramsSetFloat("d_var", world.bg_d_var)
-            yi.paramsSetFloat("e_var", world.bg_e_var)
-            yi.paramsSetBool("add_sun", world.bg_add_sun)
-            yi.paramsSetFloat("sun_power", world.bg_sun_power)
-            yi.paramsSetBool("background_light", world.bg_background_light)
-            yi.paramsSetInt("light_samples", world.bg_light_samples)
-            yi.paramsSetFloat("power", world.bg_power)
-            yi.paramsSetString("type", "sunsky")
-            yi.paramsSetBool("cast_shadows_sun", world.bg_cast_shadows_sun)
+            param_map.setVector("from", f[0], f[1], f[2])
+            param_map.setFloat("turbidity", world.bg_turbidity)
+            param_map.setFloat("a_var", world.bg_a_var)
+            param_map.setFloat("b_var", world.bg_b_var)
+            param_map.setFloat("c_var", world.bg_c_var)
+            param_map.setFloat("d_var", world.bg_d_var)
+            param_map.setFloat("e_var", world.bg_e_var)
+            param_map.setBool("add_sun", world.bg_add_sun)
+            param_map.setFloat("sun_power", world.bg_sun_power)
+            param_map.setBool("background_light", world.bg_background_light)
+            param_map.setInt("light_samples", world.bg_light_samples)
+            param_map.setFloat("power", world.bg_power)
+            param_map.setString("type", "sunsky")
+            param_map.setBool("cast_shadows_sun", world.bg_cast_shadows_sun)
 
         elif bg_type == "Sunsky2":
             f = world.bg_from
-            yi.paramsSetVector("from", f[0], f[1], f[2])
-            yi.paramsSetFloat("turbidity", world.bg_ds_turbidity)
-            yi.paramsSetFloat("altitude", world.bg_dsaltitude)
-            yi.paramsSetFloat("a_var", world.bg_a_var)
-            yi.paramsSetFloat("b_var", world.bg_b_var)
-            yi.paramsSetFloat("c_var", world.bg_c_var)
-            yi.paramsSetFloat("d_var", world.bg_d_var)
-            yi.paramsSetFloat("e_var", world.bg_e_var)
-            yi.paramsSetBool("add_sun", world.bg_add_sun)
+            param_map.setVector("from", f[0], f[1], f[2])
+            param_map.setFloat("turbidity", world.bg_ds_turbidity)
+            param_map.setFloat("altitude", world.bg_dsaltitude)
+            param_map.setFloat("a_var", world.bg_a_var)
+            param_map.setFloat("b_var", world.bg_b_var)
+            param_map.setFloat("c_var", world.bg_c_var)
+            param_map.setFloat("d_var", world.bg_d_var)
+            param_map.setFloat("e_var", world.bg_e_var)
+            param_map.setBool("add_sun", world.bg_add_sun)
             if world.bg_add_sun:
-                yi.paramsSetFloat("sun_power", world.bg_sun_power)
-            yi.paramsSetBool("background_light", world.bg_background_light)
+                param_map.setFloat("sun_power", world.bg_sun_power)
+            param_map.setBool("background_light", world.bg_background_light)
             if world.bg_background_light:
-                yi.paramsSetFloat("power", world.bg_power)
-            yi.paramsSetInt("light_samples", world.bg_light_samples)
-            yi.paramsSetFloat("bright", world.bg_dsbright)
-            yi.paramsSetBool("night", world.bg_dsnight)
-            yi.paramsSetFloat("exposure", world.bg_exposure)
-            yi.paramsSetBool("clamp_rgb", world.bg_clamp_rgb)
-            yi.paramsSetBool("gamma_enc", world.bg_gamma_enc)
-            yi.paramsSetString("color_space", world.bg_color_space)
-            yi.paramsSetString("type", "darksky")
-            yi.paramsSetBool("cast_shadows_sun", world.bg_cast_shadows_sun)
+                param_map.setFloat("power", world.bg_power)
+            param_map.setInt("light_samples", world.bg_light_samples)
+            param_map.setFloat("bright", world.bg_dsbright)
+            param_map.setBool("night", world.bg_dsnight)
+            param_map.setFloat("exposure", world.bg_exposure)
+            param_map.setBool("clamp_rgb", world.bg_clamp_rgb)
+            param_map.setBool("gamma_enc", world.bg_gamma_enc)
+            param_map.setString("color_space", world.bg_color_space)
+            param_map.setString("type", "darksky")
+            param_map.setBool("cast_shadows_sun", world.bg_cast_shadows_sun)
 
         else:
-            yi.paramsSetColor("color", c[0], c[1], c[2])
-            yi.paramsSetBool("ibl", useIBL)
-            yi.paramsSetInt("ibl_samples", iblSamples)
-            yi.paramsSetFloat("power", bgPower)
-            yi.paramsSetString("type", "constant")
+            param_map.setColor("color", c[0], c[1], c[2])
+            param_map.setBool("ibl", useIBL)
+            param_map.setInt("ibl_samples", iblSamples)
+            param_map.setFloat("power", bgPower)
+            param_map.setString("type", "constant")
             
                     
         if world is not None:
-            yi.paramsSetBool("cast_shadows", world.bg_cast_shadows)
-            yi.paramsSetBool("with_caustic", world.bg_with_caustic)
-            yi.paramsSetBool("with_diffuse", world.bg_with_diffuse)
+            param_map.setBool("cast_shadows", world.bg_cast_shadows)
+            param_map.setBool("with_caustic", world.bg_with_caustic)
+            param_map.setBool("with_diffuse", world.bg_with_diffuse)
             
         yi.defineBackground()
 
