@@ -49,22 +49,18 @@ yaf_logger.setConsoleVerbosityLevel(yaf_logger.logLevelFromString("debug"))
 yaf_logger.setLogVerbosityLevel(yaf_logger.logLevelFromString("debug"))
 #self.logger.setConsoleLogColorsEnabled(True)
 yaf_logger.enablePrintDateTime(True)
-yaf_main_scene_param_map = libyafaray4_bindings.ParamMap()
-yaf_main_scene_param_map.setString("scene_accelerator", "yafaray-kdtree-original")
-yaf_main_scene = libyafaray4_bindings.Scene(yaf_logger, "Blender Main Scene", yaf_main_scene_param_map)
-yaf_preview_scene_param_map = libyafaray4_bindings.ParamMap()
-yaf_preview_scene_param_map.setString("scene_accelerator", "yafaray-kdtree-original")
-yaf_preview_scene = libyafaray4_bindings.Scene(yaf_logger, "Blender Preview Scene", yaf_preview_scene_param_map)
+yaf_main_scene = libyafaray4_bindings.Scene(yaf_logger, "Blender Main Scene")
+yaf_preview_scene = libyafaray4_bindings.Scene(yaf_logger, "Blender Preview Scene")
 
-yaf_main_renderer_param_map = libyafaray4_bindings.ParamMap()
-yaf_main_renderer = libyafaray4_bindings.Renderer(yaf_logger, yaf_main_scene, "Blender Main Renderer", yaf_main_renderer_param_map)
-yaf_preview_renderer_param_map = libyafaray4_bindings.ParamMap()
-yaf_preview_renderer = libyafaray4_bindings.Renderer(yaf_logger, yaf_preview_scene, "Blender Preview Renderer", yaf_preview_renderer_param_map)
+yaf_main_surface_integrator_param_map = libyafaray4_bindings.ParamMap()
+yaf_main_surface_integrator = libyafaray4_bindings.SurfaceIntegrator(yaf_logger, "Blender Main SurfaceIntegrator", yaf_main_surface_integrator_param_map)
+yaf_preview_surface_integrator_param_map = libyafaray4_bindings.ParamMap()
+yaf_preview_surface_integrator = libyafaray4_bindings.SurfaceIntegrator(yaf_logger, "Blender Preview SurfaceIntegrator", yaf_preview_surface_integrator_param_map)
 
 yaf_main_film_param_map = libyafaray4_bindings.ParamMap()
-yaf_main_film = libyafaray4_bindings.Film(yaf_logger, yaf_main_renderer, "Blender Main Film", yaf_main_film_param_map)
+yaf_main_film = libyafaray4_bindings.Film(yaf_logger, yaf_main_surface_integrator, "Blender Main Film", yaf_main_film_param_map)
 yaf_preview_film_param_map = libyafaray4_bindings.ParamMap()
-yaf_preview_film = libyafaray4_bindings.Film(yaf_logger, yaf_preview_renderer, "Blender Preview Film", yaf_preview_film_param_map)
+yaf_preview_film = libyafaray4_bindings.Film(yaf_logger, yaf_preview_surface_integrator, "Blender Preview Film", yaf_preview_film_param_map)
 
 class YafaRay4RenderEngine(bpy.types.RenderEngine):
     bl_idname = YAF_ID_NAME
@@ -78,7 +74,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
     def __init__(self):
         self.logger = yaf_logger
         self.yaf_scene = yaf_main_scene
-        self.renderer = yaf_main_renderer
+        self.surface_integrator = yaf_main_surface_integrator
         self.film = yaf_main_film
 
     def setInterface(self):
@@ -86,7 +82,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
 
         if self.is_preview:
             self.yaf_scene = yaf_preview_scene
-            self.renderer = yaf_preview_renderer
+            self.surface_integrator = yaf_preview_surface_integrator
             self.film = yaf_preview_film
             self.logger.setConsoleVerbosityLevel(self.logger.logLevelFromString("mute"))
             self.logger.setLogVerbosityLevel(self.logger.logLevelFromString("mute"))
@@ -94,7 +90,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
             self.scene.bg_transp_refract = False  #to correct alpha problems in preview roughglass
         else:
             self.yaf_scene = yaf_main_scene
-            self.renderer = yaf_main_renderer
+            self.surface_integrator = yaf_main_surface_integrator
             self.film = yaf_main_film
             self.logger.enablePrintDateTime(self.scene.yafaray.logging.logPrintDateTime)
             self.logger.setConsoleVerbosityLevel(self.logger.logLevelFromString(self.scene.yafaray.logging.consoleVerbosity))
@@ -582,7 +578,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
             self.film.setFlushAreaCallback(flushAreaCallback)
             self.film.setFlushCallback(flushCallback)
             self.film.setHighlightAreaCallback(highlightCallback)
-            t = threading.Thread(target=self.renderer, args=(self.yaf_scene, progressCallback,))
+            t = threading.Thread(target=self.surface_integrator, args=(self.yaf_scene, progressCallback,))
             t.start()
 
             while t.is_alive() and not self.test_break():

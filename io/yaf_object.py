@@ -192,10 +192,7 @@ class yafObject(object):
             param_map.setVector("from", pos[0], pos[1], pos[2])
             param_map.setVector("up", up[0], up[1], up[2])
             param_map.setVector("to", to[0], to[1], to[2])
-            self.film.createCamera(cam.camera_name, param_map)
-            param_map = libyafaray4_bindings.ParamMap()
-            param_map.setString("camera_name", cam.camera_name)
-            self.yaf_scene.createRenderView(cam.view_name)
+            self.film.defineCamera(param_map)
 
 
     def getBBCorners(self, object):
