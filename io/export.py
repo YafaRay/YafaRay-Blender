@@ -551,7 +551,9 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
                 for tile in tiles:
                     tile_name, tile_bitmap = tile
                     try:
-                        blender_result_buffers.layers[0].passes[tile_name].rect = tile_bitmap
+                        if tile_name == "":
+                            tile_name="combined"
+                        blender_result_buffers.layers[0].passes[0].rect = tile_bitmap
                     except:
                         print("Exporter: Exception while rendering in " + callback_name + " function:")
                         traceback.print_exc()
@@ -568,7 +570,9 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
                     updateBlenderResult(x_0, y_0, w, h, view_name, tiles, "highlightCallback")
 
             def flushAreaCallback(*args):
-                view_name, area_id, x_0, y_0, x_1, y_1, tiles = args
+                #view_name, area_id, x_0, y_0, x_1, y_1, tiles = args
+                area_id, x_0, y_0, x_1, y_1, tiles = args
+                view_name = "test"
                 w = x_1 - x_0
                 h = y_1 - y_0
                 if view_name == "":  # In case we use Render 3D viewport with Views enabled, it will copy the result to all views
@@ -578,7 +582,8 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
                     updateBlenderResult(x_0, y_0, w, h, view_name, tiles, "flushAreaCallback")
 
             def flushCallback(*args):
-                view_name, w, h, tiles = args
+                w, h, tiles = args
+                view_name = "test"
                 if view_name == "":  # In case we use Render 3D viewport with Views enabled, it will copy the result to all views
                     for view in scene.render.views:
                         updateBlenderResult(0, 0, w, h, view.name, tiles, "flushCallback")
@@ -588,8 +593,18 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
             self.yaf_film.setFlushAreaCallback(flushAreaCallback)
             self.yaf_film.setFlushCallback(flushCallback)
             self.yaf_film.setHighlightAreaCallback(highlightCallback)
+            # Creating RenderControl #
+            render_control = libyafaray4_bindings.RenderControl()
+            # Creating RenderMonitor #
+            render_monitor = libyafaray4_bindings.RenderMonitor(progressCallback)
+            render_control.setForNormalStart()
+            scene_modified_flags = self.yaf_scene.checkAndClearModifiedFlags()
+            self.yaf_scene.preprocess(render_control, scene_modified_flags)
+            self.yaf_integrator.preprocess(render_monitor, render_control, self.yaf_scene)
+            self.yaf_integrator.render(render_control, render_monitor, self.yaf_film)
+            return #FIXME!!!
             t = threading.Thread(target=self.yaf_integrator, args=(self.yaf_scene, progressCallback,))
-            #t.start()
+            t.start()
 
             while t.is_alive() and not self.test_break():
                 time.sleep(0.2)
