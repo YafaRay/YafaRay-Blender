@@ -101,7 +101,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
 
         self.yaf_object = yafObject(self.yaf_scene, self.logger, self.is_preview)
         self.yaf_light = yafLight(self.yaf_scene, self.logger, self.is_preview)
-        self.yaf_world = yafWorld(self.yaf_scene)
+        self.yaf_world = yafWorld(self.yaf_scene, self.logger)
         self.yaf_integrator = yafIntegrator(self.yaf_scene)
         self.yaf_texture = yafTexture(self.yaf_scene, self.logger)
         self.yaf_material = yafMaterial(self.yaf_scene, self.logger, self.yaf_texture.loadedTextures)
@@ -117,12 +117,11 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
         self.exportMaterials()
         self.yaf_object.setDepsgraph(self.depsgraph)
         self.exportObjects()
-        self.yaf_object.createCameras()
         
         if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable and bpy.data.scenes[0].yafaray.preview.previewBackground == "world":
             self.yaf_world.exportWorld(bpy.data.scenes[0], self.is_preview)
         else:
-            self.yaf_world.exportWorld(self.scene, self.is_preview)
+            self.yaf_world.exportWorld(self.scene, self.yaf_scene, self.is_preview)
 
     def exportTexture(self, obj):
         if bpy.app.version >= (2, 80, 0):

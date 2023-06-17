@@ -22,13 +22,14 @@ import math
 import bpy
 from bpy.path import abspath
 from os.path import realpath, normpath
+import libyafaray4_bindings
 
 class yafWorld:
-    def __init__(self, interface):
-        self.yi = interface
+    def __init__(self, scene, logger):
+        self.scene = scene
+        self.logger = logger
 
-    def exportWorld(self, scene, is_preview):
-        
+    def exportWorld(self, scene, yaf_scene, is_preview):
 
         world = scene.world
 
@@ -85,7 +86,7 @@ class yafWorld:
                     param_map.setFloat("gamma", texture_gamma)
 
                     image_name = "world_texture_image"
-                    self.yaf_scene.createImage(image_name)
+                    self.scene.createImage(image_name)
                     param_map = libyafaray4_bindings.ParamMap()
 
                     param_map.setString("image_name", image_name)
@@ -106,7 +107,7 @@ class yafWorld:
                     param_map.setFloat("adj_saturation", worldTex.saturation)
                     param_map.setFloat("adj_hue", math.degrees(worldTex.yaf_adj_hue))
                     param_map.setBool("adj_clamp", worldTex.use_clamp)
-                    self.yaf_scene.createTexture("world_texture")
+                    self.scene.createTexture("world_texture")
                     param_map = libyafaray4_bindings.ParamMap()
 
                     # Export the actual background
@@ -210,6 +211,6 @@ class yafWorld:
             param_map.setBool("with_caustic", world.bg_with_caustic)
             param_map.setBool("with_diffuse", world.bg_with_diffuse)
             
-        yi.defineBackground()
+        yaf_scene.defineBackground(param_map)
 
         return True
