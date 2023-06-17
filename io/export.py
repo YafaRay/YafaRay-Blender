@@ -35,6 +35,7 @@ from .object import Object
 from .light import Light
 from .world import World
 from .integrator import Integrator
+from .film import Film
 from . import scene
 from .texture import Texture
 from .material import Material
@@ -57,8 +58,10 @@ yaf_main_scene = libyafaray4_bindings.Scene(yaf_logger, "Blender Main Scene")
 yaf_preview_scene = libyafaray4_bindings.Scene(yaf_logger, "Blender Preview Scene")
 
 yaf_main_surface_integrator_param_map = libyafaray4_bindings.ParamMap()
+yaf_main_surface_integrator_param_map.setString("type", "directlighting")
 yaf_main_surface_integrator = libyafaray4_bindings.SurfaceIntegrator(yaf_logger, "Blender Main SurfaceIntegrator", yaf_main_surface_integrator_param_map)
 yaf_preview_surface_integrator_param_map = libyafaray4_bindings.ParamMap()
+yaf_preview_surface_integrator_param_map.setString("type", "directlighting")
 yaf_preview_surface_integrator = libyafaray4_bindings.SurfaceIntegrator(yaf_logger, "Blender Preview SurfaceIntegrator", yaf_preview_surface_integrator_param_map)
 
 yaf_main_film_param_map = libyafaray4_bindings.ParamMap()
@@ -80,6 +83,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
         self.yaf_scene = yaf_main_scene
         self.yaf_integrator = yaf_main_surface_integrator
         self.yaf_film = yaf_main_film
+        self.film = Film(self.yaf_film, self.yaf_logger, self.is_preview)
 
     def setInterface(self):
         self.materials = set()
@@ -97,7 +101,8 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
             self.yaf_integrator = yaf_main_surface_integrator
             self.yaf_film = yaf_main_film
             self.yaf_logger.enablePrintDateTime(self.scene.yafaray.logging.logPrintDateTime)
-            self.yaf_logger.setConsoleVerbosityLevel(self.yaf_logger.logLevelFromString(self.scene.yafaray.logging.consoleVerbosity))
+            #self.yaf_logger.setConsoleVerbosityLevel(self.yaf_logger.logLevelFromString(self.scene.yafaray.logging.consoleVerbosity))
+            self.yaf_logger.setConsoleVerbosityLevel(self.yaf_logger.logLevelFromString("debug"))
             self.yaf_logger.setLogVerbosityLevel(self.yaf_logger.logLevelFromString(self.scene.yafaray.logging.logVerbosity))
             self.yaf_logger.printInfo("YafaRay-Blender (" + YAFARAY_BLENDER_VERSION + ")")
             self.yaf_logger.printInfo("Exporter: Blender version " + str(bpy.app.version[0]) + "." + str(bpy.app.version[1]) + "." + str(bpy.app.version[2]) + "." + bpy.app.version_char + "  Build information: " + bpy.app.build_platform.decode("utf-8") + ", " + bpy.app.build_type.decode("utf-8") + ", branch: " + bpy.app.build_branch.decode("utf-8") + ", hash: " + bpy.app.build_hash.decode("utf-8"))
@@ -412,8 +417,8 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
         yaf_param_map.setFloat("denoise_mix", scene.img_denoiseMix)
         print(render.image_settings.color_mode)
         yaf_param_map.setBool("alpha_channel", render.image_settings.color_mode == "RGBA")
-        yaf_scene.setLoggingAndBadgeSettings(self.yaf_scene, self.scene)
-        self.co = self.yaf_scene.createOutput(output_name)
+        #self.yaf_film.setLoggingAndBadgeSettings(self.yaf_scene, self.scene)
+        self.co = self.yaf_film.createOutput(output_name, yaf_param_map)
 
     # callback to export the scene
     def update(self, data, depsgraph):
@@ -494,14 +499,15 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
             #self.setInterface(libyafaray4_bindings.Interface())
             self.setInterface()
             #self.yaf_scene.setInputColorSpace("LinearRGB", 1.0)    #When rendering into Blender, color picker floating point data is already linear (linearized by Blender)
-            #if scene.gs_secondary_file_output and not self.is_preview:
-            #    self.defineImageOutput("blender_secondary_output", render_path, scene, render, color_space.secondary_output, gamma.secondary_output, alpha_premultiply.secondary_output)
-            #    if scene.yafaray.logging.savePreset:
-            #        presets.YAF_AddPresetBase.export_to_file(presets.YAFARAY_OT_presets_renderset, self.outputFile)
+            if scene.gs_secondary_file_output and not self.is_preview:
+                self.defineImageOutput("blender_secondary_output", render_path, scene, render, color_space.secondary_output, gamma.secondary_output, alpha_premultiply.secondary_output)
+                if scene.yafaray.logging.savePreset:
+                    presets.YAF_AddPresetBase.export_to_file(presets.YAFARAY_OT_presets_renderset, self.outputFile)
 
         self.exportScene()
         self.integrator.exportIntegrator(self.scene, self.is_preview)
         self.integrator.exportVolumeIntegrator(self.scene, self.yaf_scene, self.yaf_integrator)
+        self.film.createCameras(self.scene)
         #yaf_scene.defineLayers(self.yaf_scene, self.depsgraph)
         #yaf_scene.exportRenderSettings(self.yaf_scene, self.depsgraph, render_path, render_filename)
 
@@ -583,7 +589,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
             self.yaf_film.setFlushCallback(flushCallback)
             self.yaf_film.setHighlightAreaCallback(highlightCallback)
             t = threading.Thread(target=self.yaf_integrator, args=(self.yaf_scene, progressCallback,))
-            t.start()
+            #t.start()
 
             while t.is_alive() and not self.test_break():
                 time.sleep(0.2)
