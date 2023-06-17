@@ -18,24 +18,24 @@
 
 # <pep8 compliant>
 
-from . import yaf_preferences
-from . import yaf_object
-from . import yaf_material
-from . import yaf_light
-from . import yaf_scene
-from . import yaf_camera
-from . import yaf_texture
-from . import yaf_world
+from . import preferences
+from . import object
+from . import material
+from . import light
+from . import scene
+from . import camera
+from . import texture
+from . import world
 
 modules = (
-    yaf_preferences,
-    yaf_object,
-    yaf_material,
-    yaf_light,
-    yaf_scene,
-    yaf_camera,
-    yaf_texture,
-    yaf_world,
+    preferences,
+    object,
+    material,
+    light,
+    scene,
+    camera,
+    texture,
+    world,
 )
 
 def register():

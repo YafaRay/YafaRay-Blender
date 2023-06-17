@@ -19,10 +19,10 @@
 # <pep8 compliant>
 
 import bpy
-from ..ot import yafaray_presets
+from ..ot import presets
 from bl_ui.properties_render import RenderButtonsPanel
 from bpy.types import Panel, Menu
-from ..util.ui_utils import icon_add, ui_split
+from ..util.ui import icon_add, ui_split
 
 
 class YAFARAY4_MT_presets_render(Menu):
@@ -31,7 +31,7 @@ class YAFARAY4_MT_presets_render(Menu):
     
     preset_subdir = "render"
     preset_operator = "script.execute_preset"
-    draw = yafaray_presets.Yafaray_Menu.draw_preset
+    draw = presets.Yafaray_Menu.draw_preset
 
 
 class YAFARAY4_PT_general_settings(RenderButtonsPanel, Panel):

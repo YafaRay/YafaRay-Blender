@@ -31,18 +31,22 @@ import tempfile
 
 from .. import YAF_ID_NAME
 from .. import YAFARAY_BLENDER_VERSION
-from .yaf_object import Object
-from .yaf_light import Light
-from .yaf_world import World
-from .yaf_integrator import Integrator
-from . import yaf_scene
-from .yaf_texture import Texture
-from .yaf_material import Material
-from ..ot import yafaray_presets
+from .object import Object
+from .light import Light
+from .world import World
+from .integrator import Integrator
+from . import scene
+from .texture import Texture
+from .material import Material
+from ..ot import presets
 # from pprint import pprint
 # from pprint import pformat
-from ..util.io_utils import scene_from_depsgraph
-from .. import yaf_global_vars
+from ..util.io import scene_from_depsgraph
+from .. import global_vars
+from .scene import getRenderCoords
+from .scene import calcColorSpace
+from .scene import calcAlphaPremultiply
+from .scene import calcGamma
 
 yaf_logger = libyafaray4_bindings.Logger()
 yaf_logger.setConsoleVerbosityLevel(yaf_logger.logLevelFromString("debug"))
@@ -68,8 +72,8 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
     bl_label = "YafaRay v4 Render"
     prog = 0.0
     tag = ""
-    yaf_global_vars.useViewToRender = False
-    yaf_global_vars.viewMatrix = None
+    global_vars.useViewToRender = False
+    global_vars.viewMatrix = None
 
     def __init__(self):
         self.yaf_logger = yaf_logger
@@ -443,7 +447,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
         if not os.path.exists(render_path):
             os.mkdir(render_path)
 
-        [self.sizeX, self.sizeY, self.bStartX, self.bStartY, self.bsizeX, self.bsizeY, camDummy] = yaf_scene.getRenderCoords(scene)
+        [self.sizeX, self.sizeY, self.bStartX, self.bStartY, self.bsizeX, self.bsizeY, camDummy] = getRenderCoords(scene)
 
         if render.use_border:
             self.resX = self.bsizeX
@@ -452,9 +456,9 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
             self.resX = self.sizeX
             self.resY = self.sizeY
 
-        color_space = yaf_scene.calcColorSpace(scene)
-        gamma = yaf_scene.calcGamma(scene)
-        alpha_premultiply = yaf_scene.calcAlphaPremultiply(scene)
+        color_space = calcColorSpace(scene)
+        gamma = calcGamma(scene)
+        alpha_premultiply = calcAlphaPremultiply(scene)
 
         if scene.gs_type_render == "file":
             #self.setInterface(libyafaray4_bindings.Interface())
@@ -462,7 +466,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
             self.yaf_scene.setInputColorSpace("LinearRGB", 1.0)    #When rendering into Blender, color picker floating point data is already linear (linearized by Blender)
             self.defineImageOutput("blender_file_output", render_path, scene, render, color_space.blender, gamma.blender, alpha_premultiply.blender)
             if scene.yafaray.logging.savePreset:
-                yafaray_presets.YAF_AddPresetBase.export_to_file(yafaray_presets.YAFARAY_OT_presets_renderset, self.outputFile)
+                presets.YAF_AddPresetBase.export_to_file(presets.YAFARAY_OT_presets_renderset, self.outputFile)
 
         elif scene.gs_type_render == "xml" or scene.gs_type_render == "c" or scene.gs_type_render == "python":
             self.outputFile, self.output, self.file_type = self.decideOutputFileName(render_path, scene.gs_type_render)
@@ -493,7 +497,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
             #if scene.gs_secondary_file_output and not self.is_preview:
             #    self.defineImageOutput("blender_secondary_output", render_path, scene, render, color_space.secondary_output, gamma.secondary_output, alpha_premultiply.secondary_output)
             #    if scene.yafaray.logging.savePreset:
-            #        yafaray_presets.YAF_AddPresetBase.export_to_file(yafaray_presets.YAFARAY_OT_presets_renderset, self.outputFile)
+            #        presets.YAF_AddPresetBase.export_to_file(presets.YAFARAY_OT_presets_renderset, self.outputFile)
 
         self.exportScene()
         self.integrator.exportIntegrator(self.scene, self.is_preview)
@@ -501,7 +505,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
         #yaf_scene.defineLayers(self.yaf_scene, self.depsgraph)
         #yaf_scene.exportRenderSettings(self.yaf_scene, self.depsgraph, render_path, render_filename)
 
-        self.yaf_scene.setupRender()
+        #self.yaf_scene.setupRender()
 
     # callback to render scene
     def render(self, depsgraph):

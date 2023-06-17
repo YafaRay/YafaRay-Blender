@@ -19,37 +19,37 @@
 # <pep8 compliant>
 
 import bpy
-from . import properties_yaf_render
-from . import properties_yaf_camera
-from . import properties_yaf_material
-from . import properties_yaf_texture
-from . import properties_yaf_world
-from . import properties_yaf_strand
-from . import properties_yaf_object
-from . import properties_yaf_light
-from . import properties_yaf_scene
-from . import properties_yaf_general_settings
-from . import properties_yaf_integrator
-from . import properties_yaf_AA_settings
+from . import render
+from . import camera
+from . import material
+from . import texture
+from . import world
+from . import strand
+from . import object
+from . import light
+from . import scene
+from . import general_settings
+from . import integrator
+from . import aa_settings
 
 if bpy.app.version >= (2, 80, 0):
     pass   # FIXME BLENDER 2.80-3.00
 else:
-    from . import properties_yaf_layer_passes
+    from . import layer_passes
 
 modules = (
-    properties_yaf_general_settings,
-    properties_yaf_AA_settings,
-    properties_yaf_integrator,
-    properties_yaf_render,
-    properties_yaf_camera,
-    properties_yaf_material,
-    properties_yaf_texture,
-    properties_yaf_world,
-    properties_yaf_strand,
-    properties_yaf_object,
-    properties_yaf_light,
-    properties_yaf_scene
+    general_settings,
+    aa_settings,
+    integrator,
+    render,
+    camera,
+    material,
+    texture,
+    world,
+    strand,
+    object,
+    light,
+    scene
 )
 
 def register():
@@ -58,14 +58,14 @@ def register():
     if bpy.app.version >= (2, 80, 0):
         pass  # FIXME BLENDER 2.80-3.00
     else:
-        properties_yaf_layer_passes.register()
+        layer_passes.register()
 
 
 def unregister():
     if bpy.app.version >= (2, 80, 0):
         pass  # FIXME BLENDER 2.80-3.00
     else:
-        properties_yaf_layer_passes.unregister()
+        layer_passes.unregister()
     for module in reversed(modules):
         module.unregister()
 
@@ -126,7 +126,7 @@ del properties_data_speaker
 from bl_ui import properties_scene as properties_scene
 for member in dir(properties_scene):
 
-    if member != "SCENE_PT_color_management":   #YafaRay Color management panel is customized in properties_yaf_scene.
+    if member != "SCENE_PT_color_management":   #YafaRay Color management panel is customized in scene.
         #FIXME: The customized YafaRay panel appears at the end of the Blender scene tab panels, I don't know how to rearrange the panels to keep YafaRay color management in the same place as Blender Color Management panel was.
 
             subclass = getattr(properties_scene, member)

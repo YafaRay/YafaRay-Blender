@@ -20,7 +20,7 @@
 
 from bpy.types import Panel
 from bl_ui.properties_render_layer import RenderLayerButtonsPanel
-from ..util.ui_utils import icon_add, icon_remove
+from ..util.ui import icon_add, icon_remove
 
 
 class YAFARAY4_PT_layers(RenderLayerButtonsPanel, Panel):

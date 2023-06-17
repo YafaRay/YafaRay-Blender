@@ -1,5 +1,5 @@
 import bpy
-from .yaf_scene_property_groups_definitions import YafaRay4LoggingPropertiesDefinitions, YafaRay4NoiseControlPropertiesDefinitions, YafaRay4MaterialPreviewControlPropertiesDefinitions, YafaRay4LayersPropertiesDefinitions
+from .scene_property_groups_definitions import YafaRay4LoggingPropertiesDefinitions, YafaRay4NoiseControlPropertiesDefinitions, YafaRay4MaterialPreviewControlPropertiesDefinitions, YafaRay4LayersPropertiesDefinitions
 
 class YafaRay4LoggingProperties(bpy.types.PropertyGroup):
     prop_defs = YafaRay4LoggingPropertiesDefinitions()

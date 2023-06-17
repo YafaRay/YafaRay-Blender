@@ -20,7 +20,6 @@
 
 import sys
 import os
-import ctypes
 
 PLUGIN_NAME = "yafaray_v4"
 BIN_PATH = os.path.join(__path__[0], 'bin')

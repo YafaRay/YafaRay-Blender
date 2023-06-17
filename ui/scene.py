@@ -19,7 +19,7 @@
 # <pep8 compliant>
 
 import bpy
-from ..ot import yafaray_presets
+from ..ot import presets
 from bl_ui.properties_scene import SceneButtonsPanel
 from bpy.types import Panel, Menu
 

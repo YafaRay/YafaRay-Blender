@@ -21,7 +21,7 @@
 from bpy.types import Panel
 from bl_ui.properties_world import WorldButtonsPanel
 import bpy
-from ..util.ui_utils import ui_split
+from ..util.ui import ui_split
 
 # Inherit World data block
 from bl_ui.properties_world import WORLD_PT_context_world

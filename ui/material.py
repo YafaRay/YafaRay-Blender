@@ -19,7 +19,7 @@
 # <pep8 compliant>
 
 import bpy
-from ..util.ui_utils import icon_add, icon_remove, ui_split, material_from_context, material_check
+from ..util.ui import icon_add, icon_remove, ui_split, material_from_context, material_check
 from .ior_values import ior_list
 from bpy.types import Panel, Menu
 from bl_ui.properties_material import MaterialButtonsPanel

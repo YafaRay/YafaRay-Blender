@@ -18,10 +18,10 @@
 
 # <pep8 compliant>
 
-from . import yaf_export
+from . import export
 
 modules = (
-    yaf_export,
+    export,
 )
 
 def register():

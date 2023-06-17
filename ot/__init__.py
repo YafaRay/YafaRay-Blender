@@ -18,14 +18,14 @@
 
 # <pep8 compliant>
 
-from . import yafaray_operators
-from . import yafaray_converter
-from . import yafaray_presets
+from . import operators
+from . import converter
+from . import presets
 
 modules = (
-    yafaray_operators,
-    yafaray_converter,
-    yafaray_presets,
+    operators,
+    converter,
+    presets,
 )
 
 def register():

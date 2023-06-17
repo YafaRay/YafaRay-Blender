@@ -21,7 +21,7 @@
 import bpy
 import mathutils
 from bpy.types import Operator
-from .. import yaf_global_vars
+from .. import global_vars
 
 class OBJECT_OT_get_position(Operator):
     bl_label = "From( get position )"
@@ -145,7 +145,7 @@ class RENDER_OT_render_view(Operator):
 
     def execute(self, context):
         view3d = context.region_data
-        yaf_global_vars.useViewToRender = True
+        global_vars.useViewToRender = True
         sceneLights = checkSceneLights()
         scene = context.scene
         # Get the 3d view under the mouse cursor
@@ -158,16 +158,16 @@ class RENDER_OT_render_view(Operator):
 
         if not view3d or view3d.view_perspective == "ORTHO":
             self.report({'WARNING'}, ("The selected view is not in perspective mode or there was no 3d view available to render."))
-            yaf_global_vars.useViewToRender = False
+            global_vars.useViewToRender = False
             return {'CANCELLED'}
 
         elif not sceneLights and scene.intg_light_method == "Bidirectional":
             self.report({'WARNING'}, ("No lights in the scene and lighting method is Bidirectional!"))
-            yaf_global_vars.useViewToRender = False
+            global_vars.useViewToRender = False
             return {'CANCELLED'}
 
         else:
-            yaf_global_vars.viewMatrix = view3d.view_matrix.copy()
+            global_vars.viewMatrix = view3d.view_matrix.copy()
             bpy.ops.render.render('INVOKE_DEFAULT')
             return {'FINISHED'}
 

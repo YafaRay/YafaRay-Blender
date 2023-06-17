@@ -21,7 +21,7 @@
 import bpy
 import os
 from collections import namedtuple
-from ..util.io_utils import scene_from_depsgraph
+from ..util.io import scene_from_depsgraph
 
 def computeSceneSize(render):
     sizeX = int(render.resolution_x * render.resolution_percentage * 0.01)

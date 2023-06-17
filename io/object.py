@@ -23,8 +23,8 @@ import time
 import math
 import mathutils
 import libyafaray4_bindings
-from ..util.io_utils import scene_from_depsgraph
-from .. import yaf_global_vars
+from ..util.io import scene_from_depsgraph
+from .. import global_vars
 
 def multiplyMatrix4x4Vector4(matrix, vector):
     result = mathutils.Vector((0.0, 0.0, 0.0, 0.0))
@@ -65,7 +65,7 @@ class Object(object):
 
         render_use_multiview = render.use_multiview
 
-        if yaf_global_vars.useViewToRender or not render_use_multiview:
+        if global_vars.useViewToRender or not render_use_multiview:
             cameras.append(CameraData(self.scene.camera, self.scene.camera.name, ""))
         else:
             camera_base_name = self.scene.camera.name.rsplit('_',1)[0]
@@ -75,14 +75,14 @@ class Object(object):
                     cameras.append(CameraData(self.scene.objects[camera_base_name+view.camera_suffix], camera_base_name+view.camera_suffix, view.name))
 
         for cam in cameras:
-            if yaf_global_vars.useViewToRender and yaf_global_vars.viewMatrix:
+            if global_vars.useViewToRender and global_vars.viewMatrix:
                 # use the view matrix to calculate the inverted transformed
                 # points cam pos (0,0,0), front (0,0,1) and up (0,1,0)
                 # view matrix works like the opengl view part of the
                 # projection matrix, i.e. transforms everything so camera is
                 # at 0,0,0 looking towards 0,0,1 (y axis being up)
 
-                m = yaf_global_vars.viewMatrix
+                m = global_vars.viewMatrix
                 # m.transpose() --> not needed anymore: matrix indexing changed with Blender rev.42816
                 inv = m.inverted()
 
@@ -109,10 +109,10 @@ class Object(object):
 
             yaf_param_map = libyafaray4_bindings.ParamMap()
 
-            if yaf_global_vars.useViewToRender:
+            if global_vars.useViewToRender:
                 yaf_param_map.setString("type", "perspective")
                 yaf_param_map.setFloat("focal", 0.7)
-                yaf_global_vars.useViewToRender = False
+                global_vars.useViewToRender = False
 
             else:
                 camera = cam.camera.data
