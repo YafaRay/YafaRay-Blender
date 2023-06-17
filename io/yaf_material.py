@@ -61,7 +61,6 @@ class yafMaterial:
             return False
 
         param_map = libyafaray4_bindings.ParamMap()
-        param_map.setString("element", "shader_node")
         param_map.setString("type", "layer")
         param_map.setString("name", name)
         param_map.setString("input", tex_in)  # SEE the defination later
@@ -148,7 +147,6 @@ class yafMaterial:
 
         param_map = libyafaray4_bindings.ParamMap()
 
-        param_map.setString("element", "shader_node")
         param_map.setString("type", "texture_mapper")
         param_map.setString("name", name)
         param_map.setString("texture", texname)
