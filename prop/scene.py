@@ -439,16 +439,6 @@ def register():
         description="Enable diffuse photons processing in Photon Map integrator",
         default=True)
 
-    Scene.intg_photon_maps_processing = EnumProperty(
-        name="Photon Maps processing",
-        items=(
-            ('generate-only', 'Generate only', "Generate the Photon Maps in each render (default and RECOMMENDED)"),
-            ('generate-save', 'Generate and save', "Generate the Photon Maps and save them to files so they can be reloaded later"),
-            ('load', 'Load', "Load the Photon Maps from files. USE WITH CARE, only for scenes where ONLY the camera changes, like fly-through scenes"),
-            ('reuse-previous', 'Reuse previous', "Reuse previously generated Photon Maps from memory. USE WITH CARE, only for scenes where ONLY the camera changes, like fly-through scenes")            
-        ),
-        default='generate-only')
-
     Scene.intg_bounces = IntProperty(
         name="Depth",
         description="",
@@ -687,7 +677,6 @@ def unregister():
     del Scene.intg_motion_blur_time_forced_value
     del Scene.intg_photonmap_enable_caustics
     del Scene.intg_photonmap_enable_diffuse
-    del Scene.intg_photon_maps_processing
     del Scene.intg_bounces
     del Scene.intg_russian_roulette_min_bounces
     del Scene.intg_diffuse_radius

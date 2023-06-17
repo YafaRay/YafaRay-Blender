@@ -57,7 +57,6 @@ class Integrator:
             yaf_param_map.setString("type", "directlighting")
 
             yaf_param_map.setBool("caustics", scene.intg_use_caustics)
-            yaf_param_map.setString("photon_maps_processing", scene.intg_photon_maps_processing)
 
             if scene.intg_use_caustics:
                 yaf_param_map.setInt("caustic_photons", scene.intg_photons)
@@ -69,8 +68,6 @@ class Integrator:
             yaf_param_map.setString("type", "photonmapping")
             yaf_param_map.setBool("caustics", scene.intg_photonmap_enable_caustics)
             yaf_param_map.setBool("diffuse", scene.intg_photonmap_enable_diffuse)
-            yaf_param_map.setString("photon_maps_processing", scene.intg_photon_maps_processing)
-            
             yaf_param_map.setInt("bounces", scene.intg_bounces)
             yaf_param_map.setInt("diffuse_photons", scene.intg_photons)
             yaf_param_map.setInt("caustic_photons", scene.intg_cPhotons)
@@ -93,7 +90,6 @@ class Integrator:
             yaf_param_map.setInt("bounces", scene.intg_bounces)
             yaf_param_map.setInt("russian_roulette_min_bounces", scene.intg_russian_roulette_min_bounces)
             yaf_param_map.setBool("no_recursive", scene.intg_no_recursion)
-            yaf_param_map.setString("photon_maps_processing", scene.intg_photon_maps_processing)
 
             #-- test for simplify code
             causticTypeStr = scene.intg_caustic_method
