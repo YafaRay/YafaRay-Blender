@@ -38,7 +38,7 @@ def multiplyMatrix4x4Vector4(matrix, vector):
     return result
 
 
-class yafObject(object):
+class Object(object):
     def __init__(self, scene, logger, preview):
         self.yaf_scene = scene
         self.logger = logger
@@ -107,25 +107,25 @@ class yafObject(object):
             x = int(render.resolution_x * render.resolution_percentage * 0.01)
             y = int(render.resolution_y * render.resolution_percentage * 0.01)
 
-            param_map = libyafaray4_bindings.ParamMap()
+            yaf_param_map = libyafaray4_bindings.ParamMap()
 
             if yaf_global_vars.useViewToRender:
-                param_map.setString("type", "perspective")
-                param_map.setFloat("focal", 0.7)
+                yaf_param_map.setString("type", "perspective")
+                yaf_param_map.setFloat("focal", 0.7)
                 yaf_global_vars.useViewToRender = False
 
             else:
                 camera = cam.camera.data
                 camType = camera.camera_type
 
-                param_map.setString("type", camType)
+                yaf_param_map.setString("type", camType)
 
                 if camera.use_clipping:
-                    param_map.setFloat("nearClip", camera.clip_start)
-                    param_map.setFloat("farClip", camera.clip_end)
+                    yaf_param_map.setFloat("nearClip", camera.clip_start)
+                    yaf_param_map.setFloat("farClip", camera.clip_end)
 
                 if camType == "orthographic":
-                    param_map.setFloat("scale", camera.ortho_scale)
+                    yaf_param_map.setFloat("scale", camera.ortho_scale)
 
                 elif camType in {"perspective", "architect"}:
                     # Blenders GSOC 2011 project "tomato branch" merged into trunk.
@@ -145,7 +145,7 @@ class yafObject(object):
                     else:
                         f_aspect = x / y
 
-                    param_map.setFloat("focal", camera.lens / (f_aspect * sensor_size))
+                    yaf_param_map.setFloat("focal", camera.lens / (f_aspect * sensor_size))
 
                     # DOF params, only valid for real camera
                     # use DOF object distance if present or fixed DOF
@@ -159,22 +159,22 @@ class yafObject(object):
                         else:
                             # use fixed DOF distance
                             dof_distance = camera.dof_distance
-                        param_map.setFloat("dof_distance", dof_distance)
+                        yaf_param_map.setFloat("dof_distance", dof_distance)
 
-                    param_map.setFloat("aperture", camera.aperture)
+                    yaf_param_map.setFloat("aperture", camera.aperture)
                     # bokeh params
-                    param_map.setString("bokeh_type", camera.bokeh_type)
-                    param_map.setFloat("bokeh_rotation", camera.bokeh_rotation)
+                    yaf_param_map.setString("bokeh_type", camera.bokeh_type)
+                    yaf_param_map.setFloat("bokeh_rotation", camera.bokeh_rotation)
 
                 elif camType == "angular":
-                    param_map.setBool("circular", camera.circular)
-                    param_map.setBool("mirrored", camera.mirrored)
-                    param_map.setString("projection", camera.angular_projection)
-                    param_map.setFloat("max_angle", camera.max_angle)
-                    param_map.setFloat("angle", camera.angular_angle)
+                    yaf_param_map.setBool("circular", camera.circular)
+                    yaf_param_map.setBool("mirrored", camera.mirrored)
+                    yaf_param_map.setString("projection", camera.angular_projection)
+                    yaf_param_map.setFloat("max_angle", camera.max_angle)
+                    yaf_param_map.setFloat("angle", camera.angular_angle)
 
-            param_map.setInt("resx", x)
-            param_map.setInt("resy", y)
+            yaf_param_map.setInt("resx", x)
+            yaf_param_map.setInt("resy", y)
 
             if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable:
 
@@ -189,10 +189,10 @@ class yafObject(object):
                     up = (0,0,1)
                     to = (0,0,0)
 
-            param_map.setVector("from", pos[0], pos[1], pos[2])
-            param_map.setVector("up", up[0], up[1], up[2])
-            param_map.setVector("to", to[0], to[1], to[2])
-            self.film.defineCamera(param_map)
+            yaf_param_map.setVector("from", pos[0], pos[1], pos[2])
+            yaf_param_map.setVector("up", up[0], up[1], up[2])
+            yaf_param_map.setVector("to", to[0], to[1], to[2])
+            self.film.defineCamera(yaf_param_map)
 
 
     def getBBCorners(self, object):
@@ -294,15 +294,15 @@ class yafObject(object):
 
     def writeBGPortal(self, obj):
         self.logger.printInfo("Exporting Background Portal Light: {0}".format(obj.name))
-        param_map = libyafaray4_bindings.ParamMap()
-        param_map.setInt("obj_pass_index", obj.pass_index)
-        param_map.setString("type", "bgPortalLight")
-        param_map.setFloat("power", obj.bgp_power)
-        param_map.setInt("samples", obj.bgp_samples)
-        param_map.setString("object_name", obj.name)
-        param_map.setBool("with_caustic", obj.bgp_with_caustic)
-        param_map.setBool("with_diffuse", obj.bgp_with_diffuse)
-        param_map.setBool("photon_only", obj.bgp_photon_only)
+        yaf_param_map = libyafaray4_bindings.ParamMap()
+        yaf_param_map.setInt("obj_pass_index", obj.pass_index)
+        yaf_param_map.setString("type", "bgPortalLight")
+        yaf_param_map.setFloat("power", obj.bgp_power)
+        yaf_param_map.setInt("samples", obj.bgp_samples)
+        yaf_param_map.setString("object_name", obj.name)
+        yaf_param_map.setBool("with_caustic", obj.bgp_with_caustic)
+        yaf_param_map.setBool("with_diffuse", obj.bgp_with_diffuse)
+        yaf_param_map.setBool("photon_only", obj.bgp_photon_only)
         self.yaf_scene.createLight(obj.name)
         matrix = obj.matrix_world.copy()
         # Makes object invisible to the renderer (doesn't enter the kdtree)
@@ -314,25 +314,25 @@ class yafObject(object):
         ml_matname = "ML_"
         ml_matname += obj.name + "." + str(obj.__hash__())
 
-        param_map = libyafaray4_bindings.ParamMap()
-        param_map.setInt("obj_pass_index", obj.pass_index)
-        param_map.setString("type", "light_mat")
-        param_map.setBool("double_sided", obj.ml_double_sided)
+        yaf_param_map = libyafaray4_bindings.ParamMap()
+        yaf_param_map.setInt("obj_pass_index", obj.pass_index)
+        yaf_param_map.setString("type", "light_mat")
+        yaf_param_map.setBool("double_sided", obj.ml_double_sided)
         c = obj.ml_color
-        param_map.setColor("color", c[0], c[1], c[2])
-        param_map.setFloat("power", obj.ml_power)
+        yaf_param_map.setColor("color", c[0], c[1], c[2])
+        yaf_param_map.setFloat("power", obj.ml_power)
         self.yaf_scene.createMaterial(ml_matname)
 
         # Export mesh light
-        param_map = libyafaray4_bindings.ParamMap()
-        param_map.setInt("obj_pass_index", obj.pass_index)
-        param_map.setString("type", "objectlight")
-        param_map.setBool("double_sided", obj.ml_double_sided)
+        yaf_param_map = libyafaray4_bindings.ParamMap()
+        yaf_param_map.setInt("obj_pass_index", obj.pass_index)
+        yaf_param_map.setString("type", "objectlight")
+        yaf_param_map.setBool("double_sided", obj.ml_double_sided)
         c = obj.ml_color
-        param_map.setColor("color", c[0], c[1], c[2])
-        param_map.setFloat("power", obj.ml_power)
-        param_map.setInt("samples", obj.ml_samples)
-        param_map.setString("object_name", obj.name)
+        yaf_param_map.setColor("color", c[0], c[1], c[2])
+        yaf_param_map.setFloat("power", obj.ml_power)
+        yaf_param_map.setInt("samples", obj.ml_samples)
+        yaf_param_map.setString("object_name", obj.name)
         self.yaf_scene.createLight(obj.name)
 
         matrix = obj.matrix_world.copy()
@@ -346,16 +346,16 @@ class yafObject(object):
         # me = obj.data  /* UNUSED */
         # me_materials = me.materials  /* UNUSED */
 
-        param_map = libyafaray4_bindings.ParamMap()
-        param_map.setInt("obj_pass_index", obj.pass_index)
+        yaf_param_map = libyafaray4_bindings.ParamMap()
+        yaf_param_map.setInt("obj_pass_index", obj.pass_index)
 
         if obj.vol_region == 'ExpDensity Volume':
-            param_map.setString("type", "ExpDensityVolume")
-            param_map.setFloat("a", obj.vol_height)
-            param_map.setFloat("b", obj.vol_steepness)
+            yaf_param_map.setString("type", "ExpDensityVolume")
+            yaf_param_map.setFloat("a", obj.vol_height)
+            yaf_param_map.setFloat("b", obj.vol_steepness)
 
         elif obj.vol_region == 'Uniform Volume':
-            param_map.setString("type", "UniformVolume")
+            yaf_param_map.setString("type", "UniformVolume")
 
         elif obj.vol_region == 'Noise Volume':
             if not obj.active_material:
@@ -365,18 +365,18 @@ class yafObject(object):
             else:
                 texture = obj.active_material.active_texture
 
-                param_map.setString("type", "NoiseVolume")
-                param_map.setFloat("sharpness", obj.vol_sharpness)
-                param_map.setFloat("cover", obj.vol_cover)
-                param_map.setFloat("density", obj.vol_density)
-                param_map.setString("texture", texture.name)
+                yaf_param_map.setString("type", "NoiseVolume")
+                yaf_param_map.setFloat("sharpness", obj.vol_sharpness)
+                yaf_param_map.setFloat("cover", obj.vol_cover)
+                yaf_param_map.setFloat("density", obj.vol_density)
+                yaf_param_map.setString("texture", texture.name)
 
         elif obj.vol_region == 'Grid Volume':
-            param_map.setString("type", "GridVolume")
+            yaf_param_map.setString("type", "GridVolume")
 
-        param_map.setFloat("sigma_a", obj.vol_absorp)
-        param_map.setFloat("sigma_s", obj.vol_scatter)
-        param_map.setInt("attgridScale", self.scene.world.v_int_attgridres)
+        yaf_param_map.setFloat("sigma_a", obj.vol_absorp)
+        yaf_param_map.setFloat("sigma_s", obj.vol_scatter)
+        yaf_param_map.setInt("attgridScale", self.scene.world.v_int_attgridres)
 
         # Calculate BoundingBox: get the low corner (minx, miny, minz)
         # and the up corner (maxx, maxy, maxz) then apply object scale,
@@ -391,12 +391,12 @@ class yafObject(object):
 
         vec = [j for v in mesh.vertices for j in v.co]
 
-        param_map.setFloat("minX", max(min(vec[0::3]), -1e10))
-        param_map.setFloat("minY", max(min(vec[1::3]), -1e10))
-        param_map.setFloat("minZ", max(min(vec[2::3]), -1e10))
-        param_map.setFloat("maxX", min(max(vec[0::3]), 1e10))
-        param_map.setFloat("maxY", min(max(vec[1::3]), 1e10))
-        param_map.setFloat("maxZ", min(max(vec[2::3]), 1e10))
+        yaf_param_map.setFloat("minX", max(min(vec[0::3]), -1e10))
+        yaf_param_map.setFloat("minY", max(min(vec[1::3]), -1e10))
+        yaf_param_map.setFloat("minZ", max(min(vec[2::3]), -1e10))
+        yaf_param_map.setFloat("maxX", min(max(vec[0::3]), 1e10))
+        yaf_param_map.setFloat("maxY", min(max(vec[1::3]), 1e10))
+        yaf_param_map.setFloat("maxZ", min(max(vec[2::3]), 1e10))
 
         self.yaf_scene.createVolumeRegion("VR.{0}-{1}".format(obj.name, str(obj.__hash__())))
         if bpy.app.version >= (2, 80, 0):
@@ -503,18 +503,18 @@ class yafObject(object):
                 mesh.transform(matrix2)
             pass
 
-        param_map = libyafaray4_bindings.ParamMap()
+        yaf_param_map = libyafaray4_bindings.ParamMap()
 
-        param_map.setString("type", "mesh")
-        param_map.setInt("num_vertices", len(mesh.vertices))
-        param_map.setInt("num_faces", len(getattr(mesh, face_attr)))
-        param_map.setBool("has_orco", hasOrco)
-        param_map.setBool("has_uv", hasUV)
-        param_map.setBool("is_base_object", is_base_object)
-        param_map.setString("visibility", visibility)
-        param_map.setInt("object_index", pass_index)
-        param_map.setBool("motion_blur_bezier", obj.motion_blur_bezier)
-        object_id = self.yaf_scene.createObject(str(ID), param_map)
+        yaf_param_map.setString("type", "mesh")
+        yaf_param_map.setInt("num_vertices", len(mesh.vertices))
+        yaf_param_map.setInt("num_faces", len(getattr(mesh, face_attr)))
+        yaf_param_map.setBool("has_orco", hasOrco)
+        yaf_param_map.setBool("has_uv", hasUV)
+        yaf_param_map.setBool("is_base_object", is_base_object)
+        yaf_param_map.setString("visibility", visibility)
+        yaf_param_map.setInt("object_index", pass_index)
+        yaf_param_map.setBool("motion_blur_bezier", obj.motion_blur_bezier)
+        object_id = self.yaf_scene.createObject(str(ID), yaf_param_map)
 
         for ind, v in enumerate(mesh.vertices):
             if hasOrco:
@@ -653,14 +653,14 @@ class yafObject(object):
 
                     matrix = object.matrix_world.copy()
                     for particle in pSys.particles:
-                        param_map = libyafaray4_bindings.ParamMap()
+                        yaf_param_map = libyafaray4_bindings.ParamMap()
                         yi.setCurrentMaterial(pmaterial.name)
-                        param_map.setString("type", "curve")
-                        param_map.setFloat("strand_start", strandStart)
-                        param_map.setFloat("strand_end", strandEnd)
-                        param_map.setFloat("strand_shape", strandShape)
-                        param_map.setInt("num_vertices", len(particle.hair_keys))
-                        param_map.setBool("motion_blur_bezier", object.motion_blur_bezier)
+                        yaf_param_map.setString("type", "curve")
+                        yaf_param_map.setFloat("strand_start", strandStart)
+                        yaf_param_map.setFloat("strand_end", strandEnd)
+                        yaf_param_map.setFloat("strand_shape", strandShape)
+                        yaf_param_map.setInt("num_vertices", len(particle.hair_keys))
+                        yaf_param_map.setBool("motion_blur_bezier", object.motion_blur_bezier)
                         self.yaf_scene.createObject(object.name + "_strand_" + str(yi.getNextFreeId()))
                         for location in particle.hair_keys:
                             vertex = matrix * location.co  # use reverse vector multiply order, API changed with rev. 38674

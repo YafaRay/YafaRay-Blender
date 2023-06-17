@@ -77,121 +77,121 @@ def getRenderCoords(scene):
 
 
 def exportAA(yi, scene):
-    param_map.setInt("AA_passes", scene.AA_passes)
-    param_map.setInt("AA_minsamples", scene.AA_min_samples)
-    param_map.setInt("AA_inc_samples", scene.AA_inc_samples)
-    param_map.setFloat("AA_pixelwidth", scene.AA_pixelwidth)
-    param_map.setFloat("AA_threshold", scene.AA_threshold)
-    param_map.setString("filter_type", scene.AA_filter_type)
-    param_map.setFloat("AA_resampled_floor", scene.yafaray.noise_control.resampled_floor)
-    param_map.setFloat("AA_sample_multiplier_factor", scene.yafaray.noise_control.sample_multiplier_factor)
-    param_map.setFloat("AA_light_sample_multiplier_factor", scene.yafaray.noise_control.light_sample_multiplier_factor)
-    param_map.setFloat("AA_indirect_sample_multiplier_factor", scene.yafaray.noise_control.indirect_sample_multiplier_factor)
-    param_map.setBool("AA_detect_color_noise", scene.yafaray.noise_control.detect_color_noise)
-    param_map.setString("AA_dark_detection_type", scene.yafaray.noise_control.dark_detection_type)
-    param_map.setFloat("AA_dark_threshold_factor", scene.yafaray.noise_control.dark_threshold_factor)
-    param_map.setInt("AA_variance_edge_size", scene.yafaray.noise_control.variance_edge_size)
-    param_map.setInt("AA_variance_pixels", scene.yafaray.noise_control.variance_pixels)
-    param_map.setFloat("AA_clamp_samples", scene.yafaray.noise_control.clamp_samples)
-    param_map.setFloat("AA_clamp_indirect", scene.yafaray.noise_control.clamp_indirect)
-    param_map.setBool("background_resampling", scene.yafaray.noise_control.background_resampling)
+    yaf_param_map.setInt("AA_passes", scene.AA_passes)
+    yaf_param_map.setInt("AA_minsamples", scene.AA_min_samples)
+    yaf_param_map.setInt("AA_inc_samples", scene.AA_inc_samples)
+    yaf_param_map.setFloat("AA_pixelwidth", scene.AA_pixelwidth)
+    yaf_param_map.setFloat("AA_threshold", scene.AA_threshold)
+    yaf_param_map.setString("filter_type", scene.AA_filter_type)
+    yaf_param_map.setFloat("AA_resampled_floor", scene.yafaray.noise_control.resampled_floor)
+    yaf_param_map.setFloat("AA_sample_multiplier_factor", scene.yafaray.noise_control.sample_multiplier_factor)
+    yaf_param_map.setFloat("AA_light_sample_multiplier_factor", scene.yafaray.noise_control.light_sample_multiplier_factor)
+    yaf_param_map.setFloat("AA_indirect_sample_multiplier_factor", scene.yafaray.noise_control.indirect_sample_multiplier_factor)
+    yaf_param_map.setBool("AA_detect_color_noise", scene.yafaray.noise_control.detect_color_noise)
+    yaf_param_map.setString("AA_dark_detection_type", scene.yafaray.noise_control.dark_detection_type)
+    yaf_param_map.setFloat("AA_dark_threshold_factor", scene.yafaray.noise_control.dark_threshold_factor)
+    yaf_param_map.setInt("AA_variance_edge_size", scene.yafaray.noise_control.variance_edge_size)
+    yaf_param_map.setInt("AA_variance_pixels", scene.yafaray.noise_control.variance_pixels)
+    yaf_param_map.setFloat("AA_clamp_samples", scene.yafaray.noise_control.clamp_samples)
+    yaf_param_map.setFloat("AA_clamp_indirect", scene.yafaray.noise_control.clamp_indirect)
+    yaf_param_map.setBool("background_resampling", scene.yafaray.noise_control.background_resampling)
 
     if scene.name == "preview" and bpy.data.scenes[0].yafaray.preview.enable:
-        param_map.setInt("AA_passes", bpy.data.scenes[0].yafaray.preview.previewAApasses)
-        param_map.setFloat("AA_threshold", 0.01)
+        yaf_param_map.setInt("AA_passes", bpy.data.scenes[0].yafaray.preview.previewAApasses)
+        yaf_param_map.setFloat("AA_threshold", 0.01)
 
 
 def exportRenderSettings(yi, depsgraph, render_path, render_filename):
-    self.logger.printVerbose("Exporting Render Settings")
+    self.yaf_logger.printVerbose("Exporting Render Settings")
     scene = scene_from_depsgraph(depsgraph)
     render = scene.render
 
     [sizeX, sizeY, bStartX, bStartY, bsizeX, bsizeY, cam_data] = getRenderCoords(scene)
 
-    param_map.setString("scene_accelerator", scene.gs_accelerator)
+    yaf_param_map.setString("scene_accelerator", scene.gs_accelerator)
 
     exportAA(yi, scene)
 
-    param_map.setInt("xstart", bStartX)
-    param_map.setInt("ystart", bStartY)
+    yaf_param_map.setInt("xstart", bStartX)
+    yaf_param_map.setInt("ystart", bStartY)
 
     # no border when rendering to view
     if render.use_border and cam_data:
-        param_map.setInt("width", bsizeX)
-        param_map.setInt("height", bsizeY)
+        yaf_param_map.setInt("width", bsizeX)
+        yaf_param_map.setInt("height", bsizeY)
     else:
-        param_map.setInt("width", sizeX)
-        param_map.setInt("height", sizeY)
+        yaf_param_map.setInt("width", sizeX)
+        yaf_param_map.setInt("height", sizeY)
 
-    param_map.setBool("show_sam_pix", scene.gs_show_sam_pix)
+    yaf_param_map.setBool("show_sam_pix", scene.gs_show_sam_pix)
 
     if scene.name == "preview" and bpy.data.scenes[0].yafaray.preview.enable:
-        param_map.setBool("show_sam_pix", False)
+        yaf_param_map.setBool("show_sam_pix", False)
 
-    param_map.setInt("tile_size", scene.gs_tile_size)
-    param_map.setString("tiles_order", scene.gs_tile_order)
+    yaf_param_map.setInt("tile_size", scene.gs_tile_size)
+    yaf_param_map.setString("tiles_order", scene.gs_tile_order)
 
     if scene.gs_auto_threads:
-        param_map.setInt("threads", -1)
-        param_map.setInt("threads_photons", -1)
+        yaf_param_map.setInt("threads", -1)
+        yaf_param_map.setInt("threads_photons", -1)
     else:
-        param_map.setInt("threads", scene.gs_threads)
-        param_map.setInt("threads_photons", scene.gs_threads)
+        yaf_param_map.setInt("threads", scene.gs_threads)
+        yaf_param_map.setInt("threads_photons", scene.gs_threads)
 
-    param_map.setString("images_autosave_interval_type", scene.gs_images_autosave_interval_type)
-    param_map.setInt("images_autosave_interval_passes", scene.gs_images_autosave_interval_passes)
-    param_map.setFloat("images_autosave_interval_seconds", scene.gs_images_autosave_interval_seconds)
+    yaf_param_map.setString("images_autosave_interval_type", scene.gs_images_autosave_interval_type)
+    yaf_param_map.setInt("images_autosave_interval_passes", scene.gs_images_autosave_interval_passes)
+    yaf_param_map.setFloat("images_autosave_interval_seconds", scene.gs_images_autosave_interval_seconds)
 
-    param_map.setString("film_load_save_mode", scene.gs_film_save_load)
-    param_map.setString("film_load_save_path", render_path + "/" + render_filename)
-    param_map.setString("film_autosave_interval_type", scene.gs_film_autosave_interval_type)
-    param_map.setInt("film_autosave_interval_passes", scene.gs_film_autosave_interval_passes)
-    param_map.setFloat("film_autosave_interval_seconds", scene.gs_film_autosave_interval_seconds)
+    yaf_param_map.setString("film_load_save_mode", scene.gs_film_save_load)
+    yaf_param_map.setString("film_load_save_path", render_path + "/" + render_filename)
+    yaf_param_map.setString("film_autosave_interval_type", scene.gs_film_autosave_interval_type)
+    yaf_param_map.setInt("film_autosave_interval_passes", scene.gs_film_autosave_interval_passes)
+    yaf_param_map.setFloat("film_autosave_interval_seconds", scene.gs_film_autosave_interval_seconds)
 
-    param_map.setBool("adv_auto_shadow_bias_enabled", scene.adv_auto_shadow_bias_enabled)
-    param_map.setFloat("adv_shadow_bias_value", scene.adv_shadow_bias_value)
-    param_map.setBool("adv_auto_min_raydist_enabled", scene.adv_auto_min_raydist_enabled)
-    param_map.setFloat("adv_min_raydist_value", scene.adv_min_raydist_value)
-    param_map.setFloat("adv_min_raydist_value", scene.adv_min_raydist_value)
-    param_map.setInt("adv_base_sampling_offset", scene.adv_base_sampling_offset)
+    yaf_param_map.setBool("adv_auto_shadow_bias_enabled", scene.adv_auto_shadow_bias_enabled)
+    yaf_param_map.setFloat("adv_shadow_bias_value", scene.adv_shadow_bias_value)
+    yaf_param_map.setBool("adv_auto_min_raydist_enabled", scene.adv_auto_min_raydist_enabled)
+    yaf_param_map.setFloat("adv_min_raydist_value", scene.adv_min_raydist_value)
+    yaf_param_map.setFloat("adv_min_raydist_value", scene.adv_min_raydist_value)
+    yaf_param_map.setInt("adv_base_sampling_offset", scene.adv_base_sampling_offset)
     if bpy.app.version >= (2, 80, 0):
         pass   # FIXME BLENDER 2.80-3.00
     else:
-        param_map.setInt("adv_computer_node", bpy.context.user_preferences.addons["yafaray4"].preferences.yafaray_computer_node)
+        yaf_param_map.setInt("adv_computer_node", bpy.context.user_preferences.addons["yafaray4"].preferences.yafaray_computer_node)
 
-    param_map.setInt("layer_mask_obj_index", scene.yafaray.passes.pass_mask_obj_index)
-    param_map.setInt("layer_mask_mat_index", scene.yafaray.passes.pass_mask_mat_index)
-    param_map.setBool("layer_mask_invert", scene.yafaray.passes.pass_mask_invert)
-    param_map.setBool("layer_mask_only", scene.yafaray.passes.pass_mask_only)
+    yaf_param_map.setInt("layer_mask_obj_index", scene.yafaray.passes.pass_mask_obj_index)
+    yaf_param_map.setInt("layer_mask_mat_index", scene.yafaray.passes.pass_mask_mat_index)
+    yaf_param_map.setBool("layer_mask_invert", scene.yafaray.passes.pass_mask_invert)
+    yaf_param_map.setBool("layer_mask_only", scene.yafaray.passes.pass_mask_only)
 
-    param_map.setInt("layer_object_edge_thickness", scene.yafaray.passes.objectEdgeThickness)
-    param_map.setInt("layer_faces_edge_thickness", scene.yafaray.passes.facesEdgeThickness)
-    param_map.setFloat("layer_object_edge_threshold", scene.yafaray.passes.objectEdgeThreshold)
-    param_map.setFloat("layer_faces_edge_threshold", scene.yafaray.passes.facesEdgeThreshold)
-    param_map.setFloat("layer_object_edge_smoothness", scene.yafaray.passes.objectEdgeSmoothness)
-    param_map.setFloat("layer_faces_edge_smoothness", scene.yafaray.passes.facesEdgeSmoothness)
-    param_map.setColor("layer_toon_edge_color", scene.yafaray.passes.toonEdgeColor[0],
+    yaf_param_map.setInt("layer_object_edge_thickness", scene.yafaray.passes.objectEdgeThickness)
+    yaf_param_map.setInt("layer_faces_edge_thickness", scene.yafaray.passes.facesEdgeThickness)
+    yaf_param_map.setFloat("layer_object_edge_threshold", scene.yafaray.passes.objectEdgeThreshold)
+    yaf_param_map.setFloat("layer_faces_edge_threshold", scene.yafaray.passes.facesEdgeThreshold)
+    yaf_param_map.setFloat("layer_object_edge_smoothness", scene.yafaray.passes.objectEdgeSmoothness)
+    yaf_param_map.setFloat("layer_faces_edge_smoothness", scene.yafaray.passes.facesEdgeSmoothness)
+    yaf_param_map.setColor("layer_toon_edge_color", scene.yafaray.passes.toonEdgeColor[0],
                       scene.yafaray.passes.toonEdgeColor[1], scene.yafaray.passes.toonEdgeColor[2])
-    param_map.setFloat("layer_toon_pre_smooth", scene.yafaray.passes.toonPreSmooth)
-    param_map.setFloat("layer_toon_post_smooth", scene.yafaray.passes.toonPostSmooth)
-    param_map.setFloat("layer_toon_quantization", scene.yafaray.passes.toonQuantization)
+    yaf_param_map.setFloat("layer_toon_pre_smooth", scene.yafaray.passes.toonPreSmooth)
+    yaf_param_map.setFloat("layer_toon_post_smooth", scene.yafaray.passes.toonPostSmooth)
+    yaf_param_map.setFloat("layer_toon_quantization", scene.yafaray.passes.toonQuantization)
 
 
 def setLoggingAndBadgeSettings(yi, scene):
-    self.logger.printVerbose("Exporting Logging and Badge settings")
-    param_map.setBool("badge_draw_render_settings", scene.yafaray.logging.drawRenderSettings)
-    param_map.setBool("badge_draw_aa_noise_settings", scene.yafaray.logging.drawAANoiseSettings)
-    param_map.setBool("logging_save_txt", scene.yafaray.logging.saveLog)
-    param_map.setBool("logging_save_html", scene.yafaray.logging.saveHTML)
-    param_map.setString("badge_position", scene.yafaray.logging.paramsBadgePosition)
-    param_map.setString("badge_title", scene.yafaray.logging.title)
-    param_map.setString("badge_author", scene.yafaray.logging.author)
-    param_map.setString("badge_contact", scene.yafaray.logging.contact)
-    param_map.setString("badge_comment", scene.yafaray.logging.comments)
+    self.yaf_logger.printVerbose("Exporting Logging and Badge settings")
+    yaf_param_map.setBool("badge_draw_render_settings", scene.yafaray.logging.drawRenderSettings)
+    yaf_param_map.setBool("badge_draw_aa_noise_settings", scene.yafaray.logging.drawAANoiseSettings)
+    yaf_param_map.setBool("logging_save_txt", scene.yafaray.logging.saveLog)
+    yaf_param_map.setBool("logging_save_html", scene.yafaray.logging.saveHTML)
+    yaf_param_map.setString("badge_position", scene.yafaray.logging.paramsBadgePosition)
+    yaf_param_map.setString("badge_title", scene.yafaray.logging.title)
+    yaf_param_map.setString("badge_author", scene.yafaray.logging.author)
+    yaf_param_map.setString("badge_contact", scene.yafaray.logging.contact)
+    yaf_param_map.setString("badge_comment", scene.yafaray.logging.comments)
     if scene.yafaray.logging.customIcon != "":
-        param_map.setString("badge_icon_path", os.path.abspath(bpy.path.abspath(scene.yafaray.logging.customIcon)))
-    param_map.setString("badge_font_path", scene.yafaray.logging.customFont)
-    param_map.setFloat("badge_font_size_factor", scene.yafaray.logging.fontScale)
+        yaf_param_map.setString("badge_icon_path", os.path.abspath(bpy.path.abspath(scene.yafaray.logging.customIcon)))
+    yaf_param_map.setString("badge_font_path", scene.yafaray.logging.customFont)
+    yaf_param_map.setFloat("badge_font_size_factor", scene.yafaray.logging.fontScale)
 
 
 def calcAlphaPremultiply(scene):
@@ -262,16 +262,16 @@ def calcColorSpace(scene):
     return color_space(color_space_1, color_space_2)
 
 def defineLayers(yi, depsgraph):
-    self.logger.printVerbose("Exporting Render Passes settings")
+    self.yaf_logger.printVerbose("Exporting Render Passes settings")
     scene = scene_from_depsgraph(depsgraph)
 
     def defineLayer(layer_type, exported_image_type, exported_image_name):
-        param_map.setString("type", layer_type)
-        param_map.setString("image_type", exported_image_type)
-        param_map.setString("exported_image_name", exported_image_name)
-        param_map.setString("exported_image_type", exported_image_type)
+        yaf_param_map.setString("type", layer_type)
+        yaf_param_map.setString("image_type", exported_image_type)
+        yaf_param_map.setString("exported_image_name", exported_image_name)
+        yaf_param_map.setString("exported_image_type", exported_image_type)
         yi.defineLayer()
-        param_map = libyafaray4_bindings.ParamMap()
+        yaf_param_map = libyafaray4_bindings.ParamMap()
 
     defineLayer("combined", "ColorAlpha", "Combined")
 
