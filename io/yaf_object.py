@@ -41,7 +41,7 @@ def multiplyMatrix4x4Vector4(matrix, vector):
 class Object(object):
     def __init__(self, scene, logger, preview):
         self.yaf_scene = scene
-        self.logger = logger
+        self.yaf_logger = logger
         self.is_preview = preview
 
     def setDepsgraph(self, depsgraph):
@@ -51,7 +51,7 @@ class Object(object):
     def createCameras(self):
 
         
-        self.logger.printInfo("Exporting Cameras")
+        self.yaf_logger.printInfo("Exporting Cameras")
     
         render = self.scene.render
         
@@ -235,7 +235,7 @@ class Object(object):
                 self.writeMesh(obj, matrix)
 
     def writeInstanceBase(self, ID, obj):
-        self.logger.printInfo("Exporting Base Mesh: {0} with ID: {1}".format(obj.name, ID))
+        self.yaf_logger.printInfo("Exporting Base Mesh: {0} with ID: {1}".format(obj.name, ID))
         # Create this geometry object as a base object for instances
         self.writeGeometry(ID, obj, None, obj.pass_index, None, "normal", True)  # We want the vertices in object space
         return ID
@@ -247,13 +247,13 @@ class Object(object):
         #self.yi.addInstance(base_obj_name, o2w)
         instance_id = self.yaf_scene.createInstance()
         object_id = self.yaf_scene.getObjectId(base_obj_name)
-        self.logger.printVerbose("Exporting Instance ID={0} of {1} [ID = {2}]".format(instance_id, base_obj_name, object_id))
+        self.yaf_logger.printVerbose("Exporting Instance ID={0} of {1} [ID = {2}]".format(instance_id, base_obj_name, object_id))
         self.yaf_scene.addInstanceObject(instance_id, object_id)
         self.addInstanceMatrix(instance_id, obj_to_world, 0.0)
         return instance_id
 
     def addInstanceMatrix(self, instance_id, obj2WorldMatrix, time):
-        self.logger.printVerbose("Adding matrix to Instance ID={0} at time {1}".format(instance_id, time))
+        self.yaf_logger.printVerbose("Adding matrix to Instance ID={0} at time {1}".format(instance_id, time))
         #print(obj2WorldMatrix)
         obj_to_world = obj2WorldMatrix.to_4x4()
         self.yaf_scene.addInstanceMatrix(instance_id,
@@ -270,7 +270,7 @@ class Object(object):
             # Generate unique object ID
             ID = obj.name
         
-        self.logger.printInfo("Exporting Mesh: {0}".format(ID))
+        self.yaf_logger.printInfo("Exporting Mesh: {0}".format(ID))
 
         if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable and "preview" in obj.name:
             ymat = obj.active_material.name
@@ -293,7 +293,7 @@ class Object(object):
             self.writeGeometry(ID, obj, matrix, obj.pass_index)
 
     def writeBGPortal(self, obj):
-        self.logger.printInfo("Exporting Background Portal Light: {0}".format(obj.name))
+        self.yaf_logger.printInfo("Exporting Background Portal Light: {0}".format(obj.name))
         yaf_param_map = libyafaray4_bindings.ParamMap()
         yaf_param_map.setInt("obj_pass_index", obj.pass_index)
         yaf_param_map.setString("type", "bgPortalLight")
@@ -310,7 +310,7 @@ class Object(object):
 
     def writeMeshLight(self, obj):
 
-        self.logger.printInfo("Exporting Meshlight: {0}".format(obj.name))
+        self.yaf_logger.printInfo("Exporting Meshlight: {0}".format(obj.name))
         ml_matname = "ML_"
         ml_matname += obj.name + "." + str(obj.__hash__())
 
@@ -340,7 +340,7 @@ class Object(object):
 
     def writeVolumeObject(self, obj):
 
-        self.logger.printInfo("Exporting Volume Region: {0}".format(obj.name))
+        self.yaf_logger.printInfo("Exporting Volume Region: {0}".format(obj.name))
 
         
         # me = obj.data  /* UNUSED */
@@ -359,9 +359,9 @@ class Object(object):
 
         elif obj.vol_region == 'Noise Volume':
             if not obj.active_material:
-                self.logger.printError("Volume object ({0}) is missing the materials".format(obj.name))
+                self.yaf_logger.printError("Volume object ({0}) is missing the materials".format(obj.name))
             elif not obj.active_material.active_texture:
-                self.logger.printError("Volume object's material ({0}) is missing the noise texture".format(obj.name))
+                self.yaf_logger.printError("Volume object's material ({0}) is missing the noise texture".format(obj.name))
             else:
                 texture = obj.active_material.active_texture
 
@@ -631,7 +631,7 @@ class Object(object):
                 continue  # FIXME BLENDER 2.80-3.00
             for mod in [m for m in object.modifiers if (m is not None) and (m.type == 'PARTICLE_SYSTEM')]:
                 if (pSys.settings.render_type == 'PATH') and mod.show_render and (pSys.name == mod.particle_system.name):
-                    self.logger.printInfo("Exporter: Creating Hair Particle System {!r}".format(pSys.name))
+                    self.yaf_logger.printInfo("Exporter: Creating Hair Particle System {!r}".format(pSys.name))
                     tstart = time.time()
                     # TODO: clay particles uses at least materials thikness?
                     if object.active_material is not None:
@@ -680,7 +680,7 @@ class Object(object):
                         yi.endObject()
                     # TODO: keep object smooth
                     #yi.smoothMesh(0, 60.0)
-                    self.logger.printInfo("Exporter: Particle creation time: {0:.3f}".format(time.time() - tstart))
+                    self.yaf_logger.printInfo("Exporter: Particle creation time: {0:.3f}".format(time.time() - tstart))
 
                     if pSys.settings.use_render_emitter:
                         renderEmitter = True

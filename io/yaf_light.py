@@ -39,7 +39,7 @@ def multiplyMatrix4x4Vector4(matrix, vector):
 class Light:
     def __init__(self, scene, logger, preview):
         self.yaf_scene = scene
-        self.logger = logger
+        self.yaf_logger = logger
         self.lightMatName = None
         self.preview = preview
 
@@ -132,7 +132,7 @@ class Light:
 
         yaf_param_map = libyafaray4_bindings.ParamMap()
 
-        self.logger.printInfo("Exporting Light: {0} [{1}]".format(name, lightType))
+        self.yaf_logger.printInfo("Exporting Light: {0} [{1}]".format(name, lightType))
 
         if light.create_geometry:  # and not self.lightMat:
             yaf_param_map = libyafaray4_bindings.ParamMap()
@@ -200,7 +200,7 @@ class Light:
             yaf_param_map.setVector("to", to[0], to[1], to[2])
             ies_file = abspath(light.ies_file)
             if not any(ies_file) and not os.path.exists(ies_file):
-                self.logger.printWarning("IES file not found for {0}".format(name))
+                self.yaf_logger.printWarning("IES file not found for {0}".format(name))
                 return False
             yaf_param_map.setString("file", ies_file)
             yaf_param_map.setInt("samples", light.yaf_samples)

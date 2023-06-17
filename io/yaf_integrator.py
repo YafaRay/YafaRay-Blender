@@ -19,14 +19,14 @@
 # <pep8 compliant>
 
 import bpy
+import libyafaray4_bindings
 
 class Integrator:
-    def __init__(self, interface):
-        self.yi = interface
+    def __init__(self, yaf_integrator, yaf_logger):
+        self.yaf_integrator = yaf_integrator
+        self.yaf_logger = yaf_logger
 
-    def exportIntegrator(self, scene, renderer, logger):
-        self.logger = logger
-        self.renderer = renderer
+    def exportIntegrator(self, scene, is_preview):
 
         yaf_param_map = libyafaray4_bindings.ParamMap()
 
@@ -43,7 +43,7 @@ class Integrator:
         yaf_param_map.setBool("transpShad", scene.gs_transp_shad)
 
         light_type = scene.intg_light_method
-        self.logger.printInfo("Exporting Integrator: {0}".format(light_type))
+        self.yaf_logger.printInfo("Exporting Integrator: {0}".format(light_type))
 
         yaf_param_map.setBool("do_AO", scene.intg_use_AO)
         yaf_param_map.setInt("AO_samples", scene.intg_AO_samples)
@@ -131,10 +131,15 @@ class Integrator:
             yaf_param_map.setInt("passNums", scene.intg_pass_num)
             yaf_param_map.setBool("pmIRE", scene.intg_pm_ire)
 
-        self.renderer.defineSurfaceIntegrator()
+        if is_preview:
+            integrator_name = "Blender Main SurfaceIntegrator"
+        else:
+            integrator_name = "Blender Preview SurfaceIntegrator"
+
+        self.yaf_integrator = libyafaray4_bindings.SurfaceIntegrator(self.yaf_logger, "Blender Main SurfaceIntegrator", yaf_param_map)
         return True
 
-    def exportVolumeIntegrator(self, scene):
+    def exportVolumeIntegrator(self, scene, yaf_scene, yaf_integrator):
         
         yaf_param_map = libyafaray4_bindings.ParamMap()
 
@@ -142,7 +147,7 @@ class Integrator:
 
         if world:
             vint_type = world.v_int_type
-            self.logger.printInfo("Exporting Volume Integrator: {0}".format(vint_type))
+            self.yaf_logger.printInfo("Exporting Volume Integrator: {0}".format(vint_type))
 
             if vint_type == 'Single Scatter':
                 yaf_param_map.setString("type", "SingleScatterIntegrator")
@@ -162,5 +167,5 @@ class Integrator:
         else:
             yaf_param_map.setString("type", "none")
 
-        yi.defineVolumeIntegrator()
+        self.yaf_integrator.defineVolumeIntegrator(yaf_scene, yaf_param_map)
         return True

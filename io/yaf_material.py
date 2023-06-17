@@ -36,7 +36,7 @@ def proj2int(val):
 class Material:
     def __init__(self, scene, logger, texMap):
         self.yaf_scene = scene
-        self.logger = logger
+        self.yaf_logger = logger
         self.textureMap = texMap
 
     def getUsedTextures(self, material):
@@ -619,7 +619,7 @@ class Material:
         param_map_list = libyafaray4_bindings.ParamMapList()
         yaf_param_map = libyafaray4_bindings.ParamMap()
 
-        self.logger.printInfo("Exporter: Blend material with: [" + mat.material1name + "] [" + mat.material2name + "]")
+        self.yaf_logger.printInfo("Exporter: Blend material with: [" + mat.material1name + "] [" + mat.material2name + "]")
         yaf_param_map.setString("type", "blend_mat")
         yaf_param_map.setString("material1", mat.material1name)
         yaf_param_map.setString("material2", mat.material2name)
@@ -692,7 +692,7 @@ class Material:
 
     def writeMaterial(self, mat, scene, preview=False):
         self.preview = preview
-        self.logger.printInfo("Exporter: Creating Material: \"" + mat.name + "\"")
+        self.yaf_logger.printInfo("Exporter: Creating Material: \"" + mat.name + "\"")
         ymat = None
         if mat.name == "y_null":
             ymat = self.writeNullMat(mat, scene)

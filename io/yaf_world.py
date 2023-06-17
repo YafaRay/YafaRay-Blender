@@ -27,7 +27,7 @@ import libyafaray4_bindings
 class World:
     def __init__(self, scene, logger):
         self.scene = scene
-        self.logger = logger
+        self.yaf_logger = logger
 
     def exportWorld(self, scene, yaf_scene, is_preview):
 
@@ -46,13 +46,13 @@ class World:
             iblSamples = 16
             bgPower = 1
 
-        self.logger.printInfo("Exporting World, type: {0}".format(bg_type))
+        self.yaf_logger.printInfo("Exporting World, type: {0}".format(bg_type))
         yaf_param_map = libyafaray4_bindings.ParamMap()
 
         if bg_type == 'Texture':
             if world.active_texture is not None:
                 worldTex = world.active_texture
-                self.logger.printInfo("World Texture, name: {0}".format(worldTex.name))
+                self.yaf_logger.printInfo("World Texture, name: {0}".format(worldTex.name))
             else:
                 worldTex = None
 
@@ -121,7 +121,7 @@ class World:
                     
                     # now, this msg is not need , but....
                     if textcoord not in {'ANGMAP', 'SPHERE'}:
-                        self.logger.printWarning("World texture mapping neither Sphere or AngMap, set it to AngMap now by default!")
+                        self.yaf_logger.printWarning("World texture mapping neither Sphere or AngMap, set it to AngMap now by default!")
                         
                     yaf_param_map.setString("type", "textureback")
                     yaf_param_map.setString("texture", "world_texture")

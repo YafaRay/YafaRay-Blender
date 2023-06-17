@@ -47,7 +47,7 @@ from .. import yaf_global_vars
 yaf_logger = libyafaray4_bindings.Logger()
 yaf_logger.setConsoleVerbosityLevel(yaf_logger.logLevelFromString("debug"))
 yaf_logger.setLogVerbosityLevel(yaf_logger.logLevelFromString("debug"))
-#self.logger.setConsoleLogColorsEnabled(True)
+#self.yaf_logger.setConsoleLogColorsEnabled(True)
 yaf_logger.enablePrintDateTime(True)
 yaf_main_scene = libyafaray4_bindings.Scene(yaf_logger, "Blender Main Scene")
 yaf_preview_scene = libyafaray4_bindings.Scene(yaf_logger, "Blender Preview Scene")
@@ -102,7 +102,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
         self.object = Object(self.yaf_scene, self.yaf_logger, self.is_preview)
         self.light = Light(self.yaf_scene, self.yaf_logger, self.is_preview)
         self.world = World(self.yaf_scene, self.yaf_logger)
-        self.integrator = Integrator(self.yaf_scene)
+        self.integrator = Integrator(self.yaf_integrator, self.yaf_logger)
         self.texture = Texture(self.yaf_scene, self.yaf_logger)
         self.material = Material(self.yaf_scene, self.yaf_logger, self.texture.loadedTextures)
 
@@ -496,10 +496,11 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
             #        yafaray_presets.YAF_AddPresetBase.export_to_file(yafaray_presets.YAFARAY_OT_presets_renderset, self.outputFile)
 
         self.exportScene()
-        self.integrator.exportIntegrator(self.scene)
-        self.integrator.exportVolumeIntegrator(self.scene)
-        yaf_scene.defineLayers(self.yaf_scene, self.depsgraph)
-        yaf_scene.exportRenderSettings(self.yaf_scene, self.depsgraph, render_path, render_filename)
+        self.integrator.exportIntegrator(self.scene, self.is_preview)
+        self.integrator.exportVolumeIntegrator(self.scene, self.yaf_scene, self.yaf_integrator)
+        #yaf_scene.defineLayers(self.yaf_scene, self.depsgraph)
+        #yaf_scene.exportRenderSettings(self.yaf_scene, self.depsgraph, render_path, render_filename)
+
         self.yaf_scene.setupRender()
 
     # callback to render scene

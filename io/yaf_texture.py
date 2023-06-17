@@ -46,7 +46,7 @@ def noise2string(ntype):
 class Texture:
     def __init__(self, scene, logger):
         self.yaf_scene = scene
-        self.logger = logger
+        self.yaf_logger = logger
         self.loadedTextures = set()
 
     def writeTexture(self, scene, tex):
@@ -60,7 +60,7 @@ class Texture:
         textureConfigured = False
         
         if tex.yaf_tex_type == 'BLEND':
-            self.logger.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
+            self.yaf_logger.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
             yaf_param_map.setString("type", "blend")
 
             switchBlendType = {
@@ -84,7 +84,7 @@ class Texture:
             textureConfigured = True
 
         elif tex.yaf_tex_type == 'CLOUDS':
-            self.logger.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
+            self.yaf_logger.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
             yaf_param_map.setString("type", "clouds")
 
             noise_size = tex.noise_scale
@@ -105,7 +105,7 @@ class Texture:
             textureConfigured = True
 
         elif tex.yaf_tex_type == 'WOOD':
-            self.logger.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
+            self.yaf_logger.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
             yaf_param_map.setString("type", "wood")
 
             yaf_param_map.setInt("depth", 0)
@@ -150,7 +150,7 @@ class Texture:
             textureConfigured = True
 
         elif tex.yaf_tex_type == 'MARBLE':
-            self.logger.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
+            self.yaf_logger.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
             yaf_param_map.setString("type", "marble")
 
             yaf_param_map.setInt("depth", tex.noise_depth)
@@ -191,7 +191,7 @@ class Texture:
             textureConfigured = True
 
         elif tex.yaf_tex_type == 'VORONOI':
-            self.logger.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
+            self.yaf_logger.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
             yaf_param_map.setString("type", "voronoi")
 
             if tex.color_mode == 'POSITION':
@@ -233,7 +233,7 @@ class Texture:
             textureConfigured = True
 
         elif tex.yaf_tex_type == 'MUSGRAVE':
-            self.logger.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
+            self.yaf_logger.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
             yaf_param_map.setString("type", "musgrave")
 
             switchMusgraveType = {
@@ -262,7 +262,7 @@ class Texture:
             textureConfigured = True
 
         elif tex.yaf_tex_type == 'DISTORTED_NOISE':
-            self.logger.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
+            self.yaf_logger.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
             yaf_param_map.setString("type", "distorted_noise")
 
             yaf_param_map.setFloat("distort", tex.distortion)
@@ -308,7 +308,7 @@ class Texture:
                     else:
                         image_tex = abspath(tex.image.filepath)
                     if not os.path.exists(image_tex):
-                        self.logger.printError("Exporter: Image texture {0} not found on: {1}".format(tex.name, image_tex))
+                        self.yaf_logger.printError("Exporter: Image texture {0} not found on: {1}".format(tex.name, image_tex))
                         return False
             if tex.image.source == 'SEQUENCE':
                 if tex.image.packed_file:
@@ -349,7 +349,7 @@ class Texture:
                     else:
                         image_tex = abspath(tex_image_filepath_sequence)
                     if not os.path.exists(image_tex):
-                        self.logger.printError("Exporter: Image texture {0} not found on: {1}".format(tex.name, image_tex))
+                        self.yaf_logger.printError("Exporter: Image texture {0} not found on: {1}".format(tex.name, image_tex))
                         return False
 
             image_tex = os.path.realpath(image_tex)
@@ -380,7 +380,7 @@ class Texture:
             self.yaf_scene.createImage(image_name, yaf_param_map)
             yaf_param_map = libyafaray4_bindings.ParamMap()
 
-            self.logger.printInfo("Exporter: Creating Texture: '{0}' type {1}: {2}. Texture Color Space: '{3}', gamma={4}. Texture optimization='{5}'".format(name, tex.yaf_tex_type, image_tex, texture_color_space, texture_gamma, texture_optimization))
+            self.yaf_logger.printInfo("Exporter: Creating Texture: '{0}' type {1}: {2}. Texture Color Space: '{3}', gamma={4}. Texture optimization='{5}'".format(name, tex.yaf_tex_type, image_tex, texture_color_space, texture_gamma, texture_optimization))
 
             yaf_param_map.setString("type", "image")
             yaf_param_map.setString("image_name", image_name)
