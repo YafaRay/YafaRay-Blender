@@ -44,19 +44,17 @@ class Light:
         self.preview = preview
 
     def makeSphere(self, nu, nv, x, y, z, rad, mat):
-        
-        yi.setCurrentMaterial(mat)
 
         # get next free id from interface
-        ID = "SphereLight-" + str(yi.getNextFreeId())
-
+        object_name = "SphereLight::" + mat
+        yaf_param_map = libyafaray4_bindings.ParamMap()
         yaf_param_map.setString("type", "mesh")
         yaf_param_map.setInt("num_vertices", 2 + (nu - 1) * nv)
         yaf_param_map.setInt("num_faces", 2 * (nu - 1) * nv)
-        self.yaf_scene.createObject(ID)
+        object_id = self.yaf_scene.createObject(object_name, yaf_param_map)
 
-        yi.addVertex(x, y, z + rad)
-        yi.addVertex(x, y, z - rad)
+        self.yaf_scene.addVertex(object_id, x, y, z + rad)
+        self.yaf_scene.addVertex(object_id, x, y, z - rad)
         for v in range(0, nv):
             t = v / float(nv)
             sin_v = sin(2.0 * pi * t)
@@ -65,18 +63,16 @@ class Light:
                 s = u / float(nu)
                 sin_u = sin(pi * s)
                 cos_u = cos(pi * s)
-                yi.addVertex(x + cos_v * sin_u * rad, y + sin_v * sin_u * rad, z + cos_u * rad)
-
+                self.yaf_scene.addVertex(object_id, x + cos_v * sin_u * rad, y + sin_v * sin_u * rad, z + cos_u * rad)
+        material_id = self.yaf_scene.getMaterialId(mat)
         for v in range(0, nv):
-            yi.addTriangle(0, 2 + v * (nu - 1), 2 + ((v + 1) % nv) * (nu - 1))
-            yi.addTriangle(1, ((v + 1) % nv) * (nu - 1) + nu, v * (nu - 1) + nu)
-            for u in range(0, nu - 2):
-                yi.addTriangle(2 + v * (nu - 1) + u, 2 + v * (nu - 1) + u + 1, 2 + ((v + 1) % nv) * (nu - 1) + u)
-                yi.addTriangle(2 + v * (nu - 1) + u + 1, 2 + ((v + 1) % nv) * (nu - 1) + u + 1, 2 + ((v + 1) % nv) * (nu - 1) + u)
+            self.yaf_scene.addTriangle(object_id, 0, 2 + v * (nu - 1), 2 + ((v + 1) % nv) * (nu - 1), material_id)
+            self.yaf_scene.addTriangle(object_id, 1, ((v + 1) % nv) * (nu - 1) + nu, v * (nu - 1) + nu, material_id)
+            for u in range(object_id, 0, nu - 2):
+                self.yaf_scene.addTriangle(object_id, 2 + v * (nu - 1) + u, 2 + v * (nu - 1) + u + 1, 2 + ((v + 1) % nv) * (nu - 1) + u, material_id)
+                self.yaf_scene.addTriangle(object_id, 2 + v * (nu - 1) + u + 1, 2 + ((v + 1) % nv) * (nu - 1) + u + 1, 2 + ((v + 1) % nv) * (nu - 1) + u, material_id)
 
-        yi.endObject()
-
-        return ID
+        return object_name
 
     def createLight(self, yi, light_object, matrix=None):
 
@@ -130,22 +126,21 @@ class Light:
                 matrix2 = mathutils.Matrix.Rotation(bpy.data.scenes[0].yafaray.preview.lightRotZ, 4, 'Z')
                 pos = multiplyMatrix4x4Vector4(matrix2, mathutils.Vector((pos[0], pos[1], pos[2], pos[3])))
 
-        yaf_param_map = libyafaray4_bindings.ParamMap()
-
         self.yaf_logger.printInfo("Exporting Light: {0} [{1}]".format(name, lightType))
 
         if light.create_geometry:  # and not self.lightMat:
             yaf_param_map = libyafaray4_bindings.ParamMap()
+            yaf_param_map_list = libyafaray4_bindings.ParamMapList()
             yaf_param_map.setColor("color", color[0], color[1], color[2])  # color for spherelight and area light geometry
             yaf_param_map.setString("type", "light_mat")
             power_sphere = power / light.yaf_sphere_radius
             yaf_param_map.setFloat("power", power_sphere)
         
-            self.yaf_scene.createMaterial(name)
+            self.yaf_scene.createMaterial(name, yaf_param_map, yaf_param_map_list)
             self.lightMatName = name
-            yaf_param_map = libyafaray4_bindings.ParamMap()
             #yaf_param_map.setBool("light_enabled", light.light_enabled)
 
+        yaf_param_map = libyafaray4_bindings.ParamMap()
         if lightType == "point":
             yaf_param_map.setString("type", "pointlight")
             if getattr(light, "use_sphere", False):
