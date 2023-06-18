@@ -68,8 +68,8 @@ class Object(object):
 
         else:  # The rest of the object types
             matrix = obj.matrix_world.copy()
-            if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable:
-                if "checkers" in obj.name and bpy.data.scenes[0].yafaray.preview.previewBackground == "checker":
+            if self.is_preview and bpy.data.scenes[0].yafaray.is_preview.enable:
+                if "checkers" in obj.name and bpy.data.scenes[0].yafaray.is_preview.previewBackground == "checker":
                         self.writeMesh(obj, matrix)
                 elif "checkers" not in obj.name:
                         self.writeMesh(obj, matrix)
@@ -114,11 +114,11 @@ class Object(object):
         
         self.yaf_logger.printInfo("Exporting Mesh: {0}".format(ID))
 
-        if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable and "preview" in obj.name:
+        if self.is_preview and bpy.data.scenes[0].yafaray.is_preview.enable and "preview" in obj.name:
             ymat = obj.active_material.name
             
-            if bpy.data.scenes[0].yafaray.preview.previewObject != "" and bpy.data.scenes[0].objects[bpy.data.scenes[0].yafaray.preview.previewObject].type=="MESH":
-                    customObj = bpy.data.scenes[0].objects[bpy.data.scenes[0].yafaray.preview.previewObject]
+            if bpy.data.scenes[0].yafaray.is_preview.previewObject != "" and bpy.data.scenes[0].objects[bpy.data.scenes[0].yafaray.is_preview.previewObject].type== "MESH":
+                    customObj = bpy.data.scenes[0].objects[bpy.data.scenes[0].yafaray.is_preview.previewObject]
                     previewMatrix = customObj.matrix_world.copy()
                     previewMatrix[0][3]=0
                     previewMatrix[1][3]=0
@@ -338,10 +338,10 @@ class Object(object):
             if("checker" in obj.name):
                 matrix2 = mathutils.Matrix.Scale(4, 4)
                 mesh.transform(matrix2)
-            elif bpy.data.scenes[0].yafaray.preview.enable:
-                matrix2 = mathutils.Matrix.Scale(bpy.data.scenes[0].yafaray.preview.objScale, 4)
+            elif bpy.data.scenes[0].yafaray.is_preview.enable:
+                matrix2 = mathutils.Matrix.Scale(bpy.data.scenes[0].yafaray.is_preview.objScale, 4)
                 mesh.transform(matrix2)
-                matrix2 = mathutils.Matrix.Rotation(bpy.data.scenes[0].yafaray.preview.rotZ, 4, 'Z')
+                matrix2 = mathutils.Matrix.Rotation(bpy.data.scenes[0].yafaray.is_preview.rotZ, 4, 'Z')
                 mesh.transform(matrix2)
             pass
 

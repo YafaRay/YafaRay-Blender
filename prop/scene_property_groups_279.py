@@ -107,8 +107,8 @@ class YafaRay4MaterialPreviewControlProperties(bpy.types.PropertyGroup):
         country = bpy.props.StringProperty()
 
         def execute(self, context):
-            bpy.data.scenes[0].yafaray.preview.camRot = (0,0,1)
-            bpy.data.scenes[0].yafaray.preview.camDist = 12
+            bpy.data.scenes[0].yafaray.is_preview.camRot = (0, 0, 1)
+            bpy.data.scenes[0].yafaray.is_preview.camDist = 12
             return{'FINISHED'}
 
     class OBJECT_OT_CamZoomIn(bpy.types.Operator):
@@ -118,7 +118,7 @@ class YafaRay4MaterialPreviewControlProperties(bpy.types.PropertyGroup):
         country = bpy.props.StringProperty()
 
         def execute(self, context):
-            bpy.data.scenes[0].yafaray.preview.camDist -= 0.5
+            bpy.data.scenes[0].yafaray.is_preview.camDist -= 0.5
             return{'FINISHED'}
 
     class OBJECT_OT_CamZoomOut(bpy.types.Operator):
@@ -128,5 +128,5 @@ class YafaRay4MaterialPreviewControlProperties(bpy.types.PropertyGroup):
         country = bpy.props.StringProperty()
 
         def execute(self, context):
-            bpy.data.scenes[0].yafaray.preview.camDist += 0.5
+            bpy.data.scenes[0].yafaray.is_preview.camDist += 0.5
             return{'FINISHED'}

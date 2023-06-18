@@ -19,20 +19,10 @@
 # <pep8 compliant>
 
 import bpy
-import libyafaray4_bindings
-from .. import global_vars
 import mathutils
+import libyafaray4_bindings
+from ..util.math import multiply_matrix4x4_vector4
 
-def multiplyMatrix4x4Vector4(matrix, vector):
-    result = mathutils.Vector((0.0, 0.0, 0.0, 0.0))
-    if bpy.app.version >= (2, 80, 0):
-        for i in range(4):
-            result[i] = vector @ matrix[i]  # use reverse vector multiply order, API changed with rev. 38674
-    else:
-        for i in range(4):
-            result[i] = vector * matrix[i]  # use reverse vector multiply order, API changed with rev. 38674
-
-    return result
 
 class Film:
     def __init__(self, yaf_film, yaf_logger, is_preview):
@@ -40,148 +30,118 @@ class Film:
         self.yaf_logger = yaf_logger
         self.is_preview = is_preview
 
-    def createCameras(self, scene):
+    def define_camera(self, bl_camera, res_x, res_y, res_percentage, use_view_to_render, view_matrix):
+        if use_view_to_render and view_matrix:
+            # use the view matrix to calculate the inverted transformed
+            # points cam pos (0,0,0), front (0,0,1) and up (0,1,0)
+            # view matrix works like the opengl view part of the
+            # projection matrix, i.e. transforms everything so camera is
+            # at 0,0,0 looking towards 0,0,1 (y axis being up)
+            inv = view_matrix.inverted()
 
-        self.yaf_logger.printInfo("Exporting Cameras")
-    
-        render = scene.render
-        
-        class CameraData:
-            def __init__ (self, camera, camera_name, view_name):
-                self.camera = camera
-                self.camera_name = camera_name
-                self.view_name = view_name
-        
-        cameras = []
+            pos = multiply_matrix4x4_vector4(inv, mathutils.Vector((0, 0, 0, 1)))
+            above_cam = multiply_matrix4x4_vector4(inv, mathutils.Vector((0, 1, 0, 1)))
+            front_cam = multiply_matrix4x4_vector4(inv, mathutils.Vector((0, 0, 1, 1)))
 
-        render_use_multiview = render.use_multiview
+            direction = front_cam - pos
+            up = above_cam
 
-        if global_vars.useViewToRender or not render_use_multiview:
-            cameras.append(CameraData(scene.camera, scene.camera.name, ""))
         else:
-            camera_base_name = scene.camera.name.rsplit('_',1)[0]
+            # get cam worldspace transformation matrix, e.g. if cam is parented matrix_local does not work
+            matrix = bl_camera.matrix_world.copy()
+            # matrix indexing (row, colums) changed in Blender rev.42816, for explanation see also:
+            # http://wiki.blender.org/index.php/User:TrumanBlending/Matrix_Indexing
+            pos = matrix.col[3]
+            direction = matrix.col[2]
+            up = pos + matrix.col[1]
 
-            for view in render.views:
-                if view.use and not (render.views_format == "STEREO_3D" and view.name != "left" and view.name != "right"):
-                    cameras.append(CameraData(scene.objects[camera_base_name+view.camera_suffix], camera_base_name+view.camera_suffix, view.name))
+        to = pos - direction
 
-        for cam in cameras:
-            if global_vars.useViewToRender and global_vars.viewMatrix:
-                # use the view matrix to calculate the inverted transformed
-                # points cam pos (0,0,0), front (0,0,1) and up (0,1,0)
-                # view matrix works like the opengl view part of the
-                # projection matrix, i.e. transforms everything so camera is
-                # at 0,0,0 looking towards 0,0,1 (y axis being up)
+        x = int(res_x * res_percentage * 0.01)
+        y = int(res_y * res_percentage * 0.01)
 
-                m = global_vars.viewMatrix
-                # m.transpose() --> not needed anymore: matrix indexing changed with Blender rev.42816
-                inv = m.inverted()
+        yaf_param_map = libyafaray4_bindings.ParamMap()
 
-                pos = multiplyMatrix4x4Vector4(inv, mathutils.Vector((0, 0, 0, 1)))
-                aboveCam = multiplyMatrix4x4Vector4(inv, mathutils.Vector((0, 1, 0, 1)))
-                frontCam = multiplyMatrix4x4Vector4(inv, mathutils.Vector((0, 0, 1, 1)))
+        if use_view_to_render:
+            yaf_param_map.setString("type", "perspective")
+            yaf_param_map.setFloat("focal", 0.7)
 
-                dir = frontCam - pos
-                up = aboveCam
+        else:
+            cam_type = bl_camera.camera_type
 
-            else:
-                # get cam worldspace transformation matrix, e.g. if cam is parented matrix_local does not work
-                matrix = cam.camera.matrix_world.copy()
-                # matrix indexing (row, colums) changed in Blender rev.42816, for explanation see also:
-                # http://wiki.blender.org/index.php/User:TrumanBlending/Matrix_Indexing
-                pos = matrix.col[3]
-                dir = matrix.col[2]
-                up = pos + matrix.col[1]
+            yaf_param_map.setString("type", cam_type)
 
-            to = pos - dir
+            if bl_camera.use_clipping:
+                yaf_param_map.setFloat("nearClip", bl_camera.clip_start)
+                yaf_param_map.setFloat("farClip", bl_camera.clip_end)
 
-            x = int(render.resolution_x * render.resolution_percentage * 0.01)
-            y = int(render.resolution_y * render.resolution_percentage * 0.01)
+            if cam_type == "orthographic":
+                yaf_param_map.setFloat("scale", bl_camera.ortho_scale)
 
-            yaf_param_map = libyafaray4_bindings.ParamMap()
+            elif cam_type in {"perspective", "architect"}:
+                # Blenders GSOC 2011 project "tomato branch" merged into trunk.
+                # Check for sensor settings and use them in yafaray exporter also.
+                if bl_camera.sensor_fit == 'AUTO':
+                    horizontal_fit = (x > y)
+                    sensor_size = bl_camera.sensor_width
+                elif bl_camera.sensor_fit == 'HORIZONTAL':
+                    horizontal_fit = True
+                    sensor_size = bl_camera.sensor_width
+                else:
+                    horizontal_fit = False
+                    sensor_size = bl_camera.sensor_height
 
-            if global_vars.useViewToRender:
-                yaf_param_map.setString("type", "perspective")
-                yaf_param_map.setFloat("focal", 0.7)
-                global_vars.useViewToRender = False
+                if horizontal_fit:
+                    f_aspect = 1.0
+                else:
+                    f_aspect = x / y
 
-            else:
-                camera = cam.camera.data
-                camType = camera.camera_type
+                yaf_param_map.setFloat("focal", bl_camera.lens / (f_aspect * sensor_size))
 
-                yaf_param_map.setString("type", camType)
-
-                if camera.use_clipping:
-                    yaf_param_map.setFloat("nearClip", camera.clip_start)
-                    yaf_param_map.setFloat("farClip", camera.clip_end)
-
-                if camType == "orthographic":
-                    yaf_param_map.setFloat("scale", camera.ortho_scale)
-
-                elif camType in {"perspective", "architect"}:
-                    # Blenders GSOC 2011 project "tomato branch" merged into trunk.
-                    # Check for sensor settings and use them in yafaray exporter also.
-                    if camera.sensor_fit == 'AUTO':
-                        horizontal_fit = (x > y)
-                        sensor_size = camera.sensor_width
-                    elif camera.sensor_fit == 'HORIZONTAL':
-                        horizontal_fit = True
-                        sensor_size = camera.sensor_width
+                # DOF params, only valid for real camera
+                # use DOF object distance if present or fixed DOF
+                if bpy.app.version >= (2, 80, 0):
+                    pass  # FIXME BLENDER 2.80-3.00
+                else:
+                    if bl_camera.dof_object is not None:
+                        # use DOF object distance
+                        dist = (pos.xyz - bl_camera.dof_object.location.xyz).length
+                        dof_distance = dist
                     else:
-                        horizontal_fit = False
-                        sensor_size = camera.sensor_height
+                        # use fixed DOF distance
+                        dof_distance = bl_camera.dof_distance
+                    yaf_param_map.setFloat("dof_distance", dof_distance)
 
-                    if horizontal_fit:
-                        f_aspect = 1.0
-                    else:
-                        f_aspect = x / y
+                yaf_param_map.setFloat("aperture", bl_camera.aperture)
+                # bokeh params
+                yaf_param_map.setString("bokeh_type", bl_camera.bokeh_type)
+                yaf_param_map.setFloat("bokeh_rotation", bl_camera.bokeh_rotation)
 
-                    yaf_param_map.setFloat("focal", camera.lens / (f_aspect * sensor_size))
+            elif cam_type == "angular":
+                yaf_param_map.setBool("circular", bl_camera.circular)
+                yaf_param_map.setBool("mirrored", bl_camera.mirrored)
+                yaf_param_map.setString("projection", bl_camera.angular_projection)
+                yaf_param_map.setFloat("max_angle", bl_camera.max_angle)
+                yaf_param_map.setFloat("angle", bl_camera.angular_angle)
 
-                    # DOF params, only valid for real camera
-                    # use DOF object distance if present or fixed DOF
-                    if bpy.app.version >= (2, 80, 0):
-                        pass  # FIXME BLENDER 2.80-3.00
-                    else:
-                        if camera.dof_object is not None:
-                            # use DOF object distance
-                            dist = (pos.xyz - camera.dof_object.location.xyz).length
-                            dof_distance = dist
-                        else:
-                            # use fixed DOF distance
-                            dof_distance = camera.dof_distance
-                        yaf_param_map.setFloat("dof_distance", dof_distance)
+        yaf_param_map.setInt("resx", x)
+        yaf_param_map.setInt("resy", y)
 
-                    yaf_param_map.setFloat("aperture", camera.aperture)
-                    # bokeh params
-                    yaf_param_map.setString("bokeh_type", camera.bokeh_type)
-                    yaf_param_map.setFloat("bokeh_rotation", camera.bokeh_rotation)
+        if self.is_preview and bpy.data.scenes[0].yafaray.is_preview.enable:
 
-                elif camType == "angular":
-                    yaf_param_map.setBool("circular", camera.circular)
-                    yaf_param_map.setBool("mirrored", camera.mirrored)
-                    yaf_param_map.setString("projection", camera.angular_projection)
-                    yaf_param_map.setFloat("max_angle", camera.max_angle)
-                    yaf_param_map.setFloat("angle", camera.angular_angle)
+                #incl = bpy.data.scenes[0].yafaray.preview.camRotIncl
+                #azi = bpy.data.scenes[0].yafaray.preview.camRotAzi
+                rot = bpy.data.scenes[0].yafaray.is_preview.camRot
+                dist = bpy.data.scenes[0].yafaray.is_preview.camDist
 
-            yaf_param_map.setInt("resx", x)
-            yaf_param_map.setInt("resy", y)
+                #pos = (dist*math.sin(incl)*math.cos(azi), dist*math.sin(incl)*math.sin(azi), dist*math.cos(incl))
+                #up = (math.sin(rotZ), 0, math.cos(rotZ))
+                pos = (-dist*rot[0], -dist*rot[2], -dist*rot[1])
+                up = (0,0,1)
+                to = (0,0,0)
 
-            if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable:
-
-                    #incl = bpy.data.scenes[0].yafaray.preview.camRotIncl
-                    #azi = bpy.data.scenes[0].yafaray.preview.camRotAzi
-                    rot = bpy.data.scenes[0].yafaray.preview.camRot
-                    dist = bpy.data.scenes[0].yafaray.preview.camDist
-
-                    #pos = (dist*math.sin(incl)*math.cos(azi), dist*math.sin(incl)*math.sin(azi), dist*math.cos(incl))
-                    #up = (math.sin(rotZ), 0, math.cos(rotZ))
-                    pos = (-dist*rot[0], -dist*rot[2], -dist*rot[1])
-                    up = (0,0,1)
-                    to = (0,0,0)
-
-            yaf_param_map.setVector("from", pos[0], pos[1], pos[2])
-            yaf_param_map.setVector("up", up[0], up[1], up[2])
-            yaf_param_map.setVector("to", to[0], to[1], to[2])
-            self.yaf_film.defineCamera(yaf_param_map)
+        yaf_param_map.setVector("from", pos[0], pos[1], pos[2])
+        yaf_param_map.setVector("up", up[0], up[1], up[2])
+        yaf_param_map.setVector("to", to[0], to[1], to[2])
+        self.yaf_film.defineCamera(yaf_param_map)
 

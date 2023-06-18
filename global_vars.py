@@ -20,5 +20,5 @@
 
 # YafaRay global static variables for shared functions
 # Variables for 3D View function:
-useViewToRender = False
-viewMatrix = None
+use_view_to_render = False
+view_matrix = None

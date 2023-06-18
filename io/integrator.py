@@ -37,8 +37,8 @@ class Integrator:
             yaf_param_map.setBool("bg_transp_refract", False)
 
         yaf_param_map.setInt("raydepth", scene.gs_ray_depth)
-        if scene.name == "preview" and bpy.data.scenes[0].yafaray.preview.enable:
-            yaf_param_map.setInt("raydepth", bpy.data.scenes[0].yafaray.preview.previewRayDepth)
+        if scene.name == "preview" and bpy.data.scenes[0].yafaray.is_preview.enable:
+            yaf_param_map.setInt("raydepth", bpy.data.scenes[0].yafaray.is_preview.previewRayDepth)
         yaf_param_map.setInt("shadowDepth", scene.gs_shadow_depth)
         yaf_param_map.setBool("transpShad", scene.gs_transp_shad)
 

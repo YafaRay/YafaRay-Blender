@@ -29,7 +29,7 @@ def computeSceneSize(render):
     return [sizeX, sizeY]
 
 
-def getRenderCoords(bl_scene):
+def get_render_coords(bl_scene):
     render = bl_scene.render
     [sizeX, sizeY] = computeSceneSize(render)
 
@@ -96,8 +96,8 @@ def exportAA(yi, scene):
     yaf_param_map.setFloat("AA_clamp_indirect", scene.yafaray.noise_control.clamp_indirect)
     yaf_param_map.setBool("background_resampling", scene.yafaray.noise_control.background_resampling)
 
-    if scene.name == "preview" and bpy.data.scenes[0].yafaray.preview.enable:
-        yaf_param_map.setInt("AA_passes", bpy.data.scenes[0].yafaray.preview.previewAApasses)
+    if scene.name == "preview" and bpy.data.scenes[0].yafaray.is_preview.enable:
+        yaf_param_map.setInt("AA_passes", bpy.data.scenes[0].yafaray.is_preview.previewAApasses)
         yaf_param_map.setFloat("AA_threshold", 0.01)
 
 
@@ -106,7 +106,7 @@ def exportRenderSettings(yi, depsgraph, render_path, render_filename):
     scene = scene_from_depsgraph(depsgraph)
     render = scene.render
 
-    [sizeX, sizeY, bStartX, bStartY, bsizeX, bsizeY, cam_data] = getRenderCoords(scene)
+    [sizeX, sizeY, bStartX, bStartY, bsizeX, bsizeY, cam_data] = get_render_coords(scene)
 
     yaf_param_map.setString("scene_accelerator", scene.gs_accelerator)
 
@@ -125,7 +125,7 @@ def exportRenderSettings(yi, depsgraph, render_path, render_filename):
 
     yaf_param_map.setBool("show_sam_pix", scene.gs_show_sam_pix)
 
-    if scene.name == "preview" and bpy.data.scenes[0].yafaray.preview.enable:
+    if scene.name == "preview" and bpy.data.scenes[0].yafaray.is_preview.enable:
         yaf_param_map.setBool("show_sam_pix", False)
 
     yaf_param_map.setInt("tile_size", scene.gs_tile_size)
@@ -194,7 +194,7 @@ def setLoggingAndBadgeSettings(yi, scene):
     yaf_param_map.setFloat("badge_font_size_factor", scene.yafaray.logging.fontScale)
 
 
-def calcAlphaPremultiply(bl_scene):
+def calc_alpha_premultiply(bl_scene):
     alpha_premult = namedtuple("alpha_premult", ["blender", "secondary_output"])
     if bl_scene.gs_premult == "auto":
         if bl_scene.img_output == "PNG" or bl_scene.img_output == "JPEG":
@@ -215,7 +215,7 @@ def calcAlphaPremultiply(bl_scene):
         return alpha_premult(enable_premult, False)
 
 
-def calcGamma(bl_scene):
+def calc_gamma(bl_scene):
     gamma = namedtuple("gamma", ["blender", "secondary_output"])
     gamma_1 = 1.0
     gamma_2 = 1.0
@@ -229,7 +229,7 @@ def calcGamma(bl_scene):
     return gamma(gamma_1, gamma_2)
 
 
-def calcColorSpace(bl_scene):
+def calc_color_space(bl_scene):
     color_space = namedtuple("color_space", ["blender", "secondary_output"])
     color_space_2 = "sRGB"
 

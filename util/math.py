@@ -18,21 +18,16 @@
 
 # <pep8 compliant>
 
-from . import render_engine
+import bpy
+import mathutils
 
-modules = (
-    render_engine,
-)
+def multiply_matrix4x4_vector4(matrix, vector):
+    result = mathutils.Vector((0.0, 0.0, 0.0, 0.0))
+    if bpy.app.version >= (2, 80, 0):
+        for i in range(4):
+            result[i] = vector @ matrix[i]  # use reverse vector multiply order, API changed with rev. 38674
+    else:
+        for i in range(4):
+            result[i] = vector * matrix[i]  # use reverse vector multiply order, API changed with rev. 38674
 
-def register():
-    for module in modules:
-        module.register()
-
-def unregister():
-    for module in reversed(modules):
-        module.unregister()
-
-
-if __name__ == "__main__":  # only for live edit.
-    import bpy
-    bpy.utils.register_module(__name__)
+    return result

@@ -178,10 +178,10 @@ class YAFARAY4_PT_preview_texture_controls(YAFARAY4_TextureButtonsPanel, Panel):
 
     def draw_header(self, context):
         scene = context.scene
-        self.layout.prop(context.scene.yafaray.preview, "enable", text="")
+        self.layout.prop(context.scene.yafaray.is_preview, "enable", text="")
     
     def draw(self, context):
-        if context.scene.yafaray.preview.enable:
+        if context.scene.yafaray.is_preview.enable:
             layout = self.layout
             yaf_mat = material_from_context(context)
             split = layout.split() 
@@ -189,7 +189,7 @@ class YAFARAY4_PT_preview_texture_controls(YAFARAY4_TextureButtonsPanel, Panel):
             col.label(text="Preview dynamic rotation/zoom")
             split = layout.split() 
             col = split.column()
-            col.prop(context.scene.yafaray.preview, "camRot", text="")
+            col.prop(context.scene.yafaray.is_preview, "camRot", text="")
             col = split.column()
             row = col.row()
             row.operator("preview.camzoomout", text='Zoom Out', icon='ZOOM_OUT')
@@ -204,40 +204,40 @@ class YAFARAY4_PT_preview_texture_controls(YAFARAY4_TextureButtonsPanel, Panel):
             col.label(text="Preview object control")
             split = layout.split()
             col = split.column()
-            col.prop(context.scene.yafaray.preview, "objScale", text="Scale")
+            col.prop(context.scene.yafaray.is_preview, "objScale", text="Scale")
             col = split.column()
-            col.prop(context.scene.yafaray.preview, "rotZ", text="Z Rotation")
+            col.prop(context.scene.yafaray.is_preview, "rotZ", text="Z Rotation")
             col = split.column()
-            col.prop_search(context.scene.yafaray.preview, "previewObject", bpy.data, "objects", text="")
+            col.prop_search(context.scene.yafaray.is_preview, "previewObject", bpy.data, "objects", text="")
             split = layout.split() 
             col = split.column()
             col.label(text="Preview lights control")
             col = split.column()
-            col.prop(context.scene.yafaray.preview, "lightRotZ", text="lights Z Rotation")
+            col.prop(context.scene.yafaray.is_preview, "lightRotZ", text="lights Z Rotation")
             split = layout.split()
             col = split.column()
             col.label(text="Key light:")
             col = split.column()
-            col.prop(context.scene.yafaray.preview, "keyLightPowerFactor", text="Power factor")
+            col.prop(context.scene.yafaray.is_preview, "keyLightPowerFactor", text="Power factor")
             col = split.column()
-            col.prop(context.scene.yafaray.preview, "keyLightColor", text="")
+            col.prop(context.scene.yafaray.is_preview, "keyLightColor", text="")
             split = layout.split() 
             col = split.column()
             col.label(text="Fill lights:")
             col = split.column()
-            col.prop(context.scene.yafaray.preview, "fillLightPowerFactor", text="Power factor")
+            col.prop(context.scene.yafaray.is_preview, "fillLightPowerFactor", text="Power factor")
             col = split.column()
-            col.prop(context.scene.yafaray.preview, "fillLightColor", text="")
+            col.prop(context.scene.yafaray.is_preview, "fillLightColor", text="")
             split = layout.split() 
             col = split.column()
             col.label(text="Preview scene control")
             split = layout.split()
             col = split.column()
-            col.prop(context.scene.yafaray.preview, "previewRayDepth", text="Ray Depth")
+            col.prop(context.scene.yafaray.is_preview, "previewRayDepth", text="Ray Depth")
             col = split.column()
-            col.prop(context.scene.yafaray.preview, "previewAApasses", text="AA samples")
+            col.prop(context.scene.yafaray.is_preview, "previewAApasses", text="AA samples")
             col = split.column()
-            col.prop(context.scene.yafaray.preview, "previewBackground", text="")
+            col.prop(context.scene.yafaray.is_preview, "previewBackground", text="")
 
 
 class YAFARAY4_TEXTURE_PT_colors(YAFARAY4_TextureButtonsPanel, Panel):
