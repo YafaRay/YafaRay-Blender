@@ -145,8 +145,8 @@ class Light:
             yaf_param_map.setString("type", "pointlight")
             if getattr(light, "use_sphere", False):
                 if light.create_geometry:
-                    ID = self.makeSphere(24, 48, pos[0], pos[1], pos[2], light.yaf_sphere_radius, self.lightMatName)
-                    yaf_param_map.setString("object_name", ID)
+                    object_name = self.makeSphere(24, 48, pos[0], pos[1], pos[2], light.yaf_sphere_radius, self.lightMatName)
+                    yaf_param_map.setString("object_name", object_name)
                 yaf_param_map.setString("type", "spherelight")
                 yaf_param_map.setInt("samples", light.yaf_samples)
                 yaf_param_map.setFloat("radius", light.yaf_sphere_radius)
@@ -226,20 +226,20 @@ class Light:
             
             yaf_param_map = libyafaray4_bindings.ParamMap()
             if light.create_geometry:
-                ID = "AreaLight-"+str(yi.getNextFreeId())
+                object_name = "AreaLight::" + self.lightMatName
                 yaf_param_map.setString("type", "mesh")
                 yaf_param_map.setInt("num_vertices", 4)
                 yaf_param_map.setInt("num_faces", 2)
-                self.yaf_scene.createObject(ID)
-                yi.setCurrentMaterial(self.lightMatName)
-                yi.addVertex(point[0], point[1], point[2])
-                yi.addVertex(corner1[0], corner1[1], corner1[2])
-                yi.addVertex(corner2[0], corner2[1], corner2[2])
-                yi.addVertex(corner3[0], corner3[1], corner3[2])
-                yi.addTriangle(0, 1, 2)
-                yi.addTriangle(0, 2, 3)
-                yi.endObject()
-                yaf_param_map.setString("object_name", ID)
+                object_id = self.yaf_scene.createObject(object_name, yaf_param_map)
+                material_id = self.yaf_scene.getMaterialId(self.lightMatName)
+                yi.addVertex(object_id, point[0], point[1], point[2])
+                yi.addVertex(object_id, corner1[0], corner1[1], corner1[2])
+                yi.addVertex(object_id, corner2[0], corner2[1], corner2[2])
+                yi.addVertex(object_id, corner3[0], corner3[1], corner3[2])
+                yi.addTriangle(object_id, 0, 1, 2, material_id)
+                yi.addTriangle(object_id, 0, 2, 3, material_id)
+                yaf_param_map.clear()
+                yaf_param_map.setString("object_name", object_name)
 
             yaf_param_map.setString("type", "arealight")
             yaf_param_map.setInt("samples", light.yaf_samples)

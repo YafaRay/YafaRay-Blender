@@ -48,26 +48,26 @@ from .scene import getRenderCoords
 from .scene import calcColorSpace
 from .scene import calcAlphaPremultiply
 from .scene import calcGamma
-
+#
 yaf_logger = libyafaray4_bindings.Logger()
 yaf_logger.setConsoleVerbosityLevel(yaf_logger.logLevelFromString("debug"))
 yaf_logger.setLogVerbosityLevel(yaf_logger.logLevelFromString("debug"))
-#self.yaf_logger.setConsoleLogColorsEnabled(True)
+#yaf_logger.setConsoleLogColorsEnabled(True)
 yaf_logger.enablePrintDateTime(True)
-yaf_main_scene = libyafaray4_bindings.Scene(yaf_logger, "Blender Main Scene")
-yaf_preview_scene = libyafaray4_bindings.Scene(yaf_logger, "Blender Preview Scene")
-
-yaf_main_surface_integrator_param_map = libyafaray4_bindings.ParamMap()
-yaf_main_surface_integrator_param_map.setString("type", "directlighting")
-yaf_main_surface_integrator = libyafaray4_bindings.SurfaceIntegrator(yaf_logger, "Blender Main SurfaceIntegrator", yaf_main_surface_integrator_param_map)
-yaf_preview_surface_integrator_param_map = libyafaray4_bindings.ParamMap()
-yaf_preview_surface_integrator_param_map.setString("type", "directlighting")
-yaf_preview_surface_integrator = libyafaray4_bindings.SurfaceIntegrator(yaf_logger, "Blender Preview SurfaceIntegrator", yaf_preview_surface_integrator_param_map)
-
-yaf_main_film_param_map = libyafaray4_bindings.ParamMap()
-yaf_main_film = libyafaray4_bindings.Film(yaf_logger, yaf_main_surface_integrator, "Blender Main Film", yaf_main_film_param_map)
-yaf_preview_film_param_map = libyafaray4_bindings.ParamMap()
-yaf_preview_film = libyafaray4_bindings.Film(yaf_logger, yaf_preview_surface_integrator, "Blender Preview Film", yaf_preview_film_param_map)
+# yaf_main_scene = libyafaray4_bindings.Scene(yaf_logger, "Blender Main Scene")
+# yaf_preview_scene = libyafaray4_bindings.Scene(yaf_logger, "Blender Preview Scene")
+#
+# yaf_main_surface_integrator_param_map = libyafaray4_bindings.ParamMap()
+# yaf_main_surface_integrator_param_map.setString("type", "directlighting")
+# yaf_main_surface_integrator = libyafaray4_bindings.SurfaceIntegrator(yaf_logger, "Blender Main SurfaceIntegrator", yaf_main_surface_integrator_param_map)
+# yaf_preview_surface_integrator_param_map = libyafaray4_bindings.ParamMap()
+# yaf_preview_surface_integrator_param_map.setString("type", "directlighting")
+# yaf_preview_surface_integrator = libyafaray4_bindings.SurfaceIntegrator(yaf_logger, "Blender Preview SurfaceIntegrator", yaf_preview_surface_integrator_param_map)
+#
+# yaf_main_film_param_map = libyafaray4_bindings.ParamMap()
+# yaf_main_film = libyafaray4_bindings.Film(yaf_logger, yaf_main_surface_integrator, "Blender Main Film", yaf_main_film_param_map)
+# yaf_preview_film_param_map = libyafaray4_bindings.ParamMap()
+# yaf_preview_film = libyafaray4_bindings.Film(yaf_logger, yaf_preview_surface_integrator, "Blender Preview Film", yaf_preview_film_param_map)
 
 class YafaRay4RenderEngine(bpy.types.RenderEngine):
     bl_idname = YAF_ID_NAME
@@ -79,31 +79,28 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
     global_vars.viewMatrix = None
 
     def __init__(self):
+        self.bl_depsgraph = None
+        self.bl_scene = None
         self.yaf_logger = yaf_logger
-        self.yaf_scene = yaf_main_scene
-        self.yaf_integrator = yaf_main_surface_integrator
-        self.yaf_film = yaf_main_film
-        self.film = Film(self.yaf_film, self.yaf_logger, self.is_preview)
+        self.yaf_scene = None
+        self.integrator = None
+        self.film = None
 
     def setInterface(self):
         self.materials = set()
 
         if self.is_preview:
-            self.yaf_scene = yaf_preview_scene
-            self.yaf_integrator = yaf_preview_surface_integrator
-            self.yaf_film = yaf_preview_film
-            self.yaf_logger.setConsoleVerbosityLevel(self.yaf_logger.logLevelFromString("mute"))
-            self.yaf_logger.setLogVerbosityLevel(self.yaf_logger.logLevelFromString("mute"))
-            self.scene.bg_transp = False  #to correct alpha problems in preview roughglass
-            self.scene.bg_transp_refract = False  #to correct alpha problems in preview roughglass
-        else:
-            self.yaf_scene = yaf_main_scene
-            self.yaf_integrator = yaf_main_surface_integrator
-            self.yaf_film = yaf_main_film
-            self.yaf_logger.enablePrintDateTime(self.scene.yafaray.logging.logPrintDateTime)
-            #self.yaf_logger.setConsoleVerbosityLevel(self.yaf_logger.logLevelFromString(self.scene.yafaray.logging.consoleVerbosity))
+            self.yaf_scene = libyafaray4_bindings.Scene(yaf_logger, "Blender Preview Scene")
             self.yaf_logger.setConsoleVerbosityLevel(self.yaf_logger.logLevelFromString("debug"))
-            self.yaf_logger.setLogVerbosityLevel(self.yaf_logger.logLevelFromString(self.scene.yafaray.logging.logVerbosity))
+            self.yaf_logger.setLogVerbosityLevel(self.yaf_logger.logLevelFromString("debug"))
+            self.bl_scene.bg_transp = False  #to correct alpha problems in preview roughglass
+            self.bl_scene.bg_transp_refract = False  #to correct alpha problems in preview roughglass
+        else:
+            self.yaf_scene = libyafaray4_bindings.Scene(yaf_logger, "Blender Main Scene")
+            self.yaf_logger.enablePrintDateTime(self.bl_scene.yafaray.logging.logPrintDateTime)
+            #self.yaf_logger.setConsoleVerbosityLevel(self.yaf_logger.logLevelFromString(self.scene.yafaray.logging.consoleVerbosity))
+            self.yaf_logger.setConsoleVerbosityLevel(self.yaf_logger.logLevelFromString("info"))
+            self.yaf_logger.setLogVerbosityLevel(self.yaf_logger.logLevelFromString(self.bl_scene.yafaray.logging.logVerbosity))
             self.yaf_logger.printInfo("YafaRay-Blender (" + YAFARAY_BLENDER_VERSION + ")")
             self.yaf_logger.printInfo("Exporter: Blender version " + str(bpy.app.version[0]) + "." + str(bpy.app.version[1]) + "." + str(bpy.app.version[2]) + "." + bpy.app.version_char + "  Build information: " + bpy.app.build_platform.decode("utf-8") + ", " + bpy.app.build_type.decode("utf-8") + ", branch: " + bpy.app.build_branch.decode("utf-8") + ", hash: " + bpy.app.build_hash.decode("utf-8"))
             self.yaf_logger.printInfo("Exporter: System information: " + platform.processor() + ", " + platform.platform())
@@ -111,26 +108,25 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
         self.object = Object(self.yaf_scene, self.yaf_logger, self.is_preview)
         self.light = Light(self.yaf_scene, self.yaf_logger, self.is_preview)
         self.world = World(self.yaf_scene, self.yaf_logger)
-        self.integrator = Integrator(self.yaf_integrator, self.yaf_logger)
         self.texture = Texture(self.yaf_scene, self.yaf_logger)
         self.material = Material(self.yaf_scene, self.yaf_logger, self.texture.loadedTextures)
 
     def exportScene(self):
         if bpy.app.version >= (2, 80, 0):
-            for inst in self.depsgraph.object_instances:
+            for inst in self.bl_depsgraph.object_instances:
                 obj = inst.object
                 self.exportTexture(obj)
         else:
-            for obj in self.scene.objects:
+            for obj in self.bl_scene.objects:
                 self.exportTexture(obj)
         self.exportMaterials()
-        self.object.setDepsgraph(self.depsgraph)
+        self.object.setDepsgraph(self.bl_depsgraph)
         self.exportObjects()
         
         if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable and bpy.data.scenes[0].yafaray.preview.previewBackground == "world":
             self.world.exportWorld(bpy.data.scenes[0], self.is_preview)
         else:
-            self.world.exportWorld(self.scene, self.yaf_scene, self.is_preview)
+            self.world.exportWorld(self.bl_scene, self.yaf_scene, self.is_preview)
 
     def exportTexture(self, obj):
         if bpy.app.version >= (2, 80, 0):
@@ -155,7 +151,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
                     for blendtex in [bt for bt in bm.texture_slots if (bt and bt.texture and bt.use)]:
                         if self.is_preview and blendtex.texture.name == 'fakeshadow':
                             continue
-                        self.texture.writeTexture(self.scene, blendtex.texture)
+                        self.texture.writeTexture(self.bl_scene, blendtex.texture)
             else:
                 continue
 
@@ -163,13 +159,13 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
             for tex in [t for t in mat_slot.material.texture_slots if (t and t.texture and t.use)]:
                 if self.is_preview and tex.texture.name == "fakeshadow":
                     continue
-                self.texture.writeTexture(self.scene, tex.texture)
+                self.texture.writeTexture(self.bl_scene, tex.texture)
 
     def object_on_visible_layer(self, obj):
         if bpy.app.version >= (2, 80, 0):
             return None   # FIXME BLENDER 2.80-3.00
         obj_visible = False
-        for layer_visible in [object_layers and scene_layers for object_layers, scene_layers in zip(obj.layers, self.scene.layers)]:
+        for layer_visible in [object_layers and scene_layers for object_layers, scene_layers in zip(obj.layers, self.bl_scene.layers)]:
             obj_visible |= layer_visible
         return obj_visible
 
@@ -178,16 +174,16 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
 
         # export only visible lights
         if bpy.app.version >= (2, 80, 0):
-            visible_lights = [o.object for o in self.depsgraph.object_instances if not (o.object.hide_get() or o.object.hide_render or o.object.hide_viewport) and o.object.type == 'LIGHT']
+            visible_lights = [o.object for o in self.bl_depsgraph.object_instances if not (o.object.hide_get() or o.object.hide_render or o.object.hide_viewport) and o.object.type == 'LIGHT']
         else:
-            visible_lights = [o for o in self.scene.objects if not o.hide_render and o.is_visible(self.scene) and o.type == 'LAMP']
+            visible_lights = [o for o in self.bl_scene.objects if not o.hide_render and o.is_visible(self.bl_scene) and o.type == 'LAMP']
         for obj in visible_lights:
             if bpy.app.version >= (2, 80, 0):
                 obj_is_instancer = obj.is_instancer
             else:
                 obj_is_instancer = obj.is_duplicator
             if obj_is_instancer:
-                obj.create_dupli_list(self.scene)
+                obj.create_dupli_list(self.bl_scene)
                 for obj_dupli in obj.dupli_list:
                     matrix = obj_dupli.matrix.copy()
                     self.light.createLight(self.yaf_scene, obj_dupli.object, matrix)
@@ -211,9 +207,9 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
         dupBaseIds = {}
 
         if bpy.app.version >= (2, 80, 0):
-            visible_objects = [o.object for o in self.depsgraph.object_instances if not (o.object.hide_get() or o.object.hide_render or o.object.hide_viewport) and o.object.type in {'MESH', 'SURFACE', 'CURVE', 'FONT', 'EMPTY'}]
+            visible_objects = [o.object for o in self.bl_depsgraph.object_instances if not (o.object.hide_get() or o.object.hide_render or o.object.hide_viewport) and o.object.type in {'MESH', 'SURFACE', 'CURVE', 'FONT', 'EMPTY'}]
         else:
-            visible_objects = [o for o in self.scene.objects if not o.hide_render and (o.is_visible(self.scene) or o.hide) and self.object_on_visible_layer(o) and (o.type in {'MESH', 'SURFACE', 'CURVE', 'FONT', 'EMPTY'})]
+            visible_objects = [o for o in self.bl_scene.objects if not o.hide_render and (o.is_visible(self.bl_scene) or o.hide) and self.object_on_visible_layer(o) and (o.type in {'MESH', 'SURFACE', 'CURVE', 'FONT', 'EMPTY'})]
         for obj in visible_objects:
             # Exporting dupliObjects as instances, also check for dupliObject type 'EMPTY' and don't export them as geometry
             if bpy.app.version >= (2, 80, 0):
@@ -222,15 +218,15 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
                 obj_is_instancer = obj.is_duplicator
             if obj_is_instancer:
                 self.yaf_logger.printVerbose("Processing duplis for: {0}".format(obj.name))
-                frame_current = self.scene.frame_current
-                if self.scene.render.use_instances:
+                frame_current = self.bl_scene.frame_current
+                if self.bl_scene.render.use_instances:
                     time_steps = 3
                 else:
                     time_steps = 1
                 instance_ids = []
                 for time_step in range(0, time_steps):
-                    self.scene.frame_set(frame_current, 0.5 * time_step)
-                    obj.dupli_list_create(self.scene)
+                    self.bl_scene.frame_set(frame_current, 0.5 * time_step)
+                    obj.dupli_list_create(self.bl_scene)
                     idx = 0
                     for obj_dupli in [od for od in obj.dupli_list if not od.object.type == 'EMPTY']:
                         self.exportTexture(obj_dupli.object)
@@ -238,7 +234,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
                             if mat_slot.material not in self.materials:
                                 self.exportMaterial(mat_slot.material)
 
-                        if not self.scene.render.use_instances:
+                        if not self.bl_scene.render.use_instances:
                             matrix = obj_dupli.matrix.copy()
                             self.object.writeMesh(obj_dupli.object, matrix, obj_dupli.object.name + "_" + str(self.yaf_scene.getNextFreeId()))
                         else:
@@ -255,7 +251,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
                     if obj.dupli_list is not None:
                         obj.dupli_list_clear()
 
-                self.scene.frame_set(frame_current, 0.0)
+                self.bl_scene.frame_set(frame_current, 0.0)
 
                 # check if object has particle system and uses the option for 'render emitter'
                 if hasattr(obj, 'particle_systems'):
@@ -270,7 +266,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
                 continue
 
             # Exporting objects with shared mesh data blocks as instances
-            elif obj.data.users > 1 and self.scene.render.use_instances:
+            elif obj.data.users > 1 and self.bl_scene.render.use_instances:
                 self.yaf_logger.printVerbose("Processing shared mesh data node object: {0}".format(obj.name))
                 if obj.data.name not in baseIds:
                     baseIds[obj.data.name] = self.object.writeInstanceBase(obj.data.name, obj)
@@ -279,14 +275,14 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
                     matrix = obj.matrix_world.copy()
                     instance_id = self.object.writeInstance(obj.name, matrix, baseIds[obj.data.name])
                     if obj.motion_blur_bezier:
-                        frame_current = self.scene.frame_current
-                        self.scene.frame_set(frame_current, 0.5)
+                        frame_current = self.bl_scene.frame_current
+                        self.bl_scene.frame_set(frame_current, 0.5)
                         matrix = obj.matrix_world.copy()
                         self.object.addInstanceMatrix(instance_id, matrix, 0.5)
-                        self.scene.frame_set(frame_current, 1.0)
+                        self.bl_scene.frame_set(frame_current, 1.0)
                         matrix = obj.matrix_world.copy()
                         self.object.addInstanceMatrix(instance_id, matrix, 1.0)
-                        self.scene.frame_set(frame_current, 0.0)
+                        self.bl_scene.frame_set(frame_current, 0.0)
 
             elif obj.data.name not in baseIds and obj.name not in dupBaseIds:
                 self.object.writeObject(obj)
@@ -315,7 +311,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
 
         elif mat1 not in self.materials:
             self.materials.add(mat1)
-            self.material.writeMaterial(mat1, self.scene)
+            self.material.writeMaterial(mat1, self.bl_scene)
 
         if mat2.mat_type == 'blend':
             blendmat_error = self.handleBlendMat(mat2)
@@ -324,11 +320,11 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
 
         elif mat2 not in self.materials:
             self.materials.add(mat2)
-            self.material.writeMaterial(mat2, self.scene)
+            self.material.writeMaterial(mat2, self.bl_scene)
 
         if mat not in self.materials:
             self.materials.add(mat)
-            self.material.writeMaterial(mat, self.scene)
+            self.material.writeMaterial(mat, self.bl_scene)
 
     def exportMaterials(self):
         self.yaf_logger.printInfo("Exporter: Processing Materials...")
@@ -338,15 +334,15 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
         yaf_param_map = libyafaray4_bindings.ParamMap()
         param_map_list = libyafaray4_bindings.ParamMapList()
         yaf_param_map.setString("type", "shinydiffusemat")
-        if self.scene.gs_clay_render:    
-            cCol = self.scene.gs_clay_col
+        if self.bl_scene.gs_clay_render:
+            cCol = self.bl_scene.gs_clay_col
         else:
             cCol = (0.8, 0.8, 0.8)
         yaf_param_map.setColor("color", cCol[0], cCol[1], cCol[2])
         self.yaf_logger.printInfo("Exporter: Creating Material \"defaultMat\"")
         self.yaf_scene.createMaterial("defaultMat", yaf_param_map, param_map_list)
 
-        for obj in self.scene.objects:
+        for obj in self.bl_scene.objects:
             for mat_slot in obj.material_slots:
                 if mat_slot.material not in self.materials:
                     self.exportMaterial(mat_slot.material)
@@ -359,7 +355,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
                 self.handleBlendMat(material)
             else:
                 self.materials.add(material)
-                self.material.writeMaterial(material, self.scene, self.is_preview)
+                self.material.writeMaterial(material, self.bl_scene, self.is_preview)
 
     def decideOutputFileName(self, output_path, filetype):
 
@@ -376,17 +372,17 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
         }
         filetype = switchFileType.get(filetype, 'png')
         # write image or XML-File with filename from framenumber
-        frame_numb_str = "{:0" + str(len(str(self.scene.frame_end))) + "d}"
+        frame_numb_str = "{:0" + str(len(str(self.bl_scene.frame_end))) + "d}"
         
         filebasename = ""
-        if self.scene.img_add_blend_name:
+        if self.bl_scene.img_add_blend_name:
             if bpy.data.filepath == "":
                 filebasename += "temp"
             filebasename += os.path.splitext(os.path.basename(bpy.data.filepath))[0]+" - "
             
-        filebasename += frame_numb_str.format(self.scene.frame_current)
+        filebasename += frame_numb_str.format(self.bl_scene.frame_current)
 
-        if self.scene.img_add_datetime:
+        if self.bl_scene.img_add_datetime:
             filebasename += " ("+datetime.datetime.now().strftime("%Y-%m-%dT%H%M%S")+")"
         
         output = os.path.join(output_path, filebasename)
@@ -403,33 +399,32 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
 
         return outputFile, output, filetype
 
-    def defineImageOutput(self, output_name, fp, scene, render, color_space, gamma, alpha_premultiply):
-        self.outputFile, self.output, self.file_type = self.decideOutputFileName(fp, scene.img_output)
+    def defineImageOutput(self, output_name, fp, bl_scene, bl_render, color_space, gamma, alpha_premultiply):
+        self.outputFile, self.output, self.file_type = self.decideOutputFileName(fp, bl_scene.img_output)
         yaf_param_map = libyafaray4_bindings.ParamMap()
         yaf_param_map.setString("image_path", str(self.outputFile))
         yaf_param_map.setString("color_space", color_space)
         yaf_param_map.setFloat("gamma", gamma)
         yaf_param_map.setBool("alpha_premultiply", alpha_premultiply)
-        yaf_param_map.setBool("multi_layer", scene.img_multilayer)
-        yaf_param_map.setBool("denoise_enabled", scene.img_denoise)
-        yaf_param_map.setInt("denoise_h_lum", scene.img_denoiseHLum)
-        yaf_param_map.setInt("denoise_h_col", scene.img_denoiseHCol)
-        yaf_param_map.setFloat("denoise_mix", scene.img_denoiseMix)
-        print(render.image_settings.color_mode)
-        yaf_param_map.setBool("alpha_channel", render.image_settings.color_mode == "RGBA")
+        yaf_param_map.setBool("multi_layer", bl_scene.img_multilayer)
+        yaf_param_map.setBool("denoise_enabled", bl_scene.img_denoise)
+        yaf_param_map.setInt("denoise_h_lum", bl_scene.img_denoiseHLum)
+        yaf_param_map.setInt("denoise_h_col", bl_scene.img_denoiseHCol)
+        yaf_param_map.setFloat("denoise_mix", bl_scene.img_denoiseMix)
+        print(bl_render.image_settings.color_mode)
+        yaf_param_map.setBool("alpha_channel", bl_render.image_settings.color_mode == "RGBA")
         #self.yaf_film.setLoggingAndBadgeSettings(self.yaf_scene, self.scene)
-        self.co = self.yaf_film.createOutput(output_name, yaf_param_map)
+        self.co = self.film.yaf_film.createOutput(output_name, yaf_param_map)
 
     # callback to export the scene
-    def update(self, data, depsgraph):
-        self.depsgraph = depsgraph
-        scene = scene_from_depsgraph(depsgraph)
+    def update(self, bl_data, bl_depsgraph):
+        self.bl_depsgraph = bl_depsgraph
+        self.bl_scene = scene_from_depsgraph(bl_depsgraph)
         self.update_stats("", "Setting up render")
         if not self.is_preview:
-            scene.frame_set(scene.frame_current)
+            self.bl_scene.frame_set(self.bl_scene.frame_current)
 
-        self.scene = scene
-        render = scene.render
+        render = self.bl_scene.render
 
         if bpy.data.filepath == "":
             render_filename = "render"
@@ -438,9 +433,9 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
             render_filename = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
             render_path = "//" + render_filename + "_render/"
 
-        render_filename += " - " + str(self.scene.frame_current)
+        render_filename += " - " + str(self.bl_scene.frame_current)
 
-        if scene.img_save_with_blend_file:
+        if self.bl_scene.img_save_with_blend_file:
             render.filepath = render_path
             render_path = bpy.path.abspath(render_path)
         else:
@@ -452,7 +447,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
         if not os.path.exists(render_path):
             os.mkdir(render_path)
 
-        [self.sizeX, self.sizeY, self.bStartX, self.bStartY, self.bsizeX, self.bsizeY, camDummy] = getRenderCoords(scene)
+        [self.sizeX, self.sizeY, self.bStartX, self.bStartY, self.bsizeX, self.bsizeY, camDummy] = getRenderCoords(self.bl_scene)
 
         if render.use_border:
             self.resX = self.bsizeX
@@ -461,53 +456,56 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
             self.resX = self.sizeX
             self.resY = self.sizeY
 
-        color_space = calcColorSpace(scene)
-        gamma = calcGamma(scene)
-        alpha_premultiply = calcAlphaPremultiply(scene)
+        color_space = calcColorSpace(self.bl_scene)
+        gamma = calcGamma(self.bl_scene)
+        alpha_premultiply = calcAlphaPremultiply(self.bl_scene)
 
-        if scene.gs_type_render == "file":
+        self.setInterface()
+
+        if self.bl_scene.gs_type_render == "file":
             #self.setInterface(libyafaray4_bindings.Interface())
-            self.setInterface()
             self.yaf_scene.setInputColorSpace("LinearRGB", 1.0)    #When rendering into Blender, color picker floating point data is already linear (linearized by Blender)
-            self.defineImageOutput("blender_file_output", render_path, scene, render, color_space.blender, gamma.blender, alpha_premultiply.blender)
-            if scene.yafaray.logging.savePreset:
-                presets.YAF_AddPresetBase.export_to_file(presets.YAFARAY_OT_presets_renderset, self.outputFile)
+            self.defineImageOutput("blender_file_output", render_path, self.bl_scene, render, color_space.blender, gamma.blender, alpha_premultiply.blender)
+            if self.bl_scene.yafaray.logging.savePreset:
+                presets.AddPresetBase.export_to_file(presets.YAFARAY_OT_presets_renderset, self.outputFile)
 
-        elif scene.gs_type_render == "xml" or scene.gs_type_render == "c" or scene.gs_type_render == "python":
-            self.outputFile, self.output, self.file_type = self.decideOutputFileName(render_path, scene.gs_type_render)
+        elif self.bl_scene.gs_type_render == "xml" or self.bl_scene.gs_type_render == "c" or self.bl_scene.gs_type_render == "python":
+            self.outputFile, self.output, self.file_type = self.decideOutputFileName(render_path, self.bl_scene.gs_type_render)
             #self.setInterface(libyafaray4_bindings.Interface(self.outputFile))
-            self.setInterface()
 
             input_color_values_color_space = "sRGB"
             input_color_values_gamma = 1.0
 
-            if scene.display_settings.display_device == "sRGB":
+            if self.bl_scene.display_settings.display_device == "sRGB":
                 input_color_values_color_space = "sRGB"
                 
-            elif scene.display_settings.display_device == "XYZ":
+            elif self.bl_scene.display_settings.display_device == "XYZ":
                 input_color_values_color_space = "XYZ"
                 
-            elif scene.display_settings.display_device == "None":
+            elif self.bl_scene.display_settings.display_device == "None":
                 input_color_values_color_space = "Raw_Manual_Gamma"
-                input_color_values_gamma = scene.gs_gamma  #We only use the selected gamma if the output device is set to "None"
+                input_color_values_gamma = self.bl_scene.gs_gamma  #We only use the selected gamma if the output device is set to "None"
             
             self.yaf_scene.setInputColorSpace("LinearRGB", 1.0)    #Values from Blender, color picker floating point data are already linear (linearized by Blender)
-            self.defineImageOutput("xml_file_output", render_path, scene, render, color_space.blender, gamma.blender, alpha_premultiply.blender)
+            self.defineImageOutput("xml_file_output", render_path, self.bl_scene, render, color_space.blender, gamma.blender, alpha_premultiply.blender)
             #FIXME! self.yi.setXmlColorSpace(input_color_values_color_space, input_color_values_gamma)  #To set the XML interface to write the XML values with the correction included for the selected color space (and gamma if applicable)
 
         else:
             #self.setInterface(libyafaray4_bindings.Interface())
-            self.setInterface()
             #self.yaf_scene.setInputColorSpace("LinearRGB", 1.0)    #When rendering into Blender, color picker floating point data is already linear (linearized by Blender)
-            if scene.gs_secondary_file_output and not self.is_preview:
-                self.defineImageOutput("blender_secondary_output", render_path, scene, render, color_space.secondary_output, gamma.secondary_output, alpha_premultiply.secondary_output)
-                if scene.yafaray.logging.savePreset:
-                    presets.YAF_AddPresetBase.export_to_file(presets.YAFARAY_OT_presets_renderset, self.outputFile)
+            if self.bl_scene.gs_secondary_file_output and not self.is_preview:
+                self.defineImageOutput("blender_secondary_output", render_path, self.bl_scene, render, color_space.secondary_output, gamma.secondary_output, alpha_premultiply.secondary_output)
+                if self.bl_scene.yafaray.logging.savePreset:
+                    presets.AddPresetBase.export_to_file(presets.YAFARAY_OT_presets_renderset, self.outputFile)
 
         self.exportScene()
-        self.integrator.exportIntegrator(self.scene, self.is_preview)
-        self.integrator.exportVolumeIntegrator(self.scene, self.yaf_scene, self.yaf_integrator)
-        self.film.createCameras(self.scene)
+        self.integrator = Integrator(self.yaf_logger)
+        self.integrator.exportIntegrator(self.bl_scene, self.is_preview)
+        self.integrator.exportVolumeIntegrator(self.bl_scene, self.yaf_scene)
+        yaf_film_param_map = libyafaray4_bindings.ParamMap()
+        yaf_film = libyafaray4_bindings.Film(yaf_logger, self.integrator.yaf_integrator, "Blender Main Film", yaf_film_param_map)
+        self.film = Film(yaf_film, yaf_logger, self.is_preview)
+        self.film.createCameras(self.bl_scene)
         #yaf_scene.defineLayers(self.yaf_scene, self.depsgraph)
         #yaf_scene.exportRenderSettings(self.yaf_scene, self.depsgraph, render_path, render_filename)
 
@@ -515,12 +513,11 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
 
     # callback to render scene
     def render(self, depsgraph):
-        self.depsgraph = depsgraph
-        scene = scene_from_depsgraph(depsgraph)
+        self.bl_depsgraph = depsgraph
+        self.bl_scene = scene_from_depsgraph(depsgraph)
         self.bl_use_postprocess = False
-        self.scene = scene
 
-        if scene.gs_type_render == "file":
+        if self.bl_scene.gs_type_render == "file":
             self.yaf_logger.printInfo("Exporter: Rendering to file {0}".format(self.outputFile))
             self.update_stats("YafaRay Rendering:", "Rendering to {0}".format(self.outputFile))
             self.yaf_scene.render(0, 0)
@@ -529,7 +526,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
             #lay.passes["Depth"].load_from_file("{0} (Depth).{1}".format(self.output, self.file_type)) #FIXME? Unfortunately I cannot find a way to load the exported images back to the appropiate passes in Blender. Blender probably needs to improve their API to allow per-pass loading of files. Also, Blender does not allow opening multi layer EXR files with this function.
             self.end_result(result)
 
-        elif scene.gs_type_render == "xml":
+        elif self.bl_scene.gs_type_render == "xml":
             self.yaf_logger.printInfo("Exporter: Writing XML to file {0}".format(self.outputFile))
             self.yaf_scene.render(0, 0)
 
@@ -544,15 +541,15 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
                     self.update_progress(0.0)
 
             def updateBlenderResult(x, y, w, h, view_name, tiles, callback_name):
-                if scene.render.use_multiview:
+                #print(x, y, w, h, view_name, tiles, callback_name, scene.render.use_multiview)
+                if self.bl_scene.render.use_multiview:
                     blender_result_buffers = self.begin_result(x, y, w, h, "", view_name)
                 else:
                     blender_result_buffers = self.begin_result(x, y, w, h)
                 for tile in tiles:
                     tile_name, tile_bitmap = tile
+                    print("tile_name:", tile_name, " tile_bitmap:", tile_bitmap, " blender_result_buffers:", blender_result_buffers)
                     try:
-                        if tile_name == "":
-                            tile_name="combined"
                         blender_result_buffers.layers[0].passes[0].rect = tile_bitmap
                     except:
                         print("Exporter: Exception while rendering in " + callback_name + " function:")
@@ -564,7 +561,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
                 w = x_1 - x_0
                 h = y_1 - y_0
                 if view_name == "":  # In case we use Render 3D viewport with Views enabled, it will copy the result to all views
-                    for view in scene.render.views:
+                    for view in self.bl_scene.render.views:
                         updateBlenderResult(x_0, y_0, w, h, view.name, tiles, "highlightCallback")
                 else:  # Normal rendering
                     updateBlenderResult(x_0, y_0, w, h, view_name, tiles, "highlightCallback")
@@ -576,7 +573,7 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
                 w = x_1 - x_0
                 h = y_1 - y_0
                 if view_name == "":  # In case we use Render 3D viewport with Views enabled, it will copy the result to all views
-                    for view in scene.render.views:
+                    for view in self.bl_scene.render.views:
                         updateBlenderResult(x_0, y_0, w, h, view.name, tiles, "flushAreaCallback")
                 else:  # Normal rendering
                     updateBlenderResult(x_0, y_0, w, h, view_name, tiles, "flushAreaCallback")
@@ -585,14 +582,14 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
                 w, h, tiles = args
                 view_name = "test"
                 if view_name == "":  # In case we use Render 3D viewport with Views enabled, it will copy the result to all views
-                    for view in scene.render.views:
+                    for view in self.bl_scene.render.views:
                         updateBlenderResult(0, 0, w, h, view.name, tiles, "flushCallback")
                 else:  # Normal rendering
                     updateBlenderResult(0, 0, w, h, view_name, tiles, "flushCallback")
 
-            self.yaf_film.setFlushAreaCallback(flushAreaCallback)
-            self.yaf_film.setFlushCallback(flushCallback)
-            self.yaf_film.setHighlightAreaCallback(highlightCallback)
+            self.film.yaf_film.setFlushAreaCallback(flushAreaCallback)
+            self.film.yaf_film.setFlushCallback(flushCallback)
+            self.film.yaf_film.setHighlightAreaCallback(highlightCallback)
             # Creating RenderControl #
             render_control = libyafaray4_bindings.RenderControl()
             # Creating RenderMonitor #
@@ -600,8 +597,8 @@ class YafaRay4RenderEngine(bpy.types.RenderEngine):
             render_control.setForNormalStart()
             scene_modified_flags = self.yaf_scene.checkAndClearModifiedFlags()
             self.yaf_scene.preprocess(render_control, scene_modified_flags)
-            self.yaf_integrator.preprocess(render_monitor, render_control, self.yaf_scene)
-            self.yaf_integrator.render(render_control, render_monitor, self.yaf_film)
+            self.integrator.yaf_integrator.preprocess(render_monitor, render_control, self.yaf_scene)
+            self.integrator.yaf_integrator.render(render_control, render_monitor, self.film.yaf_film)
             return #FIXME!!!
             t = threading.Thread(target=self.yaf_integrator, args=(self.yaf_scene, progressCallback,))
             t.start()

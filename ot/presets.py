@@ -26,7 +26,7 @@ from bpy.path import clean_name, display_name
 from bpy_types import StructRNA, _GenericUI, RNAMeta
 
 
-def yaf_preset_find(name, preset_path, disp_name=False):
+def preset_find(name, preset_path, disp_name=False):
     if not name:
         return None
 
@@ -45,7 +45,7 @@ def yaf_preset_find(name, preset_path, disp_name=False):
             return filepath
 
 
-class YAF_AddPresetBase():
+class AddPresetBase():
     bl_options = {'REGISTER'}  # only because invoke_props_popup requires.
     name = bpy.props.StringProperty(name="Name", description="Name of the preset, used to make the path name", maxlen=64, default="")
     remove_active = bpy.props.BoolProperty(default=False, options={'HIDDEN'})
@@ -113,10 +113,10 @@ class YAF_AddPresetBase():
             if not os.path.exists(target_path):
                 os.makedirs(target_path)
 
-            filepath = yaf_preset_find(preset_active, target_path)
+            filepath = preset_find(preset_active, target_path)
 
             if not filepath:
-                filepath = yaf_preset_find(preset_active, target_path, disp_name=True)
+                filepath = preset_find(preset_active, target_path, disp_name=True)
 
             if not filepath:
                 return {'CANCELLED'}
@@ -179,7 +179,7 @@ class YAF_AddPresetBase():
         file_preset.close()
 
 
-class YAFARAY_OT_presets_renderset(YAF_AddPresetBase, Operator):
+class YAFARAY_OT_presets_renderset(AddPresetBase, Operator):
     '''Add a Yafaray Render Preset in user home folder->yafaray_user_data/presets/render'''
     '''To delete or modify presets, modify the .py files directly in that folder'''
     bl_idname = "yafaray.preset_add"

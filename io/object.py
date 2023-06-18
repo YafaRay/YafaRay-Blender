@@ -137,7 +137,7 @@ class Object(object):
     def writeBGPortal(self, obj):
         self.yaf_logger.printInfo("Exporting Background Portal Light: {0}".format(obj.name))
         yaf_param_map = libyafaray4_bindings.ParamMap()
-        yaf_param_map.setInt("obj_pass_index", obj.pass_index)
+        #yaf_param_map.setInt("obj_pass_index", obj.pass_index)
         yaf_param_map.setString("type", "bgPortalLight")
         yaf_param_map.setFloat("power", obj.bgp_power)
         yaf_param_map.setInt("samples", obj.bgp_samples)
@@ -157,17 +157,17 @@ class Object(object):
         ml_matname += obj.name + "." + str(obj.__hash__())
 
         yaf_param_map = libyafaray4_bindings.ParamMap()
-        yaf_param_map.setInt("obj_pass_index", obj.pass_index)
+        yaf_param_map_list = libyafaray4_bindings.ParamMapList()
         yaf_param_map.setString("type", "light_mat")
         yaf_param_map.setBool("double_sided", obj.ml_double_sided)
         c = obj.ml_color
         yaf_param_map.setColor("color", c[0], c[1], c[2])
         yaf_param_map.setFloat("power", obj.ml_power)
-        self.yaf_scene.createMaterial(ml_matname)
+        self.yaf_scene.createMaterial(ml_matname, yaf_param_map, yaf_param_map_list)
 
         # Export mesh light
         yaf_param_map = libyafaray4_bindings.ParamMap()
-        yaf_param_map.setInt("obj_pass_index", obj.pass_index)
+        #yaf_param_map.setInt("obj_pass_index", obj.pass_index)
         yaf_param_map.setString("type", "objectlight")
         yaf_param_map.setBool("double_sided", obj.ml_double_sided)
         c = obj.ml_color
@@ -175,7 +175,7 @@ class Object(object):
         yaf_param_map.setFloat("power", obj.ml_power)
         yaf_param_map.setInt("samples", obj.ml_samples)
         yaf_param_map.setString("object_name", obj.name)
-        self.yaf_scene.createLight(obj.name)
+        self.yaf_scene.createLight(obj.name, yaf_param_map)
 
         matrix = obj.matrix_world.copy()
         self.writeGeometry(obj.name, obj, matrix, obj.pass_index, ml_matname)
@@ -240,7 +240,7 @@ class Object(object):
         yaf_param_map.setFloat("maxY", min(max(vec[1::3]), 1e10))
         yaf_param_map.setFloat("maxZ", min(max(vec[2::3]), 1e10))
 
-        self.yaf_scene.createVolumeRegion("VR.{0}-{1}".format(obj.name, str(obj.__hash__())))
+        self.yaf_scene.createVolumeRegion("VR.{0}-{1}".format(obj.name, str(obj.__hash__())), yaf_param_map)
         if bpy.app.version >= (2, 80, 0):
             pass  # FIXME BLENDER 2.80-3.00
         else:

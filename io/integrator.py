@@ -22,8 +22,8 @@ import bpy
 import libyafaray4_bindings
 
 class Integrator:
-    def __init__(self, yaf_integrator, yaf_logger):
-        self.yaf_integrator = yaf_integrator
+    def __init__(self, yaf_logger):
+        self.yaf_integrator = None
         self.yaf_logger = yaf_logger
 
     def exportIntegrator(self, scene, is_preview):
@@ -135,28 +135,28 @@ class Integrator:
         self.yaf_integrator = libyafaray4_bindings.SurfaceIntegrator(self.yaf_logger, "Blender Main SurfaceIntegrator", yaf_param_map)
         return True
 
-    def exportVolumeIntegrator(self, scene, yaf_scene, yaf_integrator):
+    def exportVolumeIntegrator(self, bl_scene, yaf_scene):
         
         yaf_param_map = libyafaray4_bindings.ParamMap()
 
-        world = scene.world
+        bl_world = bl_scene.world
 
-        if world:
-            vint_type = world.v_int_type
+        if bl_world:
+            vint_type = bl_world.v_int_type
             self.yaf_logger.printInfo("Exporting Volume Integrator: {0}".format(vint_type))
 
             if vint_type == 'Single Scatter':
                 yaf_param_map.setString("type", "SingleScatterIntegrator")
-                yaf_param_map.setFloat("stepSize", world.v_int_step_size)
-                yaf_param_map.setBool("adaptive", world.v_int_adaptive)
-                yaf_param_map.setBool("optimize", world.v_int_optimize)
+                yaf_param_map.setFloat("stepSize", bl_world.v_int_step_size)
+                yaf_param_map.setBool("adaptive", bl_world.v_int_adaptive)
+                yaf_param_map.setBool("optimize", bl_world.v_int_optimize)
 
             elif vint_type == 'Sky':
                 yaf_param_map.setString("type", "SkyIntegrator")
-                yaf_param_map.setFloat("turbidity", world.v_int_dsturbidity)
-                yaf_param_map.setFloat("stepSize", world.v_int_step_size)
-                yaf_param_map.setFloat("alpha", world.v_int_alpha)
-                yaf_param_map.setFloat("sigma_t", world.v_int_scale)
+                yaf_param_map.setFloat("turbidity", bl_world.v_int_dsturbidity)
+                yaf_param_map.setFloat("stepSize", bl_world.v_int_step_size)
+                yaf_param_map.setFloat("alpha", bl_world.v_int_alpha)
+                yaf_param_map.setFloat("sigma_t", bl_world.v_int_scale)
 
             else:
                 yaf_param_map.setString("type", "none")

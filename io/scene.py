@@ -29,8 +29,8 @@ def computeSceneSize(render):
     return [sizeX, sizeY]
 
 
-def getRenderCoords(scene):
-    render = scene.render
+def getRenderCoords(bl_scene):
+    render = bl_scene.render
     [sizeX, sizeY] = computeSceneSize(render)
 
     bStartX = 0
@@ -40,8 +40,8 @@ def getRenderCoords(scene):
 
     cam_data = None
 
-    if scene.objects:
-        for item in scene.objects:
+    if bl_scene.objects:
+        for item in bl_scene.objects:
             if item.type == 'CAMERA':
                 cam_data = item.data
                 break
@@ -194,19 +194,19 @@ def setLoggingAndBadgeSettings(yi, scene):
     yaf_param_map.setFloat("badge_font_size_factor", scene.yafaray.logging.fontScale)
 
 
-def calcAlphaPremultiply(scene):
+def calcAlphaPremultiply(bl_scene):
     alpha_premult = namedtuple("alpha_premult", ["blender", "secondary_output"])
-    if scene.gs_premult == "auto":
-        if scene.img_output == "PNG" or scene.img_output == "JPEG":
+    if bl_scene.gs_premult == "auto":
+        if bl_scene.img_output == "PNG" or bl_scene.img_output == "JPEG":
             enable_premult = False
         else:
             enable_premult = True
-    elif scene.gs_premult == "yes":
+    elif bl_scene.gs_premult == "yes":
         enable_premult = True
     else:
         enable_premult = False
 
-    if scene.gs_type_render == "into_blender":
+    if bl_scene.gs_type_render == "into_blender":
         # We force alpha premultiply when rendering into Blender as it expects premultiplied input
         # In case we use a secondary file output, we set the premultiply according to the Blender setting
         return alpha_premult(True, enable_premult)
@@ -215,46 +215,46 @@ def calcAlphaPremultiply(scene):
         return alpha_premult(enable_premult, False)
 
 
-def calcGamma(scene):
+def calcGamma(bl_scene):
     gamma = namedtuple("gamma", ["blender", "secondary_output"])
     gamma_1 = 1.0
     gamma_2 = 1.0
-    if scene.gs_type_render == "into_blender" and scene.display_settings.display_device == "None":
-        gamma_1 = scene.gs_gamma  # We only use the selected gamma if the output device is set to "None"
-        if scene.display_settings.display_device == "None":
-            gamma_2 = scene.gs_gamma  #We only use the selected gamma if the output device is set to "None"
-    elif scene.display_settings.display_device == "None":
-        gamma_1 = scene.gs_gamma  # We only use the selected gamma if the output device is set to "None"
+    if bl_scene.gs_type_render == "into_blender" and bl_scene.display_settings.display_device == "None":
+        gamma_1 = bl_scene.gs_gamma  # We only use the selected gamma if the output device is set to "None"
+        if bl_scene.display_settings.display_device == "None":
+            gamma_2 = bl_scene.gs_gamma  #We only use the selected gamma if the output device is set to "None"
+    elif bl_scene.display_settings.display_device == "None":
+        gamma_1 = bl_scene.gs_gamma  # We only use the selected gamma if the output device is set to "None"
 
     return gamma(gamma_1, gamma_2)
 
 
-def calcColorSpace(scene):
+def calcColorSpace(bl_scene):
     color_space = namedtuple("color_space", ["blender", "secondary_output"])
     color_space_2 = "sRGB"
 
-    if scene.gs_type_render == "into_blender":
-        if scene.display_settings.display_device == "None":
+    if bl_scene.gs_type_render == "into_blender":
+        if bl_scene.display_settings.display_device == "None":
             color_space_1 = "Raw_Manual_Gamma"
         else:
             color_space_1 = "LinearRGB"  #For all other Blender display devices, it expects a linear output from YafaRay
         #Optional Secondary file output color space
-        if scene.img_output == "OPEN_EXR" or scene.img_output == "HDR":  #If the output file is a HDR/EXR file, we force the render output to Linear
+        if bl_scene.img_output == "OPEN_EXR" or bl_scene.img_output == "HDR":  #If the output file is a HDR/EXR file, we force the render output to Linear
             color_space_2 = "LinearRGB"
-        elif scene.display_settings.display_device == "sRGB":
+        elif bl_scene.display_settings.display_device == "sRGB":
             color_space_2 = "sRGB"
-        elif scene.display_settings.display_device == "XYZ":
+        elif bl_scene.display_settings.display_device == "XYZ":
             color_space_2 = "XYZ"
-        elif scene.display_settings.display_device == "None":
+        elif bl_scene.display_settings.display_device == "None":
             color_space_2 = "Raw_Manual_Gamma"
     else:
-        if scene.img_output == "OPEN_EXR" or scene.img_output == "HDR":  # If the output file is a HDR/EXR file, we force the render output to Linear
+        if bl_scene.img_output == "OPEN_EXR" or bl_scene.img_output == "HDR":  # If the output file is a HDR/EXR file, we force the render output to Linear
             color_space_1 = "LinearRGB"
-        elif scene.display_settings.display_device == "sRGB":
+        elif bl_scene.display_settings.display_device == "sRGB":
             color_space_1 = "sRGB"
-        elif scene.display_settings.display_device == "XYZ":
+        elif bl_scene.display_settings.display_device == "XYZ":
             color_space_1 = "XYZ"
-        elif scene.display_settings.display_device == "None":
+        elif bl_scene.display_settings.display_device == "None":
             color_space_1 = "Raw_Manual_Gamma"
         else:
             color_space_1 = "sRGB"
