@@ -21,346 +21,253 @@
 import bpy
 import os
 from collections import namedtuple
+import platform
 from ..util.io import scene_from_depsgraph
+import libyafaray4_bindings
+from .. import YAF_ID_NAME
+from .. import YAFARAY_BLENDER_VERSION
 
-def computeSceneSize(render):
-    sizeX = int(render.resolution_x * render.resolution_percentage * 0.01)
-    sizeY = int(render.resolution_y * render.resolution_percentage * 0.01)
-    return [sizeX, sizeY]
+class Scene:
+    def __init__(self, bl_depsgraph, yaf_logger):
+        self.yaf_logger = yaf_logger
+        self.is_preview = False
+        self.bl_depsgraph = bl_depsgraph
+        self.bl_scene = scene_from_depsgraph(bl_depsgraph)
+        self.materials = set()
 
-
-def get_render_coords(bl_scene):
-    render = bl_scene.render
-    [sizeX, sizeY] = computeSceneSize(render)
-
-    bStartX = 0
-    bStartY = 0
-    bsizeX = 0
-    bsizeY = 0
-
-    cam_data = None
-
-    if bl_scene.objects:
-        for item in bl_scene.objects:
-            if item.type == 'CAMERA':
-                cam_data = item.data
-                break
-
-    # Shift only available if camera is selected
-    if not cam_data:
-        shiftX = 0
-        shiftY = 0
-
-    else:
-        # Sanne: get lens shift
-        #camera = self.scene.objects.camera.getData()
-        maxsize = max(sizeX, sizeY)
-        shiftX = int(cam_data.shift_x * maxsize)
-        shiftY = int(cam_data.shift_y * maxsize)
-
-    # no border when rendering to view
-    if render.use_border and cam_data:
-        minX = render.border_min_x * sizeX
-        minY = render.border_min_y * sizeY
-        maxX = render.border_max_x * sizeX
-        maxY = render.border_max_y * sizeY
-        bStartX = int(minX)
-        bStartY = int(sizeY) - int(maxY)
-        bsizeX = int(maxX) - int(minX)
-        bsizeY = int(maxY) - int(minY)
-
-    # Sanne: add lens shift
-    bStartX += shiftX
-    bStartY -= shiftY
-
-    return [sizeX, sizeY, bStartX, bStartY, bsizeX, bsizeY, cam_data]
-
-
-def exportAA(yi, scene):
-    yaf_param_map.setInt("AA_passes", scene.AA_passes)
-    yaf_param_map.setInt("AA_minsamples", scene.AA_min_samples)
-    yaf_param_map.setInt("AA_inc_samples", scene.AA_inc_samples)
-    yaf_param_map.setFloat("AA_pixelwidth", scene.AA_pixelwidth)
-    yaf_param_map.setFloat("AA_threshold", scene.AA_threshold)
-    yaf_param_map.setString("filter_type", scene.AA_filter_type)
-    yaf_param_map.setFloat("AA_resampled_floor", scene.yafaray.noise_control.resampled_floor)
-    yaf_param_map.setFloat("AA_sample_multiplier_factor", scene.yafaray.noise_control.sample_multiplier_factor)
-    yaf_param_map.setFloat("AA_light_sample_multiplier_factor", scene.yafaray.noise_control.light_sample_multiplier_factor)
-    yaf_param_map.setFloat("AA_indirect_sample_multiplier_factor", scene.yafaray.noise_control.indirect_sample_multiplier_factor)
-    yaf_param_map.setBool("AA_detect_color_noise", scene.yafaray.noise_control.detect_color_noise)
-    yaf_param_map.setString("AA_dark_detection_type", scene.yafaray.noise_control.dark_detection_type)
-    yaf_param_map.setFloat("AA_dark_threshold_factor", scene.yafaray.noise_control.dark_threshold_factor)
-    yaf_param_map.setInt("AA_variance_edge_size", scene.yafaray.noise_control.variance_edge_size)
-    yaf_param_map.setInt("AA_variance_pixels", scene.yafaray.noise_control.variance_pixels)
-    yaf_param_map.setFloat("AA_clamp_samples", scene.yafaray.noise_control.clamp_samples)
-    yaf_param_map.setFloat("AA_clamp_indirect", scene.yafaray.noise_control.clamp_indirect)
-    yaf_param_map.setBool("background_resampling", scene.yafaray.noise_control.background_resampling)
-
-    if scene.name == "preview" and bpy.data.scenes[0].yafaray.is_preview.enable:
-        yaf_param_map.setInt("AA_passes", bpy.data.scenes[0].yafaray.is_preview.previewAApasses)
-        yaf_param_map.setFloat("AA_threshold", 0.01)
-
-
-def exportRenderSettings(yi, depsgraph, render_path, render_filename):
-    self.yaf_logger.printVerbose("Exporting Render Settings")
-    scene = scene_from_depsgraph(depsgraph)
-    render = scene.render
-
-    [sizeX, sizeY, bStartX, bStartY, bsizeX, bsizeY, cam_data] = get_render_coords(scene)
-
-    yaf_param_map.setString("scene_accelerator", scene.gs_accelerator)
-
-    exportAA(yi, scene)
-
-    yaf_param_map.setInt("xstart", bStartX)
-    yaf_param_map.setInt("ystart", bStartY)
-
-    # no border when rendering to view
-    if render.use_border and cam_data:
-        yaf_param_map.setInt("width", bsizeX)
-        yaf_param_map.setInt("height", bsizeY)
-    else:
-        yaf_param_map.setInt("width", sizeX)
-        yaf_param_map.setInt("height", sizeY)
-
-    yaf_param_map.setBool("show_sam_pix", scene.gs_show_sam_pix)
-
-    if scene.name == "preview" and bpy.data.scenes[0].yafaray.is_preview.enable:
-        yaf_param_map.setBool("show_sam_pix", False)
-
-    yaf_param_map.setInt("tile_size", scene.gs_tile_size)
-    yaf_param_map.setString("tiles_order", scene.gs_tile_order)
-
-    if scene.gs_auto_threads:
-        yaf_param_map.setInt("threads", -1)
-        yaf_param_map.setInt("threads_photons", -1)
-    else:
-        yaf_param_map.setInt("threads", scene.gs_threads)
-        yaf_param_map.setInt("threads_photons", scene.gs_threads)
-
-    yaf_param_map.setString("images_autosave_interval_type", scene.gs_images_autosave_interval_type)
-    yaf_param_map.setInt("images_autosave_interval_passes", scene.gs_images_autosave_interval_passes)
-    yaf_param_map.setFloat("images_autosave_interval_seconds", scene.gs_images_autosave_interval_seconds)
-
-    yaf_param_map.setString("film_load_save_mode", scene.gs_film_save_load)
-    yaf_param_map.setString("film_load_save_path", render_path + "/" + render_filename)
-    yaf_param_map.setString("film_autosave_interval_type", scene.gs_film_autosave_interval_type)
-    yaf_param_map.setInt("film_autosave_interval_passes", scene.gs_film_autosave_interval_passes)
-    yaf_param_map.setFloat("film_autosave_interval_seconds", scene.gs_film_autosave_interval_seconds)
-
-    yaf_param_map.setBool("adv_auto_shadow_bias_enabled", scene.adv_auto_shadow_bias_enabled)
-    yaf_param_map.setFloat("adv_shadow_bias_value", scene.adv_shadow_bias_value)
-    yaf_param_map.setBool("adv_auto_min_raydist_enabled", scene.adv_auto_min_raydist_enabled)
-    yaf_param_map.setFloat("adv_min_raydist_value", scene.adv_min_raydist_value)
-    yaf_param_map.setFloat("adv_min_raydist_value", scene.adv_min_raydist_value)
-    yaf_param_map.setInt("adv_base_sampling_offset", scene.adv_base_sampling_offset)
-    if bpy.app.version >= (2, 80, 0):
-        pass   # FIXME BLENDER 2.80-3.00
-    else:
-        yaf_param_map.setInt("adv_computer_node", bpy.context.user_preferences.addons["yafaray4"].preferences.yafaray_computer_node)
-
-    yaf_param_map.setInt("layer_mask_obj_index", scene.yafaray.passes.pass_mask_obj_index)
-    yaf_param_map.setInt("layer_mask_mat_index", scene.yafaray.passes.pass_mask_mat_index)
-    yaf_param_map.setBool("layer_mask_invert", scene.yafaray.passes.pass_mask_invert)
-    yaf_param_map.setBool("layer_mask_only", scene.yafaray.passes.pass_mask_only)
-
-    yaf_param_map.setInt("layer_object_edge_thickness", scene.yafaray.passes.objectEdgeThickness)
-    yaf_param_map.setInt("layer_faces_edge_thickness", scene.yafaray.passes.facesEdgeThickness)
-    yaf_param_map.setFloat("layer_object_edge_threshold", scene.yafaray.passes.objectEdgeThreshold)
-    yaf_param_map.setFloat("layer_faces_edge_threshold", scene.yafaray.passes.facesEdgeThreshold)
-    yaf_param_map.setFloat("layer_object_edge_smoothness", scene.yafaray.passes.objectEdgeSmoothness)
-    yaf_param_map.setFloat("layer_faces_edge_smoothness", scene.yafaray.passes.facesEdgeSmoothness)
-    yaf_param_map.setColor("layer_toon_edge_color", scene.yafaray.passes.toonEdgeColor[0],
-                      scene.yafaray.passes.toonEdgeColor[1], scene.yafaray.passes.toonEdgeColor[2])
-    yaf_param_map.setFloat("layer_toon_pre_smooth", scene.yafaray.passes.toonPreSmooth)
-    yaf_param_map.setFloat("layer_toon_post_smooth", scene.yafaray.passes.toonPostSmooth)
-    yaf_param_map.setFloat("layer_toon_quantization", scene.yafaray.passes.toonQuantization)
-
-
-def setLoggingAndBadgeSettings(yi, scene):
-    self.yaf_logger.printVerbose("Exporting Logging and Badge settings")
-    yaf_param_map.setBool("badge_draw_render_settings", scene.yafaray.logging.drawRenderSettings)
-    yaf_param_map.setBool("badge_draw_aa_noise_settings", scene.yafaray.logging.drawAANoiseSettings)
-    yaf_param_map.setBool("logging_save_txt", scene.yafaray.logging.saveLog)
-    yaf_param_map.setBool("logging_save_html", scene.yafaray.logging.saveHTML)
-    yaf_param_map.setString("badge_position", scene.yafaray.logging.paramsBadgePosition)
-    yaf_param_map.setString("badge_title", scene.yafaray.logging.title)
-    yaf_param_map.setString("badge_author", scene.yafaray.logging.author)
-    yaf_param_map.setString("badge_contact", scene.yafaray.logging.contact)
-    yaf_param_map.setString("badge_comment", scene.yafaray.logging.comments)
-    if scene.yafaray.logging.customIcon != "":
-        yaf_param_map.setString("badge_icon_path", os.path.abspath(bpy.path.abspath(scene.yafaray.logging.customIcon)))
-    yaf_param_map.setString("badge_font_path", scene.yafaray.logging.customFont)
-    yaf_param_map.setFloat("badge_font_size_factor", scene.yafaray.logging.fontScale)
-
-
-def calc_alpha_premultiply(bl_scene):
-    alpha_premult = namedtuple("alpha_premult", ["blender", "secondary_output"])
-    if bl_scene.gs_premult == "auto":
-        if bl_scene.img_output == "PNG" or bl_scene.img_output == "JPEG":
-            enable_premult = False
+        if self.is_preview:
+            self.yaf_scene = libyafaray4_bindings.Scene(yaf_logger, "Blender Preview Scene")
+            self.yaf_logger.setConsoleVerbosityLevel(self.yaf_logger.logLevelFromString("debug"))
+            self.yaf_logger.setLogVerbosityLevel(self.yaf_logger.logLevelFromString("debug"))
+            self.bl_scene.bg_transp = False  # to correct alpha problems in preview roughglass
+            self.bl_scene.bg_transp_refract = False  # to correct alpha problems in preview roughglass
         else:
-            enable_premult = True
-    elif bl_scene.gs_premult == "yes":
-        enable_premult = True
-    else:
-        enable_premult = False
+            self.yaf_scene = libyafaray4_bindings.Scene(yaf_logger, "Blender Main Scene")
+            self.yaf_logger.enablePrintDateTime(self.bl_scene.yafaray.logging.logPrintDateTime)
+            # self.yaf_logger.setConsoleVerbosityLevel(self.yaf_logger.logLevelFromString(self.scene.yafaray.logging.consoleVerbosity))
+            self.yaf_logger.setConsoleVerbosityLevel(self.yaf_logger.logLevelFromString("info"))
+            self.yaf_logger.setLogVerbosityLevel(
+                self.yaf_logger.logLevelFromString(self.bl_scene.yafaray.logging.logVerbosity))
+            self.yaf_logger.printInfo("YafaRay-Blender (" + YAFARAY_BLENDER_VERSION + ")")
+            self.yaf_logger.printInfo(
+                "Exporter: Blender version " + str(bpy.app.version[0]) + "." + str(bpy.app.version[1]) + "." + str(
+                    bpy.app.version[
+                        2]) + "." + bpy.app.version_char + "  Build information: " + bpy.app.build_platform.decode(
+                    "utf-8") + ", " + bpy.app.build_type.decode("utf-8") + ", branch: " + bpy.app.build_branch.decode(
+                    "utf-8") + ", hash: " + bpy.app.build_hash.decode("utf-8"))
+            self.yaf_logger.printInfo(
+                "Exporter: System information: " + platform.processor() + ", " + platform.platform())
 
-    if bl_scene.gs_type_render == "into_blender":
-        # We force alpha premultiply when rendering into Blender as it expects premultiplied input
-        # In case we use a secondary file output, we set the premultiply according to the Blender setting
-        return alpha_premult(True, enable_premult)
-    else:
-        # In this case we use the calculated enable premult value, and leave the second value as False as there is no secondary output in this case
-        return alpha_premult(enable_premult, False)
-
-
-def calc_gamma(bl_scene):
-    gamma = namedtuple("gamma", ["blender", "secondary_output"])
-    gamma_1 = 1.0
-    gamma_2 = 1.0
-    if bl_scene.gs_type_render == "into_blender" and bl_scene.display_settings.display_device == "None":
-        gamma_1 = bl_scene.gs_gamma  # We only use the selected gamma if the output device is set to "None"
-        if bl_scene.display_settings.display_device == "None":
-            gamma_2 = bl_scene.gs_gamma  #We only use the selected gamma if the output device is set to "None"
-    elif bl_scene.display_settings.display_device == "None":
-        gamma_1 = bl_scene.gs_gamma  # We only use the selected gamma if the output device is set to "None"
-
-    return gamma(gamma_1, gamma_2)
-
-
-def calc_color_space(bl_scene):
-    color_space = namedtuple("color_space", ["blender", "secondary_output"])
-    color_space_2 = "sRGB"
-
-    if bl_scene.gs_type_render == "into_blender":
-        if bl_scene.display_settings.display_device == "None":
-            color_space_1 = "Raw_Manual_Gamma"
+    def export_scene(self):
+        if bpy.app.version >= (2, 80, 0):
+            for inst in self.bl_depsgraph.object_instances:
+                obj = inst.object
+                self.export_texture(obj)
         else:
-            color_space_1 = "LinearRGB"  #For all other Blender display devices, it expects a linear output from YafaRay
-        #Optional Secondary file output color space
-        if bl_scene.img_output == "OPEN_EXR" or bl_scene.img_output == "HDR":  #If the output file is a HDR/EXR file, we force the render output to Linear
-            color_space_2 = "LinearRGB"
-        elif bl_scene.display_settings.display_device == "sRGB":
-            color_space_2 = "sRGB"
-        elif bl_scene.display_settings.display_device == "XYZ":
-            color_space_2 = "XYZ"
-        elif bl_scene.display_settings.display_device == "None":
-            color_space_2 = "Raw_Manual_Gamma"
-    else:
-        if bl_scene.img_output == "OPEN_EXR" or bl_scene.img_output == "HDR":  # If the output file is a HDR/EXR file, we force the render output to Linear
-            color_space_1 = "LinearRGB"
-        elif bl_scene.display_settings.display_device == "sRGB":
-            color_space_1 = "sRGB"
-        elif bl_scene.display_settings.display_device == "XYZ":
-            color_space_1 = "XYZ"
-        elif bl_scene.display_settings.display_device == "None":
-            color_space_1 = "Raw_Manual_Gamma"
+            for obj in self.bl_scene.objects:
+                self.export_texture(obj)
+        self.export_materials()
+        self.object.setDepsgraph(self.bl_depsgraph)
+        self.export_objects()
+
+        if self.is_preview and bpy.data.scenes[0].yafaray.is_preview.enable and bpy.data.scenes[
+            0].yafaray.is_preview.previewBackground == "world":
+            self.world.export(bpy.data.scenes[0], self.is_preview)
         else:
-            color_space_1 = "sRGB"
+            self.world.export(self.bl_scene, self.yaf_scene, self.is_preview)
 
-    return color_space(color_space_1, color_space_2)
+        def export_texture(self, obj):
+            if bpy.app.version >= (2, 80, 0):
+                return None  # FIXME BLENDER 2.80-3.00
+            # First export the textures of the materials type 'blend'
+            for mat_slot in [m for m in obj.material_slots if m.material is not None]:
+                if mat_slot.material.mat_type == 'blend':
+                    blendmat_error = False
+                    try:
+                        mat1 = bpy.data.materials[mat_slot.material.material1name]
+                    except:
+                        self.yaf_logger.printWarning(
+                            "Exporter: Problem with blend material:\"{0}\". Could not find the first material:\"{1}\"".format(
+                                mat_slot.material.name, mat_slot.material.material1name))
+                        blendmat_error = True
+                    try:
+                        mat2 = bpy.data.materials[mat_slot.material.material2name]
+                    except:
+                        self.yaf_logger.printWarning(
+                            "Exporter: Problem with blend material:\"{0}\". Could not find the second material:\"{1}\"".format(
+                                mat_slot.material.name, mat_slot.material.material2name))
+                        blendmat_error = True
+                    if blendmat_error:
+                        continue
+                    for bm in [mat1, mat2]:
+                        for blendtex in [bt for bt in bm.texture_slots if (bt and bt.texture and bt.use)]:
+                            if self.is_preview and blendtex.texture.name == 'fakeshadow':
+                                continue
+                            self.texture.writeTexture(self.bl_scene, blendtex.texture)
+                else:
+                    continue
 
-def defineLayers(yi, depsgraph):
-    self.yaf_logger.printVerbose("Exporting Render Passes settings")
-    scene = scene_from_depsgraph(depsgraph)
+            for mat_slot in [m for m in obj.material_slots if m.material is not None]:
+                for tex in [t for t in mat_slot.material.texture_slots if (t and t.texture and t.use)]:
+                    if self.is_preview and tex.texture.name == "fakeshadow":
+                        continue
+                    self.texture.writeTexture(self.bl_scene, tex.texture)
 
-    def defineLayer(layer_type, exported_image_type, exported_image_name):
-        yaf_param_map.setString("type", layer_type)
-        yaf_param_map.setString("image_type", exported_image_type)
-        yaf_param_map.setString("exported_image_name", exported_image_name)
-        yaf_param_map.setString("exported_image_type", exported_image_type)
-        yi.defineLayer()
+    def object_on_visible_layer(self, obj):
+        if bpy.app.version >= (2, 80, 0):
+            return None  # FIXME BLENDER 2.80-3.00
+        obj_visible = False
+        for layer_visible in [object_layers and scene_layers for object_layers, scene_layers in
+                              zip(obj.layers, self.bl_scene.layers)]:
+            obj_visible |= layer_visible
+        return obj_visible
+
+    def export_objects(self):
+        self.yaf_logger.printInfo("Exporter: Processing Lights...")
+
+        # export only visible lights
+        if bpy.app.version >= (2, 80, 0):
+            visible_lights = [o.object for o in self.bl_depsgraph.object_instances if not (
+                    o.object.hide_get() or o.object.hide_render or o.object.hide_viewport) and o.object.type == 'LIGHT']
+        else:
+            visible_lights = [o for o in self.bl_scene.objects if
+                              not o.hide_render and o.is_visible(self.bl_scene) and o.type == 'LAMP']
+        for obj in visible_lights:
+            if bpy.app.version >= (2, 80, 0):
+                obj_is_instancer = obj.is_instancer
+            else:
+                obj_is_instancer = obj.is_duplicator
+            if obj_is_instancer:
+                obj.create_dupli_list(self.bl_scene)
+                for obj_dupli in obj.dupli_list:
+                    matrix = obj_dupli.matrix.copy()
+                    self.light.createLight(self.yaf_scene, obj_dupli.object, matrix)
+
+                if obj.dupli_list:
+                    obj.free_dupli_list()
+            else:
+                if obj.parent:
+                    if bpy.app.version >= (2, 80, 0):
+                        obj_parent_is_instancer = obj.parent.is_instancer
+                    else:
+                        obj_parent_is_instancer = obj.parent.is_duplicator
+                    if obj_parent_is_instancer:
+                        continue
+                self.light.createLight(self.yaf_scene, obj, obj.matrix_world)
+
+        self.yaf_logger.printInfo("Exporter: Processing Geometry...")
+
+        # export only visible objects
+        base_ids = {}
+        dup_base_ids = {}
+
+        if bpy.app.version >= (2, 80, 0):
+            visible_objects = [o.object for o in self.bl_depsgraph.object_instances if not (
+                    o.object.hide_get() or o.object.hide_render or o.object.hide_viewport) and o.object.type in {
+                                   'MESH', 'SURFACE', 'CURVE', 'FONT', 'EMPTY'}]
+        else:
+            visible_objects = [o for o in self.bl_scene.objects if not o.hide_render and (
+                    o.is_visible(self.bl_scene) or o.hide) and self.object_on_visible_layer(o) and (
+                                       o.type in {'MESH', 'SURFACE', 'CURVE', 'FONT', 'EMPTY'})]
+        for obj in visible_objects:
+            # Exporting dupliObjects as instances, also check for dupliObject type 'EMPTY' and don't export them as geometry
+            if bpy.app.version >= (2, 80, 0):
+                obj_is_instancer = obj.is_instancer
+            else:
+                obj_is_instancer = obj.is_duplicator
+            if obj_is_instancer:
+                self.yaf_logger.printVerbose("Processing duplis for: {0}".format(obj.name))
+                frame_current = self.bl_scene.frame_current
+                if self.bl_scene.render.use_instances:
+                    time_steps = 3
+                else:
+                    time_steps = 1
+                instance_ids = []
+                for time_step in range(0, time_steps):
+                    self.bl_scene.frame_set(frame_current, 0.5 * time_step)
+                    obj.dupli_list_create(self.bl_scene)
+                    idx = 0
+                    for obj_dupli in [od for od in obj.dupli_list if not od.object.type == 'EMPTY']:
+                        self.export_texture(obj_dupli.object)
+                        for mat_slot in obj_dupli.object.material_slots:
+                            if mat_slot.material not in self.materials:
+                                self.export_material(mat_slot.material)
+
+                        if not self.bl_scene.render.use_instances:
+                            matrix = obj_dupli.matrix.copy()
+                            self.object.writeMesh(obj_dupli.object, matrix,
+                                                  obj_dupli.object.name + "_" + str(self.yaf_scene.getNextFreeId()))
+                        else:
+                            if obj_dupli.object.name not in dup_base_ids:
+                                dup_base_ids[obj_dupli.object.name] = self.object.writeInstanceBase(
+                                    obj_dupli.object.name, obj_dupli.object)
+                            matrix = obj_dupli.matrix.copy()
+                            if time_step == 0:
+                                instance_id = self.object.writeInstance(dup_base_ids[obj_dupli.object.name], matrix,
+                                                                        obj_dupli.object.name)
+                                instance_ids.append(instance_id)
+                            elif obj.motion_blur_bezier:
+                                self.object.addInstanceMatrix(instance_ids[idx], matrix, 0.5 * time_step)
+                                idx += 1
+
+                    if obj.dupli_list is not None:
+                        obj.dupli_list_clear()
+
+                self.bl_scene.frame_set(frame_current, 0.0)
+
+                # check if object has particle system and uses the option for 'render emitter'
+                if hasattr(obj, 'particle_systems'):
+                    for pSys in obj.particle_systems:
+                        check_rendertype = pSys.settings.render_type in {'OBJECT', 'GROUP'}
+                        if check_rendertype and pSys.settings.use_render_emitter:
+                            matrix = obj.matrix_world.copy()
+                            self.object.writeMesh(obj, matrix)
+
+            # no need to write empty object from here on, so continue with next object in loop
+            elif obj.type == 'EMPTY':
+                continue
+
+            # Exporting objects with shared mesh data blocks as instances
+            elif obj.data.users > 1 and self.bl_scene.render.use_instances:
+                self.yaf_logger.printVerbose("Processing shared mesh data node object: {0}".format(obj.name))
+                if obj.data.name not in base_ids:
+                    base_ids[obj.data.name] = self.object.writeInstanceBase(obj.data.name, obj)
+
+                if obj.name not in dup_base_ids:
+                    matrix = obj.matrix_world.copy()
+                    instance_id = self.object.writeInstance(obj.name, matrix, base_ids[obj.data.name])
+                    if obj.motion_blur_bezier:
+                        frame_current = self.bl_scene.frame_current
+                        self.bl_scene.frame_set(frame_current, 0.5)
+                        matrix = obj.matrix_world.copy()
+                        self.object.addInstanceMatrix(instance_id, matrix, 0.5)
+                        self.bl_scene.frame_set(frame_current, 1.0)
+                        matrix = obj.matrix_world.copy()
+                        self.object.addInstanceMatrix(instance_id, matrix, 1.0)
+                        self.bl_scene.frame_set(frame_current, 0.0)
+
+            elif obj.data.name not in base_ids and obj.name not in dup_base_ids:
+                self.object.writeObject(obj)
+
+
+
+    def export_materials(self):
+        self.yaf_logger.printInfo("Exporter: Processing Materials...")
+        self.materials = set()
+
+        # create a default shiny diffuse material -> it will be assigned, if object has no material(s)
         yaf_param_map = libyafaray4_bindings.ParamMap()
+        param_map_list = libyafaray4_bindings.ParamMapList()
+        yaf_param_map.setString("type", "shinydiffusemat")
+        if self.bl_scene.gs_clay_render:
+            c_col = self.bl_scene.gs_clay_col
+        else:
+            c_col = (0.8, 0.8, 0.8)
+        yaf_param_map.setColor("color", c_col[0], c_col[1], c_col[2])
+        self.yaf_logger.printInfo("Exporter: Creating Material \"defaultMat\"")
+        self.yaf_scene.createMaterial("defaultMat", yaf_param_map, param_map_list)
 
-    defineLayer("combined", "ColorAlpha", "Combined")
-
-    if scene.yafaray.passes.pass_enable:
-        if scene.render.layers[0].use_pass_z:
-            defineLayer(scene.yafaray.passes.pass_Depth, "Gray", "Depth")
-            
-        if scene.render.layers[0].use_pass_vector:
-            defineLayer(scene.yafaray.passes.pass_Vector, "ColorAlpha", "Vector")
-            
-        if scene.render.layers[0].use_pass_normal:
-            defineLayer(scene.yafaray.passes.pass_Normal, "Color", "Normal")
-            
-        if scene.render.layers[0].use_pass_uv:
-            defineLayer(scene.yafaray.passes.pass_UV, "Color", "UV")
-            
-        if scene.render.layers[0].use_pass_color:
-            defineLayer(scene.yafaray.passes.pass_Color, "ColorAlpha", "Color")
-            
-        if scene.render.layers[0].use_pass_emit:
-            defineLayer(scene.yafaray.passes.pass_Emit, "Color", "Emit")
-            
-        if scene.render.layers[0].use_pass_mist:
-            defineLayer(scene.yafaray.passes.pass_Mist, "Gray", "Mist")
-            
-        if scene.render.layers[0].use_pass_diffuse:
-            defineLayer(scene.yafaray.passes.pass_Diffuse, "Color", "Diffuse")
-            
-        if scene.render.layers[0].use_pass_specular:
-            defineLayer(scene.yafaray.passes.pass_Spec, "Color", "Spec")
-            
-        if scene.render.layers[0].use_pass_ambient_occlusion:
-            defineLayer(scene.yafaray.passes.pass_AO, "Color", "AO")
-            
-        if scene.render.layers[0].use_pass_environment:
-            defineLayer(scene.yafaray.passes.pass_Env, "Color", "Env")
-            
-        if scene.render.layers[0].use_pass_indirect:
-            defineLayer(scene.yafaray.passes.pass_Indirect, "Color", "Indirect")
-            
-        if scene.render.layers[0].use_pass_shadow:
-            defineLayer(scene.yafaray.passes.pass_Shadow, "Color", "Shadow")
-            
-        if scene.render.layers[0].use_pass_reflection:
-            defineLayer(scene.yafaray.passes.pass_Reflect, "Color", "Reflect")
-            
-        if scene.render.layers[0].use_pass_refraction:
-            defineLayer(scene.yafaray.passes.pass_Refract, "Color", "Refract")
-            
-        if scene.render.layers[0].use_pass_object_index:
-            defineLayer(scene.yafaray.passes.pass_IndexOB, "Gray", "IndexOB")
-            
-        if scene.render.layers[0].use_pass_material_index:
-            defineLayer(scene.yafaray.passes.pass_IndexMA, "Gray", "IndexMA")
-            
-        if scene.render.layers[0].use_pass_diffuse_direct:
-            defineLayer(scene.yafaray.passes.pass_Depth, "pass_DiffDir", "DiffDir")
-            
-        if scene.render.layers[0].use_pass_diffuse_indirect:
-            defineLayer(scene.yafaray.passes.pass_DiffInd, "Color", "DiffInd")
-            
-        if scene.render.layers[0].use_pass_diffuse_color:
-            defineLayer(scene.yafaray.passes.pass_DiffCol, "Color", "DiffCol")
-            
-        if scene.render.layers[0].use_pass_glossy_direct:
-            defineLayer(scene.yafaray.passes.pass_GlossDir, "Color", "GlossDir")
-            
-        if scene.render.layers[0].use_pass_glossy_indirect:
-            defineLayer(scene.yafaray.passes.pass_GlossInd, "Color", "GlossInd")
-            
-        if scene.render.layers[0].use_pass_glossy_color:
-            defineLayer(scene.yafaray.passes.pass_GlossCol, "Color", "GlossCol")
-            
-        if scene.render.layers[0].use_pass_transmission_direct:
-            defineLayer(scene.yafaray.passes.pass_TransDir, "Color", "TransDir")
-            
-        if scene.render.layers[0].use_pass_transmission_indirect:
-            defineLayer(scene.yafaray.passes.pass_TransInd, "Color", "TransInd")
-            
-        if scene.render.layers[0].use_pass_transmission_color:
-            defineLayer(scene.yafaray.passes.pass_TransCol, "Color", "TransCol")
-            
-        if scene.render.layers[0].use_pass_subsurface_direct:
-            defineLayer(scene.yafaray.passes.pass_SubsurfaceDir, "Color", "SubsurfaceDir")
-            
-        if scene.render.layers[0].use_pass_subsurface_indirect:
-            defineLayer(scene.yafaray.passes.pass_SubsurfaceInd, "Color", "SubsurfaceInd")
-            
-        if scene.render.layers[0].use_pass_subsurface_color:
-            defineLayer(scene.yafaray.passes.pass_SubsurfaceCol, "Color", "SubsurfaceCol")
-
-    
+        for obj in self.bl_scene.objects:
+            for mat_slot in obj.material_slots:
+                if mat_slot.material not in self.materials:
+                    self.export_material(mat_slot.material)

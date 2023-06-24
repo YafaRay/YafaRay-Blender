@@ -39,15 +39,12 @@ from .film import Film
 from . import scene
 from .texture import Texture
 from .material import Material
+from .scene import Scene
 from ..ot import presets
 # from pprint import pprint
 # from pprint import pformat
 from ..util.io import scene_from_depsgraph
 from .. import global_vars
-from .scene import get_render_coords
-from .scene import calc_color_space
-from .scene import calc_alpha_premultiply
-from .scene import calc_gamma
 
 #
 yaf_logger = libyafaray4_bindings.Logger()
@@ -82,385 +79,19 @@ class RenderEngine(bpy.types.RenderEngine):
     global_vars.view_matrix = None
 
     def __init__(self):
-        self.bl_depsgraph = None
-        self.bl_scene = None
         self.yaf_logger = yaf_logger
-        self.yaf_scene = None
+        self.scene = None
         self.integrator = None
         self.film = None
-        self.materials = None
-        self.res_x = None
-        self.res_y = None
-        self.size_x = None
-        self.size_y = None
-        self.border_size_x = None
-        self.border_size_y = None
-        self.border_start_x = None
-        self.border_start_y = None
-        self.bl_use_postprocess = False
-        self.file_type = None
-        self.output = None
-        self.output_file = None
-
-    def set_interface(self):
-        self.materials = set()
-
-        if self.is_preview:
-            self.yaf_scene = libyafaray4_bindings.Scene(yaf_logger, "Blender Preview Scene")
-            self.yaf_logger.setConsoleVerbosityLevel(self.yaf_logger.logLevelFromString("debug"))
-            self.yaf_logger.setLogVerbosityLevel(self.yaf_logger.logLevelFromString("debug"))
-            self.bl_scene.bg_transp = False  # to correct alpha problems in preview roughglass
-            self.bl_scene.bg_transp_refract = False  # to correct alpha problems in preview roughglass
-        else:
-            self.yaf_scene = libyafaray4_bindings.Scene(yaf_logger, "Blender Main Scene")
-            self.yaf_logger.enablePrintDateTime(self.bl_scene.yafaray.logging.logPrintDateTime)
-            # self.yaf_logger.setConsoleVerbosityLevel(self.yaf_logger.logLevelFromString(self.scene.yafaray.logging.consoleVerbosity))
-            self.yaf_logger.setConsoleVerbosityLevel(self.yaf_logger.logLevelFromString("info"))
-            self.yaf_logger.setLogVerbosityLevel(
-                self.yaf_logger.logLevelFromString(self.bl_scene.yafaray.logging.logVerbosity))
-            self.yaf_logger.printInfo("YafaRay-Blender (" + YAFARAY_BLENDER_VERSION + ")")
-            self.yaf_logger.printInfo(
-                "Exporter: Blender version " + str(bpy.app.version[0]) + "." + str(bpy.app.version[1]) + "." + str(
-                    bpy.app.version[
-                        2]) + "." + bpy.app.version_char + "  Build information: " + bpy.app.build_platform.decode(
-                    "utf-8") + ", " + bpy.app.build_type.decode("utf-8") + ", branch: " + bpy.app.build_branch.decode(
-                    "utf-8") + ", hash: " + bpy.app.build_hash.decode("utf-8"))
-            self.yaf_logger.printInfo(
-                "Exporter: System information: " + platform.processor() + ", " + platform.platform())
-
-    def export_scene(self):
-        if bpy.app.version >= (2, 80, 0):
-            for inst in self.bl_depsgraph.object_instances:
-                obj = inst.object
-                self.export_texture(obj)
-        else:
-            for obj in self.bl_scene.objects:
-                self.export_texture(obj)
-        self.export_materials()
-        self.object.setDepsgraph(self.bl_depsgraph)
-        self.export_objects()
-
-        if self.is_preview and bpy.data.scenes[0].yafaray.is_preview.enable and bpy.data.scenes[
-            0].yafaray.is_preview.previewBackground == "world":
-            self.world.export(bpy.data.scenes[0], self.is_preview)
-        else:
-            self.world.export(self.bl_scene, self.yaf_scene, self.is_preview)
-
-    def export_texture(self, obj):
-        if bpy.app.version >= (2, 80, 0):
-            return None  # FIXME BLENDER 2.80-3.00
-        # First export the textures of the materials type 'blend'
-        for mat_slot in [m for m in obj.material_slots if m.material is not None]:
-            if mat_slot.material.mat_type == 'blend':
-                blendmat_error = False
-                try:
-                    mat1 = bpy.data.materials[mat_slot.material.material1name]
-                except:
-                    self.yaf_logger.printWarning(
-                        "Exporter: Problem with blend material:\"{0}\". Could not find the first material:\"{1}\"".format(
-                            mat_slot.material.name, mat_slot.material.material1name))
-                    blendmat_error = True
-                try:
-                    mat2 = bpy.data.materials[mat_slot.material.material2name]
-                except:
-                    self.yaf_logger.printWarning(
-                        "Exporter: Problem with blend material:\"{0}\". Could not find the second material:\"{1}\"".format(
-                            mat_slot.material.name, mat_slot.material.material2name))
-                    blendmat_error = True
-                if blendmat_error:
-                    continue
-                for bm in [mat1, mat2]:
-                    for blendtex in [bt for bt in bm.texture_slots if (bt and bt.texture and bt.use)]:
-                        if self.is_preview and blendtex.texture.name == 'fakeshadow':
-                            continue
-                        self.texture.writeTexture(self.bl_scene, blendtex.texture)
-            else:
-                continue
-
-        for mat_slot in [m for m in obj.material_slots if m.material is not None]:
-            for tex in [t for t in mat_slot.material.texture_slots if (t and t.texture and t.use)]:
-                if self.is_preview and tex.texture.name == "fakeshadow":
-                    continue
-                self.texture.writeTexture(self.bl_scene, tex.texture)
-
-    def object_on_visible_layer(self, obj):
-        if bpy.app.version >= (2, 80, 0):
-            return None  # FIXME BLENDER 2.80-3.00
-        obj_visible = False
-        for layer_visible in [object_layers and scene_layers for object_layers, scene_layers in
-                              zip(obj.layers, self.bl_scene.layers)]:
-            obj_visible |= layer_visible
-        return obj_visible
-
-    def export_objects(self):
-        self.yaf_logger.printInfo("Exporter: Processing Lights...")
-
-        # export only visible lights
-        if bpy.app.version >= (2, 80, 0):
-            visible_lights = [o.object for o in self.bl_depsgraph.object_instances if not (
-                    o.object.hide_get() or o.object.hide_render or o.object.hide_viewport) and o.object.type == 'LIGHT']
-        else:
-            visible_lights = [o for o in self.bl_scene.objects if
-                              not o.hide_render and o.is_visible(self.bl_scene) and o.type == 'LAMP']
-        for obj in visible_lights:
-            if bpy.app.version >= (2, 80, 0):
-                obj_is_instancer = obj.is_instancer
-            else:
-                obj_is_instancer = obj.is_duplicator
-            if obj_is_instancer:
-                obj.create_dupli_list(self.bl_scene)
-                for obj_dupli in obj.dupli_list:
-                    matrix = obj_dupli.matrix.copy()
-                    self.light.createLight(self.yaf_scene, obj_dupli.object, matrix)
-
-                if obj.dupli_list:
-                    obj.free_dupli_list()
-            else:
-                if obj.parent:
-                    if bpy.app.version >= (2, 80, 0):
-                        obj_parent_is_instancer = obj.parent.is_instancer
-                    else:
-                        obj_parent_is_instancer = obj.parent.is_duplicator
-                    if obj_parent_is_instancer:
-                        continue
-                self.light.createLight(self.yaf_scene, obj, obj.matrix_world)
-
-        self.yaf_logger.printInfo("Exporter: Processing Geometry...")
-
-        # export only visible objects
-        base_ids = {}
-        dup_base_ids = {}
-
-        if bpy.app.version >= (2, 80, 0):
-            visible_objects = [o.object for o in self.bl_depsgraph.object_instances if not (
-                    o.object.hide_get() or o.object.hide_render or o.object.hide_viewport) and o.object.type in {
-                                   'MESH', 'SURFACE', 'CURVE', 'FONT', 'EMPTY'}]
-        else:
-            visible_objects = [o for o in self.bl_scene.objects if not o.hide_render and (
-                    o.is_visible(self.bl_scene) or o.hide) and self.object_on_visible_layer(o) and (
-                                       o.type in {'MESH', 'SURFACE', 'CURVE', 'FONT', 'EMPTY'})]
-        for obj in visible_objects:
-            # Exporting dupliObjects as instances, also check for dupliObject type 'EMPTY' and don't export them as geometry
-            if bpy.app.version >= (2, 80, 0):
-                obj_is_instancer = obj.is_instancer
-            else:
-                obj_is_instancer = obj.is_duplicator
-            if obj_is_instancer:
-                self.yaf_logger.printVerbose("Processing duplis for: {0}".format(obj.name))
-                frame_current = self.bl_scene.frame_current
-                if self.bl_scene.render.use_instances:
-                    time_steps = 3
-                else:
-                    time_steps = 1
-                instance_ids = []
-                for time_step in range(0, time_steps):
-                    self.bl_scene.frame_set(frame_current, 0.5 * time_step)
-                    obj.dupli_list_create(self.bl_scene)
-                    idx = 0
-                    for obj_dupli in [od for od in obj.dupli_list if not od.object.type == 'EMPTY']:
-                        self.export_texture(obj_dupli.object)
-                        for mat_slot in obj_dupli.object.material_slots:
-                            if mat_slot.material not in self.materials:
-                                self.export_material(mat_slot.material)
-
-                        if not self.bl_scene.render.use_instances:
-                            matrix = obj_dupli.matrix.copy()
-                            self.object.writeMesh(obj_dupli.object, matrix,
-                                                  obj_dupli.object.name + "_" + str(self.yaf_scene.getNextFreeId()))
-                        else:
-                            if obj_dupli.object.name not in dup_base_ids:
-                                dup_base_ids[obj_dupli.object.name] = self.object.writeInstanceBase(
-                                    obj_dupli.object.name, obj_dupli.object)
-                            matrix = obj_dupli.matrix.copy()
-                            if time_step == 0:
-                                instance_id = self.object.writeInstance(dup_base_ids[obj_dupli.object.name], matrix,
-                                                                        obj_dupli.object.name)
-                                instance_ids.append(instance_id)
-                            elif obj.motion_blur_bezier:
-                                self.object.addInstanceMatrix(instance_ids[idx], matrix, 0.5 * time_step)
-                                idx += 1
-
-                    if obj.dupli_list is not None:
-                        obj.dupli_list_clear()
-
-                self.bl_scene.frame_set(frame_current, 0.0)
-
-                # check if object has particle system and uses the option for 'render emitter'
-                if hasattr(obj, 'particle_systems'):
-                    for pSys in obj.particle_systems:
-                        check_rendertype = pSys.settings.render_type in {'OBJECT', 'GROUP'}
-                        if check_rendertype and pSys.settings.use_render_emitter:
-                            matrix = obj.matrix_world.copy()
-                            self.object.writeMesh(obj, matrix)
-
-            # no need to write empty object from here on, so continue with next object in loop
-            elif obj.type == 'EMPTY':
-                continue
-
-            # Exporting objects with shared mesh data blocks as instances
-            elif obj.data.users > 1 and self.bl_scene.render.use_instances:
-                self.yaf_logger.printVerbose("Processing shared mesh data node object: {0}".format(obj.name))
-                if obj.data.name not in base_ids:
-                    base_ids[obj.data.name] = self.object.writeInstanceBase(obj.data.name, obj)
-
-                if obj.name not in dup_base_ids:
-                    matrix = obj.matrix_world.copy()
-                    instance_id = self.object.writeInstance(obj.name, matrix, base_ids[obj.data.name])
-                    if obj.motion_blur_bezier:
-                        frame_current = self.bl_scene.frame_current
-                        self.bl_scene.frame_set(frame_current, 0.5)
-                        matrix = obj.matrix_world.copy()
-                        self.object.addInstanceMatrix(instance_id, matrix, 0.5)
-                        self.bl_scene.frame_set(frame_current, 1.0)
-                        matrix = obj.matrix_world.copy()
-                        self.object.addInstanceMatrix(instance_id, matrix, 1.0)
-                        self.bl_scene.frame_set(frame_current, 0.0)
-
-            elif obj.data.name not in base_ids and obj.name not in dup_base_ids:
-                self.object.writeObject(obj)
-
-    def handle_blend_mat(self, mat):
-        blendmat_error = False
-        try:
-            mat1 = bpy.data.materials[mat.material1name]
-        except:
-            self.yaf_logger.printWarning(
-                "Exporter: Problem with blend material:\"{0}\". Could not find the first material:\"{1}\"".format(
-                    mat.name, mat.material1name))
-            blendmat_error = True
-        try:
-            mat2 = bpy.data.materials[mat.material2name]
-        except:
-            self.yaf_logger.printWarning(
-                "Exporter: Problem with blend material:\"{0}\". Could not find the second material:\"{1}\"".format(
-                    mat.name, mat.material2name))
-            blendmat_error = True
-        if blendmat_error:
-            return blendmat_error
-        if mat1.name == mat2.name:
-            self.yaf_logger.printWarning(
-                "Exporter: Problem with blend material \"{0}\". \"{1}\" and \"{2}\" to blend are the same materials".format(
-                    mat.name, mat1.name, mat2.name))
-
-        if mat1.mat_type == 'blend':
-            blendmat_error = self.handle_blend_mat(mat1)
-            if blendmat_error:
-                return
-
-        elif mat1 not in self.materials:
-            self.materials.add(mat1)
-            self.material.write_material(mat1, self.bl_scene)
-
-        if mat2.mat_type == 'blend':
-            blendmat_error = self.handle_blend_mat(mat2)
-            if blendmat_error:
-                return
-
-        elif mat2 not in self.materials:
-            self.materials.add(mat2)
-            self.material.write_material(mat2, self.bl_scene)
-
-        if mat not in self.materials:
-            self.materials.add(mat)
-            self.material.write_material(mat, self.bl_scene)
-
-    def export_materials(self):
-        self.yaf_logger.printInfo("Exporter: Processing Materials...")
-        self.materials = set()
-
-        # create a default shiny diffuse material -> it will be assigned, if object has no material(s)
-        yaf_param_map = libyafaray4_bindings.ParamMap()
-        param_map_list = libyafaray4_bindings.ParamMapList()
-        yaf_param_map.setString("type", "shinydiffusemat")
-        if self.bl_scene.gs_clay_render:
-            c_col = self.bl_scene.gs_clay_col
-        else:
-            c_col = (0.8, 0.8, 0.8)
-        yaf_param_map.setColor("color", c_col[0], c_col[1], c_col[2])
-        self.yaf_logger.printInfo("Exporter: Creating Material \"defaultMat\"")
-        self.yaf_scene.createMaterial("defaultMat", yaf_param_map, param_map_list)
-
-        for obj in self.bl_scene.objects:
-            for mat_slot in obj.material_slots:
-                if mat_slot.material not in self.materials:
-                    self.export_material(mat_slot.material)
-
-    def export_material(self, bl_material):
-        if bl_material:
-            if bl_material.mat_type == 'blend':
-                # must make sure all materials used by a blend mat
-                # are written before the blend mat itself
-                self.handle_blend_mat(bl_material)
-            else:
-                self.materials.add(bl_material)
-                material = Material(self.yaf_scene, self.yaf_logger, bl_material.texture_map)
-                material.write_material(bl_material, self.bl_scene, self.is_preview)
-
-    def decide_output_file_name(self, output_path, filetype):
-
-        switch_file_type = {
-            'PNG': 'png',
-            'TARGA': 'tga',
-            'TIFF': 'tif',
-            'JPEG': 'jpg',
-            'HDR': 'hdr',
-            'OPEN_EXR': 'exr',
-            'xml': 'xml',
-            'c': 'c',
-            'python': 'py',
-        }
-        filetype = switch_file_type.get(filetype, 'png')
-        # write image or XML-File with filename from framenumber
-        frame_numb_str = "{:0" + str(len(str(self.bl_scene.frame_end))) + "d}"
-
-        filebasename = ""
-        if self.bl_scene.img_add_blend_name:
-            if bpy.data.filepath == "":
-                filebasename += "temp"
-            filebasename += os.path.splitext(os.path.basename(bpy.data.filepath))[0] + " - "
-
-        filebasename += frame_numb_str.format(self.bl_scene.frame_current)
-
-        if self.bl_scene.img_add_datetime:
-            filebasename += " (" + datetime.datetime.now().strftime("%Y-%m-%dT%H%M%S") + ")"
-
-        output = os.path.join(output_path, filebasename)
-        # try to create dir if it not exists...
-        if not os.path.exists(output_path):
-            try:
-                os.makedirs(output_path)
-            except:
-                print("Unable to create directory...")
-                import traceback
-                traceback.print_exc()
-                output = ""
-        outputFile = output + "." + filetype
-
-        return outputFile, output, filetype
-
-    def define_image_output(self, output_name, fp, bl_scene, bl_render, color_space, gamma, alpha_premultiply):
-        self.output_file, self.output, self.file_type = self.decide_output_file_name(fp, bl_scene.img_output)
-        yaf_param_map = libyafaray4_bindings.ParamMap()
-        yaf_param_map.setString("image_path", str(self.output_file))
-        yaf_param_map.setString("color_space", color_space)
-        yaf_param_map.setFloat("gamma", gamma)
-        yaf_param_map.setBool("alpha_premultiply", alpha_premultiply)
-        yaf_param_map.setBool("multi_layer", bl_scene.img_multilayer)
-        yaf_param_map.setBool("denoise_enabled", bl_scene.img_denoise)
-        yaf_param_map.setInt("denoise_h_lum", bl_scene.img_denoiseHLum)
-        yaf_param_map.setInt("denoise_h_col", bl_scene.img_denoiseHCol)
-        yaf_param_map.setFloat("denoise_mix", bl_scene.img_denoiseMix)
-        print(bl_render.image_settings.color_mode)
-        yaf_param_map.setBool("alpha_channel", bl_render.image_settings.color_mode == "RGBA")
-        # self.yaf_film.setLoggingAndBadgeSettings(self.yaf_scene, self.scene)
-        self.co = self.film.yaf_film.createOutput(output_name, yaf_param_map)
+        self.is_preview = False
 
     # callback to export the scene
-    def update(self, bl_data, bl_depsgraph):
-        self.bl_depsgraph = bl_depsgraph
-        self.bl_scene = scene_from_depsgraph(bl_depsgraph)
+    def update_OLD_DELETE(self, bl_data, bl_depsgraph):
+        self.scene = Scene(bl_depsgraph, self.yaf_logger)
+        self.update_stats("", "Setting up render")
 
-        self.set_interface()
+    def update_OLD_DELETE(self, bl_data, bl_depsgraph):
+        self.scene = Scene(bl_depsgraph, self.yaf_logger)
         self.update_stats("", "Setting up render")
         if not self.is_preview:
             self.bl_scene.frame_set(self.bl_scene.frame_current)
@@ -660,6 +291,8 @@ class RenderEngine(bpy.types.RenderEngine):
                         update_blender_result(0, 0, w, h, view.name, tiles, "flushCallback")
                 else:  # Normal rendering
                     update_blender_result(0, 0, w, h, view_name, tiles, "flushCallback")
+
+            return
 
             self.film.yaf_film.setFlushAreaCallback(flush_area_callback)
             self.film.yaf_film.setFlushCallback(flush_callback)

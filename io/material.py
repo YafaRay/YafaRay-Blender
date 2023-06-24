@@ -716,3 +716,60 @@ class Material:
                 #We cannot exclude just the blended material from the Clay render, the individual materials that are used to make the blend also have to be excluded
         else:
             self.write_null_mat(bl_material, bl_scene)
+
+
+    def handle_blend_mat(self, mat):
+        blendmat_error = False
+        try:
+            mat1 = bpy.data.materials[mat.material1name]
+        except:
+            self.yaf_logger.printWarning(
+                "Exporter: Problem with blend material:\"{0}\". Could not find the first material:\"{1}\"".format(
+                    mat.name, mat.material1name))
+            blendmat_error = True
+        try:
+            mat2 = bpy.data.materials[mat.material2name]
+        except:
+            self.yaf_logger.printWarning(
+                "Exporter: Problem with blend material:\"{0}\". Could not find the second material:\"{1}\"".format(
+                    mat.name, mat.material2name))
+            blendmat_error = True
+        if blendmat_error:
+            return blendmat_error
+        if mat1.name == mat2.name:
+            self.yaf_logger.printWarning(
+                "Exporter: Problem with blend material \"{0}\". \"{1}\" and \"{2}\" to blend are the same materials".format(
+                    mat.name, mat1.name, mat2.name))
+
+        if mat1.mat_type == 'blend':
+            blendmat_error = self.handle_blend_mat(mat1)
+            if blendmat_error:
+                return
+
+        elif mat1 not in self.materials:
+            self.materials.add(mat1)
+            self.material.write_material(mat1, self.bl_scene)
+
+        if mat2.mat_type == 'blend':
+            blendmat_error = self.handle_blend_mat(mat2)
+            if blendmat_error:
+                return
+
+        elif mat2 not in self.materials:
+            self.materials.add(mat2)
+            self.material.write_material(mat2, self.bl_scene)
+
+        if mat not in self.materials:
+            self.materials.add(mat)
+            self.material.write_material(mat, self.bl_scene)
+
+    def export_material(self, bl_material):
+        if bl_material:
+            if bl_material.mat_type == 'blend':
+                # must make sure all materials used by a blend mat
+                # are written before the blend mat itself
+                self.handle_blend_mat(bl_material)
+            else:
+                self.materials.add(bl_material)
+                material = Material(self.yaf_scene, self.yaf_logger, bl_material.texture_map)
+                material.write_material(bl_material, self.bl_scene, self.is_preview)
