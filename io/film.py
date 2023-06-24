@@ -547,3 +547,78 @@ def defineLayers(yi, depsgraph):
         yaf_param_map.setBool("alpha_channel", bl_render.image_settings.color_mode == "RGBA")
         # self.yaf_film.setLoggingAndBadgeSettings(self.yaf_scene, self.scene)
         self.co = self.film.yaf_film.createOutput(output_name, yaf_param_map)
+
+
+        def update_blender_result(x, y, w, h, view_name, tiles, callback_name):
+            # print(x, y, w, h, view_name, tiles, callback_name, scene.render.use_multiview)
+            if self.bl_scene.render.use_multiview:
+                blender_result_buffers = self.begin_result(x, y, w, h, "", view_name)
+            else:
+                blender_result_buffers = self.begin_result(x, y, w, h)
+            for tile in tiles:
+                tile_name, tile_bitmap = tile
+                print("tile_name:", tile_name, " tile_bitmap:", tile_bitmap, " blender_result_buffers:",
+                      blender_result_buffers)
+                try:
+                    blender_result_buffers.layers[0].passes[0].rect = tile_bitmap
+                except:
+                    print("Exporter: Exception while rendering in " + callback_name + " function:")
+                    traceback.print_exc()
+            self.end_result(blender_result_buffers)
+
+        def highlight_callback(*args):
+            view_name, area_id, x_0, y_0, x_1, y_1, tiles = args
+            w = x_1 - x_0
+            h = y_1 - y_0
+            if view_name == "":  # In case we use Render 3D viewport with Views enabled, it will copy the result to all views
+                for view in self.bl_scene.render.views:
+                    update_blender_result(x_0, y_0, w, h, view.name, tiles, "highlightCallback")
+            else:  # Normal rendering
+                update_blender_result(x_0, y_0, w, h, view_name, tiles, "highlightCallback")
+
+        def flush_area_callback(*args):
+            # view_name, area_id, x_0, y_0, x_1, y_1, tiles = args
+            area_id, x_0, y_0, x_1, y_1, tiles = args
+            view_name = "test"
+            w = x_1 - x_0
+            h = y_1 - y_0
+            if view_name == "":  # In case we use Render 3D viewport with Views enabled, it will copy the result to all views
+                for view in self.bl_scene.render.views:
+                    update_blender_result(x_0, y_0, w, h, view.name, tiles, "flushAreaCallback")
+            else:  # Normal rendering
+                update_blender_result(x_0, y_0, w, h, view_name, tiles, "flushAreaCallback")
+
+        def flush_callback(*args):
+            w, h, tiles = args
+            view_name = "test"
+            if view_name == "":  # In case we use Render 3D viewport with Views enabled, it will copy the result to all views
+                for view in self.bl_scene.render.views:
+                    update_blender_result(0, 0, w, h, view.name, tiles, "flushCallback")
+            else:  # Normal rendering
+                update_blender_result(0, 0, w, h, view_name, tiles, "flushCallback")
+
+    def render(self):
+        self.film.yaf_film.setFlushAreaCallback(flush_area_callback)
+        self.film.yaf_film.setFlushCallback(flush_callback)
+        self.film.yaf_film.setHighlightAreaCallback(highlight_callback)
+        # Creating RenderControl #
+        render_control = libyafaray4_bindings.RenderControl()
+        # Creating RenderMonitor #
+        render_monitor = libyafaray4_bindings.RenderMonitor(progress_callback)
+        render_control.setForNormalStart()
+        scene_modified_flags = self.yaf_scene.checkAndClearModifiedFlags()
+        self.yaf_scene.preprocess(render_control, scene_modified_flags)
+        self.integrator.yaf_integrator.preprocess(render_monitor, render_control, self.yaf_scene)
+        self.integrator.yaf_integrator.render(render_control, render_monitor, self.film.yaf_film)
+        return  # FIXME!!!
+        t = threading.Thread(target=self.yaf_integrator, args=(self.yaf_scene, progressCallback,))
+        t.start()
+
+        while t.is_alive() and not self.test_break():
+            time.sleep(0.2)
+
+        if t.is_alive():
+            self.update_stats("",
+                              "Aborting, please wait for all pending tasks to complete (progress in console log)...")
+            self.yaf_scene.cancelRendering()
+            t.join()
