@@ -74,24 +74,30 @@ class RenderEngine(bpy.types.RenderEngine):
         #     pass_filter (int in [0, inf]) – Pass Filter, Filter to combined, diffuse, glossy and transmission passes
         #     width (int in [0, inf]) – Width, Image width
         #     height (int in [0, inf]) – Height, Image height
-    def bake(self, bl_depsgraph, bl_object, bl_pass_type, bl_pass_filter, bl_width, bl_height):
-        print("bake", self, bl_depsgraph, bl_object, bl_pass_type, bl_pass_filter, bl_width, bl_height)
+
+    if bpy.app.version >= (2, 80, 0):
+        def bake(self, bl_depsgraph, bl_object, bl_pass_type, bl_pass_filter, bl_width, bl_height):
+            print("bake", self, bl_depsgraph, bl_object, bl_pass_type, bl_pass_filter, bl_width, bl_height)
 
     # Blender callback. Update on data changes for viewport render
     # For viewport renders, this method gets called once at the start and
     # whenever the scene or 3D viewport changes. This method is where data
     # should be read from Blender in the same thread. Typically a render
     # thread will be started to do the work while keeping Blender responsive.
-    def view_update(self, bl_context, bl_depsgraph):
-        print("view_update", self, bl_context, bl_depsgraph)
+
+    if bpy.app.version >= (2, 80, 0):
+        def view_update(self, bl_context, bl_depsgraph):
+            print("view_update", self, bl_context, bl_depsgraph)
 
     # Blender callback. Draw viewport render
     # For viewport renders, this method is called whenever Blender redraws
     # the 3D viewport. The renderer is expected to quickly draw the render
     # with OpenGL, and not perform other expensive work.
     # Blender will draw overlays for selection and editing on top of the
-    def view_draw(self, bl_context, bl_depsgraph):
-        print("view_draw", self, bl_context, bl_depsgraph)
+
+    if bpy.app.version >= (2, 80, 0):
+        def view_draw(self, bl_context, bl_depsgraph):
+            print("view_draw", self, bl_context, bl_depsgraph)
 
     # Blender callback. Compile shader script node
     def update_script_node(self, bl_node=None):
