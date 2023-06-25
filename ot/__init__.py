@@ -21,13 +21,11 @@
 from . import operators
 from . import converter
 from . import presets
-from . import migration
 
 modules = (
     operators,
     converter,
     presets,
-    migration,
 )
 
 def register():

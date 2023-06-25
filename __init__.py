@@ -61,10 +61,10 @@ from . import ot
 from .ot import migration
 
 modules = (
-    prop,
+    #prop,
     io,
-    ui,
-    ot,
+    #ui,
+    #ot,
 )
 
 

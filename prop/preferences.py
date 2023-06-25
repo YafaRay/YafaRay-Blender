@@ -23,7 +23,7 @@ from bpy.types import AddonPreferences
 from bpy.props import IntProperty
 from .. import PLUGIN_NAME
 
-class YafaRay_Preferences(AddonPreferences):
+class Preferences(AddonPreferences):
     bl_idname = PLUGIN_NAME
 
     yafaray_computer_node = IntProperty(
@@ -32,7 +32,7 @@ class YafaRay_Preferences(AddonPreferences):
         default=0, min=0, max=1000
     )
 
-    def draw(self, context):
+    def draw(self, bl_context):
         layout = self.layout
         split = layout.split()
         col = split.column()
@@ -41,7 +41,7 @@ class YafaRay_Preferences(AddonPreferences):
         col.label(text="Click bottom left \"Save & Load\"->\"Save Preferences\" to apply changes permanently!", icon="INFO")
 
 classes = (
-    YafaRay_Preferences,
+    Preferences,
 )
 
 
