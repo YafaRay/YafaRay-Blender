@@ -19,6 +19,7 @@
 # <pep8 compliant>
 
 import bpy
+from . import preferences
 from . import render
 from . import camera
 from . import material
@@ -38,6 +39,7 @@ else:
     from . import layer_passes
 
 modules = (
+    preferences,
     general_settings,
     aa_settings,
     integrator,

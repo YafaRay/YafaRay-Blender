@@ -37,17 +37,19 @@ bl_info = {
               "Paulo Gomes (tuga3d), Michele Castigliego (subcomandante),"
               "Bert Buchholz, Rodrigo Placencia (DarkTide),"
               "Alexander Smirnov (Exvion), Olaf Arnold (olaf), David Bluecame",
-# Version to be automatically populated during the cmake build process, getting the version from git tags
+    # Version to be automatically populated during the cmake build process, getting the version from git tags
     "version": ("v4-pre-alpha (development)", ""),
     "blender": (3, 5, 1),
     "location": "Info Header > Engine dropdown menu",
-    "wiki_url": "http://www.yafaray.org/community/forum",
-    "tracker_url": "http://www.yafaray.org/development/bugtracker/yafaray",
+    # "wiki_url": "http://www.yafaray.org/community/forum",
+    # "tracker_url": "http://www.yafaray.org/development/bugtracker/yafaray",
+    "wiki_url": "https://github.com/YafaRay/YafaRay-Blender",
+    "tracker_url": "https://github.com/YafaRay/YafaRay-Blender/issues",
     "category": "Render"
-    }
+}
 
 # Set Library Search options
-if sys.platform == 'win32':   #I think this is the easiest and most flexible way to set the search options for Windows DLL
+if sys.platform == 'win32':  # I think this is the easiest and most flexible way to set the search options for Windows DLL
     os.environ['PATH'] = os.path.dirname(__file__) + '\\bin;' + os.environ['PATH']
 # For Linux and MacOSX, set the RPATH in all the .so and .dylib libraries to relative paths respect to their location 
 
@@ -58,13 +60,16 @@ from . import io
 from . import ui
 from . import ot
 
+
 @persistent
 def load_handler(dummy):
     for tex in bpy.data.textures:
         if tex is not None:
             # set the correct texture type on file load....
             # converts old files, where propertie yaf_tex_type wasn't defined
-            print("Load Handler: Convert Yafaray texture \"{0}\" with texture type: \"{1}\" to \"{2}\"".format(tex.name, tex.yaf_tex_type, tex.type))
+            print("Load Handler: Convert Yafaray texture \"{0}\" with texture type: \"{1}\" to \"{2}\"".format(tex.name,
+                                                                                                               tex.yaf_tex_type,
+                                                                                                               tex.type))
             tex.yaf_tex_type = tex.type
     for mat in bpy.data.materials:
         if mat is not None:
@@ -78,24 +83,6 @@ def load_handler(dummy):
     if bpy.context.scene.render.image_settings.file_format is not bpy.context.scene.img_output:
         bpy.context.scene.img_output = bpy.context.scene.render.image_settings.file_format
 
-from bpy.types import AddonPreferences
-from bpy.props import IntProperty
-class YafaRay4Preferences(AddonPreferences):
-    bl_idname = __name__
-
-    yafaray_computer_node = IntProperty(
-        name="YafaRay computer node",
-        description='Computer node number in multi-computer render environments / render farms',
-        default=0, min=0, max=1000
-    )
-
-    def draw(self, context):
-        layout = self.layout
-        split = layout.split()
-        col = split.column()
-        col.prop(self, "yafaray_computer_node")
-        col = col.column()
-        col.label(text="Click Save User Settings below to store the changes permanently in YafaRay!", icon="INFO")
 
 modules = (
     prop,
@@ -104,17 +91,21 @@ modules = (
     ot,
 )
 
+
 def register():
-    bpy.utils.register_class(YafaRay4Preferences)
     for module in modules:
         module.register()
     bpy.app.handlers.load_post.append(load_handler)
     # register keys for 'render 3d view', 'render still' and 'render animation'
     if bpy.context.window_manager.keyconfigs.addon is not None:
         km = bpy.context.window_manager.keyconfigs.addon.keymaps.new(name='Screen')
-        kmi = km.keymap_items.new(idname='render.render_view', type='F12', value='PRESS', any=False, shift=False, ctrl=False, alt=True)
-        kmi = km.keymap_items.new(idname='render.render_animation', type='F12', value='PRESS', any=False, shift=False, ctrl=True, alt=False)
-        kmi = km.keymap_items.new(idname='render.render_still', type='F12', value='PRESS', any=False, shift=False, ctrl=False, alt=False)
+        km.keymap_items.new(idname='render.render_view', type='F12', value='PRESS', any=False, shift=False, ctrl=False,
+                            alt=True)
+        km.keymap_items.new(idname='render.render_animation', type='F12', value='PRESS', any=False, shift=False,
+                            ctrl=True, alt=False)
+        km.keymap_items.new(idname='render.render_still', type='F12', value='PRESS', any=False, shift=False, ctrl=False,
+                            alt=False)
+
 
 def unregister():
     # unregister keys for 'render 3d view', 'render still' and 'render animation'
@@ -122,9 +113,8 @@ def unregister():
         kma = bpy.context.window_manager.keyconfigs.addon.keymaps['Screen']
         for kmi in kma.keymap_items:
             if kmi.idname == 'render.render_view' or kmi.idname == 'render.render_animation' \
-            or kmi.idname == 'render.render_still':
+                    or kmi.idname == 'render.render_still':
                 kma.keymap_items.remove(kmi)
     bpy.app.handlers.load_post.remove(load_handler)
     for module in reversed(modules):
         module.unregister()
-    bpy.utils.unregister_class(YafaRay4Preferences)
