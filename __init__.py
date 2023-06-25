@@ -54,17 +54,17 @@ if sys.platform == 'win32':  # I think this is the easiest and most flexible way
     os.environ['PATH'] = os.path.dirname(__file__) + '\\bin;' + os.environ['PATH']
 # For Linux and MacOSX, set the RPATH in all the .so and .dylib libraries to relative paths respect to their location 
 
-#from . import prop
+from . import prop
 from . import io
-#from . import ui
-#from . import ot
+from . import ui
+from . import ot
 from .ot import migration
 
 modules = (
-    #prop,
+    prop,
     io,
-    #ui,
-    #ot,
+    ui,
+    ot,
 )
 
 

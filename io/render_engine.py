@@ -65,8 +65,8 @@ class RenderEngine(bpy.types.RenderEngine):
         print("render_frame_finish", self)
 
     # Blender callback. Draw render image
-    def draw(self, bl_context, bl_depsgraph):
-        print("draw", self, bl_context, bl_depsgraph)
+#    def draw(self, bl_context, bl_depsgraph):
+#        print("draw", self, bl_context, bl_depsgraph)
 
     # Blender callback. Bake passes
         # Parameters
@@ -75,9 +75,9 @@ class RenderEngine(bpy.types.RenderEngine):
         #     width (int in [0, inf]) – Width, Image width
         #     height (int in [0, inf]) – Height, Image height
 
-    if bpy.app.version >= (2, 80, 0):
-        def bake(self, bl_depsgraph, bl_object, bl_pass_type, bl_pass_filter, bl_width, bl_height):
-            print("bake", self, bl_depsgraph, bl_object, bl_pass_type, bl_pass_filter, bl_width, bl_height)
+#    if bpy.app.version >= (2, 80, 0):
+#        def bake(self, bl_depsgraph, bl_object, bl_pass_type, bl_pass_filter, bl_width, bl_height):
+#            print("bake", self, bl_depsgraph, bl_object, bl_pass_type, bl_pass_filter, bl_width, bl_height)
 
     # Blender callback. Update on data changes for viewport render
     # For viewport renders, this method gets called once at the start and
@@ -100,16 +100,12 @@ class RenderEngine(bpy.types.RenderEngine):
             print("view_draw", self, bl_context, bl_depsgraph)
 
     # Blender callback. Compile shader script node
-    def update_script_node(self, bl_node=None):
-        print("update_script_node", self, bl_node)
+    #def update_script_node(self, bl_node=None):
+    #    print("update_script_node", self, bl_node)
 
     # Blender callback. Update the render passes that will be generated
     def update_render_passes(self, bl_scene=None, bl_renderlayer=None):
         print("update_render_passes", self, bl_scene, bl_renderlayer)
-
-    # Blender callback
-    def active_view_set(self, bl_view):
-        print ("active_view_set", self, bl_view)
 
 
 classes = (
