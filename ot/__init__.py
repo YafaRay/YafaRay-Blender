@@ -18,14 +18,14 @@
 
 # <pep8 compliant>
 
-from . import operators
-from . import converter
-from . import presets
+# from . import operators
+# from . import converter
+# from . import presets
 
 modules = (
-    operators,
-    converter,
-    presets,
+    # operators,
+    # converter,
+    # presets,
 )
 
 def register():
@@ -35,8 +35,3 @@ def register():
 def unregister():
     for module in reversed(modules):
         module.unregister()
-
-
-if __name__ == "__main__":  # only for live edit.
-    import bpy
-    bpy.utils.register_module(__name__)

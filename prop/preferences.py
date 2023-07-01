@@ -21,10 +21,10 @@
 import bpy
 from bpy.types import AddonPreferences
 from bpy.props import IntProperty
-from .. import PLUGIN_NAME
+from .. import BASE_PACKAGE_NAME
 
 class Preferences(AddonPreferences):
-    bl_idname = PLUGIN_NAME
+    bl_idname = BASE_PACKAGE_NAME
 
     yafaray_computer_node = IntProperty(
         name="YafaRay computer node",
@@ -40,22 +40,17 @@ class Preferences(AddonPreferences):
         col = col.column()
         col.label(text="Click bottom left \"Save & Load\"->\"Save Preferences\" to apply changes permanently!", icon="INFO")
 
+
 classes = (
     Preferences,
 )
 
 
 def register():
-    from bpy.utils import register_class
     for cls in classes:
-        register_class(cls)
+        bpy.utils.register_class(cls)
+
 
 def unregister():
-    from bpy.utils import unregister_class
     for cls in reversed(classes):
-        unregister_class(cls)
-
-        
-if __name__ == "__main__":  # only for live edit.
-    import bpy
-    bpy.utils.register_module(__name__)
+        bpy.utils.unregister_class(cls)

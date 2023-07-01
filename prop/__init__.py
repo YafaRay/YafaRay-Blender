@@ -19,23 +19,23 @@
 # <pep8 compliant>
 
 from . import preferences
-from . import object
-from . import material
-from . import light
-from . import scene
-from . import camera
-from . import texture
-from . import world
+# from . import object
+# from . import material
+# from . import light
+# from . import scene
+# from . import camera
+# from . import texture
+# from . import world
 
 modules = (
     preferences,
-    object,
-    material,
-    light,
-    scene,
-    camera,
-    texture,
-    world,
+    #object,
+    #material,
+    #light,
+    #scene,
+    #camera,
+    #texture,
+    #world,
 )
 
 def register():
@@ -45,8 +45,3 @@ def register():
 def unregister():
     for module in reversed(modules):
         module.unregister()
-
-
-if __name__ == "__main__":  # only for live edit.
-    import bpy
-    bpy.utils.register_module(__name__)

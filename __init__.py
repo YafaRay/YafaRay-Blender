@@ -23,6 +23,7 @@ import os
 import bpy
 
 PLUGIN_NAME = "yafaray_v4"
+BASE_PACKAGE_NAME = __package__
 BIN_PATH = os.path.join(__path__[0], 'bin')
 YAF_ID_NAME = "YAFARAY4_RENDER"
 
@@ -61,36 +62,38 @@ from . import ot
 from .ot import migration
 
 modules = (
-    #prop,
+    prop,
     io,
-    #ui,
-    #ot,
+    ui,
+    ot,
 )
 
 
 def register():
     for module in modules:
         module.register()
-    bpy.app.handlers.load_post.append(migration)
-    # register keys for 'render 3d view', 'render still' and 'render animation'
-    if bpy.context.window_manager.keyconfigs.addon is not None:
-        km = bpy.context.window_manager.keyconfigs.addon.keymaps.new(name='Screen')
-        km.keymap_items.new(idname='render.render_view', type='F12', value='PRESS', any=False, shift=False, ctrl=False,
-                            alt=True)
-        km.keymap_items.new(idname='render.render_animation', type='F12', value='PRESS', any=False, shift=False,
-                            ctrl=True, alt=False)
-        km.keymap_items.new(idname='render.render_still', type='F12', value='PRESS', any=False, shift=False, ctrl=False,
-                            alt=False)
+    if False:
+        bpy.app.handlers.load_post.append(migration)
+        # register keys for 'render 3d view', 'render still' and 'render animation'
+        if bpy.context.window_manager.keyconfigs.addon is not None:
+            km = bpy.context.window_manager.keyconfigs.addon.keymaps.new(name='Screen')
+            km.keymap_items.new(idname='render.render_view', type='F12', value='PRESS', any=False, shift=False, ctrl=False,
+                                alt=True)
+            km.keymap_items.new(idname='render.render_animation', type='F12', value='PRESS', any=False, shift=False,
+                                ctrl=True, alt=False)
+            km.keymap_items.new(idname='render.render_still', type='F12', value='PRESS', any=False, shift=False, ctrl=False,
+                                alt=False)
 
 
 def unregister():
     # unregister keys for 'render 3d view', 'render still' and 'render animation'
-    if bpy.context.window_manager.keyconfigs.addon is not None:
-        kma = bpy.context.window_manager.keyconfigs.addon.keymaps['Screen']
-        for kmi in kma.keymap_items:
-            if kmi.idname == 'render.render_view' or kmi.idname == 'render.render_animation' \
-                    or kmi.idname == 'render.render_still':
-                kma.keymap_items.remove(kmi)
-    bpy.app.handlers.load_post.remove(migration)
+    if False:
+        if bpy.context.window_manager.keyconfigs.addon is not None:
+            kma = bpy.context.window_manager.keyconfigs.addon.keymaps['Screen']
+            for kmi in kma.keymap_items:
+                if kmi.idname == 'render.render_view' or kmi.idname == 'render.render_animation' \
+                        or kmi.idname == 'render.render_still':
+                    kma.keymap_items.remove(kmi)
+        bpy.app.handlers.load_post.remove(migration)
     for module in reversed(modules):
         module.unregister()
