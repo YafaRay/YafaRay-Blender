@@ -27,7 +27,7 @@ from .. import BASE_PACKAGE_NAME
 class Preferences(AddonPreferences):
     bl_idname = BASE_PACKAGE_NAME
 
-    yafaray_computer_node: IntProperty(
+    yafaray_computer_node = IntProperty(
         name="YafaRay computer node",
         description='Computer node number in multi-computer render environments / render farms',
         default=0, min=0, max=1000
