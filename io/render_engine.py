@@ -24,8 +24,8 @@ import libyafaray4_bindings
 from .. import YAF_ID_NAME
 
 yaf_logger = libyafaray4_bindings.Logger()
-yaf_logger.setConsoleVerbosityLevel(yaf_logger.logLevelFromString("debug"))
-yaf_logger.setLogVerbosityLevel(yaf_logger.logLevelFromString("debug"))
+yaf_logger.set_console_verbosity_level(yaf_logger.log_level_from_string("debug"))
+yaf_logger.set_log_verbosity_level(yaf_logger.log_level_from_string("debug"))
 
 
 class RenderEngine(bpy.types.RenderEngine):
