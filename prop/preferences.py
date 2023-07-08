@@ -20,13 +20,11 @@
 
 import bpy
 from bpy.types import AddonPreferences
-from bpy.types import Panel
-from bl_ui.properties_world import WorldButtonsPanel
 from bpy.props import IntProperty
 from .. import BASE_PACKAGE_NAME
 
 
-class Preferences(WorldButtonsPanel, Panel):
+class Preferences(AddonPreferences):
     bl_idname = BASE_PACKAGE_NAME
 
     yafaray_computer_node: IntProperty(

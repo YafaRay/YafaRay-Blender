@@ -20,15 +20,12 @@
 
 import bpy
 from bpy.types import AddonPreferences
-from bpy.types import Panel
-from bl_ui.properties_world import WorldButtonsPanel
 from bpy.props import IntProperty
 from .. import BASE_PACKAGE_NAME
 
 
-class Preferences(WorldButtonsPanel, Panel):
+class Preferences(AddonPreferences):
     bl_idname = BASE_PACKAGE_NAME
-    bl_label = "TEST WORLD"
 
     yafaray_computer_node = IntProperty(
         name="YafaRay computer node",
@@ -40,7 +37,7 @@ class Preferences(WorldButtonsPanel, Panel):
         layout = self.layout
         split = layout.split()
         col = split.column()
-        col.prop(bl_context.world, "yafaray_computer_node")
+        col.prop(self, "yafaray_computer_node")
         col = col.column()
         col.label(text="Click bottom left \"Save & Load\"->\"Save Preferences\" to apply changes permanently!",
                   icon="INFO")
@@ -52,11 +49,6 @@ classes = (
 
 
 def register():
-    bpy.types.World.yafaray_computer_node = IntProperty(
-        name="YafaRay computer node",
-        description='Computer node number in multi-computer render environments / render farms',
-        default=0, min=0, max=1000
-    )
     for cls in classes:
         bpy.utils.register_class(cls)
 
