@@ -21,7 +21,6 @@
 # TODO: Use Blender enumerators if any
 import bpy
 import libyafaray4_bindings
-from .. import YAF_ID_NAME
 
 yaf_logger = libyafaray4_bindings.Logger()
 yaf_logger.set_console_verbosity_level(yaf_logger.log_level_from_string("debug"))
@@ -31,7 +30,6 @@ yaf_logger.set_log_verbosity_level(yaf_logger.log_level_from_string("debug"))
 class RenderEngine(bpy.types.RenderEngine):
     # These members are used by blender to set up the
     # RenderEngine; define its internal name, visible name and capabilities.
-    bl_idname = YAF_ID_NAME
     bl_label = "YafaRay v4 Render"
     bl_use_preview = True  # Render engine supports being used for rendering previews of materials, lights and worlds
     bl_use_shading_nodes_custom = True  # Don’t expose Cycles and Eevee shading nodes in the node editor user interface, so own nodes can be used instead
@@ -125,7 +123,5 @@ def unregister():
         unregister_class(cls)
 
 
-if __name__ == "__main__":  # only for live edit.
-    import bpy
-
-    bpy.utils.register_module(__name__)
+if __name__ == "__main__":  # only for live edit. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" module is installed on
+    register()
