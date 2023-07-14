@@ -65,9 +65,9 @@ class Material:
             return False
 
         yaf_param_map = libyafaray4_bindings.ParamMap()
-        yaf_param_map.setString("type", "layer")
-        yaf_param_map.setString("name", name)
-        yaf_param_map.setString("input", tex_in)  # SEE the defination later
+        yaf_param_map.set_string("type", "layer")
+        yaf_param_map.set_string("name", name)
+        yaf_param_map.set_string("input", tex_in)  # SEE the defination later
 
         #mtex is an instance of MaterialTextureSlot class
 
@@ -84,15 +84,15 @@ class Material:
         }
 
         mode = switch_blend_mode.get(mtex.blend_type, 'MIX')  # set texture blend mode, if not a supported mode then set it to 'MIX'
-        yaf_param_map.setString("blend_mode", mode)
-        yaf_param_map.setBool("stencil", mtex.use_stencil)
+        yaf_param_map.set_string("blend_mode", mode)
+        yaf_param_map.set_bool("stencil", mtex.use_stencil)
 
         negative = mtex.invert
-        yaf_param_map.setBool("negative", negative)
+        yaf_param_map.set_bool("negative", negative)
 
         if factor < 0:  # added a check for negative values
             factor = factor * -1
-            yaf_param_map.setBool("negative", True)
+            yaf_param_map.set_bool("negative", True)
 
         # "hack", scalar maps should always convert the RGB intensity to scalar
         # not clear why without this and noRGB == False, maps on scalar values seem to be "white" everywhere   <-- ???
@@ -101,10 +101,10 @@ class Material:
         # if len(dcol) == 1:    # disabled this 'hack' again, does not work with procedurals and alpha mapping (e.g. PNG image with 'use alpha')
         #     noRGB = True      # user should decide if rgb_to_intensity will be used or not...
 
-        yaf_param_map.setBool("noRGB", no_rgb)
+        yaf_param_map.set_bool("noRGB", no_rgb)
 
-        yaf_param_map.setColor("def_col", mtex.color[0], mtex.color[1], mtex.color[2])
-        yaf_param_map.setFloat("def_val", mtex.default_value)
+        yaf_param_map.set_color("def_col", mtex.color[0], mtex.color[1], mtex.color[2])
+        yaf_param_map.set_float("def_val", mtex.default_value)
 
         tex = mtex.texture  # texture object instance
         # lots to do...
@@ -117,32 +117,32 @@ class Material:
             is_colored = False
 
         use_alpha = False
-        yaf_param_map.setBool("color_input", is_colored)
+        yaf_param_map.set_bool("color_input", is_colored)
 
         if is_image:
             use_alpha = (tex.yaf_use_alpha) and not(tex.use_calculate_alpha)
 
-        yaf_param_map.setBool("use_alpha", use_alpha)
+        yaf_param_map.set_bool("use_alpha", use_alpha)
 
         do_color = len(dcol) >= 3  # see defination of dcol later on, watch the remaining parts from now on.
 
         if ulayer == "":
             if do_color:
-                yaf_param_map.setColor("upper_color", dcol[0], dcol[1], dcol[2])
-                yaf_param_map.setFloat("upper_value", 0)
+                yaf_param_map.set_color("upper_color", dcol[0], dcol[1], dcol[2])
+                yaf_param_map.set_float("upper_value", 0)
             else:
-                yaf_param_map.setColor("upper_color", 0, 0, 0)
-                yaf_param_map.setFloat("upper_value", dcol[0])
+                yaf_param_map.set_color("upper_color", 0, 0, 0)
+                yaf_param_map.set_float("upper_value", dcol[0])
         else:
-            yaf_param_map.setString("upper_layer", ulayer)
+            yaf_param_map.set_string("upper_layer", ulayer)
 
         if do_color:
-            yaf_param_map.setFloat("colfac", factor)
+            yaf_param_map.set_float("colfac", factor)
         else:
-            yaf_param_map.setFloat("valfac", factor)
+            yaf_param_map.set_float("valfac", factor)
 
-        yaf_param_map.setBool("do_color", do_color)
-        yaf_param_map.setBool("do_scalar", not do_color)
+        yaf_param_map.set_bool("do_color", do_color)
+        yaf_param_map.set_bool("do_scalar", not do_color)
 
         param_map_list.addParamMap(yaf_param_map)
         return True
@@ -152,9 +152,9 @@ class Material:
 
         yaf_param_map = libyafaray4_bindings.ParamMap()
 
-        yaf_param_map.setString("type", "texture_mapper")
-        yaf_param_map.setString("name", name)
-        yaf_param_map.setString("texture", texname)
+        yaf_param_map.set_string("type", "texture_mapper")
+        yaf_param_map.set_string("name", name)
+        yaf_param_map.set_string("texture", texname)
 
         switch_tex_coords = {
             'UV': 'uv',
@@ -170,15 +170,15 @@ class Material:
         }
 
         texco = switch_tex_coords.get(mtex.texture_coords, 'orco')  # get texture coords, default is 'orco'
-        yaf_param_map.setString("texco", texco)
+        yaf_param_map.set_string("texco", texco)
 
         if mtex.object:
             texmat = mtex.object.matrix_world.inverted()
-            yaf_param_map.setMatrix("transform", texmat[0][0], texmat[0][1], texmat[0][2], texmat[0][3], texmat[1][0], texmat[1][1], texmat[1][2], texmat[1][3], texmat[2][0], texmat[2][1], texmat[2][2], texmat[2][3], texmat[3][0], texmat[3][1], texmat[3][2], texmat[3][3], False)
+            yaf_param_map.set_matrix("transform", texmat[0][0], texmat[0][1], texmat[0][2], texmat[0][3], texmat[1][0], texmat[1][1], texmat[1][2], texmat[1][3], texmat[2][0], texmat[2][1], texmat[2][2], texmat[2][3], texmat[3][0], texmat[3][1], texmat[3][2], texmat[3][3], False)
 
-        yaf_param_map.setInt("proj_x", proj2int(mtex.mapping_x))
-        yaf_param_map.setInt("proj_y", proj2int(mtex.mapping_y))
-        yaf_param_map.setInt("proj_z", proj2int(mtex.mapping_z))
+        yaf_param_map.set_int("proj_x", proj2int(mtex.mapping_x))
+        yaf_param_map.set_int("proj_y", proj2int(mtex.mapping_y))
+        yaf_param_map.set_int("proj_z", proj2int(mtex.mapping_z))
 
         switch_mapping_coords = {
             'FLAT': 'plain',
@@ -187,16 +187,16 @@ class Material:
             'SPHERE': 'sphere',
         }
         mapping_coords = switch_mapping_coords.get(mtex.mapping, 'plain')
-        yaf_param_map.setString("mapping", mapping_coords)
+        yaf_param_map.set_string("mapping", mapping_coords)
 
-        yaf_param_map.setVector("scale", mtex.scale[0], mtex.scale[1], mtex.scale[2])
-        yaf_param_map.setVector("offset", mtex.offset[0], mtex.offset[1], mtex.offset[2])
+        yaf_param_map.set_vector("scale", mtex.scale[0], mtex.scale[1], mtex.scale[2])
+        yaf_param_map.set_vector("offset", mtex.offset[0], mtex.offset[1], mtex.offset[2])
 
         if mtex.use_map_normal:  # || mtex->maptoneg & MAP_NORM )
             # scale up the normal factor, it resembles
             # blender a bit more
             nf = mtex.normal_factor * 2
-            yaf_param_map.setFloat("bump_strength", nf)
+            yaf_param_map.set_float("bump_strength", nf)
 
         param_map_list.addParamMap(yaf_param_map)
 
@@ -207,15 +207,15 @@ class Material:
         param_map_list = libyafaray4_bindings.ParamMapList()
         yaf_param_map = libyafaray4_bindings.ParamMap()
 
-        yaf_param_map.setInt("mat_pass_index", mat.pass_index)
+        yaf_param_map.set_int("mat_pass_index", mat.pass_index)
 
         if rough:  # create bool property "rough"
-            yaf_param_map.setString("type", "rough_glass")
-            yaf_param_map.setFloat("alpha", mat.refr_roughness)  # added refraction roughness for roughglass material
+            yaf_param_map.set_string("type", "rough_glass")
+            yaf_param_map.set_float("alpha", mat.refr_roughness)  # added refraction roughness for roughglass material
         else:
-            yaf_param_map.setString("type", "glass")
+            yaf_param_map.set_string("type", "glass")
 
-        yaf_param_map.setFloat("IOR", mat.IOR_refraction)  # added IOR for refraction
+        yaf_param_map.set_float("IOR", mat.IOR_refraction)  # added IOR for refraction
         if scene.gs_clay_render and not mat.clay_exclude:
             filt_col = (1.0, 1.0, 1.0)
             abs_col = (1.0, 1.0, 1.0)
@@ -225,24 +225,24 @@ class Material:
         mir_col = mat.glass_mir_col
         tfilt = mat.glass_transmit
 
-        yaf_param_map.setColor("filter_color", filt_col[0], filt_col[1], filt_col[2])
-        yaf_param_map.setColor("mirror_color", mir_col[0], mir_col[1], mir_col[2])
-        yaf_param_map.setFloat("transmit_filter", tfilt)
+        yaf_param_map.set_color("filter_color", filt_col[0], filt_col[1], filt_col[2])
+        yaf_param_map.set_color("mirror_color", mir_col[0], mir_col[1], mir_col[2])
+        yaf_param_map.set_float("transmit_filter", tfilt)
 
-        yaf_param_map.setColor("absorption", abs_col[0], abs_col[1], abs_col[2])
-        yaf_param_map.setFloat("absorption_dist", mat.absorption_dist)
-        yaf_param_map.setFloat("dispersion_power", mat.dispersion_power)
-        yaf_param_map.setBool("fake_shadows", mat.fake_shadows)
-        yaf_param_map.setString("visibility", mat.visibility)
-        yaf_param_map.setBool("receive_shadows", mat.receive_shadows)
-        yaf_param_map.setBool("flat_material", False)
-        yaf_param_map.setInt("additionaldepth", mat.additionaldepth)
-        yaf_param_map.setFloat("samplingfactor", mat.samplingfactor)
+        yaf_param_map.set_color("absorption", abs_col[0], abs_col[1], abs_col[2])
+        yaf_param_map.set_float("absorption_dist", mat.absorption_dist)
+        yaf_param_map.set_float("dispersion_power", mat.dispersion_power)
+        yaf_param_map.set_bool("fake_shadows", mat.fake_shadows)
+        yaf_param_map.set_string("visibility", mat.visibility)
+        yaf_param_map.set_bool("receive_shadows", mat.receive_shadows)
+        yaf_param_map.set_bool("flat_material", False)
+        yaf_param_map.set_int("additionaldepth", mat.additionaldepth)
+        yaf_param_map.set_float("samplingfactor", mat.samplingfactor)
 
-        yaf_param_map.setFloat("wireframe_amount", mat.wireframe_amount)
-        yaf_param_map.setColor("wireframe_color", mat.wireframe_color[0], mat.wireframe_color[1], mat.wireframe_color[2])
-        yaf_param_map.setFloat("wireframe_thickness", mat.wireframe_thickness)
-        yaf_param_map.setFloat("wireframe_exponent", mat.wireframe_exponent)
+        yaf_param_map.set_float("wireframe_amount", mat.wireframe_amount)
+        yaf_param_map.set_color("wireframe_color", mat.wireframe_color[0], mat.wireframe_color[1], mat.wireframe_color[2])
+        yaf_param_map.set_float("wireframe_thickness", mat.wireframe_thickness)
+        yaf_param_map.set_float("wireframe_exponent", mat.wireframe_exponent)
 
         mcol_root = ''
         bump_root = ''
@@ -288,17 +288,17 @@ class Material:
 
 
         if len(mcol_root) > 0:
-            yaf_param_map.setString("mirror_color_shader", mcol_root)
+            yaf_param_map.set_string("mirror_color_shader", mcol_root)
         if len(bump_root) > 0:
-            yaf_param_map.setString("bump_shader", bump_root)
+            yaf_param_map.set_string("bump_shader", bump_root)
         if len(filter_color_root) > 0:
-            yaf_param_map.setString("filter_color_shader", filter_color_root)
+            yaf_param_map.set_string("filter_color_shader", filter_color_root)
         if len(ior_root) > 0:
-            yaf_param_map.setString("IOR_shader", ior_root)
+            yaf_param_map.set_string("IOR_shader", ior_root)
         if len(wireframe_root) > 0:
-            yaf_param_map.setString("wireframe_shader", wireframe_root)
+            yaf_param_map.set_string("wireframe_shader", wireframe_root)
         if len(roughness_root) > 0:
-            yaf_param_map.setString("roughness_shader", roughness_root)
+            yaf_param_map.set_string("roughness_shader", roughness_root)
         return self.yaf_scene.createMaterial(mat.name, yaf_param_map, param_map_list)
 
     def write_glossy_shader(self, mat, scene, coated):  # mat : instance of material class
@@ -306,42 +306,42 @@ class Material:
         param_map_list = libyafaray4_bindings.ParamMapList()
         yaf_param_map = libyafaray4_bindings.ParamMap()
 
-        yaf_param_map.setInt("mat_pass_index", mat.pass_index)
+        yaf_param_map.set_int("mat_pass_index", mat.pass_index)
 
         b_specr = mat.specular_reflect
 
         if coated:  # create bool property
-            yaf_param_map.setString("type", "coated_glossy")
-            yaf_param_map.setFloat("IOR", mat.IOR_reflection)  # IOR for reflection
+            yaf_param_map.set_string("type", "coated_glossy")
+            yaf_param_map.set_float("IOR", mat.IOR_reflection)  # IOR for reflection
             mir_col = mat.coat_mir_col  # added mirror color for coated glossy
-            yaf_param_map.setColor("mirror_color", mir_col[0], mir_col[1], mir_col[2])
-            yaf_param_map.setFloat("specular_reflect", b_specr)
+            yaf_param_map.set_color("mirror_color", mir_col[0], mir_col[1], mir_col[2])
+            yaf_param_map.set_float("specular_reflect", b_specr)
         else:
-            yaf_param_map.setString("type", "glossy")
+            yaf_param_map.set_string("type", "glossy")
             mir_col = mat.diffuse_color
 
         diffuse_color = mat.diffuse_color
         color = mat.glossy_color
 
-        yaf_param_map.setColor("diffuse_color", diffuse_color[0], diffuse_color[1], diffuse_color[2])
-        yaf_param_map.setColor("color", color[0], color[1], color[2])
-        yaf_param_map.setFloat("glossy_reflect", mat.glossy_reflect)
-        yaf_param_map.setFloat("exponent", mat.exponent)
-        yaf_param_map.setFloat("diffuse_reflect", mat.diffuse_reflect)
-        yaf_param_map.setBool("as_diffuse", mat.as_diffuse)
-        yaf_param_map.setBool("anisotropic", mat.anisotropic)
-        yaf_param_map.setFloat("exp_u", mat.exp_u)
-        yaf_param_map.setFloat("exp_v", mat.exp_v)
-        yaf_param_map.setString("visibility", mat.visibility)
-        yaf_param_map.setBool("receive_shadows", mat.receive_shadows)
-        yaf_param_map.setBool("flat_material", False)
-        yaf_param_map.setInt("additionaldepth", mat.additionaldepth)
-        yaf_param_map.setFloat("samplingfactor", mat.samplingfactor)
+        yaf_param_map.set_color("diffuse_color", diffuse_color[0], diffuse_color[1], diffuse_color[2])
+        yaf_param_map.set_color("color", color[0], color[1], color[2])
+        yaf_param_map.set_float("glossy_reflect", mat.glossy_reflect)
+        yaf_param_map.set_float("exponent", mat.exponent)
+        yaf_param_map.set_float("diffuse_reflect", mat.diffuse_reflect)
+        yaf_param_map.set_bool("as_diffuse", mat.as_diffuse)
+        yaf_param_map.set_bool("anisotropic", mat.anisotropic)
+        yaf_param_map.set_float("exp_u", mat.exp_u)
+        yaf_param_map.set_float("exp_v", mat.exp_v)
+        yaf_param_map.set_string("visibility", mat.visibility)
+        yaf_param_map.set_bool("receive_shadows", mat.receive_shadows)
+        yaf_param_map.set_bool("flat_material", False)
+        yaf_param_map.set_int("additionaldepth", mat.additionaldepth)
+        yaf_param_map.set_float("samplingfactor", mat.samplingfactor)
 
-        yaf_param_map.setFloat("wireframe_amount", mat.wireframe_amount)
-        yaf_param_map.setColor("wireframe_color", mat.wireframe_color[0], mat.wireframe_color[1], mat.wireframe_color[2])
-        yaf_param_map.setFloat("wireframe_thickness", mat.wireframe_thickness)
-        yaf_param_map.setFloat("wireframe_exponent", mat.wireframe_exponent)
+        yaf_param_map.set_float("wireframe_amount", mat.wireframe_amount)
+        yaf_param_map.set_color("wireframe_color", mat.wireframe_color[0], mat.wireframe_color[1], mat.wireframe_color[2])
+        yaf_param_map.set_float("wireframe_thickness", mat.wireframe_thickness)
+        yaf_param_map.set_float("wireframe_exponent", mat.wireframe_exponent)
 
         diff_root = ''
         gloss_root = ''
@@ -415,32 +415,32 @@ class Material:
 
 
         if len(diff_root) > 0:
-            yaf_param_map.setString("diffuse_shader", diff_root)
+            yaf_param_map.set_string("diffuse_shader", diff_root)
         if len(gloss_root) > 0:
-            yaf_param_map.setString("glossy_shader", gloss_root)
+            yaf_param_map.set_string("glossy_shader", gloss_root)
         if len(gl_ref_root) > 0:
-            yaf_param_map.setString("glossy_reflect_shader", gl_ref_root)
+            yaf_param_map.set_string("glossy_reflect_shader", gl_ref_root)
         if len(bump_root) > 0:
-            yaf_param_map.setString("bump_shader", bump_root)
+            yaf_param_map.set_string("bump_shader", bump_root)
         if len(sigma_oren_root) > 0:
-            yaf_param_map.setString("sigma_oren_shader", sigma_oren_root)
+            yaf_param_map.set_string("sigma_oren_shader", sigma_oren_root)
         if len(exponent_root) > 0:
-            yaf_param_map.setString("exponent_shader", exponent_root)
+            yaf_param_map.set_string("exponent_shader", exponent_root)
         if len(ior_root) > 0:
-            yaf_param_map.setString("IOR_shader", ior_root)
+            yaf_param_map.set_string("IOR_shader", ior_root)
         if len(wireframe_root) > 0:
-            yaf_param_map.setString("wireframe_shader", wireframe_root)
+            yaf_param_map.set_string("wireframe_shader", wireframe_root)
         if len(diff_reflect_root) > 0:
-            yaf_param_map.setString("diffuse_refl_shader", diff_reflect_root)
+            yaf_param_map.set_string("diffuse_refl_shader", diff_reflect_root)
         if coated:
             if len(mcol_root) > 0:
-                yaf_param_map.setString("mirror_color_shader", mcol_root)
+                yaf_param_map.set_string("mirror_color_shader", mcol_root)
             if len(mirror_root) > 0:
-                yaf_param_map.setString("mirror_shader", mirror_root)
+                yaf_param_map.set_string("mirror_shader", mirror_root)
 
         if mat.brdf_type == "oren-nayar":  # oren-nayar fix for glossy
-            yaf_param_map.setString("diffuse_brdf", "oren_nayar")
-            yaf_param_map.setFloat("sigma", mat.sigma)
+            yaf_param_map.set_string("diffuse_brdf", "oren_nayar")
+            yaf_param_map.set_float("sigma", mat.sigma)
 
         return self.yaf_scene.createMaterial(mat.name, yaf_param_map, param_map_list)
 
@@ -450,9 +450,9 @@ class Material:
         param_map_list = libyafaray4_bindings.ParamMapList()
         yaf_param_map = libyafaray4_bindings.ParamMap()
 
-        yaf_param_map.setInt("mat_pass_index", mat.pass_index)
+        yaf_param_map.set_int("mat_pass_index", mat.pass_index)
 
-        yaf_param_map.setString("type", "shinydiffusemat")
+        yaf_param_map.set_string("type", "shinydiffusemat")
 
         b_col = mat.diffuse_color
         b_mir_col = mat.mirror_color
@@ -562,58 +562,58 @@ class Material:
 
 
         if len(diff_root) > 0:
-            yaf_param_map.setString("diffuse_shader", diff_root)
+            yaf_param_map.set_string("diffuse_shader", diff_root)
         if len(mcol_root) > 0:
-            yaf_param_map.setString("mirror_color_shader", mcol_root)
+            yaf_param_map.set_string("mirror_color_shader", mcol_root)
         if len(transp_root) > 0:
-            yaf_param_map.setString("transparency_shader", transp_root)
+            yaf_param_map.set_string("transparency_shader", transp_root)
         if len(transl_root) > 0:
-            yaf_param_map.setString("translucency_shader", transl_root)
+            yaf_param_map.set_string("translucency_shader", transl_root)
         if len(mirror_root) > 0:
-            yaf_param_map.setString("mirror_shader", mirror_root)
+            yaf_param_map.set_string("mirror_shader", mirror_root)
         if len(bump_root) > 0:
-            yaf_param_map.setString("bump_shader", bump_root)
+            yaf_param_map.set_string("bump_shader", bump_root)
         if len(sigma_oren_root) > 0:
-            yaf_param_map.setString("sigma_oren_shader", sigma_oren_root)
+            yaf_param_map.set_string("sigma_oren_shader", sigma_oren_root)
         if len(diff_reflect_root) > 0:
-            yaf_param_map.setString("diffuse_refl_shader", diff_reflect_root)
+            yaf_param_map.set_string("diffuse_refl_shader", diff_reflect_root)
         if len(ior_root) > 0:
-            yaf_param_map.setString("IOR_shader", ior_root)
+            yaf_param_map.set_string("IOR_shader", ior_root)
         if len(wireframe_root) > 0:
-            yaf_param_map.setString("wireframe_shader", wireframe_root)
+            yaf_param_map.set_string("wireframe_shader", wireframe_root)
 
-        yaf_param_map.setColor("color", b_col[0], b_col[1], b_col[2])
-        yaf_param_map.setFloat("transparency", b_transp)
-        yaf_param_map.setFloat("translucency", b_transl)
-        yaf_param_map.setFloat("diffuse_reflect", b_diff_refl)
-        yaf_param_map.setFloat("emit", b_emit)
-        yaf_param_map.setFloat("transmit_filter", b_transmit)
+        yaf_param_map.set_color("color", b_col[0], b_col[1], b_col[2])
+        yaf_param_map.set_float("transparency", b_transp)
+        yaf_param_map.set_float("translucency", b_transl)
+        yaf_param_map.set_float("diffuse_reflect", b_diff_refl)
+        yaf_param_map.set_float("emit", b_emit)
+        yaf_param_map.set_float("transmit_filter", b_transmit)
 
-        yaf_param_map.setFloat("specular_reflect", b_specr)
-        yaf_param_map.setColor("mirror_color", b_mir_col[0], b_mir_col[1], b_mir_col[2])
-        yaf_param_map.setBool("fresnel_effect", mat.fresnel_effect)
-        yaf_param_map.setFloat("IOR", mat.IOR_reflection)  # added IOR for reflection
-        yaf_param_map.setString("visibility", mat.visibility)
-        yaf_param_map.setBool("receive_shadows", mat.receive_shadows)
-        yaf_param_map.setBool("flat_material", mat.flat_material)
-        yaf_param_map.setInt("additionaldepth", mat.additionaldepth)
-        yaf_param_map.setFloat("transparentbias_factor", mat.transparentbias_factor)
-        yaf_param_map.setBool("transparentbias_multiply_raydepth", mat.transparentbias_multiply_raydepth)
+        yaf_param_map.set_float("specular_reflect", b_specr)
+        yaf_param_map.set_color("mirror_color", b_mir_col[0], b_mir_col[1], b_mir_col[2])
+        yaf_param_map.set_bool("fresnel_effect", mat.fresnel_effect)
+        yaf_param_map.set_float("IOR", mat.IOR_reflection)  # added IOR for reflection
+        yaf_param_map.set_string("visibility", mat.visibility)
+        yaf_param_map.set_bool("receive_shadows", mat.receive_shadows)
+        yaf_param_map.set_bool("flat_material", mat.flat_material)
+        yaf_param_map.set_int("additionaldepth", mat.additionaldepth)
+        yaf_param_map.set_float("transparentbias_factor", mat.transparentbias_factor)
+        yaf_param_map.set_bool("transparentbias_multiply_raydepth", mat.transparentbias_multiply_raydepth)
 
-        yaf_param_map.setFloat("samplingfactor", mat.samplingfactor)
+        yaf_param_map.set_float("samplingfactor", mat.samplingfactor)
 
-        yaf_param_map.setFloat("wireframe_amount", mat.wireframe_amount)
-        yaf_param_map.setColor("wireframe_color", mat.wireframe_color[0], mat.wireframe_color[1], mat.wireframe_color[2])
-        yaf_param_map.setFloat("wireframe_thickness", mat.wireframe_thickness)
-        yaf_param_map.setFloat("wireframe_exponent", mat.wireframe_exponent)
+        yaf_param_map.set_float("wireframe_amount", mat.wireframe_amount)
+        yaf_param_map.set_color("wireframe_color", mat.wireframe_color[0], mat.wireframe_color[1], mat.wireframe_color[2])
+        yaf_param_map.set_float("wireframe_thickness", mat.wireframe_thickness)
+        yaf_param_map.set_float("wireframe_exponent", mat.wireframe_exponent)
 
         if scene.gs_clay_render and not mat.clay_exclude:
              if scene.gs_clay_oren_nayar:
-                 yaf_param_map.setString("diffuse_brdf", "oren_nayar")
-                 yaf_param_map.setFloat("sigma", scene.gs_clay_sigma)
+                 yaf_param_map.set_string("diffuse_brdf", "oren_nayar")
+                 yaf_param_map.set_float("sigma", scene.gs_clay_sigma)
         elif mat.brdf_type == "oren-nayar":  # oren-nayar fix for shinydiffuse
-            yaf_param_map.setString("diffuse_brdf", "oren_nayar")
-            yaf_param_map.setFloat("sigma", mat.sigma)
+            yaf_param_map.set_string("diffuse_brdf", "oren_nayar")
+            yaf_param_map.set_float("sigma", mat.sigma)
 
         return self.yaf_scene.createMaterial(mat.name, yaf_param_map, param_map_list)
 
@@ -623,14 +623,14 @@ class Material:
         yaf_param_map = libyafaray4_bindings.ParamMap()
 
         self.yaf_logger.printInfo("Exporter: Blend material with: [" + mat.material1name + "] [" + mat.material2name + "]")
-        yaf_param_map.setString("type", "blend_mat")
-        yaf_param_map.setString("material1", mat.material1name)
-        yaf_param_map.setString("material2", mat.material2name)
+        yaf_param_map.set_string("type", "blend_mat")
+        yaf_param_map.set_string("material1", mat.material1name)
+        yaf_param_map.set_string("material2", mat.material2name)
 
-        yaf_param_map.setFloat("wireframe_amount", mat.wireframe_amount)
-        yaf_param_map.setColor("wireframe_color", mat.wireframe_color[0], mat.wireframe_color[1], mat.wireframe_color[2])
-        yaf_param_map.setFloat("wireframe_thickness", mat.wireframe_thickness)
-        yaf_param_map.setFloat("wireframe_exponent", mat.wireframe_exponent)
+        yaf_param_map.set_float("wireframe_amount", mat.wireframe_amount)
+        yaf_param_map.set_color("wireframe_color", mat.wireframe_color[0], mat.wireframe_color[1], mat.wireframe_color[2])
+        yaf_param_map.set_float("wireframe_thickness", mat.wireframe_thickness)
+        yaf_param_map.set_float("wireframe_exponent", mat.wireframe_exponent)
 
         i = 0
 
@@ -663,19 +663,19 @@ class Material:
 
         # if we have a blending map, disable the blend_value
         if len(diff_root) > 0:
-            yaf_param_map.setString("blend_shader", diff_root)
-            yaf_param_map.setFloat("blend_value", 0)
+            yaf_param_map.set_string("blend_shader", diff_root)
+            yaf_param_map.set_float("blend_value", 0)
         else:
-            yaf_param_map.setFloat("blend_value", mat.blend_value)
+            yaf_param_map.set_float("blend_value", mat.blend_value)
 
         if len(wireframe_root) > 0:
-            yaf_param_map.setString("wireframe_shader", wireframe_root)
+            yaf_param_map.set_string("wireframe_shader", wireframe_root)
 
-        yaf_param_map.setString("visibility", mat.visibility)
-        yaf_param_map.setBool("receive_shadows", mat.receive_shadows)
-        yaf_param_map.setBool("flat_material", False)
-        yaf_param_map.setInt("additionaldepth", mat.additionaldepth)
-        yaf_param_map.setFloat("samplingfactor", mat.samplingfactor)
+        yaf_param_map.set_string("visibility", mat.visibility)
+        yaf_param_map.set_bool("receive_shadows", mat.receive_shadows)
+        yaf_param_map.set_bool("flat_material", False)
+        yaf_param_map.set_int("additionaldepth", mat.additionaldepth)
+        yaf_param_map.set_float("samplingfactor", mat.samplingfactor)
 
         return self.yaf_scene.createMaterial(mat.name, yaf_param_map, param_map_list)
 
@@ -683,14 +683,14 @@ class Material:
 
         param_map_list = libyafaray4_bindings.ParamMapList()
         yaf_param_map = libyafaray4_bindings.ParamMap()
-        yaf_param_map.setString("type", "shadow_mat")
+        yaf_param_map.set_string("type", "shadow_mat")
         return self.yaf_scene.createMaterial(mat.name, yaf_param_map, param_map_list)
 
     def write_null_mat(self, mat, scene):
 
         param_map_list = libyafaray4_bindings.ParamMapList()
         yaf_param_map = libyafaray4_bindings.ParamMap()
-        yaf_param_map.setString("type", "null")
+        yaf_param_map.set_string("type", "null")
         return self.yaf_scene.createMaterial(mat.name, yaf_param_map, param_map_list)
 
     def write_material(self, bl_material, bl_scene, is_preview=False):

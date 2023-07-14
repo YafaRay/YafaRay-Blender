@@ -64,7 +64,7 @@ class World:
                     image_file = realpath(image_file)
                     image_file = normpath(image_file)
 
-                    yaf_param_map.setString("filename", image_file)
+                    yaf_param_map.set_string("filename", image_file)
 
                     texture_color_space = "sRGB"
                     texture_gamma = 1.0
@@ -82,31 +82,31 @@ class World:
                         texture_color_space = "Raw_manualGamma"
                         texture_gamma = world_tex.yaf_gamma_input  #We only use the selected gamma if the color space is set to "Raw"
 
-                    yaf_param_map.setString("color_space", texture_color_space)
-                    yaf_param_map.setFloat("gamma", texture_gamma)
+                    yaf_param_map.set_string("color_space", texture_color_space)
+                    yaf_param_map.set_float("gamma", texture_gamma)
 
                     image_name = "world_texture_image"
                     self.scene.createImage(image_name)
                     yaf_param_map = libyafaray4_bindings.ParamMap()
 
-                    yaf_param_map.setString("image_name", image_name)
-                    yaf_param_map.setString("type", "image")
+                    yaf_param_map.set_string("image_name", image_name)
+                    yaf_param_map.set_string("type", "image")
                     # exposure_adjust not restricted to integer range anymore
-                    #yaf_param_map.setFloat("exposure_adjust", world.exposure) #bg_exposure)
+                    #yaf_param_map.set_float("exposure_adjust", world.exposure) #bg_exposure)
                     interpolate = 'none'
                     if world_tex.use_interpolation == True:
                         interpolate = 'bilinear'
-                    yaf_param_map.setString("interpolate", interpolate)
+                    yaf_param_map.set_string("interpolate", interpolate)
 
                     # FIXME DAVID color adjustments and texture params for non-image textures??
-                    yaf_param_map.setFloat("adj_mult_factor_red", world_tex.factor_red)
-                    yaf_param_map.setFloat("adj_mult_factor_green", world_tex.factor_green)
-                    yaf_param_map.setFloat("adj_mult_factor_blue", world_tex.factor_blue)
-                    yaf_param_map.setFloat("adj_intensity", world_tex.intensity)
-                    yaf_param_map.setFloat("adj_contrast", world_tex.contrast)
-                    yaf_param_map.setFloat("adj_saturation", world_tex.saturation)
-                    yaf_param_map.setFloat("adj_hue", math.degrees(world_tex.yaf_adj_hue))
-                    yaf_param_map.setBool("adj_clamp", world_tex.use_clamp)
+                    yaf_param_map.set_float("adj_mult_factor_red", world_tex.factor_red)
+                    yaf_param_map.set_float("adj_mult_factor_green", world_tex.factor_green)
+                    yaf_param_map.set_float("adj_mult_factor_blue", world_tex.factor_blue)
+                    yaf_param_map.set_float("adj_intensity", world_tex.intensity)
+                    yaf_param_map.set_float("adj_contrast", world_tex.contrast)
+                    yaf_param_map.set_float("adj_saturation", world_tex.saturation)
+                    yaf_param_map.set_float("adj_hue", math.degrees(world_tex.yaf_adj_hue))
+                    yaf_param_map.set_bool("adj_clamp", world_tex.use_clamp)
                     self.scene.createTexture("world_texture")
                     yaf_param_map = libyafaray4_bindings.ParamMap()
 
@@ -117,98 +117,98 @@ class World:
                     mappingType = {'ANGMAP': 'angular',
                                    'SPHERE': 'sphere'}
                     texco = mappingType.get(text_coord, "angular")
-                    yaf_param_map.setString("mapping", texco)
+                    yaf_param_map.set_string("mapping", texco)
 
                     # now, this msg is not need , but....
                     if text_coord not in {'ANGMAP', 'SPHERE'}:
                         self.yaf_logger.printWarning("World texture mapping neither Sphere or AngMap, set it to AngMap now by default!")
 
-                    yaf_param_map.setString("type", "textureback")
-                    yaf_param_map.setString("texture", "world_texture")
-                    yaf_param_map.setBool("ibl", use_ibl)
-                    #yaf_param_map.setFloat("ibl_clamp_sampling", world.ibl_clamp_sampling) #No longer needed after this issue was solved in Core (http://www.yafaray.org/node/752#comment-1621), but I will leave it here for now just in case...
+                    yaf_param_map.set_string("type", "textureback")
+                    yaf_param_map.set_string("texture", "world_texture")
+                    yaf_param_map.set_bool("ibl", use_ibl)
+                    #yaf_param_map.set_float("ibl_clamp_sampling", world.ibl_clamp_sampling) #No longer needed after this issue was solved in Core (http://www.yafaray.org/node/752#comment-1621), but I will leave it here for now just in case...
                     if is_preview:
-                        yaf_param_map.setFloat("smartibl_blur", 0.0) #To avoid causing Blender UI freezing while waiting for the blur process to complete in the material/world previews
+                        yaf_param_map.set_float("smartibl_blur", 0.0) #To avoid causing Blender UI freezing while waiting for the blur process to complete in the material/world previews
                     else:
-                        yaf_param_map.setFloat("smartibl_blur", bl_world.bg_smartibl_blur)
+                        yaf_param_map.set_float("smartibl_blur", bl_world.bg_smartibl_blur)
                     # 'with_caustic' and 'with_diffuse' settings gets checked in textureback.cc,
                     # so if IBL enabled when they are used...
-                    yaf_param_map.setInt("ibl_samples", ibl_samples)
-                    yaf_param_map.setFloat("power", bg_power)
-                    yaf_param_map.setFloat("rotation", bl_world.bg_rotation)
+                    yaf_param_map.set_int("ibl_samples", ibl_samples)
+                    yaf_param_map.set_float("power", bg_power)
+                    yaf_param_map.set_float("rotation", bl_world.bg_rotation)
 
         elif bg_type == 'Gradient':
             c = bl_world.bg_horizon_color
-            yaf_param_map.setColor("horizon_color", c[0], c[1], c[2])
+            yaf_param_map.set_color("horizon_color", c[0], c[1], c[2])
 
             c = bl_world.bg_zenith_color
-            yaf_param_map.setColor("zenith_color", c[0], c[1], c[2])
+            yaf_param_map.set_color("zenith_color", c[0], c[1], c[2])
 
             c = bl_world.bg_horizon_ground_color
-            yaf_param_map.setColor("horizon_ground_color", c[0], c[1], c[2])
+            yaf_param_map.set_color("horizon_ground_color", c[0], c[1], c[2])
 
             c = bl_world.bg_zenith_ground_color
-            yaf_param_map.setColor("zenith_ground_color", c[0], c[1], c[2])
+            yaf_param_map.set_color("zenith_ground_color", c[0], c[1], c[2])
 
-            yaf_param_map.setFloat("power", bg_power)
-            yaf_param_map.setBool("ibl", use_ibl)
-            yaf_param_map.setInt("ibl_samples", ibl_samples)
-            yaf_param_map.setString("type", "gradientback")
+            yaf_param_map.set_float("power", bg_power)
+            yaf_param_map.set_bool("ibl", use_ibl)
+            yaf_param_map.set_int("ibl_samples", ibl_samples)
+            yaf_param_map.set_string("type", "gradientback")
 
         elif bg_type == 'Sunsky1':
             f = bl_world.bg_from
-            yaf_param_map.setVector("from", f[0], f[1], f[2])
-            yaf_param_map.setFloat("turbidity", bl_world.bg_turbidity)
-            yaf_param_map.setFloat("a_var", bl_world.bg_a_var)
-            yaf_param_map.setFloat("b_var", bl_world.bg_b_var)
-            yaf_param_map.setFloat("c_var", bl_world.bg_c_var)
-            yaf_param_map.setFloat("d_var", bl_world.bg_d_var)
-            yaf_param_map.setFloat("e_var", bl_world.bg_e_var)
-            yaf_param_map.setBool("add_sun", bl_world.bg_add_sun)
-            yaf_param_map.setFloat("sun_power", bl_world.bg_sun_power)
-            yaf_param_map.setBool("background_light", bl_world.bg_background_light)
-            yaf_param_map.setInt("light_samples", bl_world.bg_light_samples)
-            yaf_param_map.setFloat("power", bl_world.bg_power)
-            yaf_param_map.setString("type", "sunsky")
-            yaf_param_map.setBool("cast_shadows_sun", bl_world.bg_cast_shadows_sun)
+            yaf_param_map.set_vector("from", f[0], f[1], f[2])
+            yaf_param_map.set_float("turbidity", bl_world.bg_turbidity)
+            yaf_param_map.set_float("a_var", bl_world.bg_a_var)
+            yaf_param_map.set_float("b_var", bl_world.bg_b_var)
+            yaf_param_map.set_float("c_var", bl_world.bg_c_var)
+            yaf_param_map.set_float("d_var", bl_world.bg_d_var)
+            yaf_param_map.set_float("e_var", bl_world.bg_e_var)
+            yaf_param_map.set_bool("add_sun", bl_world.bg_add_sun)
+            yaf_param_map.set_float("sun_power", bl_world.bg_sun_power)
+            yaf_param_map.set_bool("background_light", bl_world.bg_background_light)
+            yaf_param_map.set_int("light_samples", bl_world.bg_light_samples)
+            yaf_param_map.set_float("power", bl_world.bg_power)
+            yaf_param_map.set_string("type", "sunsky")
+            yaf_param_map.set_bool("cast_shadows_sun", bl_world.bg_cast_shadows_sun)
 
         elif bg_type == "Sunsky2":
             f = bl_world.bg_from
-            yaf_param_map.setVector("from", f[0], f[1], f[2])
-            yaf_param_map.setFloat("turbidity", bl_world.bg_ds_turbidity)
-            yaf_param_map.setFloat("altitude", bl_world.bg_dsaltitude)
-            yaf_param_map.setFloat("a_var", bl_world.bg_a_var)
-            yaf_param_map.setFloat("b_var", bl_world.bg_b_var)
-            yaf_param_map.setFloat("c_var", bl_world.bg_c_var)
-            yaf_param_map.setFloat("d_var", bl_world.bg_d_var)
-            yaf_param_map.setFloat("e_var", bl_world.bg_e_var)
-            yaf_param_map.setBool("add_sun", bl_world.bg_add_sun)
+            yaf_param_map.set_vector("from", f[0], f[1], f[2])
+            yaf_param_map.set_float("turbidity", bl_world.bg_ds_turbidity)
+            yaf_param_map.set_float("altitude", bl_world.bg_dsaltitude)
+            yaf_param_map.set_float("a_var", bl_world.bg_a_var)
+            yaf_param_map.set_float("b_var", bl_world.bg_b_var)
+            yaf_param_map.set_float("c_var", bl_world.bg_c_var)
+            yaf_param_map.set_float("d_var", bl_world.bg_d_var)
+            yaf_param_map.set_float("e_var", bl_world.bg_e_var)
+            yaf_param_map.set_bool("add_sun", bl_world.bg_add_sun)
             if bl_world.bg_add_sun:
-                yaf_param_map.setFloat("sun_power", bl_world.bg_sun_power)
-            yaf_param_map.setBool("background_light", bl_world.bg_background_light)
+                yaf_param_map.set_float("sun_power", bl_world.bg_sun_power)
+            yaf_param_map.set_bool("background_light", bl_world.bg_background_light)
             if bl_world.bg_background_light:
-                yaf_param_map.setFloat("power", bl_world.bg_power)
-            yaf_param_map.setInt("light_samples", bl_world.bg_light_samples)
-            yaf_param_map.setFloat("bright", bl_world.bg_dsbright)
-            yaf_param_map.setBool("night", bl_world.bg_dsnight)
-            yaf_param_map.setFloat("exposure", bl_world.bg_exposure)
-            yaf_param_map.setBool("clamp_rgb", bl_world.bg_clamp_rgb)
-            yaf_param_map.setBool("gamma_enc", bl_world.bg_gamma_enc)
-            yaf_param_map.setString("color_space", bl_world.bg_color_space)
-            yaf_param_map.setString("type", "darksky")
-            yaf_param_map.setBool("cast_shadows_sun", bl_world.bg_cast_shadows_sun)
+                yaf_param_map.set_float("power", bl_world.bg_power)
+            yaf_param_map.set_int("light_samples", bl_world.bg_light_samples)
+            yaf_param_map.set_float("bright", bl_world.bg_dsbright)
+            yaf_param_map.set_bool("night", bl_world.bg_dsnight)
+            yaf_param_map.set_float("exposure", bl_world.bg_exposure)
+            yaf_param_map.set_bool("clamp_rgb", bl_world.bg_clamp_rgb)
+            yaf_param_map.set_bool("gamma_enc", bl_world.bg_gamma_enc)
+            yaf_param_map.set_string("color_space", bl_world.bg_color_space)
+            yaf_param_map.set_string("type", "darksky")
+            yaf_param_map.set_bool("cast_shadows_sun", bl_world.bg_cast_shadows_sun)
 
         else:
-            yaf_param_map.setColor("color", c[0], c[1], c[2])
-            yaf_param_map.setBool("ibl", use_ibl)
-            yaf_param_map.setInt("ibl_samples", ibl_samples)
-            yaf_param_map.setFloat("power", bg_power)
-            yaf_param_map.setString("type", "constant")
+            yaf_param_map.set_color("color", c[0], c[1], c[2])
+            yaf_param_map.set_bool("ibl", use_ibl)
+            yaf_param_map.set_int("ibl_samples", ibl_samples)
+            yaf_param_map.set_float("power", bg_power)
+            yaf_param_map.set_string("type", "constant")
 
         if bl_world is not None:
-            yaf_param_map.setBool("cast_shadows", bl_world.bg_cast_shadows)
-            yaf_param_map.setBool("with_caustic", bl_world.bg_with_caustic)
-            yaf_param_map.setBool("with_diffuse", bl_world.bg_with_diffuse)
+            yaf_param_map.set_bool("cast_shadows", bl_world.bg_cast_shadows)
+            yaf_param_map.set_bool("with_caustic", bl_world.bg_with_caustic)
+            yaf_param_map.set_bool("with_diffuse", bl_world.bg_with_diffuse)
 
         yaf_scene.defineBackground(yaf_param_map)
 

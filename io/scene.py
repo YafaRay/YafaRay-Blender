@@ -258,12 +258,12 @@ class Scene:
         # create a default shiny diffuse material -> it will be assigned, if object has no material(s)
         yaf_param_map = libyafaray4_bindings.ParamMap()
         param_map_list = libyafaray4_bindings.ParamMapList()
-        yaf_param_map.setString("type", "shinydiffusemat")
+        yaf_param_map.set_string("type", "shinydiffusemat")
         if self.bl_scene.gs_clay_render:
             c_col = self.bl_scene.gs_clay_col
         else:
             c_col = (0.8, 0.8, 0.8)
-        yaf_param_map.setColor("color", c_col[0], c_col[1], c_col[2])
+        yaf_param_map.set_color("color", c_col[0], c_col[1], c_col[2])
         self.yaf_logger.printInfo("Exporter: Creating Material \"defaultMat\"")
         self.yaf_scene.createMaterial("defaultMat", yaf_param_map, param_map_list)
 
