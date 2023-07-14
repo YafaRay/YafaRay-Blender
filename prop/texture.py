@@ -29,6 +29,7 @@ Texture = bpy.types.Texture
 def update_preview(self, context):
     context.texture.saturation = context.texture.saturation
 
+
 # try to update blender propertie texture.type to YafaRay's texture.yaf_tex_type
 def call_tex_type_update(self, context):
     try:
@@ -60,12 +61,12 @@ def register():
         update=update_preview, name="Use map as normal map",
         description="Use image RGB values for normal mapping",
         default=False)
-    #test
+    # test
     Texture.yaf_use_alpha = BoolProperty(
         update=update_preview, name="Use alpha image info",
         description="Use alpha values for image mapping",
         default=False)
-        
+
     Texture.yaf_gamma_input = FloatProperty(
         update=update_preview, name="Gamma input",
         description="Gamma correction applied to input texture",
@@ -77,16 +78,18 @@ def register():
             ('bilinear', "Bilinear (default)", ""),
             ('bicubic', "Bicubic", ""),
             ('none', "No interpolation", ""),
-            ('mipmap_trilinear', "Mipmaps - trilinear", "Mipmaps generation, trilinear interpolation (faster but lower quality)"),
-            ('mipmap_ewa', "Mipmaps - EWA", "Mipmaps generation, EWA interpolation (slower but higher quality)")            
+            ('mipmap_trilinear', "Mipmaps - trilinear",
+             "Mipmaps generation, trilinear interpolation (faster but lower quality)"),
+            ('mipmap_ewa', "Mipmaps - EWA", "Mipmaps generation, EWA interpolation (slower but higher quality)")
         ),
         default='bilinear')
-        
+
     Texture.yaf_tex_optimization = EnumProperty(
         name="Optimization",
         description="Texture optimization to reduce RAM usage",
         items=(
-            ('compressed', "Compressed", "Lossy color compression, some color/transparency details will be lost, more RAM improvement"),
+            ('compressed', "Compressed",
+             "Lossy color compression, some color/transparency details will be lost, more RAM improvement"),
             ('optimized', "Optimized", "Almost lossless optimization, good RAM improvement"),
             ('none', "None", "No optimization, lossless and faster but high RAM usage"),
             ('default', "Default", "Use global texture optimization setting from the Render tab")
@@ -99,7 +102,7 @@ def register():
         min=math.radians(-360), max=math.radians(360),
         subtype="ANGLE", unit="ROTATION",
         default=0.0, precision=1)
-        
+
     Texture.yaf_trilinear_level_bias = FloatProperty(
         update=update_preview, name="Trilinear level bias",
         description="Negative values will choose higher resolution mipmaps than calculated, reducing the blurry artifacts at the cost of increasing texture noise. Positive values will choose lower resolution mipmaps than calculated. Default (and recommended) is 0.0 to use the calculated mipmaps as-is.",
@@ -109,11 +112,12 @@ def register():
         update=update_preview, name="EWA max anisotropy",
         description="Maximum anisotropy allowed for mipmap EWA algorithm. Higher values give better quality in textures seen from an angle, but render will be slower. Lower values will give more speed but lower quality in textures seen in an angle.",
         min=1.0, max=100.0, default=8.0)
-        
+
     Texture.yaf_img_grayscale = BoolProperty(
         update=update_preview, name="Use as Grayscale",
         description="Convert internally to Grayscale to reduce memory usage for bump or mask textures, for example",
         default=False)
+
 
 def unregister():
     del Texture.yaf_tex_type

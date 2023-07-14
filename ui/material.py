@@ -19,10 +19,32 @@
 # <pep8 compliant>
 
 import bpy
-from ..util.ui import icon_add, icon_remove, ui_split, material_from_context, material_check
 from .ior_values import ior_list
 from bpy.types import Panel, Menu
 from bl_ui.properties_material import MaterialButtonsPanel
+
+
+def ui_split(ui_item, factor):
+    if bpy.app.version >= (2, 80, 0):
+        return ui_item.split(factor=factor)
+    else:
+        return ui_item.split(percentage=factor)
+
+
+def material_from_context(context):
+    if bpy.app.version >= (2, 80, 0):
+        return context.material
+    else:
+        from bl_ui.properties_material import active_node_mat
+        return active_node_mat(context.material)
+
+
+def material_check(material):
+    if bpy.app.version >= (2, 80, 0):
+        return material
+    else:
+        from bl_ui.properties_material import check_material
+        return check_material(material)
 
 
 def blend_one_draw(layout, mat):
@@ -78,8 +100,8 @@ class YAFARAY4_PT_context_material(MaterialButtonsPanel, Panel):
             row.template_list("MATERIAL_UL_matslots", "", ob, "material_slots", ob, "active_material_index", rows=2)
 
             col = row.column(align=True)
-            col.operator("object.material_slot_add", icon=icon_add, text="")
-            col.operator("object.material_slot_remove", icon=icon_remove, text="")
+            col.operator("object.material_slot_add", icon="ADD" if bpy.app.version >= (2, 80, 0) else "ZOOMIN", text="")
+            col.operator("object.material_slot_remove", icon="REMOVE" if bpy.app.version >= (2, 80, 0) else "ZOOMOUT", text="")
 
             # TODO: code own operators to copy yaf material settings...
             col.menu("MATERIAL_MT_specials", icon='DOWNARROW_HLT', text="")

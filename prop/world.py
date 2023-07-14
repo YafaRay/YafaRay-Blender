@@ -27,12 +27,13 @@ from bpy.props import (EnumProperty,
 
 World = bpy.types.World
 
+
 def update_preview(self, context):
     context.world.use_sky_paper = context.world.use_sky_paper
 
 
 def register():
-    ########### YafaRays world background properties #############
+    # YafaRay's world background properties
     World.bg_type = EnumProperty(
         update=update_preview, name="Background",
         items=(
@@ -53,8 +54,8 @@ def register():
             ('sRGB (D50)', "sRGB (D50)", "Select color space model")
         ),
         default="CIE (E)")
-    
-    ## povman test: create a list of YafaRay mapping modes ##########
+
+    # povman test: create a list of YafaRay mapping modes
     # 
     World.yaf_mapworld_type = EnumProperty(
         update=update_preview, name="Mapping Type",
@@ -63,7 +64,6 @@ def register():
             ('ANGMAP', "Angular", "Angular mapping")
         ),
         default='SPHERE')
-    ########## end test ########################
 
     World.bg_zenith_color = FloatVectorProperty(
         update=update_preview, name="Zenith color",
@@ -247,18 +247,18 @@ def register():
         update=update_preview, name="Gamma encoding",
         description="Apply gamma encoding to the sky",
         default=True)
-        
+
     World.bg_cast_shadows = BoolProperty(
         update=update_preview, name="Background cast shadows",
         description="Enable casting shadows from the Background environmental lighting. This is the normal and expected behavior. Disable it only for special cases!",
         default=True)
-        
+
     World.bg_cast_shadows_sun = BoolProperty(
         update=update_preview, name="Sun cast shadows",
         description="Enable casting shadows from the Background Sun lighting. This is the normal and expected behavior. Disable it only for special cases!",
         default=True)
-        
-    ########### YafaRays volume integrator properties #############
+
+    # YafaRay's volume integrator properties
     World.v_int_type = EnumProperty(
         update=update_preview, name="Volume integrator",
         description="Set the volume integrator",
@@ -356,6 +356,6 @@ def unregister():
     del World.v_int_scale
     del World.v_int_alpha
     del World.v_int_dsturbidity
-    
+
     # povman test --->
     del World.yaf_mapworld_type

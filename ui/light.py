@@ -20,7 +20,14 @@
 
 from bpy.types import Panel
 import bpy
-from ..util.ui import light_from_context
+
+
+def light_from_context(context):
+    if bpy.app.version >= (2, 80, 0):
+        return context.light
+    else:
+        return context.lamp
+
 
 # Inherit Light data block
 if bpy.app.version >= (2, 80, 0):

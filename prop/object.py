@@ -23,8 +23,7 @@ from bpy.props import (FloatVectorProperty,
                        FloatProperty,
                        IntProperty,
                        BoolProperty,
-                       EnumProperty,
-                       StringProperty)
+                       EnumProperty)
 
 Object = bpy.types.Object
 
@@ -91,7 +90,7 @@ def register():
     Object.bgp_with_diffuse = BoolProperty(
         name="Diffuse photons",
         description="Allow BG Portal Light to shoot diffuse photons",
-       default=True)
+        default=True)
 
     Object.bgp_photon_only = BoolProperty(
         name="Photons only",

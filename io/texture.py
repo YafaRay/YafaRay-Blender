@@ -288,17 +288,17 @@ class Texture:
                 save_dir = "//"
 
             filename = clean_name(filename)
-            fileformat = scene.render.image_settings.file_format.lower()
+            file_format = scene.render.image_settings.file_format.lower()
             extract_path = os.path.join(filename, "{:05d}".format(scene.frame_current))
 
             if tex.image.source == 'GENERATED':
-                image_tex = "yaf_baked_image_{0}.{1}".format(clean_name(tex.name), fileformat)
+                image_tex = "yaf_baked_image_{0}.{1}".format(clean_name(tex.name), file_format)
                 image_tex = os.path.join(save_dir, extract_path, image_tex)
                 image_tex = abspath(image_tex)
                 tex.image.save_render(image_tex, scene)
             if tex.image.source == 'FILE':
                 if tex.image.packed_file:
-                    image_tex = "yaf_extracted_image_{0}.{1}".format(clean_name(tex.name), fileformat)
+                    image_tex = "yaf_extracted_image_{0}.{1}".format(clean_name(tex.name), file_format)
                     image_tex = os.path.join(save_dir, extract_path, image_tex)
                     image_tex = abspath(image_tex)
                     tex.image.save_render(image_tex, scene)
@@ -312,7 +312,7 @@ class Texture:
                         return False
             if tex.image.source == 'SEQUENCE':
                 if tex.image.packed_file:
-                    image_tex = "yaf_extracted_image_{0}.{1}".format(clean_name(tex.name), fileformat)
+                    image_tex = "yaf_extracted_image_{0}.{1}".format(clean_name(tex.name), file_format)
                     image_tex = os.path.join(save_dir, extract_path, image_tex)
                     image_tex = abspath(image_tex)
                     tex.image.save_render(image_tex, scene)

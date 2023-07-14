@@ -20,7 +20,7 @@
 
 import bpy
 from bpy.props import (FloatProperty,
-                       IntProperty,                       
+                       IntProperty,
                        BoolProperty,
                        EnumProperty,
                        FloatVectorProperty,
@@ -28,19 +28,21 @@ from bpy.props import (FloatProperty,
 
 Material = bpy.types.Material
 
+
 # This code is irrelevant after the change in the blend material to convert it from EnumProperty to StringProperty. I'm keeping this as a reference in case a better solution can be found for the blend material component materials references
 def items_mat1(self, context):
     a = []
     for mat in [m for m in bpy.data.materials if m.name not in self.name]:
         a.append((mat.name, mat.name, "First blend material"))
-    return(a)
+    return a
+
 
 # This code is irrelevant after the change in the blend material to convert it from EnumProperty to StringProperty. I'm keeping this as a reference in case a better solution can be found for the blend material component materials references
 def items_mat2(self, context):
     a = []
     for mat in [m for m in bpy.data.materials if m.name not in self.name]:
         a.append((mat.name, mat.name, "Second blend material"))
-    return(a)
+    return a
 
 def update_preview(self, context):
     context.material.preview_render_type = context.material.preview_render_type
@@ -301,7 +303,7 @@ def register():
         description="",
         default=False)
 
-    #Deprecated blend material component Enum references, only to keep compatibility with old scenes
+    # Deprecated blend material component Enum references, only to keep compatibility with old scenes
     Material.material1 = EnumProperty(
         update=update_preview, name="Material one",
         description="First blend material",
@@ -312,16 +314,16 @@ def register():
         description="Second blend material",
         items=items_mat2)
 
-    #New blend material component String references, when opening old scenes it should copy the old Enum Property materials to the new String Properties
+    # New blend material component String references, when opening old scenes it should copy the old Enum Property materials to the new String Properties
     Material.material1name = StringProperty(
         update=update_preview, name="Material one",
         description="First blend material")
-        #,        get=get_blend_mat1_old_scenes)
+    # ,        get=get_blend_mat1_old_scenes)
 
     Material.material2name = StringProperty(
         update=update_preview, name="Material two",
         description="Second blend material")
-        #,        get=get_blend_mat2_old_scenes)
+    # ,        get=get_blend_mat2_old_scenes)
 
     Material.visibility = EnumProperty(
         update=update_preview, name="Visibility",
@@ -330,10 +332,10 @@ def register():
             ('shadow_only', "Shadows only", "Invisible but casting shadows"),
             ('no_shadows', "No shadows", "Visible but not casting shadows"),
             ('normal', "Normal", "Normal visibility - visible casting shadows"),
-            
+
         ),
         default='normal')
-        
+
     Material.receive_shadows = BoolProperty(
         update=update_preview, name="Receive Shadows",
         description="If this parameter is set to false, the material will not receive shadows from other objects",
@@ -360,7 +362,7 @@ def register():
         update=update_preview, name="Multiply Bias by Ray Depth",
         description="If the Transparent Bias is used and this is disabled, the bias will be just added to each secondary ray initial position. If this parameter is enabled, the bias for each ray will be multiplied by the ray depth. That way, the first few surfaces will be rendered giving a better density but the further the secondary rays are generated, the bigger the bias will be.",
         default=False)
-        
+
     Material.samplingfactor = FloatProperty(
         update=update_preview, name="Sampling Factor",
         description="The number of samples in the adaptative AA passes are multiplied by this per-material factor. This does not affect the first pass.",
@@ -387,6 +389,7 @@ def register():
             update=update_preview, name="emit",
             description="",
             default=False)
+
 
 def unregister():
     del Material.mat_type

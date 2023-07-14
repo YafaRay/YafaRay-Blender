@@ -1,5 +1,8 @@
 import bpy
-from .scene_property_groups_definitions import YafaRay4LoggingPropertiesDefinitions, YafaRay4NoiseControlPropertiesDefinitions, YafaRay4MaterialPreviewControlPropertiesDefinitions, YafaRay4LayersPropertiesDefinitions
+from .scene_property_groups_definitions import YafaRay4LoggingPropertiesDefinitions, \
+    YafaRay4NoiseControlPropertiesDefinitions, YafaRay4MaterialPreviewControlPropertiesDefinitions, \
+    YafaRay4LayersPropertiesDefinitions
+
 
 class YafaRay4LoggingProperties(bpy.types.PropertyGroup):
     prop_defs = YafaRay4LoggingPropertiesDefinitions()
@@ -20,6 +23,7 @@ class YafaRay4LoggingProperties(bpy.types.PropertyGroup):
     customFont = prop_defs.customFont
     fontScale = prop_defs.fontScale
 
+
 class YafaRay4NoiseControlProperties(bpy.types.PropertyGroup):
     prop_defs = YafaRay4NoiseControlPropertiesDefinitions()
     resampled_floor = prop_defs.resampled_floor
@@ -34,6 +38,7 @@ class YafaRay4NoiseControlProperties(bpy.types.PropertyGroup):
     clamp_samples = prop_defs.clamp_samples
     clamp_indirect = prop_defs.clamp_indirect
     background_resampling = prop_defs.background_resampling
+
 
 class YafaRay4LayersProperties(bpy.types.PropertyGroup):
     prop_defs = YafaRay4LayersPropertiesDefinitions()
@@ -83,6 +88,7 @@ class YafaRay4LayersProperties(bpy.types.PropertyGroup):
     pass_SubsurfaceInd = prop_defs.pass_SubsurfaceInd
     pass_SubsurfaceCol = prop_defs.pass_SubsurfaceCol
 
+
 class YafaRay4MaterialPreviewControlProperties(bpy.types.PropertyGroup):
     prop_defs = YafaRay4MaterialPreviewControlPropertiesDefinitions()
     enable = prop_defs.enable
@@ -109,7 +115,7 @@ class YafaRay4MaterialPreviewControlProperties(bpy.types.PropertyGroup):
         def execute(self, context):
             bpy.data.scenes[0].yafaray.is_preview.camRot = (0, 0, 1)
             bpy.data.scenes[0].yafaray.is_preview.camDist = 12
-            return{'FINISHED'}
+            return {'FINISHED'}
 
     class OBJECT_OT_CamZoomIn(bpy.types.Operator):
         """ Camera zoom in (reduces distance between camera and object) """
@@ -119,7 +125,7 @@ class YafaRay4MaterialPreviewControlProperties(bpy.types.PropertyGroup):
 
         def execute(self, context):
             bpy.data.scenes[0].yafaray.is_preview.camDist -= 0.5
-            return{'FINISHED'}
+            return {'FINISHED'}
 
     class OBJECT_OT_CamZoomOut(bpy.types.Operator):
         """ Camera zoom out (increases distance between camera and object) """
@@ -129,4 +135,4 @@ class YafaRay4MaterialPreviewControlProperties(bpy.types.PropertyGroup):
 
         def execute(self, context):
             bpy.data.scenes[0].yafaray.is_preview.camDist += 0.5
-            return{'FINISHED'}
+            return {'FINISHED'}

@@ -18,44 +18,47 @@
 
 # <pep8 compliant>
 
-import math
 import bpy
-from sys import platform
-import traceback
 from bpy.props import (IntProperty,
                        FloatProperty,
                        FloatVectorProperty,
                        EnumProperty,
                        BoolProperty,
-                       StringProperty,
-                       PointerProperty,
-                       CollectionProperty)
+                       PointerProperty)
 
 Scene = bpy.types.Scene
 
-# set fileformat for image saving on same format as in YafaRay, both have default PNG
-def call_update_fileformat(self, context):
+
+# set file format for image saving on same format as in YafaRay, both have default PNG
+def call_update_file_format(self, context):
     scene = context.scene
     render = scene.render
     if scene.img_output is not render.image_settings.file_format:
         render.image_settings.file_format = scene.img_output
 
+
 class YafaRay4Properties(bpy.types.PropertyGroup):
     pass
 
+
 if bpy.app.version >= (2, 80, 0):
-    from .scene_property_groups import YafaRay4LayersProperties, YafaRay4MaterialPreviewControlProperties, YafaRay4NoiseControlProperties, YafaRay4LoggingProperties
+    from .scene_property_groups import YafaRay4LayersProperties, YafaRay4MaterialPreviewControlProperties, \
+        YafaRay4NoiseControlProperties, YafaRay4LoggingProperties
 else:
-    from .scene_property_groups_279 import YafaRay4LayersProperties, YafaRay4MaterialPreviewControlProperties, YafaRay4NoiseControlProperties, YafaRay4LoggingProperties
+    from .scene_property_groups_279 import YafaRay4LayersProperties, YafaRay4MaterialPreviewControlProperties, \
+        YafaRay4NoiseControlProperties, YafaRay4LoggingProperties
+
 
 def register():
-    ########### YafaRay's general settings properties #############
+    # YafaRay's general settings properties
     Scene.gs_accelerator = EnumProperty(
         name="Scene accelerator",
         description="Selects the scene accelerator algorithm",
         items=(
-            ('yafaray-kdtree-original', "KDTree single-thread", "KDTree single-thread (original/default, faster but single threaded)"),
-            ('yafaray-kdtree-multi-thread', "KDTree multi-thread", "KDTree multi-thread (slower per thread, but might be faster for >= 8 cores)"),
+            ('yafaray-kdtree-original', "KDTree single-thread",
+             "KDTree single-thread (original/default, faster but single threaded)"),
+            ('yafaray-kdtree-multi-thread', "KDTree multi-thread",
+             "KDTree multi-thread (slower per thread, but might be faster for >= 8 cores)"),
             ('yafaray-simpletest', "Simple/Test", "Simple (for development TESTING ONLY, very slow renders!)"),
         ),
         default='yafaray-kdtree-original')
@@ -79,7 +82,7 @@ def register():
         name="Gamma",
         description="Gamma correction applied to final output, inverse correction "
                     "of textures and colors is performed",
-        min=0, max=5, default= 1.0)
+        min=0, max=5, default=1.0)
 
     Scene.gs_gamma_input = FloatProperty(
         name="Gamma input",
@@ -97,7 +100,8 @@ def register():
         items=(
             ('linear', "Linear", "Render tiles appear in succesive lines until all render is complete."),
             ('random', "Random", "Render tiles appear at random locations until all render is complete."),
-            ('centre', "Centre", "Render tiles appear around the centre of the image expanding until all render is complete.")
+            ('centre', "Centre",
+             "Render tiles appear around the centre of the image expanding until all render is complete.")
         ),
         default='centre')
 
@@ -134,11 +138,11 @@ def register():
         soft_min=0.0, soft_max=1.0,
         default=0.30000)
 
-
     # added clay color property
     Scene.gs_clay_col = FloatVectorProperty(
         name="Clay color",
-        description="Color of clay render material - default value Middle Gray (sRGB 50% reflectance)", #as defined at https://en.wikipedia.org/wiki/Middle_gray
+        description="Color of clay render material - default value Middle Gray (sRGB 50% reflectance)",
+        # as defined at https://en.wikipedia.org/wiki/Middle_gray
         subtype='COLOR',
         min=0.0, max=1.0,
         default=(0.216, 0.216, 0.216))
@@ -196,8 +200,9 @@ def register():
         name="Mesh Tesselation",
         description="Selects the way that meshes are tesselated before being rendered by YafaRay.",
         items=(
-            ('triangles_quads', "Triangles + Quads", "(default) Meshes are internally tesselated as a mix of triangles and quads."),
-            ('triangles_only', "Triangles Only",  "Meshes are internally tesselated as triangles only."),
+            ('triangles_quads', "Triangles + Quads",
+             "(default) Meshes are internally tesselated as a mix of triangles and quads."),
+            ('triangles_only', "Triangles Only", "Meshes are internally tesselated as triangles only."),
         ),
         default='triangles_quads')
 
@@ -207,7 +212,8 @@ def register():
         items=(
             ('yes', "Yes", "Apply Alpha channel Premultiply"),
             ('no', "No", "Don't apply Alpha channel Premultiply"),
-            ('auto', "Auto", "Automatically try to guess if Alpha channel Premultiply is needed depending on the file type (recommended)")
+            ('auto', "Auto",
+             "Automatically try to guess if Alpha channel Premultiply is needed depending on the file type (recommended)")
         ),
         default='auto')
 
@@ -220,7 +226,7 @@ def register():
         name="Show sample pixels",
         description="Masks pixels marked for resampling during adaptive passes",
         default=True)
-    
+
     Scene.gs_type_render = EnumProperty(
         name="Render",
         description="Choose the render output method",
@@ -242,7 +248,8 @@ def register():
         name="Textures optimization",
         description="Textures optimization to reduce RAM usage, can be overriden by per-texture setting",
         items=(
-            ('compressed', "Compressed", "Lossy color compression, some color/transparency details will be lost, more RAM improvement"),
+            ('compressed', "Compressed",
+             "Lossy color compression, some color/transparency details will be lost, more RAM improvement"),
             ('optimized', "Optimized", "Lossless optimization, good RAM improvement"),
             ('none', "None", "No optimization, lossless and faster but high RAM usage")
         ),
@@ -272,7 +279,8 @@ def register():
         name="Internal ImageFilm save/load",
         description="Option to save / load the imageFilm, may be useful to continue interrupted renders. The ImageFilm file can be BIG and SLOW, especially when enabling many render passes.",
         items=(
-            ('load-save', "Load and Save", "Loads the internal ImageFilm files at start. USE WITH CARE! It will also save the ImageFilm with the images"),
+            ('load-save', "Load and Save",
+             "Loads the internal ImageFilm files at start. USE WITH CARE! It will also save the ImageFilm with the images"),
             ('save', "Save", "Saves the internal ImageFilm with the images"),
             ('none', "Disabled", "Image autosave will be disabled")
         ),
@@ -298,7 +306,7 @@ def register():
         ),
         default="none")
 
-    ######### YafaRays own image output property ############
+    # YafaRay's own image output property
     Scene.img_output = EnumProperty(
         name="Image File Type",
         description="Image will be saved in this file format",
@@ -310,7 +318,7 @@ def register():
             ('OPEN_EXR', " EXR (IL&M OpenEXR)", ""),
             ('HDR', " HDR (Radiance RGBE)", "")
         ),
-        default='PNG', update=call_update_fileformat)
+        default='PNG', update=call_update_file_format)
 
     Scene.img_multilayer = BoolProperty(
         name="MultiLayer",
@@ -346,13 +354,13 @@ def register():
         name="Include .blend name",
         description="Include .blend name in the image filename",
         default=True)
-        
+
     Scene.img_add_datetime = BoolProperty(
         name="Include date/time",
         description="Include current date/time in the image filename",
         default=False)
 
-    ########### YafaRays integrator properties #############
+    # YafaRay's integrator properties
     Scene.intg_light_method = EnumProperty(
         name="Lighting Method",
         items=(
@@ -540,7 +548,7 @@ def register():
     Scene.intg_times = FloatProperty(
         name="Radius factor",
         min=0.0,
-        description= "Initial radius times",
+        description="Initial radius times",
         default=1.0)
 
     Scene.intg_photon_radius = FloatProperty(
@@ -548,7 +556,7 @@ def register():
         min=0.0,
         default=1.0)
 
-    ######### YafaRays anti-aliasing/noise properties ###########
+    # YafaRay's antialiasing/noise properties
     Scene.AA_min_samples = IntProperty(
         name="Samples",
         description="Number of samples for first AA pass",

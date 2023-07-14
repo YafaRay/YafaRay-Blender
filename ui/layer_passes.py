@@ -20,7 +20,6 @@
 
 from bpy.types import Panel
 from bl_ui.properties_render_layer import RenderLayerButtonsPanel
-from ..util.ui import icon_add, icon_remove
 
 
 class YAFARAY4_PT_layers(RenderLayerButtonsPanel, Panel):
@@ -38,8 +37,8 @@ class YAFARAY4_PT_layers(RenderLayerButtonsPanel, Panel):
         row.template_list("RENDERLAYER_UL_renderlayers", "", rd, "layers", rd.layers, "active_index", rows=2)
 
         col = row.column(align=True)
-        col.operator("scene.render_layer_add", icon=icon_add, text="")
-        col.operator("scene.render_layer_remove", icon=icon_remove, text="")
+        col.operator("scene.render_layer_add", icon="ADD" if bpy.app.version >= (2, 80, 0) else "ZOOMIN", text="")
+        col.operator("scene.render_layer_remove", icon="REMOVE" if bpy.app.version >= (2, 80, 0) else "ZOOMOUT", text="")
 
         row = layout.row()
         rl = rd.layers.active
@@ -334,8 +333,8 @@ class YAFARAY4_PT_views(RenderLayerButtonsPanel, Panel):
                     row.template_list("RENDERLAYER_UL_renderviews", "name", rd, "views", rd.views, "active_index", rows=2)
 
                     col = row.column(align=True)
-                    col.operator("scene.render_view_add", icon=icon_add, text="")
-                    col.operator("scene.render_view_remove", icon=icon_remove, text="")
+                    col.operator("scene.render_view_add", icon="ADD" if bpy.app.version >= (2, 80, 0) else "ZOOMIN", text="")
+                    col.operator("scene.render_view_remove", icon="REMOVE" if bpy.app.version >= (2, 80, 0) else "ZOOMOUT", text="")
 
                     row = layout.row()
                     row.label(text="Camera Suffix:")

@@ -21,12 +21,18 @@
 from bpy.types import Panel
 from bl_ui.properties_world import WorldButtonsPanel
 import bpy
-from ..util.ui import ui_split
-
 # Inherit World data block
 from bl_ui.properties_world import WORLD_PT_context_world
 WORLD_PT_context_world.COMPAT_ENGINES.add('YAFARAY4_RENDER')
 del WORLD_PT_context_world
+
+
+def ui_split(ui_item, factor):
+    if bpy.app.version >= (2, 80, 0):
+        return ui_item.split(factor=factor)
+    else:
+        return ui_item.split(percentage=factor)
+
 
 # Inherit World Preview Panel
 if bpy.app.version >= (2, 80, 0):

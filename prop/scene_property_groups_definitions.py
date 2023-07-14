@@ -3,9 +3,7 @@ from bpy.props import (IntProperty,
                        FloatVectorProperty,
                        EnumProperty,
                        BoolProperty,
-                       StringProperty,
-                       PointerProperty,
-                       CollectionProperty)
+                       StringProperty)
 
 def update_preview(self, context):
     if hasattr(context, "material") and context.material is not None:
@@ -13,7 +11,8 @@ def update_preview(self, context):
     elif len(bpy.data.materials) > 0:
         bpy.data.materials[0].preview_render_type = bpy.data.materials[0].preview_render_type
 
-class YafaRay4LoggingPropertiesDefinitions():
+
+class YafaRay4LoggingPropertiesDefinitions:
     paramsBadgePosition = EnumProperty(
         name="Params Badge position",
         description="Choose the position of the params badge in the exported image file. Inside Blender it may appear incorrect or not at all",
@@ -81,22 +80,22 @@ class YafaRay4LoggingPropertiesDefinitions():
 
     title = StringProperty(
         name="Title",
-        description=("Title to be shown in the logs and/or params badge"),
+        description="Title to be shown in the logs and/or params badge",
         default="")
 
     author = StringProperty(
         name="Author",
-        description=("Author to be shown in the logs and/or params badge"),
+        description="Author to be shown in the logs and/or params badge",
         default="")
 
     contact = StringProperty(
         name="Contact info",
-        description=("Contact information (phone, e-mail, etc) to be shown in the logs and/or params badge"),
+        description="Contact information (phone, e-mail, etc) to be shown in the logs and/or params badge",
         default="")
 
     comments = StringProperty(
         name="Comments",
-        description=("Comments to be added to the logs and/or params badge"),
+        description="Comments to be added to the logs and/or params badge",
         default="")
 
     customIcon = StringProperty(
@@ -116,12 +115,12 @@ class YafaRay4LoggingPropertiesDefinitions():
 
     fontScale = FloatProperty(
         name="Font scale",
-        description=("Font scaling factor."),
+        description="Font scaling factor.",
         min=0.2, max=5.0, precision=1,
         default=1.0)
 
 
-class YafaRay4NoiseControlPropertiesDefinitions():
+class YafaRay4NoiseControlPropertiesDefinitions:
     resampled_floor = FloatProperty(
         name="Resampled floor (%)",
         description=("Noise reduction: when resampled pixels go below this value (% of total pixels),"
@@ -199,7 +198,7 @@ class YafaRay4NoiseControlPropertiesDefinitions():
         default=True)
 
 
-class YafaRay4LayersPropertiesDefinitions():
+class YafaRay4LayersPropertiesDefinitions:
     pass_enable = BoolProperty(
         name="Enable render passes",
         default=False)
@@ -240,35 +239,35 @@ class YafaRay4LayersPropertiesDefinitions():
 
     objectEdgeThreshold = FloatProperty(
         name="Object Edge Threshold",
-        description=("Threshold for the edge detection process used in the Object Edge and Toon Render Passes"),
+        description="Threshold for the edge detection process used in the Object Edge and Toon Render Passes",
         min=0.0, max=1.0,
         precision=3,
         default=0.3)
 
     facesEdgeThreshold = FloatProperty(
         name="Faces Edge Threshold",
-        description=("Threshold for the edge detection process used in the Faces Edge Render Pass"),
+        description="Threshold for the edge detection process used in the Faces Edge Render Pass",
         min=0.0, max=1.0,
         precision=3,
         default=0.01)
 
     objectEdgeSmoothness = FloatProperty(
         name="Object Edge Smoothness",
-        description=("Smoothness (blur) of the edges used in the Object Edge and Toon Render Passes"),
+        description="Smoothness (blur) of the edges used in the Object Edge and Toon Render Passes",
         min=0.0, max=5.0,
         precision=2,
         default=0.75)
 
     facesEdgeSmoothness = FloatProperty(
         name="Faces Edge Smoothness",
-        description=("Smoothness (blur) of the edges used in the Faces Edge Render Pass"),
+        description="Smoothness (blur) of the edges used in the Faces Edge Render Pass",
         min=0.0, max=5.0,
         precision=2,
         default=0.5)
 
     toonEdgeColor = FloatVectorProperty(
         name="Toon Edge Color",
-        description=("Color of the edges used in the Toon Render Pass"),
+        description="Color of the edges used in the Toon Render Pass",
         subtype='COLOR',
         step=1, precision=2,
         min=0.0, max=1.0,
@@ -277,21 +276,21 @@ class YafaRay4LayersPropertiesDefinitions():
 
     toonPreSmooth = FloatProperty(
         name="Toon Pre-Smooth",
-        description=("Toon effect: smoothness applied to the original image"),
+        description="Toon effect: smoothness applied to the original image",
         min=0.0,
         precision=2,
         default=3.0)
 
     toonPostSmooth = FloatProperty(
         name="Toon Post-Smooth",
-        description=("Toon effect: smoothness applied to the original image"),
+        description="Toon effect: smoothness applied to the original image",
         min=0.0,
         precision=2,
         default=3.0)
 
     toonQuantization = FloatProperty(
         name="Toon Color Quantization",
-        description=("Toon effect: color Quantization applied to the original image"),
+        description="Toon effect: color Quantization applied to the original image",
         min=0.0, max=1.0,
         precision=3,
         default=0.1)
@@ -328,8 +327,9 @@ class YafaRay4LayersPropertiesDefinitions():
         ('obj-index-norm', "Index-Object (normalized)",
          "Index-Object: Grayscale value = obj.index in the object properties (normalized values)", 202),
         (
-        'obj-index-auto', "Index-Object (auto, color)", "Index-Object: A color automatically generated for each object",
-        203),
+            'obj-index-auto', "Index-Object (auto, color)",
+            "Index-Object: A color automatically generated for each object",
+            203),
         ('obj-index-mask', "Index-Object Mask", "Index-Object: Masking object based on obj.index.mask setting", 204),
         ('obj-index-mask-shadow', "Index-Object Mask Shadow",
          "Index-Object: Masking object shadow based on obj.index.mask setting", 205),
@@ -394,7 +394,9 @@ class YafaRay4LayersPropertiesDefinitions():
         ('debug-dudxy-dvdxy', "Debug: differential dUdx+dUdy, dVdx+dVdy",
          "For debugging mipmaps, etc, show differential dUdx+dUdy and dVdx+dVdy", 324),
         ('debug-barycentric-uvw', "Debug: Barycentric UVW", "Debug: barycentric UVW coordinates", 325),
-        ('debug-object-time', "Debug: Object Time", "Debug: Time of Object samples. Samples of non-motion blur objects are green. Samples of motion blur objects are blue for t=0.0 towards red for t=1.0", 326),
+        ('debug-object-time', "Debug: Object Time",
+         "Debug: Time of Object samples. Samples of non-motion blur objects are green. Samples of motion blur objects are blue for t=0.0 towards red for t=1.0",
+         326),
     ), key=lambda index: index[1])
 
     renderInternalPassAdvanced = sorted((
@@ -640,7 +642,7 @@ class YafaRay4LayersPropertiesDefinitions():
         default="adv-subsurface-color")
 
 
-class YafaRay4MaterialPreviewControlPropertiesDefinitions():
+class YafaRay4MaterialPreviewControlPropertiesDefinitions:
     enable = BoolProperty(
         update=update_preview,
         name="Material Preview Controls enabled",
@@ -650,7 +652,7 @@ class YafaRay4MaterialPreviewControlPropertiesDefinitions():
     objScale = FloatProperty(
         update=update_preview,
         name="objScale",
-        description=("Material Preview object scaling factor"),
+        description="Material Preview object scaling factor",
         min=0.0,  # max=10.0,
         precision=2, step=10,
         default=1.0)
@@ -658,7 +660,7 @@ class YafaRay4MaterialPreviewControlPropertiesDefinitions():
     rotZ = FloatProperty(
         update=update_preview,
         name="rotZ",
-        description=("Material Preview object rotation Z axis"),
+        description="Material Preview object rotation Z axis",
         precision=1, step=1000,
         # min=math.radians(-360), max=math.radians(360),
         subtype="ANGLE", unit="ROTATION",
@@ -667,7 +669,7 @@ class YafaRay4MaterialPreviewControlPropertiesDefinitions():
     lightRotZ = FloatProperty(
         update=update_preview,
         name="lightRotZ",
-        description=("Material Preview light rotation Z axis"),
+        description="Material Preview light rotation Z axis",
         precision=1, step=1000,
         # min=math.radians(-360), max=math.radians(360),
         subtype="ANGLE", unit="ROTATION",
@@ -676,21 +678,21 @@ class YafaRay4MaterialPreviewControlPropertiesDefinitions():
     keyLightPowerFactor = FloatProperty(
         update=update_preview,
         name="keyLightPowerFactor",
-        description=("Material Preview power factor for the key light"),
+        description="Material Preview power factor for the key light",
         min=0.0, max=10.0, precision=2, step=10,
         default=1.0)
 
     fillLightPowerFactor = FloatProperty(
         update=update_preview,
         name="lightPowerFactor",
-        description=("Material Preview power factor for the fill lights"),
+        description="Material Preview power factor for the fill lights",
         min=0.0, max=10.0, precision=2, step=10,
         default=0.5)
 
     keyLightColor = FloatVectorProperty(
         update=update_preview,
         name="keyLightColor",
-        description=("Material Preview color for key light"),
+        description="Material Preview color for key light",
         subtype='COLOR',
         step=1, precision=2,
         min=0.0, max=1.0,
@@ -700,7 +702,7 @@ class YafaRay4MaterialPreviewControlPropertiesDefinitions():
     fillLightColor = FloatVectorProperty(
         update=update_preview,
         name="fillLightColor",
-        description=("Material Preview color for fill lights"),
+        description="Material Preview color for fill lights",
         subtype='COLOR',
         step=1, precision=2,
         min=0.0, max=1.0,
@@ -710,19 +712,19 @@ class YafaRay4MaterialPreviewControlPropertiesDefinitions():
     previewRayDepth = IntProperty(
         update=update_preview,
         name="previewRayDepth",
-        description=("Material Preview max ray depth, set higher for better (slower) glass preview"),
+        description="Material Preview max ray depth, set higher for better (slower) glass preview",
         min=0, max=20, default=2)
 
     previewAApasses = IntProperty(
         update=update_preview,
         name="previewAApasses",
-        description=("Material Preview AA passes, set higher for better (slower) preview"),
+        description="Material Preview AA passes, set higher for better (slower) preview",
         min=1, max=20, default=1)
 
     previewBackground = EnumProperty(
         update=update_preview,
         name="previewBackground",
-        description=("Material Preview background type"),
+        description="Material Preview background type",
         items=(
             ('none', "None", "No background", 0),
             ('checker', "Checker", "Checker background (default)", 1),
@@ -733,20 +735,20 @@ class YafaRay4MaterialPreviewControlPropertiesDefinitions():
     previewObject = StringProperty(
         update=update_preview,
         name="previewObject",
-        description=("Material Preview custom object to be shown, if empty will use default preview objects"),
+        description="Material Preview custom object to be shown, if empty will use default preview objects",
         default="")
 
     camDist = FloatProperty(
         update=update_preview,
         name="camDist",
-        description=("Material Preview Camera distance to object"),
+        description="Material Preview Camera distance to object",
         min=0.1, max=22.0, precision=2, step=100,
         default=12.0)
 
     camRot = FloatVectorProperty(
         update=update_preview,
         name="camRot",
-        description=("Material Preview camera rotation"),
+        description="Material Preview camera rotation",
         subtype='DIRECTION',
         # step=10, precision=3,
         # min=-1.0, max=1.0,

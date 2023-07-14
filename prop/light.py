@@ -44,8 +44,9 @@ def call_lighttype_update(self, context):
     else:
         light = context.lamp
     if light is not None:
-        switchLightType = {'area': 'AREA', 'spot': 'SPOT', 'sun': 'SUN', 'point': 'POINT', 'ies': 'SPOT', 'directional': 'SUN'}
-        light.type = switchLightType.get(light.lamp_type)
+        switch_light_type = {'area': 'AREA', 'spot': 'SPOT', 'sun': 'SUN', 'point': 'POINT', 'ies': 'SPOT',
+                             'directional': 'SUN'}
+        light.type = switch_light_type.get(light.lamp_type)
 
 
 def set_shadow_method(self, context):
@@ -58,7 +59,7 @@ def set_shadow_method(self, context):
     else:
         light.shadow_method = 'RAY_SHADOW'
     light.type = light.type
-    
+
 
 def sync_with_distance(self, context):
     if bpy.app.version >= (2, 80, 0):
@@ -82,7 +83,7 @@ def register():
             ('area', "Area", "Directional area light source"),
             ('directional', "Directional", "Directional Sun light")
         ),
-        default="point", update=call_lighttype_update)
+        default="point", update=call_light_type_update)
 
     Light.yaf_energy = FloatProperty(
         update=update_preview, name="Power",
@@ -160,7 +161,7 @@ def register():
         update=update_preview, name="Light enabled",
         description="Enable/Disable light",
         default=True)
-        
+
     Light.cast_shadows = BoolProperty(
         update=update_preview, name="Cast shadows",
         description="Enable casting shadows. This is the normal and expected behavior. Disable it only for special cases!",
@@ -175,6 +176,7 @@ def register():
         update=update_preview, name="Diffuse photons",
         description="Allow light to shoot diffuse photons",
         default=True)
+
 
 def unregister():
     del Light.lamp_type

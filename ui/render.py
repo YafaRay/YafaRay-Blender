@@ -21,7 +21,14 @@
 import bpy
 from bpy.types import Panel
 from bl_ui.properties_render import RenderButtonsPanel
-from ..util.ui import icon_add, icon_remove, ui_split
+
+
+def ui_split(ui_item, factor):
+    if bpy.app.version >= (2, 80, 0):
+        return ui_item.split(factor=factor)
+    else:
+        return ui_item.split(percentage=factor)
+
 
 class YAFARAY4_PT_Render(RenderButtonsPanel, Panel):
     bl_label = "Render"
@@ -67,8 +74,8 @@ class YAFARAY4_PT_dimensions(RenderButtonsPanel, Panel):
             pass   # FIXME BLENDER 2.80-3.00
         else:
             row.menu("RENDER_MT_presets", text=bpy.types.RENDER_MT_presets.bl_label)
-            row.operator("render.preset_add", text="", icon=icon_add)
-            row.operator("render.preset_add", text="", icon=icon_remove).remove_active = True
+            row.operator("render.preset_add", text="", icon="ADD" if bpy.app.version >= (2, 80, 0) else "ZOOMIN")
+            row.operator("render.preset_add", text="", icon="REMOVE" if bpy.app.version >= (2, 80, 0) else "ZOOMOUT").remove_active = True
 
         split = layout.split()
 
