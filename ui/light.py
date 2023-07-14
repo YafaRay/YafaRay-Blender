@@ -34,6 +34,7 @@ else:
     DATA_PT_context_lamp.COMPAT_ENGINES.add('YAFARAY4_RENDER')
     del DATA_PT_context_lamp
 
+
 class YAFARAY4_PT_preview(Panel):
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
@@ -112,7 +113,7 @@ class YAFARAY4_PT_light(DataButtonsPanel, Panel):
             if light.ies_soft_shadows:
                 layout.box().prop(light, "yaf_samples")
 
-# povman test
+
 class YAFARAY4_PT_area(DataButtonsPanel, Panel):
     bl_label = "Area Shape"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -136,7 +137,7 @@ class YAFARAY4_PT_area(DataButtonsPanel, Panel):
         elif light.shape == 'RECTANGLE':
             sub.prop(light, "size", text="Size X")
             sub.prop(light, "size_y", text="Size Y")
-# end
+
 
 class YAFARAY4_PT_spot(DataButtonsPanel, Panel):
     bl_label = "Spot Shape"
@@ -168,6 +169,7 @@ class YAFARAY4_PT_spot(DataButtonsPanel, Panel):
             col.label(text="")
             col.prop(light, "shadow_buffer_clip_end", text=" Clip End")
 
+
 class YAFARAY4_PT_light_advanced(DataButtonsPanel, Panel):
     bl_label = "Advanced settings"
     bl_options = {'DEFAULT_CLOSED'}
@@ -198,10 +200,12 @@ classes = (
     YAFARAY4_PT_light_advanced,
 )
 
+
 def register():
     from bpy.utils import register_class
     for cls in classes:
         register_class(cls)
+
 
 def unregister():
     from bpy.utils import unregister_class
@@ -209,6 +213,5 @@ def unregister():
         unregister_class(cls)
 
 
-if __name__ == "__main__":  # only for live edit.
-    import bpy
-    bpy.utils.register_module(__name__)
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on
+    register()

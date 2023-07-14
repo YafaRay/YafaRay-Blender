@@ -123,5 +123,6 @@ def unregister():
         unregister_class(cls)
 
 
-if __name__ == "__main__":  # only for live edit. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" module is installed on
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on
     register()
+

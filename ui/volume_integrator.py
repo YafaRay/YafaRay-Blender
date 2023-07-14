@@ -53,10 +53,12 @@ classes = (
     YAFARAY4_PT_vol_integrator,
 )
 
+
 def register():
     from bpy.utils import register_class
     for cls in classes:
         register_class(cls)
+
 
 def unregister():
     from bpy.utils import unregister_class
@@ -65,6 +67,5 @@ def unregister():
 
 
 
-if __name__ == "__main__":  # only for live edit.
-    import bpy
-    bpy.utils.register_module(__name__)
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on
+    register()
