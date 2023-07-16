@@ -27,7 +27,16 @@ if __name__ == "__main__":  # Only used when editing and testing "live" within B
     from yafaray4.ui.ior_values import ior_list
     import yafaray4.prop.material
     yafaray4.prop.material.register()
-
+    import yafaray4.prop.texture
+    yafaray4.prop.texture.register()
+    import yafaray4.prop.scene
+    if hasattr(bpy.types, 'YafaRay4Properties'):
+        yafaray4.prop.scene.unregister()
+    yafaray4.prop.scene.register()
+    import yafaray4.ot.presets
+    if hasattr(bpy.types, 'YAFARAY_OT_preset_add'):
+        yafaray4.ot.presets.unregister()
+    yafaray4.ot.presets.register()
 else:
     from .ior_values import ior_list
 
@@ -154,10 +163,10 @@ class YAFARAY4_PT_preview_controls(MaterialButtonsPanel, Panel):
 
     def draw_header(self, context):
         scene = context.scene
-        self.layout.prop(context.scene.yafaray.is_preview, "enable", text="")
+        self.layout.prop(context.scene.yafaray.preview, "enable", text="")
     
     def draw(self, context):
-        if context.scene.yafaray.is_preview.enable:
+        if context.scene.yafaray.preview.enable:
             layout = self.layout
             yaf_mat = material_from_context(context)
             split = layout.split() 
@@ -165,7 +174,7 @@ class YAFARAY4_PT_preview_controls(MaterialButtonsPanel, Panel):
             col.label(text="Preview dynamic rotation/zoom")
             split = layout.split() 
             col = split.column()
-            col.prop(context.scene.yafaray.is_preview, "camRot", text="")
+            col.prop(context.scene.yafaray.preview, "camRot", text="")
             col = split.column()
             row = col.row()
             row.operator("preview.camzoomout", text='Zoom Out', icon='ZOOM_OUT')
@@ -180,40 +189,40 @@ class YAFARAY4_PT_preview_controls(MaterialButtonsPanel, Panel):
             col.label(text="Preview object control")
             split = layout.split()
             col = split.column()
-            col.prop(context.scene.yafaray.is_preview, "objScale", text="Scale")
+            col.prop(context.scene.yafaray.preview, "objScale", text="Scale")
             col = split.column()
-            col.prop(context.scene.yafaray.is_preview, "rotZ", text="Z Rotation")
+            col.prop(context.scene.yafaray.preview, "rotZ", text="Z Rotation")
             col = split.column()
-            col.prop_search(context.scene.yafaray.is_preview, "previewObject", bpy.data, "objects", text="")
+            col.prop_search(context.scene.yafaray.preview, "previewObject", bpy.data, "objects", text="")
             split = layout.split() 
             col = split.column()
             col.label(text="Preview lights control")
             col = split.column()
-            col.prop(context.scene.yafaray.is_preview, "lightRotZ", text="lights Z Rotation")
+            col.prop(context.scene.yafaray.preview, "lightRotZ", text="lights Z Rotation")
             split = layout.split()
             col = split.column()
             col.label(text="Key light:")
             col = split.column()
-            col.prop(context.scene.yafaray.is_preview, "keyLightPowerFactor", text="Power factor")
+            col.prop(context.scene.yafaray.preview, "keyLightPowerFactor", text="Power factor")
             col = split.column()
-            col.prop(context.scene.yafaray.is_preview, "keyLightColor", text="")
+            col.prop(context.scene.yafaray.preview, "keyLightColor", text="")
             split = layout.split() 
             col = split.column()
             col.label(text="Fill lights:")
             col = split.column()
-            col.prop(context.scene.yafaray.is_preview, "fillLightPowerFactor", text="Power factor")
+            col.prop(context.scene.yafaray.preview, "fillLightPowerFactor", text="Power factor")
             col = split.column()
-            col.prop(context.scene.yafaray.is_preview, "fillLightColor", text="")
+            col.prop(context.scene.yafaray.preview, "fillLightColor", text="")
             split = layout.split() 
             col = split.column()
             col.label(text="Preview scene control")
             split = layout.split()
             col = split.column()
-            col.prop(context.scene.yafaray.is_preview, "previewRayDepth", text="Ray Depth")
+            col.prop(context.scene.yafaray.preview, "previewRayDepth", text="Ray Depth")
             col = split.column()
-            col.prop(context.scene.yafaray.is_preview, "previewAApasses", text="AA samples")
+            col.prop(context.scene.yafaray.preview, "previewAApasses", text="AA samples")
             col = split.column()
-            col.prop(context.scene.yafaray.is_preview, "previewBackground", text="")
+            col.prop(context.scene.yafaray.preview, "previewBackground", text="")
 
 
 def draw_generator(ior_n):

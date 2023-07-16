@@ -22,6 +22,11 @@ import bpy
 from bpy.types import Panel
 from bl_ui.properties_data_camera import CameraButtonsPanel
 
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on.
+    # Assuming that the YafaRay-Plugin exporter is installed in a folder named "yafaray4" within the addons Blender directory
+    import yafaray4.prop.camera
+    yafaray4.prop.camera.register()
+
 
 class YAFARAY4_PT_lens(CameraButtonsPanel, Panel):
     bl_label = "Lens"

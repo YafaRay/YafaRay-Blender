@@ -26,6 +26,11 @@ from bl_ui.properties_world import WORLD_PT_context_world
 WORLD_PT_context_world.COMPAT_ENGINES.add('YAFARAY4_RENDER')
 del WORLD_PT_context_world
 
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on.
+    # Assuming that the YafaRay-Plugin exporter is installed in a folder named "yafaray4" within the addons Blender directory
+    import yafaray4.prop.world
+    yafaray4.prop.world.register()
+
 
 def ui_split(ui_item, factor):
     if bpy.app.version >= (2, 80, 0):

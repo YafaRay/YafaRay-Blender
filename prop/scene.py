@@ -615,10 +615,15 @@ def register():
 
 
 def unregister():
+    del YafaRay4Properties.preview
     bpy.utils.unregister_class(YafaRay4MaterialPreviewControlProperties)
+    del YafaRay4Properties.logging
     bpy.utils.unregister_class(YafaRay4LoggingProperties)
+    del YafaRay4Properties.noise_control
     bpy.utils.unregister_class(YafaRay4NoiseControlProperties)
+    del YafaRay4Properties.passes
     bpy.utils.unregister_class(YafaRay4LayersProperties)
+    del bpy.types.Scene.yafaray
     bpy.utils.unregister_class(YafaRay4Properties)
 
     del Scene.gs_accelerator

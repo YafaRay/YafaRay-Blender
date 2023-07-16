@@ -24,6 +24,14 @@ from bpy.types import Panel, Menu
 
 if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on.
     # Assuming that the YafaRay-Plugin exporter is installed in a folder named "yafaray4" within the addons Blender directory
+    import yafaray4.prop.scene
+    if hasattr(bpy.types, 'YafaRay4Properties'):
+        yafaray4.prop.scene.unregister()
+    yafaray4.prop.scene.register()
+    import yafaray4.ot.presets
+    if hasattr(bpy.types, 'YAFARAY_OT_preset_add'):
+        yafaray4.ot.presets.unregister()
+    yafaray4.ot.presets.register()
     from yafaray4.ot import presets
 else:
     from ..ot import presets
