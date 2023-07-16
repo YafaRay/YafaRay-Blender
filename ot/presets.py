@@ -21,7 +21,6 @@
 import bpy
 from bpy.types import Operator
 import os
-import sys
 from bpy.path import clean_name, display_name
 from bpy_types import StructRNA, _GenericUI, RNAMeta
 

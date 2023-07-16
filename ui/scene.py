@@ -18,10 +18,9 @@
 
 # <pep8 compliant>
 
-import bpy
-from ..ot import presets
 from bl_ui.properties_scene import SceneButtonsPanel
-from bpy.types import Panel, Menu
+from bpy.types import Panel
+
 
 class YAFARAY4_PT_color_management(SceneButtonsPanel, Panel):
     bl_label = "Color Management"
@@ -40,13 +39,14 @@ class YAFARAY4_PT_color_management(SceneButtonsPanel, Panel):
             pass
         elif scene.display_settings.display_device == "None":
             row = layout.row(align=True)
-            row.prop(scene, "gs_gamma", text = "Display device output gamma")
+            row.prop(scene, "gs_gamma", text="Display device output gamma")
         elif scene.display_settings.display_device == "XYZ":
             row = layout.row(align=True)
             row.label(text="YafaRay 'XYZ' support is experimental and may not give the expected results", icon="ERROR")
         else:
             row = layout.row(align=True)
-            row.label(text="YafaRay doesn't support '" + scene.display_settings.display_device + "', assuming sRGB", icon="ERROR")
+            row.label(text="YafaRay doesn't support '" + scene.display_settings.display_device + "', assuming sRGB",
+                      icon="ERROR")
 
         col = layout.column()
         col.separator()

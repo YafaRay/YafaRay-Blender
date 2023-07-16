@@ -38,7 +38,7 @@ def update_preview(self, context):
     light.type = light.type
 
 
-def call_lighttype_update(self, context):
+def call_light_type_update(self, context):
     if bpy.app.version >= (2, 80, 0):
         light = context.light
     else:

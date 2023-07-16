@@ -21,14 +21,6 @@
 from bpy.types import Panel
 import bpy
 
-
-def light_from_context(context):
-    if bpy.app.version >= (2, 80, 0):
-        return context.light
-    else:
-        return context.lamp
-
-
 # Inherit Light data block
 if bpy.app.version >= (2, 80, 0):
     from bl_ui.properties_data_light import DataButtonsPanel
@@ -40,6 +32,18 @@ else:
     from bl_ui.properties_data_lamp import DATA_PT_context_lamp
     DATA_PT_context_lamp.COMPAT_ENGINES.add('YAFARAY4_RENDER')
     del DATA_PT_context_lamp
+
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on.
+    # Assuming that the YafaRay-Plugin exporter is installed in a folder named "yafaray4" within the addons Blender directory
+    import yafaray4.prop.light
+    yafaray4.prop.light.register()
+
+
+def light_from_context(context):
+    if bpy.app.version >= (2, 80, 0):
+        return context.light
+    else:
+        return context.lamp
 
 
 class YAFARAY4_PT_preview(Panel):

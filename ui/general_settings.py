@@ -19,10 +19,14 @@
 # <pep8 compliant>
 
 import bpy
-from ..ot import presets
 from bl_ui.properties_render import RenderButtonsPanel
 from bpy.types import Panel, Menu
 
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on.
+    # Assuming that the YafaRay-Plugin exporter is installed in a folder named "yafaray4" within the addons Blender directory
+    from yafaray4.ot import presets
+else:
+    from ..ot import presets
 
 def ui_split(ui_item, factor):
     if bpy.app.version >= (2, 80, 0):

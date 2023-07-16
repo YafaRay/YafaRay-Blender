@@ -21,7 +21,12 @@
 import bpy
 import mathutils
 from bpy.types import Operator
-from .. import global_vars
+
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on.
+    # Assuming that the YafaRay-Plugin exporter is installed in a folder named "yafaray4" within the addons Blender directory
+    from yafaray4 import global_vars
+else:
+    from .. import global_vars
 
 class OBJECT_OT_get_position(Operator):
     bl_label = "From( get position )"
