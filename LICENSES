@@ -10,6 +10,9 @@ YafaRay-Blender exporter code
 www.yafaray.org
 https://github.com/YafaRay/YafaRay-Blender
 
+SPDX-License-Identifier: GPL-2.0-or-later
+https://spdx.org/licenses/GPL-2.0-or-later.html
+
 		    GNU GENERAL PUBLIC LICENSE
 		       Version 2, June 1991
 
@@ -357,6 +360,9 @@ libYafaRay code
 ----------------
 www.yafaray.org
 https://github.com/YafaRay/libYafaRay
+
+SPDX-License-Identifier: LGPL-2.1-or-later
+https://spdx.org/licenses/LGPL-2.1-or-later.html
 
 This program called YAFARAY was originally written by Alejandro Conty
 and Alfredo de Greef under the name YAFRAY in 2001 and it's under the LGPL
