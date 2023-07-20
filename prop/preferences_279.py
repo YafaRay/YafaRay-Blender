@@ -16,16 +16,19 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# <pep8 compliant>
-
 import bpy
 from bpy.types import AddonPreferences
 from bpy.props import IntProperty
-from .. import BASE_PACKAGE_NAME
+
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on.
+    # Assuming that the YafaRay-Plugin exporter is installed in a folder named "yafaray4" within the addons Blender directory
+    from yafaray4 import YAFARAY_PACKAGE_NAME
+else:
+    from .. import YAFARAY_PACKAGE_NAME
 
 
 class Preferences(AddonPreferences):
-    bl_idname = BASE_PACKAGE_NAME
+    bl_idname = YAFARAY_PACKAGE_NAME
 
     yafaray_computer_node = IntProperty(
         name="YafaRay computer node",

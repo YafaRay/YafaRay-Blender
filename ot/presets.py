@@ -16,8 +16,6 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# <pep8 compliant>
-
 import bpy
 from bpy.types import Operator
 import os
@@ -181,7 +179,6 @@ class AddPresetBase():
 class YAFARAY_OT_presets_renderset(AddPresetBase, Operator):
     '''Add a Yafaray Render Preset in user home folder->yafaray_user_data/presets/render'''
     '''To delete or modify presets, modify the .py files directly in that folder'''
-    bl_idname = "yafaray.preset_add"
     bl_label = "Yafaray Render Presets"
     preset_menu = "YAFARAY4_MT_presets_render"
     preset_defines = [

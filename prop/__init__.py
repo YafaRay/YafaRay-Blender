@@ -16,8 +16,6 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# <pep8 compliant>
-
 import bpy
 
 if bpy.app.version >= (2, 80, 0):

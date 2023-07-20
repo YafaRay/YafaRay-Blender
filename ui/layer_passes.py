@@ -16,8 +16,6 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# <pep8 compliant>
-
 from bpy.types import Panel
 from bl_ui.properties_render_layer import RenderLayerButtonsPanel
 

@@ -16,16 +16,11 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# <pep8 compliant>
-
 import bpy
-import os
-from collections import namedtuple
 import platform
 from ..util.io import scene_from_depsgraph
-import libyafaray4_bindings
-from .. import YAF_ID_NAME
 from .. import YAFARAY_BLENDER_VERSION
+import libyafaray4_bindings
 
 class Scene:
     def __init__(self, bl_depsgraph, yaf_logger):
@@ -48,7 +43,7 @@ class Scene:
             self.yaf_logger.setConsoleVerbosityLevel(self.yaf_logger.logLevelFromString("info"))
             self.yaf_logger.setLogVerbosityLevel(
                 self.yaf_logger.logLevelFromString(self.bl_scene.yafaray.logging.logVerbosity))
-            self.yaf_logger.printInfo("YafaRay-Blender (" + YAFARAY_BLENDER_VERSION + ")")
+            self.yaf_logger.printInfo("YafaRay-Blender (v" + YAFARAY_BLENDER_VERSION + ")")
             self.yaf_logger.printInfo(
                 "Exporter: Blender version " + str(bpy.app.version[0]) + "." + str(bpy.app.version[1]) + "." + str(
                     bpy.app.version[

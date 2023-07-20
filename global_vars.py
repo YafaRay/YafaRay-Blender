@@ -16,8 +16,6 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# <pep8 compliant>
-
 # YafaRay global static variables for shared functions
 # Variables for 3D View function:
 use_view_to_render = False

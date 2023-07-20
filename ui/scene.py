@@ -16,8 +16,6 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# <pep8 compliant>
-
 from bl_ui.properties_scene import SceneButtonsPanel
 from bpy.types import Panel
 

@@ -16,8 +16,6 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# <pep8 compliant>
-
 # Use this function *ONLY ONCE* or Blender might hang
 #
 # Select in the variable "pydev_source_dir" below the path to the folder containing "pydevd.py". Do not install a "generic" pydevd nor pycharm-pydevd using pip, use the folder that comes with the IDE (either Eclipse + PyDev plugin, PyCharm Pro or IntelliJ IDEA Ultimate for example)
