@@ -1,16 +1,12 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-import bpy
-import sys
-import os
-
 # Note: variables cannot be used in bl_info, Blender reads it without executing code
 bl_info = {
     "name": "YafaRay v4",
     "description": "YafaRay Render Engine for Blender",
     "version": (4, 0, 0, -4),
     "warning": "PRE-ALPHA version, for development only. Do NOT use for real production.",
-    "blender": (2, 8, 0),
+    "blender": (3, 5, 1),
     "category": "Render",
     "author": "Shuvro Sarker, Kim Skoglund (Kerbox), Pedro Alcaide (povmaniaco), "
               "Paulo Gomes (tuga3d), Michele Castigliego (subcomandante), "
@@ -33,6 +29,9 @@ YAFARAY_VERSION_SUFFIX = {
 YAFARAY_BLENDER_VERSION = str(bl_info['version'][0]) + "." + str(bl_info['version'][1]) + "." + str(
     bl_info['version'][2]) + " " + YAFARAY_VERSION_SUFFIX[bl_info['version'][3]]
 
+
+import sys
+import os
 # The path to the system-wide libYafaRay binary libraries can be set in the PYTHONPATH environment variable before running Blender.
 # For portable YafaRay-Blender installations, where the libYafaRay binary libraries are self-contained in the "bin" folder within the YafaRay-Blender add-on itself, the following code section should set the search paths to the "bin" folder
 PORTABLE_LIBYAFARAY_PATH = os.path.join(__path__[0], 'bin')
@@ -43,6 +42,7 @@ if sys.platform == 'win32':  # I think this is the easiest and most flexible way
 
 
 # Importing and registering modules from add-on sub-folders
+import bpy
 from . import prop
 from . import io
 from . import ui
@@ -60,30 +60,22 @@ modules = (
 def register():
     for module in modules:
         module.register()
-    if False:
-        bpy.app.handlers.load_post.append(migration)
-        # register keys for 'render 3d view', 'render still' and 'render animation'
-        if bpy.context.window_manager.keyconfigs.addon is not None:
-            km = bpy.context.window_manager.keyconfigs.addon.keymaps.new(name='Screen')
-            km.keymap_items.new(idname='render.render_view', type='F12', value='PRESS', any=False, shift=False,
-                                ctrl=False,
-                                alt=True)
-            km.keymap_items.new(idname='render.render_animation', type='F12', value='PRESS', any=False, shift=False,
-                                ctrl=True, alt=False)
-            km.keymap_items.new(idname='render.render_still', type='F12', value='PRESS', any=False, shift=False,
-                                ctrl=False,
-                                alt=False)
+    bpy.app.handlers.load_post.append(migration)
+    # register keys for 'render 3d view', 'render still' and 'render animation'
+    if bpy.context.window_manager.keyconfigs.addon is not None:
+        km = bpy.context.window_manager.keyconfigs.addon.keymaps.new(name='Screen')
+        km.keymap_items.new(idname='render.yafaray4_render_view', type='F12', value='PRESS', any=False, shift=False, ctrl=False, alt=True)
+        km.keymap_items.new(idname='render.yafaray4_render_animation', type='F12', value='PRESS', any=False, shift=False, ctrl=True, alt=False)
+        km.keymap_items.new(idname='render.yafaray4_render_still', type='F12', value='PRESS', any=False, shift=False, ctrl=False, alt=False)
 
 
 def unregister():
     # unregister keys for 'render 3d view', 'render still' and 'render animation'
-    if False:
-        if bpy.context.window_manager.keyconfigs.addon is not None:
-            kma = bpy.context.window_manager.keyconfigs.addon.keymaps['Screen']
-            for kmi in kma.keymap_items:
-                if kmi.idname == 'render.render_view' or kmi.idname == 'render.render_animation' \
-                        or kmi.idname == 'render.render_still':
-                    kma.keymap_items.remove(kmi)
-        bpy.app.handlers.load_post.remove(migration)
+    if bpy.context.window_manager.keyconfigs.addon is not None:
+        kma = bpy.context.window_manager.keyconfigs.addon.keymaps['Screen']
+        for kmi in kma.keymap_items:
+            if kmi.idname == 'render.yafaray4_render_view' or kmi.idname == 'render.yafaray4_render_animation' or kmi.idname == 'render.yafaray4_render_still':
+                kma.keymap_items.remove(kmi)
+    bpy.app.handlers.load_post.remove(migration)
     for module in reversed(modules):
         module.unregister()

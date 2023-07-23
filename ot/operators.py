@@ -10,55 +10,55 @@ if __name__ == "__main__":  # Only used when editing and testing "live" within B
 else:
     from .. import global_vars
 
-class OBJECT_OT_get_position(Operator):
+
+class WorldGetSunPosition(Operator):
+    bl_idname = "world.yafaray4_get_position"
     bl_label = "From( get position )"
-    bl_idname = "world.get_position"
     bl_description = "Get the position of the sun from the selected light location"
 
-    def execute(self, context):
-        warning_message = sunPosAngle(mode="get", val="position")
+    def execute(self, _context):
+        warning_message = sun_pos_angle(mode="get", val="position")
         if warning_message:
-            self.report({'WARNING'}, (warning_message))
+            self.report({'WARNING'}, warning_message)
             return {'CANCELLED'}
         else:
             return{'FINISHED'}
 
 
-class OBJECT_OT_get_angle(Operator):
+class WorldGetSunAngle(Operator):
+    bl_idname = "world.yafaray4_get_angle"
     bl_label = "From( get angle )"
-    bl_idname = "world.get_angle"
     bl_description = "Get the position of the sun from selected light angle"
 
-    def execute(self, context):
-        warning_message = sunPosAngle(mode="get", val="angle")
+    def execute(self, _context):
+        warning_message = sun_pos_angle(mode="get", val="angle")
         if warning_message:
-            self.report({'WARNING'}, (warning_message))
+            self.report({'WARNING'}, warning_message)
             return {'CANCELLED'}
         else:
             return{'FINISHED'}
 
 
-class OBJECT_OT_update_sun(Operator):
+class WorldUpdateSunPositionAndAngle(Operator):
+    bl_idname = "world.yafaray4_update_sun"
     bl_label = "From( update sun )"
-    bl_idname = "world.update_sun"
     bl_description = "Update the position and angle of selected light in 3D View according to GUI values"
 
-    def execute(self, context):
-        warning_message = sunPosAngle(mode="update")
+    def execute(self, _context):
+        warning_message = sun_pos_angle(mode="update")
         if warning_message:
-            self.report({'WARNING'}, (warning_message))
+            self.report({'WARNING'}, warning_message)
             return {'CANCELLED'}
         else:
             return{'FINISHED'}
 
 
-def sunPosAngle(mode="get", val="position"):
+def sun_pos_angle(mode="get", val="position"):
     active_object = bpy.context.active_object
     scene = bpy.context.scene
     world = scene.world
 
     if active_object and (active_object.type == "LAMP" or active_object.type == "LIGHT"):
-
         if mode == "get":
             # get the position of the sun from selected light 'location'
             if val == "position":
@@ -78,62 +78,60 @@ def sunPosAngle(mode="get", val="position"):
                 return
 
         elif mode == "update":
-
             # get gui from vector and normalize it
             bg_from = mathutils.Vector(world.bg_from).copy()
             if bg_from.length:
                 bg_from.normalize()
 
             # set location
-            sundist = mathutils.Vector(active_object.location).length
-            active_object.location = sundist * bg_from
+            sun_dist = mathutils.Vector(active_object.location).length
+            active_object.location = sun_dist * bg_from
 
             # compute and set rotation
-            quat = bg_from.to_track_quat("Z", "Y")
-            eul = quat.to_euler()
+            quaternion = bg_from.to_track_quat("Z", "Y")
+            euler = quaternion.to_euler()
 
             # update sun rotation and redraw the 3D windows
-            active_object.rotation_euler = eul
+            active_object.rotation_euler = euler
             return
 
     else:
         return "No selected LIGHT object in the scene!"
 
 
-def checkSceneLights():
+def check_scene_lights():
     scene = bpy.context.scene
     world = scene.world
     
     # expand fuction for include light from 'add sun' or 'add skylight' in sunsky or sunsky2 mode    
-    haveLights = False
-     # use light create with sunsky, sunsky2 or with use ibl ON
+    have_lights = False
+    # use light create with sunsky, sunsky2 or with use ibl ON
     if world.bg_add_sun or world.bg_background_light or world.bg_use_ibl:
         return True
     # if above is true, this 'for' is not used
     for sceneObj in scene.objects:
         if not sceneObj.hide_render:
-             # FIXME BLENDER 2.80-3.00 visibility in Blender >= 2.80??
-            if bpy.app.version >= (2, 80, 0) or sceneObj.is_visible(scene): # check light, meshlight or portal light object
+            # FIXME BLENDER 2.80-3.51 visibility in Blender >= 2.80??
+            if bpy.app.version >= (2, 80, 0) or sceneObj.is_visible(scene):  # check light, meshlight or portal light object
                 if sceneObj.type == "LAMP" or sceneObj.type == "LIGHT" or sceneObj.ml_enable or sceneObj.bgp_enable:
-                    haveLights = True
+                    have_lights = True
                     break
-    #
-    return haveLights
+    return have_lights
 
-class RENDER_OT_render_view(Operator):
+
+class RenderView(Operator):
+    bl_idname = "render.yafaray4_render_view"
     bl_label = "YafaRay render view"
-    bl_idname = "render.render_view"
     bl_description = "Renders using the view in the active 3d viewport"
 
     @classmethod
     def poll(cls, context):
-
         return context.scene.render.engine == 'YAFARAY4_RENDER'
 
     def execute(self, context):
         view3d = context.region_data
         global_vars.use_view_to_render = True
-        sceneLights = checkSceneLights()
+        scene_lights = check_scene_lights()
         scene = context.scene
         # Get the 3d view under the mouse cursor
         # if the region is not a 3d view
@@ -144,12 +142,12 @@ class RENDER_OT_render_view(Operator):
                 break
 
         if not view3d or view3d.view_perspective == "ORTHO":
-            self.report({'WARNING'}, ("The selected view is not in perspective mode or there was no 3d view available to render."))
+            self.report({'WARNING'}, "The selected view is not in perspective mode or there was no 3d view available to render.")
             global_vars.use_view_to_render = False
             return {'CANCELLED'}
 
-        elif not sceneLights and scene.intg_light_method == "Bidirectional":
-            self.report({'WARNING'}, ("No lights in the scene and lighting method is Bidirectional!"))
+        elif not scene_lights and scene.intg_light_method == "Bidirectional":
+            self.report({'WARNING'}, "No lights in the scene and lighting method is Bidirectional!")
             global_vars.use_view_to_render = False
             return {'CANCELLED'}
 
@@ -159,22 +157,21 @@ class RENDER_OT_render_view(Operator):
             return {'FINISHED'}
 
 
-class RENDER_OT_render_animation(Operator):
+class RenderAnimation(Operator):
+    bl_idname = "render.yafaray4_render_animation"
     bl_label = "YafaRay render animation"
-    bl_idname = "render.render_animation"
     bl_description = "Render active scene"
 
     @classmethod
     def poll(cls, context):
-
         return context.scene.render.engine == 'YAFARAY4_RENDER'
 
     def execute(self, context):
-        sceneLights = checkSceneLights()
+        scene_lights = check_scene_lights()
         scene = context.scene
 
-        if not sceneLights and scene.intg_light_method == "Bidirectional":
-            self.report({'WARNING'}, ("No lights in the scene and lighting method is Bidirectional!"))
+        if not scene_lights and scene.intg_light_method == "Bidirectional":
+            self.report({'WARNING'}, "No lights in the scene and lighting method is Bidirectional!")
             return {'CANCELLED'}
 
         else:
@@ -182,22 +179,21 @@ class RENDER_OT_render_animation(Operator):
             return {'FINISHED'}
 
 
-class RENDER_OT_render_still(Operator):
+class RenderStill(Operator):
+    bl_idname = "render.yafaray4_render_still"
     bl_label = "YafaRay render still"
-    bl_idname = "render.render_still"
     bl_description = "Render active scene"
 
     @classmethod
     def poll(cls, context):
-
         return context.scene.render.engine == 'YAFARAY4_RENDER'
 
     def execute(self, context):
-        sceneLights = checkSceneLights()
+        scene_lights = check_scene_lights()
         scene = context.scene
 
-        if not sceneLights and scene.intg_light_method == "Bidirectional":
-            self.report({'WARNING'}, ("No lights in the scene and lighting method is Bidirectional!"))
+        if not scene_lights and scene.intg_light_method == "Bidirectional":
+            self.report({'WARNING'}, "No lights in the scene and lighting method is Bidirectional!")
             return {'CANCELLED'}
 
         else:
@@ -205,8 +201,8 @@ class RENDER_OT_render_still(Operator):
             return {'FINISHED'}
 
 
-class YAF_OT_presets_ior_list(Operator):
-    bl_idname = "material.set_ior_preset"
+class MaterialPresetsIorList(Operator):
+    bl_idname = "material.yafaray4_preset_ior_list"
     bl_label = "IOR presets"
     index = bpy.props.FloatProperty()
     name = bpy.props.StringProperty()
@@ -224,12 +220,12 @@ class YAF_OT_presets_ior_list(Operator):
 
 
 classes = (
-    OBJECT_OT_get_position,
-    OBJECT_OT_get_angle,
-    RENDER_OT_render_view,
-    RENDER_OT_render_animation,
-    RENDER_OT_render_still,
-    YAF_OT_presets_ior_list,
+    WorldGetSunPosition,
+    WorldGetSunAngle,
+    RenderView,
+    RenderAnimation,
+    RenderStill,
+    MaterialPresetsIorList,
 )
 
 

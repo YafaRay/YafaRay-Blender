@@ -31,7 +31,7 @@ class YAFARAY4_MT_presets_render(Menu):
     
     preset_subdir = "render"
     preset_operator = "script.execute_preset"
-    draw = presets.Yafaray_Menu.draw_preset
+    draw = presets.YafarayMenu.draw_preset
 
 
 class YAFARAY4_PT_general_settings(RenderButtonsPanel, Panel):
