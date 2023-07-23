@@ -11,7 +11,7 @@ if __name__ == "__main__":  # Only used when editing and testing "live" within B
         yafaray4.prop.scene.unregister()
     yafaray4.prop.scene.register()
     import yafaray4.ot.presets
-    if hasattr(bpy.types, 'YAFARAY_OT_preset_add'):
+    if hasattr(bpy.types, 'RENDER_OT_yafaray4_presets'):
         yafaray4.ot.presets.unregister()
     yafaray4.ot.presets.register()
     from yafaray4.ot import presets
@@ -48,7 +48,7 @@ class YAFARAY4_PT_general_settings(RenderButtonsPanel, Panel):
             pass  # FIXME BLENDER 2.80-3.00
         else:
             row.menu("YAFARAY4_MT_presets_render", text=bpy.types.YAFARAY4_MT_presets_render.bl_label)
-            row.operator("render.yafaray4_presets", text="", icon="ADD" if bpy.app.version >= (2, 80, 0) else "ZOOMIN")
+            row.operator("yafaray4.render_presets", text="", icon="ADD" if bpy.app.version >= (2, 80, 0) else "ZOOMIN")
 
         layout.separator()
 

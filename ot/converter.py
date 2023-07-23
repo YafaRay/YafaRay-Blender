@@ -464,7 +464,7 @@ def convertSceneSettings(scene):
 
 
 class ConvertYafarayProperties(bpy.types.Operator):
-    bl_idname = "data.convert_yafaray_properties"
+    bl_idname = "yafaray4.data_convert_properties"
     bl_label = ""
 
     def execute(self, context):

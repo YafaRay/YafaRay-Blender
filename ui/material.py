@@ -16,7 +16,7 @@ if __name__ == "__main__":  # Only used when editing and testing "live" within B
         yafaray4.prop.scene.unregister()
     yafaray4.prop.scene.register()
     import yafaray4.ot.presets
-    if hasattr(bpy.types, 'YAFARAY_OT_preset_add'):
+    if hasattr(bpy.types, 'YAFARAY4_OT_render_presets'):
         yafaray4.ot.presets.unregister()
     yafaray4.ot.presets.register()
 else:
@@ -159,13 +159,13 @@ class YAFARAY4_PT_preview_controls(MaterialButtonsPanel, Panel):
             col.prop(context.scene.yafaray.preview, "camRot", text="")
             col = split.column()
             row = col.row()
-            row.operator("preview.camzoomout", text='Zoom Out', icon='ZOOM_OUT')
+            row.operator("yafaray4.preview_camera_zoom_out", text='Zoom Out', icon='ZOOM_OUT')
             col2 = row.column()
-            col2.operator("preview.camzoomin", text='Zoom In', icon='ZOOM_IN')
+            col2.operator("yafaray4.preview_camera_zoom_in", text='Zoom In', icon='ZOOM_IN')
             row = col.row()
             row.label(text="")
             row = col.row()
-            row.operator("preview.camrotreset", text='Reset dynamic rotation/zoom')
+            row.operator("yafaray4.preview_camera_rotation_reset", text='Reset dynamic rotation/zoom')
             split = layout.split() 
             col = split.column()
             col.label(text="Preview object control")

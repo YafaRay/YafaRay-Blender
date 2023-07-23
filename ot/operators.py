@@ -12,7 +12,7 @@ else:
 
 
 class WorldGetSunPosition(Operator):
-    bl_idname = "world.yafaray4_get_position"
+    bl_idname = "yafaray4.world_get_position"
     bl_label = "From( get position )"
     bl_description = "Get the position of the sun from the selected light location"
 
@@ -26,7 +26,7 @@ class WorldGetSunPosition(Operator):
 
 
 class WorldGetSunAngle(Operator):
-    bl_idname = "world.yafaray4_get_angle"
+    bl_idname = "yafaray4.world_get_angle"
     bl_label = "From( get angle )"
     bl_description = "Get the position of the sun from selected light angle"
 
@@ -40,7 +40,7 @@ class WorldGetSunAngle(Operator):
 
 
 class WorldUpdateSunPositionAndAngle(Operator):
-    bl_idname = "world.yafaray4_update_sun"
+    bl_idname = "yafaray4.world_update_sun"
     bl_label = "From( update sun )"
     bl_description = "Update the position and angle of selected light in 3D View according to GUI values"
 
@@ -120,7 +120,7 @@ def check_scene_lights():
 
 
 class RenderView(Operator):
-    bl_idname = "render.yafaray4_render_view"
+    bl_idname = "yafaray4.render_view"
     bl_label = "YafaRay render view"
     bl_description = "Renders using the view in the active 3d viewport"
 
@@ -158,7 +158,7 @@ class RenderView(Operator):
 
 
 class RenderAnimation(Operator):
-    bl_idname = "render.yafaray4_render_animation"
+    bl_idname = "yafaray4.render_animation"
     bl_label = "YafaRay render animation"
     bl_description = "Render active scene"
 
@@ -180,7 +180,7 @@ class RenderAnimation(Operator):
 
 
 class RenderStill(Operator):
-    bl_idname = "render.yafaray4_render_still"
+    bl_idname = "yafaray4.render_still"
     bl_label = "YafaRay render still"
     bl_description = "Render active scene"
 
@@ -202,7 +202,7 @@ class RenderStill(Operator):
 
 
 class MaterialPresetsIorList(Operator):
-    bl_idname = "material.yafaray4_preset_ior_list"
+    bl_idname = "yafaray4.material_preset_ior_list"
     bl_label = "IOR presets"
     index = bpy.props.FloatProperty()
     name = bpy.props.StringProperty()

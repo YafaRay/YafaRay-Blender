@@ -64,9 +64,9 @@ def register():
     # register keys for 'render 3d view', 'render still' and 'render animation'
     if bpy.context.window_manager.keyconfigs.addon is not None:
         km = bpy.context.window_manager.keyconfigs.addon.keymaps.new(name='Screen')
-        km.keymap_items.new(idname='render.yafaray4_render_view', type='F12', value='PRESS', any=False, shift=False, ctrl=False, alt=True)
-        km.keymap_items.new(idname='render.yafaray4_render_animation', type='F12', value='PRESS', any=False, shift=False, ctrl=True, alt=False)
-        km.keymap_items.new(idname='render.yafaray4_render_still', type='F12', value='PRESS', any=False, shift=False, ctrl=False, alt=False)
+        km.keymap_items.new(idname='yafaray4.render_view', type='F12', value='PRESS', any=False, shift=False, ctrl=False, alt=True)
+        km.keymap_items.new(idname='yafaray4.render_animation', type='F12', value='PRESS', any=False, shift=False, ctrl=True, alt=False)
+        km.keymap_items.new(idname='yafaray4.render_still', type='F12', value='PRESS', any=False, shift=False, ctrl=False, alt=False)
 
 
 def unregister():
@@ -74,7 +74,7 @@ def unregister():
     if bpy.context.window_manager.keyconfigs.addon is not None:
         kma = bpy.context.window_manager.keyconfigs.addon.keymaps['Screen']
         for kmi in kma.keymap_items:
-            if kmi.idname == 'render.yafaray4_render_view' or kmi.idname == 'render.yafaray4_render_animation' or kmi.idname == 'render.yafaray4_render_still':
+            if kmi.idname == 'yafaray4.render_view' or kmi.idname == 'yafaray4.render_animation' or kmi.idname == 'yafaray4.render_still':
                 kma.keymap_items.remove(kmi)
     bpy.app.handlers.load_post.remove(migration)
     for module in reversed(modules):

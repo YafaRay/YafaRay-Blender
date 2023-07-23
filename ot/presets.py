@@ -29,7 +29,7 @@ def preset_find(name, preset_path, disp_name=False):
 class RenderPresets(Operator):
     '''Add a Yafaray Render Preset in user home folder->yafaray_user_data/presets/render'''
     '''To delete or modify presets, modify the .py files directly in that folder'''
-    bl_idname = "render.yafaray4_presets"
+    bl_idname = "yafaray4.render_presets"
     bl_label = "Yafaray Render Presets"
     bl_options = {'REGISTER'}  # only because invoke_props_popup requires.
     preset_menu = "YAFARAY4_MT_presets_render"
