@@ -1,18 +1,18 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import bpy
-# from . import render
-# from . import camera
-# from . import material
-# from . import texture
-# from . import world
-# from . import strand
-# from . import object
-# from . import light
-# from . import scene
-# from . import general_settings
-# from . import integrator
-# from . import aa_settings
+from . import render
+from . import camera
+from . import material
+from . import texture
+from . import world
+from . import strand
+from . import object
+from . import light
+from . import scene
+from . import general_settings
+from . import integrator
+from . import aa_settings
 
 if bpy.app.version >= (2, 80, 0):
     pass   # FIXME BLENDER 2.80-3.00
@@ -20,34 +20,32 @@ else:
     from . import layer_passes
 
 modules = (
-    # general_settings,
-    # aa_settings,
-    # integrator,
-    # render,
-    # camera,
-    # material,
-    # texture,
-    # world,
-    # strand,
-    # object,
-    # light,
-    # scene
+    general_settings,
+    aa_settings,
+    integrator,
+    render,
+    camera,
+    material,
+    texture,
+    world,
+    strand,
+    object,
+    light,
+    scene
 )
+
+if bpy.app.version >= (2, 80, 0):
+    pass  # FIXME BLENDER 2.80-3.00
+else:
+    modules = modules + (layer_passes, )
+
 
 def register():
     for module in modules:
         module.register()
-    if bpy.app.version >= (2, 80, 0):
-        pass  # FIXME BLENDER 2.80-3.00
-    else:
-        layer_passes.register()
 
 
 def unregister():
-    if bpy.app.version >= (2, 80, 0):
-        pass  # FIXME BLENDER 2.80-3.00
-    else:
-        layer_passes.unregister()
     for module in reversed(modules):
         module.unregister()
 

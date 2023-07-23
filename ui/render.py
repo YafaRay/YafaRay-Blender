@@ -32,9 +32,9 @@ class YAFARAY4_PT_Render(RenderButtonsPanel, Panel):
             row = layout.row()
             row.label(text="Be aware that even when rendering into Blender, it will save images to the image output folder", icon="INFO")
         row = layout.row()
-        row.operator("render.render_still", text="Image", icon='RENDER_STILL')
-        row.operator("render.render_animation", text="Animation", icon='RENDER_ANIMATION')
-        layout.row().operator("render.render_view", text="Render 3D View", icon='VIEW3D')
+        row.operator("render.yafaray4_render_still", text="Image", icon='RENDER_STILL')
+        row.operator("render.yafaray4_render_animation", text="Animation", icon='RENDER_ANIMATION')
+        layout.row().operator("render.yafaray4_render_view", text="Render 3D View", icon='VIEW3D')
         if bpy.app.version >= (2, 80, 0):
             pass   # FIXME BLENDER 2.80-3.00
         else:
@@ -56,8 +56,8 @@ class YAFARAY4_PT_dimensions(RenderButtonsPanel, Panel):
             pass   # FIXME BLENDER 2.80-3.00
         else:
             row.menu("RENDER_MT_presets", text=bpy.types.RENDER_MT_presets.bl_label)
-            row.operator("render.preset_add", text="", icon="ADD" if bpy.app.version >= (2, 80, 0) else "ZOOMIN")
-            row.operator("render.preset_add", text="", icon="REMOVE" if bpy.app.version >= (2, 80, 0) else "ZOOMOUT").remove_active = True
+            row.operator("render.yafaray4_presets", text="", icon="ADD" if bpy.app.version >= (2, 80, 0) else "ZOOMIN")
+            row.operator("render.yafaray4_presets", text="", icon="REMOVE" if bpy.app.version >= (2, 80, 0) else "ZOOMOUT").remove_active = True
 
         split = layout.split()
 

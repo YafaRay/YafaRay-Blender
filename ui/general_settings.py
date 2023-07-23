@@ -48,8 +48,7 @@ class YAFARAY4_PT_general_settings(RenderButtonsPanel, Panel):
             pass  # FIXME BLENDER 2.80-3.00
         else:
             row.menu("YAFARAY4_MT_presets_render", text=bpy.types.YAFARAY4_MT_presets_render.bl_label)
-            row.operator("yafaray.preset_add", text="", icon="ADD" if bpy.app.version >= (2, 80, 0) else "ZOOMIN")
-            #row.operator("yafaray.preset_add", text="", icon="REMOVE" if bpy.app.version >= (2, 80, 0) else "ZOOMOUT").remove_active = True  #Does not work as expected, possibly better that the user deletes the presets manually himself to avoid deleting the wrong one by mistake anyway?
+            row.operator("render.yafaray4_presets", text="", icon="ADD" if bpy.app.version >= (2, 80, 0) else "ZOOMIN")
 
         layout.separator()
 

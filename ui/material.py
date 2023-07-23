@@ -212,7 +212,7 @@ def draw_generator(ior_n):
         sl = self.layout
         for values in ior_n:
             ior_name, ior_index = values
-            props = sl.operator('material.preset_ior_list', text=ior_name)
+            props = sl.operator('material.yafaray4_preset_ior_list', text=ior_name)
             # two values given to ior preset operator
             props.index = ior_index
             props.name = ior_name
