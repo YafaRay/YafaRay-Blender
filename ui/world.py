@@ -1,16 +1,22 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-from bpy.types import Panel
-from bl_ui.properties_world import WorldButtonsPanel
 import bpy
 # Inherit World data block
 from bl_ui.properties_world import WORLD_PT_context_world
+from bl_ui.properties_world import WorldButtonsPanel
+# noinspection PyUnresolvedReferences
+from bpy.types import Panel
+
 WORLD_PT_context_world.COMPAT_ENGINES.add('YAFARAY4_RENDER')
 del WORLD_PT_context_world
 
-if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on.
-    # Assuming that the YafaRay-Plugin exporter is installed in a folder named "yafaray4" within the addons Blender directory
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, 
+    # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the 
+    # "libyafaray4_bindings" compiled module is installed on. Assuming that the YafaRay-Plugin exporter is installed 
+    # in a folder named "yafaray4" within the addons Blender directory
+    # noinspection PyUnresolvedReferences
     import yafaray4.prop.world
+
     yafaray4.prop.world.register()
 
 
@@ -25,12 +31,15 @@ def ui_split(ui_item, factor):
 if bpy.app.version >= (2, 80, 0):
     pass  # FIXME BLENDER 2.80-3.00
 else:
+    # noinspection PyUnresolvedReferences
     from bl_ui.properties_world import WORLD_PT_preview
+
     WORLD_PT_preview.COMPAT_ENGINES.add('YAFARAY4_RENDER')
     del WORLD_PT_preview
 
 
-class YAFARAY4_PT_world(WorldButtonsPanel, Panel):
+class World(WorldButtonsPanel, Panel):
+    bl_idname = "yafaray4.world"
     bl_label = "Background Settings"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     ibl = True
@@ -57,18 +66,17 @@ class YAFARAY4_PT_world(WorldButtonsPanel, Panel):
             col.prop(world, "bg_horizon_color", text="")
             col.prop(world, "bg_horizon_ground_color", text="")
             col.prop(world, "bg_zenith_ground_color", text="")
-            col.prop(world, "bg_power")          
+            col.prop(world, "bg_power")
 
             split = ui_split(layout, 0.40)
             col = split.column()
             col.prop(world, "bg_use_ibl")
             col.label(text=" ")
-            
+
             if world.bg_use_ibl:
                 row = layout.row()
                 row.prop(world, "bg_with_diffuse")
                 row.prop(world, "bg_with_caustic")
-
 
         elif world.bg_type == "Texture":
             if bpy.app.version >= (2, 80, 0):
@@ -79,29 +87,37 @@ class YAFARAY4_PT_world(WorldButtonsPanel, Panel):
                 #
                 layout.template_ID(context.world, "active_texture")
                 #
-                if  tex.yaf_tex_type == "IMAGE":  # it allows to change the used image
+                if tex.yaf_tex_type == "IMAGE":  # it allows to change the used image
                     #
                     layout.template_image(tex, "image", tex.image_user, compact=True)
-                    
-                    if tex.image.colorspace_settings.name == "sRGB" or tex.image.colorspace_settings.name == "Linear" or tex.image.colorspace_settings.name == "Non-Color":
+
+                    if tex.image.colorspace_settings.name == "sRGB" \
+                            or tex.image.colorspace_settings.name == "Linear" \
+                            or tex.image.colorspace_settings.name == "Non-Color":
                         pass
-                    
+
                     elif tex.image.colorspace_settings.name == "XYZ":
                         row = layout.row(align=True)
-                        row.label(text="YafaRay 'XYZ' support is experimental and may not give the expected results", icon="ERROR")
-                    
+                        row.label(text="YafaRay 'XYZ' support is experimental and may not give the expected results",
+                                  icon="ERROR")
+
                     elif tex.image.colorspace_settings.name == "Linear ACES":
                         row = layout.row(align=True)
-                        row.label(text="YafaRay doesn't support '" + tex.image.colorspace_settings.name + "', assuming linear RGB", icon="ERROR")
-                    
+                        row.label(
+                            text="YafaRay doesn't support '" + tex.image.colorspace_settings.name
+                                 + "', assuming linear RGB",
+                            icon="ERROR")
+
                     elif tex.image.colorspace_settings.name == "Raw":
                         row = layout.row(align=True)
                         row.prop(tex, "yaf_gamma_input", text="Texture gamma input correction")
 
                     else:
                         row = layout.row(align=True)
-                        row.label(text="YafaRay doesn't support '" + tex.image.colorspace_settings.name + "', assuming sRGB", icon="ERROR")
-                    
+                        row.label(
+                            text="YafaRay doesn't support '" + tex.image.colorspace_settings.name + "', assuming sRGB",
+                            icon="ERROR")
+
                     #
                 else:
                     # TODO: create message about not allow texture type
@@ -110,18 +126,19 @@ class YAFARAY4_PT_world(WorldButtonsPanel, Panel):
                 layout.template_ID(context.world, "active_texture", new="texture.new")
 
             layout.label(text="Background Texture controls")
-            layout.prop(world,"bg_rotation")
-            layout.prop(world,"yaf_mapworld_type", text="Mapping Coord")
+            layout.prop(world, "bg_rotation")
+            layout.prop(world, "yaf_mapworld_type", text="Mapping Coord")
             layout.separator()
             layout.prop(world, "bg_power")
-            
+
             split = ui_split(layout, 0.33)
             col = split.column()
             col.prop(world, "bg_use_ibl")
             col = split.column()
             col.prop(world, "bg_smartibl_blur")
-            #col = split.column()
-            #col.prop(world, "ibl_clamp_sampling") #No longer needed after this issue was solved in Core (http://www.yafaray.org/node/752#comment-1621), but I will leave it here for now just in case...
+            # col = split.column()
+            # col.prop(world, "ibl_clamp_sampling") #No longer needed after this issue was solved in Core
+            # (http://www.yafaray.org/node/752#comment-1621), but I will leave it here for now just in case...
 
             if world.bg_use_ibl:
                 row = layout.row()
@@ -143,7 +160,7 @@ class YAFARAY4_PT_world(WorldButtonsPanel, Panel):
             sub.prop(world, "bg_d_var")
             sub.prop(world, "bg_e_var")
             sub.prop(world, "bg_power")
-            
+
             split = layout.split()
             col = split.column()
             col.label(text="Set sun position:")
@@ -177,8 +194,7 @@ class YAFARAY4_PT_world(WorldButtonsPanel, Panel):
                 row.prop(world, "bg_with_diffuse")
                 row.prop(world, "bg_with_caustic")
 
-
-        ## DarkTide Sunsky
+        # DarkTide Sunsky
         elif world.bg_type == "Sunsky2":
             self.ibl = False
             layout.separator()
@@ -247,7 +263,7 @@ class YAFARAY4_PT_world(WorldButtonsPanel, Panel):
             col = split.column()
             col.prop(world, "bg_single_color", text="")
             col.prop(world, "bg_power", text="Power")
-            
+
             split = ui_split(layout, 0.33)
             col = split.column()
             col.prop(world, "bg_use_ibl")
@@ -264,12 +280,12 @@ class YAFARAY4_PT_world(WorldButtonsPanel, Panel):
             col.prop(world, "bg_ibl_samples")
 
 
-
-class YAFARAY4_PT_advanced(WorldButtonsPanel, Panel):
+class Advanced(WorldButtonsPanel, Panel):
+    bl_idname = "yafaray4.world_advanced"
     bl_label = "Advanced settings"
     bl_options = {'DEFAULT_CLOSED'}
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
-    
+
     def draw(self, context):
         layout = self.layout
         world = context.world
@@ -277,14 +293,14 @@ class YAFARAY4_PT_advanced(WorldButtonsPanel, Panel):
         split = layout.split()
         col = split.column()
         col.prop(world, "bg_cast_shadows")
-        if world.bg_type == "Sunsky1" or world.bg_type == "Sunsky2": 
+        if world.bg_type == "Sunsky1" or world.bg_type == "Sunsky2":
             col = split.column()
             col.prop(world, "bg_cast_shadows_sun")
 
 
 classes = (
-    YAFARAY4_PT_world,
-    YAFARAY4_PT_advanced,
+    World,
+    Advanced,
 )
 
 
@@ -300,6 +316,7 @@ def unregister():
         unregister_class(cls)
 
 
-
-if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed,
+    # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the 
+    # "libyafaray4_bindings" compiled module is installed on
     register()

@@ -1,10 +1,12 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-from bpy.types import Panel
 from bl_ui.properties_render import RenderButtonsPanel
+# noinspection PyUnresolvedReferences
+from bpy.types import Panel
 
 
-class YAFARAY4_PT_AA_settings(RenderButtonsPanel, Panel):
+class AASettings(RenderButtonsPanel, Panel):
+    bl_idname = "yafaray4.aa_settings"
     bl_label = "Anti-Aliasing / Noise control"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -33,7 +35,7 @@ class YAFARAY4_PT_AA_settings(RenderButtonsPanel, Panel):
         sub_always.prop(scene, "AA_pixelwidth")
 
         col = split.column()
-        sub_always = col.column()
+        col.column()
         sub_nosppm = col.column()
         sub_nosppm.enabled = scene.intg_light_method != "SPPM"
         sub_morethan1pass = col.column()
@@ -46,14 +48,14 @@ class YAFARAY4_PT_AA_settings(RenderButtonsPanel, Panel):
 
         row = layout.row()
         row.enabled = scene.intg_light_method != "SPPM" and scene.AA_passes > 1
-        
+
         row.prop(scene.yafaray.noise_control, "dark_detection_type")
         col = row.column()
         if scene.yafaray.noise_control.dark_detection_type == "curve":
             col.label(text="")
         elif scene.yafaray.noise_control.dark_detection_type == "linear":
             col.prop(scene, "AA_threshold")
-            col.prop(scene.yafaray.noise_control, "dark_threshold_factor")                
+            col.prop(scene.yafaray.noise_control, "dark_threshold_factor")
         else:
             col.prop(scene, "AA_threshold")
 
@@ -74,8 +76,9 @@ class YAFARAY4_PT_AA_settings(RenderButtonsPanel, Panel):
         col.prop(scene.yafaray.noise_control, "variance_edge_size")
         col.prop(scene.yafaray.noise_control, "variance_pixels")
 
+
 classes = (
-    YAFARAY4_PT_AA_settings,
+    AASettings,
 )
 
 
@@ -91,5 +94,7 @@ def unregister():
         unregister_class(cls)
 
 
-if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, 
+    # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the 
+    # "libyafaray4_bindings" compiled module is installed on
     register()

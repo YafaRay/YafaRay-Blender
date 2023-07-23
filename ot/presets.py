@@ -1,12 +1,16 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-import bpy
-from bpy.types import Operator
 import os
+
+import bpy
 from bpy.path import clean_name, display_name
+# noinspection PyUnresolvedReferences
+from bpy.types import Operator
+# noinspection PyUnresolvedReferences,PyProtectedMember
 from bpy_types import StructRNA, _GenericUI, RNAMeta
 
 
+# noinspection PyUnusedLocal
 def preset_find(name, preset_path, disp_name=False):
     if not name:
         return None
@@ -27,13 +31,15 @@ def preset_find(name, preset_path, disp_name=False):
 
 
 class RenderPresets(Operator):
-    '''Add a Yafaray Render Preset in user home folder->yafaray_user_data/presets/render'''
-    '''To delete or modify presets, modify the .py files directly in that folder'''
+    """List of render presets. Also allows to add a Yafaray Render Preset in user home
+    folder->yafaray4_user_data/presets/render. To delete or modify presets, modify the .py files directly in that
+    folder"""
     bl_idname = "yafaray4.render_presets"
     bl_label = "Yafaray Render Presets"
     bl_options = {'REGISTER'}  # only because invoke_props_popup requires.
     preset_menu = "YAFARAY4_MT_presets_render"
-    name = bpy.props.StringProperty(name="Name", description="Name of the preset, used to make the path name", maxlen=64, default="")
+    name = bpy.props.StringProperty(name="Name", description="Name of the preset, used to make the path name",
+                                    maxlen=64, default="")
     remove_active = bpy.props.BoolProperty(default=False, options={'HIDDEN'})
     preset_defines = [
         "scene = bpy.context.scene"
@@ -224,19 +230,7 @@ class RenderPresets(Operator):
                         file_preset.write("%s\n" % rna_path)
                     file_preset.write("\n")
 
-                for rna_path in self.preset_values:
-                    value = eval(rna_path)
-                    if type(value) == float:  # formatting of the floating point values
-                        value = round(value, 4)
-                    if str(value).startswith('Color'):  # formatting of the Color Vectors (r,g,b)
-                        r, g, b = round(value.r, 3), round(value.g, 3), round(value.b, 3)
-                        file_preset.write("%s = %r, %r, %r\n" % (rna_path, r, g, b))
-                    else:
-                        try:  # convert thin wrapped sequences to simple lists to repr()
-                            value = value[:]
-                        except:
-                            pass
-                        file_preset.write("%s = %r\n" % (rna_path, value))
+                self.write_presets_to_file(file_preset)
 
                 file_preset.close()
 
@@ -261,9 +255,10 @@ class RenderPresets(Operator):
             if hasattr(self, "remove"):
                 self.remove(context, filepath)
             else:
+                # noinspection PyBroadException
                 try:
                     os.remove(filepath)
-                except:
+                except Exception:
                     import traceback
                     print("No Preset there to remove...")
             # XXX stupid: Print bl_label on menu selector...
@@ -274,10 +269,12 @@ class RenderPresets(Operator):
 
         return {'FINISHED'}
 
-    def check(self, _context):
+    # noinspection PyUnusedLocal
+    def check(self, context):
         self.name = clean_name(self.name)
 
-    def invoke(self, context, _event):
+    # noinspection PyUnusedLocal
+    def invoke(self, context, event):
         if not self.remove_active:
             wm = context.window_manager
             return wm.invoke_props_dialog(self)
@@ -299,35 +296,42 @@ class RenderPresets(Operator):
         if bpy.app.version >= (2, 80, 0):
             pass  # FIXME BLENDER 2.80-3.00
         else:
-            for rna_path in self.preset_values:
-                value = eval(rna_path)
-                if type(value) == float:  # formatting of the floating point values
-                    value = round(value, 4)
-                if str(value).startswith('Color'):  # formatting of the Color Vectors (r,g,b)
-                    r, g, b = round(value.r, 3), round(value.g, 3), round(value.b, 3)
-                    file_preset.write("%s = %r, %r, %r\n" % (rna_path, r, g, b))
-                else:
-                    try:  # convert thin wrapped sequences to simple lists to repr()
-                        value = value[:]
-                    except:
-                        pass
-                    file_preset.write("%s = %r\n" % (rna_path, value))
+            self.write_presets_to_file(file_preset)
 
         file_preset.close()
 
+    def write_presets_to_file(self, file_preset):
+        for rna_path in self.preset_values:
+            value = eval(rna_path)
+            if type(value) == float:  # formatting of the floating point values
+                value = round(value, 4)
+            if str(value).startswith('Color'):  # formatting of the Color Vectors (r,g,b)
+                r, g, b = round(value.r, 3), round(value.g, 3), round(value.b, 3)
+                file_preset.write("%s = %r, %r, %r\n" % (rna_path, r, g, b))
+            else:
+                # noinspection PyBroadException
+                try:  # convert thin wrapped sequences to simple lists to repr()
+                    value = value[:]
+                except Exception:
+                    pass
+                file_preset.write("%s = %r\n" % (rna_path, value))
 
-class YafarayMenu(StructRNA, _GenericUI, metaclass=RNAMeta):  # YafaRay's own Preset Menu drawing: search method for files changed
+
+class YafarayMenu(StructRNA, _GenericUI,
+                  metaclass=RNAMeta):  # YafaRay's own Preset Menu drawing: search method for files changed
     __slots__ = ()
 
-    def path_menu(self, searchpaths, operator, props_default={}):
+    def path_menu(self, search_paths, operator, props_default=None):
+        if props_default is None:
+            props_default = {}
         layout = self.layout
 
-        if not searchpaths:
+        if not search_paths:
             layout.label(text="* Missing Paths *")
 
         # collect paths
         files = []
-        for directory in searchpaths:
+        for directory in search_paths:
             files.extend([(f, os.path.join(directory, f)) for f in os.listdir(directory)])
 
         files.sort()
@@ -347,7 +351,8 @@ class YafarayMenu(StructRNA, _GenericUI, metaclass=RNAMeta):  # YafaRay's own Pr
             if operator == "script.execute_preset":
                 props.menu_idname = self.bl_idname
 
-    def draw_preset(self, _context):
+    # noinspection PyUnusedLocal
+    def draw_preset(self, context):
         """Define these on the subclass
          - preset_operator
          - preset_subdir
@@ -356,7 +361,7 @@ class YafarayMenu(StructRNA, _GenericUI, metaclass=RNAMeta):  # YafaRay's own Pr
         search_path = [os.path.join(home_dir, "yafaray4_userdata", "presets", self.preset_subdir)]
         if not os.path.exists(search_path[0]):
             os.makedirs(search_path[0])
-       
+
         self.path_menu(search_path, self.preset_operator)
 
 
@@ -377,5 +382,7 @@ def unregister():
         unregister_class(cls)
 
 
-if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, 
+    # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the 
+    # "libyafaray4_bindings" compiled module is installed on
     register()

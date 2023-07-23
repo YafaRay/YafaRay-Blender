@@ -1,11 +1,16 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import bpy
-from bpy.types import AddonPreferences
 from bpy.props import IntProperty
+# noinspection PyUnresolvedReferences
+from bpy.types import AddonPreferences
 
-if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on.
-    # Assuming that the YafaRay-Plugin exporter is installed in a folder named "yafaray4" within the addons Blender directory
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, 
+    # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the 
+    # "libyafaray4_bindings" compiled module is installed on.
+    # Assuming that the YafaRay-Plugin exporter is installed in a folder named "yafaray4"
+    # within the addons Blender directory
+    # noinspection PyUnresolvedReferences
     from yafaray4 import YAFARAY_PACKAGE_NAME
 else:
     from .. import YAFARAY_PACKAGE_NAME
@@ -20,6 +25,7 @@ class Preferences(AddonPreferences):
         default=0, min=0, max=1000
     )
 
+    # noinspection PyUnusedLocal
     def draw(self, bl_context):
         layout = self.layout
         split = layout.split()

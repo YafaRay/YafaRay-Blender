@@ -2,10 +2,14 @@
 
 import bpy
 import mathutils
+# noinspection PyUnresolvedReferences
 from bpy.types import Operator
 
-if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on.
-    # Assuming that the YafaRay-Plugin exporter is installed in a folder named "yafaray4" within the addons Blender directory
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed,
+    # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the
+    # "libyafaray4_bindings" compiled module is installed on. Assuming that the YafaRay-Plugin exporter is installed
+    # in a folder named "yafaray4" within the addons Blender directory
+    # noinspection PyUnresolvedReferences
     from yafaray4 import global_vars
 else:
     from .. import global_vars
@@ -16,13 +20,14 @@ class WorldGetSunPosition(Operator):
     bl_label = "From( get position )"
     bl_description = "Get the position of the sun from the selected light location"
 
-    def execute(self, _context):
+    # noinspection PyUnusedLocal
+    def execute(self, context):
         warning_message = sun_pos_angle(mode="get", val="position")
         if warning_message:
             self.report({'WARNING'}, warning_message)
             return {'CANCELLED'}
         else:
-            return{'FINISHED'}
+            return {'FINISHED'}
 
 
 class WorldGetSunAngle(Operator):
@@ -30,13 +35,14 @@ class WorldGetSunAngle(Operator):
     bl_label = "From( get angle )"
     bl_description = "Get the position of the sun from selected light angle"
 
-    def execute(self, _context):
+    # noinspection PyUnusedLocal
+    def execute(self, context):
         warning_message = sun_pos_angle(mode="get", val="angle")
         if warning_message:
             self.report({'WARNING'}, warning_message)
             return {'CANCELLED'}
         else:
-            return{'FINISHED'}
+            return {'FINISHED'}
 
 
 class WorldUpdateSunPositionAndAngle(Operator):
@@ -44,13 +50,14 @@ class WorldUpdateSunPositionAndAngle(Operator):
     bl_label = "From( update sun )"
     bl_description = "Update the position and angle of selected light in 3D View according to GUI values"
 
-    def execute(self, _context):
+    # noinspection PyUnusedLocal
+    def execute(self, context):
         warning_message = sun_pos_angle(mode="update")
         if warning_message:
             self.report({'WARNING'}, warning_message)
             return {'CANCELLED'}
         else:
-            return{'FINISHED'}
+            return {'FINISHED'}
 
 
 def sun_pos_angle(mode="get", val="position"):
@@ -74,6 +81,7 @@ def sun_pos_angle(mode="get", val="position"):
             # get the position of the sun from selected lights 'angle'
             elif val == "angle":
                 matrix = mathutils.Matrix(active_object.matrix_local).copy()
+                # noinspection PyUnresolvedReferences
                 world.bg_from = (matrix[0][2], matrix[1][2], matrix[2][2])
                 return
 
@@ -89,6 +97,7 @@ def sun_pos_angle(mode="get", val="position"):
 
             # compute and set rotation
             quaternion = bg_from.to_track_quat("Z", "Y")
+            # noinspection PyArgumentList
             euler = quaternion.to_euler()
 
             # update sun rotation and redraw the 3D windows
@@ -102,7 +111,7 @@ def sun_pos_angle(mode="get", val="position"):
 def check_scene_lights():
     scene = bpy.context.scene
     world = scene.world
-    
+
     # expand fuction for include light from 'add sun' or 'add skylight' in sunsky or sunsky2 mode    
     have_lights = False
     # use light create with sunsky, sunsky2 or with use ibl ON
@@ -112,7 +121,8 @@ def check_scene_lights():
     for sceneObj in scene.objects:
         if not sceneObj.hide_render:
             # FIXME BLENDER 2.80-3.51 visibility in Blender >= 2.80??
-            if bpy.app.version >= (2, 80, 0) or sceneObj.is_visible(scene):  # check light, meshlight or portal light object
+            if bpy.app.version >= (2, 80, 0) or sceneObj.is_visible(scene):  # check light, meshlight or portal light
+                # object
                 if sceneObj.type == "LAMP" or sceneObj.type == "LIGHT" or sceneObj.ml_enable or sceneObj.bgp_enable:
                     have_lights = True
                     break
@@ -142,7 +152,8 @@ class RenderView(Operator):
                 break
 
         if not view3d or view3d.view_perspective == "ORTHO":
-            self.report({'WARNING'}, "The selected view is not in perspective mode or there was no 3d view available to render.")
+            self.report({'WARNING'}, "The selected view is not in perspective mode or there was no 3d view available "
+                                     "to render.")
             global_vars.use_view_to_render = False
             return {'CANCELLED'}
 
@@ -214,19 +225,12 @@ class MaterialPresetsIorList(Operator):
 
     def execute(self, context):
         yaf_mat = context.material
-        bpy.types.YAFARAY4_MT_presets_ior_list.bl_label = self.name
+        bpy.types.PresetsIorList.bl_label = self.name
         yaf_mat.IOR_refraction = self.index
         return {'FINISHED'}
 
 
-classes = (
-    WorldGetSunPosition,
-    WorldGetSunAngle,
-    RenderView,
-    RenderAnimation,
-    RenderStill,
-    MaterialPresetsIorList,
-)
+classes = (WorldGetSunPosition, WorldGetSunAngle, RenderView, RenderAnimation, RenderStill, MaterialPresetsIorList,)
 
 
 def register():
@@ -241,5 +245,7 @@ def unregister():
         unregister_class(cls)
 
 
-if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed,
+    # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the
+    # "libyafaray4_bindings" compiled module is installed on
     register()

@@ -87,11 +87,11 @@ def register():
     Object.vol_region = EnumProperty(
         name="Volume region",
         description="Set the volume region",
-        items=(
+        items=[
             ('ExpDensity Volume', "ExpDensity Volume", ""),
             ('Noise Volume', "Noise Volume", ""),
             ('Uniform Volume', "Uniform Volume", "")
-        ),
+        ],
         default='ExpDensity Volume')
 
     Object.vol_height = FloatProperty(

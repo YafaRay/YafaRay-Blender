@@ -2,6 +2,7 @@
 
 import bpy
 from bl_ui.properties_texture import context_tex_datablock
+# noinspection PyUnresolvedReferences
 from bpy.types import (Panel,
                        Texture,
                        Brush,
@@ -21,11 +22,13 @@ def material_from_context(context):
     if bpy.app.version >= (2, 80, 0):
         return context.material
     else:
+        # noinspection PyUnresolvedReferences
         from bl_ui.properties_material import active_node_mat
         return active_node_mat(context.material)
 
 
-class YAFARAY4_TextureButtonsPanel():
+class TextureButtons:
+    bl_idname = "yafaray4.texture_buttons"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "texture"
@@ -34,10 +37,12 @@ class YAFARAY4_TextureButtonsPanel():
     @classmethod
     def poll(cls, context):
         tex = context.texture
-        return tex and (tex.yaf_tex_type not in 'NONE' or tex.use_nodes) and (context.scene.render.engine in cls.COMPAT_ENGINES)
+        return tex and (tex.yaf_tex_type not in 'NONE' or tex.use_nodes) and (
+                context.scene.render.engine in cls.COMPAT_ENGINES)
 
 
-class YAFARAY4_TEXTURE_PT_context_texture(YAFARAY4_TextureButtonsPanel, Panel):
+class Context(TextureButtons, Panel):
+    bl_idname = "yafaray4.texture_context"
     bl_label = "YafaRay Textures"
     bl_options = {'HIDE_HEADER'}
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -74,6 +79,7 @@ class YAFARAY4_TEXTURE_PT_context_texture(YAFARAY4_TextureButtonsPanel, Panel):
         space.use_limited_texture_context = True
 
         if space.use_pin_id and not isinstance(pin_id, Texture):
+            # noinspection PyUnresolvedReferences
             idblock = id_tex_datablock(pin_id)
             pin_id = None
 
@@ -111,7 +117,8 @@ class YAFARAY4_TEXTURE_PT_context_texture(YAFARAY4_TextureButtonsPanel, Panel):
 
         if tex_collection:
             row = layout.row()
-            row.template_list("TEXTURE_UL_texslots", "", idblock, "texture_slots", idblock, "active_texture_index", rows=2)
+            row.template_list("TEXTURE_UL_texslots", "", idblock, "texture_slots", idblock, "active_texture_index",
+                              rows=2)
 
             col = row.column(align=True)
             col.operator("texture.slot_move", text="", icon='TRIA_UP').type = 'UP'
@@ -131,7 +138,7 @@ class YAFARAY4_TEXTURE_PT_context_texture(YAFARAY4_TextureButtonsPanel, Panel):
         if pin_id:
             col.template_ID(space, "pin_id")
 
-        col = split.column()
+        split.column()
 
         if tex:
             split = ui_split(layout, 0.2)
@@ -147,7 +154,8 @@ class YAFARAY4_TEXTURE_PT_context_texture(YAFARAY4_TextureButtonsPanel, Panel):
                 split.prop(tex, "yaf_tex_type", text="")
 
 
-class YAFARAY4_TEXTURE_PT_preview(YAFARAY4_TextureButtonsPanel, Panel):
+class Preview(TextureButtons, Panel):
+    bl_idname = "yafaray4.texture_preview"
     bl_label = "Preview"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -163,27 +171,28 @@ class YAFARAY4_TEXTURE_PT_preview(YAFARAY4_TextureButtonsPanel, Panel):
         else:
             layout.template_preview(tex, slot=slot)
 
-        #Show Alpha Button for Brush Textures, see #29502
+        # Show Alpha Button for Brush Textures, see #29502
         if context.space_data.texture_context == 'BRUSH':
             layout.prop(tex, "use_preview_alpha")
 
-class YAFARAY4_PT_preview_texture_controls(YAFARAY4_TextureButtonsPanel, Panel):
+
+class PreviewControls(TextureButtons, Panel):
+    bl_idname = "yafaray4.texture_preview_controls"
     bl_label = "Preview Controls"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
-    #bl_options = {'DEFAULT_CLOSED'}
+
+    # bl_options = {'DEFAULT_CLOSED'}
 
     def draw_header(self, context):
-        scene = context.scene
         self.layout.prop(context.scene.yafaray.preview, "enable", text="")
-    
+
     def draw(self, context):
         if context.scene.yafaray.preview.enable:
             layout = self.layout
-            yaf_mat = material_from_context(context)
-            split = layout.split() 
+            split = layout.split()
             col = split.column()
             col.label(text="Preview dynamic rotation/zoom")
-            split = layout.split() 
+            split = layout.split()
             col = split.column()
             col.prop(context.scene.yafaray.preview, "camRot", text="")
             col = split.column()
@@ -195,7 +204,7 @@ class YAFARAY4_PT_preview_texture_controls(YAFARAY4_TextureButtonsPanel, Panel):
             row.label(text="")
             row = col.row()
             row.operator("yafaray4.preview_camera_rotation_reset", text='Reset dynamic rotation/zoom')
-            split = layout.split() 
+            split = layout.split()
             col = split.column()
             col.label(text="Preview object control")
             split = layout.split()
@@ -205,7 +214,7 @@ class YAFARAY4_PT_preview_texture_controls(YAFARAY4_TextureButtonsPanel, Panel):
             col.prop(context.scene.yafaray.preview, "rotZ", text="Z Rotation")
             col = split.column()
             col.prop_search(context.scene.yafaray.preview, "previewObject", bpy.data, "objects", text="")
-            split = layout.split() 
+            split = layout.split()
             col = split.column()
             col.label(text="Preview lights control")
             col = split.column()
@@ -217,14 +226,14 @@ class YAFARAY4_PT_preview_texture_controls(YAFARAY4_TextureButtonsPanel, Panel):
             col.prop(context.scene.yafaray.preview, "keyLightPowerFactor", text="Power factor")
             col = split.column()
             col.prop(context.scene.yafaray.preview, "keyLightColor", text="")
-            split = layout.split() 
+            split = layout.split()
             col = split.column()
             col.label(text="Fill lights:")
             col = split.column()
             col.prop(context.scene.yafaray.preview, "fillLightPowerFactor", text="Power factor")
             col = split.column()
             col.prop(context.scene.yafaray.preview, "fillLightColor", text="")
-            split = layout.split() 
+            split = layout.split()
             col = split.column()
             col.label(text="Preview scene control")
             split = layout.split()
@@ -236,7 +245,8 @@ class YAFARAY4_PT_preview_texture_controls(YAFARAY4_TextureButtonsPanel, Panel):
             col.prop(context.scene.yafaray.preview, "previewBackground", text="")
 
 
-class YAFARAY4_TEXTURE_PT_colors(YAFARAY4_TextureButtonsPanel, Panel):
+class Colors(TextureButtons, Panel):
+    bl_idname = "yafaray4.texture_colors"
     bl_label = "Colors"
     bl_options = {'DEFAULT_CLOSED'}
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -253,13 +263,17 @@ class YAFARAY4_TEXTURE_PT_colors(YAFARAY4_TextureButtonsPanel, Panel):
                 row = split.row()
                 row.label(text="Color ramp is ignored by YafaRay when using image textures", icon="INFO")
 
-            if tex.color_ramp.color_mode == "RGB" and tex.color_ramp.interpolation != "CONSTANT" and tex.color_ramp.interpolation != "LINEAR":
+            if tex.color_ramp.color_mode == "RGB" and tex.color_ramp.interpolation != "CONSTANT" \
+                    and tex.color_ramp.interpolation != "LINEAR":
                 split = layout.split()
                 row = split.row()
-                row.label(text="The ramp interpolation '" + tex.color_ramp.interpolation + "' is not supported. Using Linear instead", icon="ERROR")
+                row.label(
+                    text="The ramp interpolation '" + tex.color_ramp.interpolation
+                         + "' is not supported. Using Linear instead",
+                    icon="ERROR")
 
             layout.template_color_ramp(tex, "color_ramp", expand=True)
-                
+
         split = layout.split()
 
         col = split.column()
@@ -279,12 +293,13 @@ class YAFARAY4_TEXTURE_PT_colors(YAFARAY4_TextureButtonsPanel, Panel):
         col.prop(tex, "yaf_adj_hue")
         col = split.column()
         col.prop(tex, "saturation")
-        
+
         col = layout.column()
         col.prop(tex, "use_clamp", text="Clamp")
 
 
-class YAFARAY4_TextureSlotPanel(YAFARAY4_TextureButtonsPanel):
+class Slot(TextureButtons):
+    bl_idname = "yafaray4.texture_slot"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     @classmethod
@@ -293,10 +308,11 @@ class YAFARAY4_TextureSlotPanel(YAFARAY4_TextureButtonsPanel):
             return False
 
         engine = context.scene.render.engine
-        return YAFARAY4_TextureButtonsPanel.poll(cls, context) and (engine in cls.COMPAT_ENGINES)
+        return TextureButtons.poll(cls, context) and (engine in cls.COMPAT_ENGINES)
 
 
-class YAFARAY4_TextureTypePanel(YAFARAY4_TextureButtonsPanel):
+class Type(TextureButtons):
+    bl_idname = "yafaray4.texture_type"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     @classmethod
@@ -307,7 +323,8 @@ class YAFARAY4_TextureTypePanel(YAFARAY4_TextureButtonsPanel):
 
 
 # --- YafaRay's own Texture Type Panels --- #
-class YAFARAY4_TEXTURE_PT_clouds(YAFARAY4_TextureTypePanel, Panel):
+class TypeClouds(Type, Panel):
+    bl_idname = "yafaray4.texture_type_clouds"
     bl_label = "Clouds"
     tex_type = 'CLOUDS'
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -329,7 +346,8 @@ class YAFARAY4_TEXTURE_PT_clouds(YAFARAY4_TextureTypePanel, Panel):
         split.prop(tex, "noise_depth", text="Depth")
 
 
-class YAFARAY4_TEXTURE_PT_wood(YAFARAY4_TextureTypePanel, Panel):
+class TypeWood(Type, Panel):
+    bl_idname = "yafaray4.texture_type_wood"
     bl_label = "Wood"
     tex_type = 'WOOD'
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -356,7 +374,8 @@ class YAFARAY4_TEXTURE_PT_wood(YAFARAY4_TextureTypePanel, Panel):
         split.prop(tex, "turbulence")
 
 
-class YAFARAY4_TEXTURE_PT_marble(YAFARAY4_TextureTypePanel, Panel):
+class TypeMarble(Type, Panel):
+    bl_idname = "yafaray4.texture_type_marble"
     bl_label = "Marble"
     tex_type = 'MARBLE'
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -380,7 +399,8 @@ class YAFARAY4_TEXTURE_PT_marble(YAFARAY4_TextureTypePanel, Panel):
         split.prop(tex, "turbulence")
 
 
-class YAFARAY4_TEXTURE_PT_blend(YAFARAY4_TextureTypePanel, Panel):
+class TypeBlend(Type, Panel):
+    bl_idname = "yafaray4.texture_type_blend"
     bl_label = "Blend"
     tex_type = 'BLEND'
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -398,8 +418,8 @@ class YAFARAY4_TEXTURE_PT_blend(YAFARAY4_TextureTypePanel, Panel):
         sub.prop(tex, "use_flip_axis", expand=True)
 
 
-
-class YAFARAY4_TEXTURE_PT_image(YAFARAY4_TextureTypePanel, Panel):
+class TypeImage(Type, Panel):
+    bl_idname = "yafaray4.texture_type_image"
     bl_label = "Map Image"
     tex_type = 'IMAGE'
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -410,31 +430,37 @@ class YAFARAY4_TEXTURE_PT_image(YAFARAY4_TextureTypePanel, Panel):
         tex = context.texture
         layout.template_image(tex, "image", tex.image_user)
 
-        if hasattr(tex.image,"colorspace_settings"):
-            if tex.image.colorspace_settings.name == "sRGB" or tex.image.colorspace_settings.name == "Linear" or tex.image.colorspace_settings.name == "Non-Color":
+        if hasattr(tex.image, "colorspace_settings"):
+            if tex.image.colorspace_settings.name == "sRGB" or tex.image.colorspace_settings.name == "Linear" \
+                    or tex.image.colorspace_settings.name == "Non-Color":
                 pass
-            
+
             elif tex.image.colorspace_settings.name == "XYZ":
                 row = layout.row(align=True)
-                row.label(text="YafaRay 'XYZ' support is experimental and may not give the expected results", icon="ERROR")
-            
+                row.label(text="YafaRay 'XYZ' support is experimental and may not give the expected results",
+                          icon="ERROR")
+
             elif tex.image.colorspace_settings.name == "Linear ACES":
                 row = layout.row(align=True)
-                row.label(text="YafaRay doesn't support '" + tex.image.colorspace_settings.name + "', assuming linear RGB", icon="ERROR")
-            
+                row.label(
+                    text="YafaRay doesn't support '" + tex.image.colorspace_settings.name + "', assuming linear RGB",
+                    icon="ERROR")
+
             elif tex.image.colorspace_settings.name == "Raw":
                 row = layout.row(align=True)
                 row.prop(tex, "yaf_gamma_input", text="Texture gamma input correction")
 
             else:
                 row = layout.row(align=True)
-                row.label(text="YafaRay doesn't support '" + tex.image.colorspace_settings.name + "', assuming sRGB", icon="ERROR")
-            
+                row.label(text="YafaRay doesn't support '" + tex.image.colorspace_settings.name + "', assuming sRGB",
+                          icon="ERROR")
+
         row = layout.row(align=True)
         row.label(text="Note: for bump/normal maps, textures are always considered Linear", icon="INFO")
-        
 
-class YAFARAY4_TEXTURE_PT_image_sampling(YAFARAY4_TextureTypePanel, Panel):
+
+class TypeImageSampling(Type, Panel):
+    bl_idname = "yafaray4.texture_type_image_sampling"
     bl_label = "Image Sampling"
     bl_options = {'DEFAULT_CLOSED'}
     tex_type = 'IMAGE'
@@ -461,12 +487,13 @@ class YAFARAY4_TEXTURE_PT_image_sampling(YAFARAY4_TextureTypePanel, Panel):
                 layout.prop(tex, "yaf_trilinear_level_bias")
         else:
             row.prop(tex, "use_interpolation", text="Use image background interpolation")
-            #row.prop(tex, "use_calculate_alpha", text="Calculate Alpha")
+            # row.prop(tex, "use_calculate_alpha", text="Calculate Alpha")
         layout.prop(tex, "yaf_tex_optimization")
         layout.prop(tex, "yaf_img_grayscale", text="Use as Grayscale")
 
 
-class YAFARAY4_TEXTURE_PT_image_mapping(YAFARAY4_TextureTypePanel, Panel):
+class TypeImageMapping(Type, Panel):
+    bl_idname = "yafaray4.texture_type_image_mapping"
     bl_label = "Image Mapping"
     bl_options = {'DEFAULT_CLOSED'}
     tex_type = 'IMAGE'
@@ -493,9 +520,9 @@ class YAFARAY4_TEXTURE_PT_image_mapping(YAFARAY4_TextureTypePanel, Panel):
             row.prop(tex, "use_mirror_x", text="X")
             row = col.row(align=True)
             row.prop(tex, "use_mirror_y", text="Y")
-            
+
             layout.separator()
-            
+
         elif tex.extension == 'CHECKER':
             col = split.column(align=True)
             row = col.row()
@@ -520,7 +547,8 @@ class YAFARAY4_TEXTURE_PT_image_mapping(YAFARAY4_TextureTypePanel, Panel):
         col.prop(tex, "crop_max_y", text="Y")
 
 
-class YAFARAY4_TEXTURE_PT_musgrave(YAFARAY4_TextureTypePanel, Panel):
+class TypeMusgrave(Type, Panel):
+    bl_idname = "yafaray4.texture_type_musgrave"
     bl_label = "Musgrave"
     tex_type = 'MUSGRAVE'
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -556,7 +584,8 @@ class YAFARAY4_TEXTURE_PT_musgrave(YAFARAY4_TextureTypePanel, Panel):
         row.prop(tex, "noise_scale", text="Size")
 
 
-class YAFARAY4_TEXTURE_PT_voronoi(YAFARAY4_TextureTypePanel, Panel):
+class TypeVoronoi(Type, Panel):
+    bl_idname = "yafaray4.texture_type_voronoi"
     bl_label = "Voronoi"
     tex_type = 'VORONOI'
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -591,7 +620,8 @@ class YAFARAY4_TEXTURE_PT_voronoi(YAFARAY4_TextureTypePanel, Panel):
         row.prop(tex, "noise_scale", text="Size")
 
 
-class YAFARAY4_TEXTURE_PT_distortednoise(YAFARAY4_TextureTypePanel, Panel):
+class TypeDistortedNoise(Type, Panel):
+    bl_idname = "yafaray4.texture_type_distorted_noise"
     bl_label = "Distorted Noise"
     tex_type = 'DISTORTED_NOISE'
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -611,7 +641,8 @@ class YAFARAY4_TEXTURE_PT_distortednoise(YAFARAY4_TextureTypePanel, Panel):
         split.prop(tex, "noise_scale", text="Size")
 
 
-class YAFARAY4_TEXTURE_PT_ocean(YAFARAY4_TextureTypePanel, Panel):
+class TypeOcean(Type, Panel):
+    bl_idname = "yafaray4.texture_type_ocean"
     bl_label = "Ocean"
     tex_type = 'OCEAN'
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -627,7 +658,8 @@ class YAFARAY4_TEXTURE_PT_ocean(YAFARAY4_TextureTypePanel, Panel):
         col.prop(ot, "output")
 
 
-class YAFARAY4_TEXTURE_PT_mapping(YAFARAY4_TextureSlotPanel, Panel):
+class SlotMapping(Slot, Panel):
+    bl_idname = "yafaray4.texture_slot_mapping"
     bl_label = "YafaRay Mapping (Map Input)"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -641,7 +673,7 @@ class YAFARAY4_TEXTURE_PT_mapping(YAFARAY4_TextureSlotPanel, Panel):
             return False
 
         engine = context.scene.render.engine
-        return (engine in cls.COMPAT_ENGINES)
+        return engine in cls.COMPAT_ENGINES
 
     def draw(self, context):
         layout = self.layout
@@ -666,10 +698,9 @@ class YAFARAY4_TEXTURE_PT_mapping(YAFARAY4_TextureSlotPanel, Panel):
                 col = split.column()
                 col.prop(tex, "texture_coords", text="")
 
-
             if tex.texture_coords == 'UV':
                 pass
-                #### UV layers not supported in yafaray engine ###
+                # UV layers not supported in yafaray engine
                 """
                 split = ui_split(layout, 0.3)
                 split.label(text="Layer:")
@@ -722,7 +753,8 @@ class YAFARAY4_TEXTURE_PT_mapping(YAFARAY4_TextureSlotPanel, Panel):
             row.column().prop(tex, "scale")
 
 
-class YAFARAY4_TEXTURE_PT_influence(YAFARAY4_TextureSlotPanel, Panel):
+class SlotInfluence(Slot, Panel):
+    bl_idname = "yafaray4.texture_slot_influence"
     bl_label = "YafaRay Influence (Map To)"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -736,12 +768,9 @@ class YAFARAY4_TEXTURE_PT_influence(YAFARAY4_TextureSlotPanel, Panel):
             return False
 
         engine = context.scene.render.engine
-        return (engine in cls.COMPAT_ENGINES)
+        return engine in cls.COMPAT_ENGINES
 
     def draw(self, context):
-
-        layout = self.layout
-
         idblock = context_tex_datablock(context)
 
         tex = context.texture_slot
@@ -755,44 +784,50 @@ class YAFARAY4_TEXTURE_PT_influence(YAFARAY4_TextureSlotPanel, Panel):
             sub.prop(tex, factor, text=name, slider=True)
             return sub  # XXX, temp. use_map_normal needs to override.
 
-        shaderNodes = dict()
-        shaderNodes["Bump"] = ["use_map_normal", "normal_factor", "Bump"]
-        shaderNodes["MirrorAmount"] = ["use_map_raymir", "raymir_factor", "Mirror Amount"]
-        shaderNodes["SigmaOren"] = ["use_map_hardness", "hardness_factor", "Sigma Amount for Oren Nayar"]
-        shaderNodes["MirrorColor"] = ["use_map_mirror", "mirror_factor", "Mirror Color"]
-        shaderNodes["DiffuseColor"] = ["use_map_color_diffuse", "diffuse_color_factor", "Diffuse Color"]
-        shaderNodes["GlossyColor"] = ["use_map_color_spec", "specular_color_factor", "Glossy Color"]
-        shaderNodes["GlossyAmount"] = ["use_map_specular", "specular_factor", "Glossy Amount"]
-        shaderNodes["Transparency"] = ["use_map_alpha", "alpha_factor", "Transparency"]
-        shaderNodes["Translucency"] = ["use_map_translucency", "translucency_factor", "Translucency"]
-        shaderNodes["BlendAmount"] = ["use_map_diffuse", "diffuse_factor", "Blending Amount"]
-        shaderNodes["DiffuseReflection"] = ["use_map_diffuse", "diffuse_factor", "Diffuse reflection Amount"]
-        shaderNodes["FilterColor"] = ["use_map_color_reflection", "reflection_color_factor", "Filter Color Amount"]
-        shaderNodes["IORAmount"] = ["use_map_warp", "warp_factor", "IOR Amount (added to material IOR)"]
-        shaderNodes["RoughnessAmount"] = ["use_map_hardness", "hardness_factor", "Roughness amount"]
-        shaderNodes["ExponentAmount"] = ["use_map_ambient", "ambient_factor", "Glossy Exponent amount"]
-        shaderNodes["Wireframe"] = ["use_map_displacement", "displacement_factor", "Wireframe Amount"]
-                
-        materialShaderNodes = dict()
-        materialShaderNodes["glass"] = ["FilterColor", "MirrorColor", "IORAmount", "Bump", "Wireframe"]
-        materialShaderNodes["rough_glass"] = ["RoughnessAmount", "FilterColor", "MirrorColor", "IORAmount", "Bump", "Wireframe"]
-        materialShaderNodes["glossy"] = ["DiffuseColor", "DiffuseReflection", "SigmaOren", "GlossyColor", "GlossyAmount", "ExponentAmount", "Bump", "Wireframe"]
-        materialShaderNodes["coated_glossy"] = ["DiffuseColor", "DiffuseReflection", "SigmaOren", "GlossyColor", "GlossyAmount", "ExponentAmount", "MirrorAmount", "MirrorColor", "IORAmount", "Bump", "Wireframe"]
-        materialShaderNodes["shinydiffusemat"] = ["DiffuseColor", "DiffuseReflection", "SigmaOren", "MirrorAmount", "MirrorColor", "IORAmount", "Transparency", "Translucency", "Bump", "Wireframe"]
-        materialShaderNodes["blend"] = ["BlendAmount"]
+        shader_nodes = dict()
+        shader_nodes["Bump"] = ["use_map_normal", "normal_factor", "Bump"]
+        shader_nodes["MirrorAmount"] = ["use_map_raymir", "raymir_factor", "Mirror Amount"]
+        shader_nodes["SigmaOren"] = ["use_map_hardness", "hardness_factor", "Sigma Amount for Oren Nayar"]
+        shader_nodes["MirrorColor"] = ["use_map_mirror", "mirror_factor", "Mirror Color"]
+        shader_nodes["DiffuseColor"] = ["use_map_color_diffuse", "diffuse_color_factor", "Diffuse Color"]
+        shader_nodes["GlossyColor"] = ["use_map_color_spec", "specular_color_factor", "Glossy Color"]
+        shader_nodes["GlossyAmount"] = ["use_map_specular", "specular_factor", "Glossy Amount"]
+        shader_nodes["Transparency"] = ["use_map_alpha", "alpha_factor", "Transparency"]
+        shader_nodes["Translucency"] = ["use_map_translucency", "translucency_factor", "Translucency"]
+        shader_nodes["BlendAmount"] = ["use_map_diffuse", "diffuse_factor", "Blending Amount"]
+        shader_nodes["DiffuseReflection"] = ["use_map_diffuse", "diffuse_factor", "Diffuse reflection Amount"]
+        shader_nodes["FilterColor"] = ["use_map_color_reflection", "reflection_color_factor", "Filter Color Amount"]
+        shader_nodes["IORAmount"] = ["use_map_warp", "warp_factor", "IOR Amount (added to material IOR)"]
+        shader_nodes["RoughnessAmount"] = ["use_map_hardness", "hardness_factor", "Roughness amount"]
+        shader_nodes["ExponentAmount"] = ["use_map_ambient", "ambient_factor", "Glossy Exponent amount"]
+        shader_nodes["Wireframe"] = ["use_map_displacement", "displacement_factor", "Wireframe Amount"]
+
+        material_shader_nodes = dict()
+        material_shader_nodes["glass"] = ["FilterColor", "MirrorColor", "IORAmount", "Bump", "Wireframe"]
+        material_shader_nodes["rough_glass"] = ["RoughnessAmount", "FilterColor", "MirrorColor", "IORAmount", "Bump",
+                                                "Wireframe"]
+        material_shader_nodes["glossy"] = ["DiffuseColor", "DiffuseReflection", "SigmaOren", "GlossyColor",
+                                           "GlossyAmount", "ExponentAmount", "Bump", "Wireframe"]
+        material_shader_nodes["coated_glossy"] = ["DiffuseColor", "DiffuseReflection", "SigmaOren", "GlossyColor",
+                                                  "GlossyAmount", "ExponentAmount", "MirrorAmount", "MirrorColor",
+                                                  "IORAmount", "Bump", "Wireframe"]
+        material_shader_nodes["shinydiffusemat"] = ["DiffuseColor", "DiffuseReflection", "SigmaOren", "MirrorAmount",
+                                                    "MirrorColor", "IORAmount", "Transparency", "Translucency", "Bump",
+                                                    "Wireframe"]
+        material_shader_nodes["blend"] = ["BlendAmount"]
 
         if isinstance(idblock, Material):
-            nodes = materialShaderNodes[idblock.mat_type]
-            col = layout.column()
+            nodes = material_shader_nodes[idblock.mat_type]
+            col = self.layout.column()
 
             for node in nodes:
-                value = shaderNodes[node]
+                value = shader_nodes[node]
                 factor_but(col, value[0], value[1], value[2])
                 if node == "Bump" and getattr(tex, "use_map_normal") and texture.yaf_tex_type == 'IMAGE':
                     col.prop(texture, "yaf_is_normal_map", "Use map as normal map")
 
         elif isinstance(idblock, World):  # for setup world texture
-            split = layout.split()
+            split = self.layout.split()
 
             col = split.column()
             factor_but(col, "use_map_blend", "blend_factor", "Blend")
@@ -803,7 +838,7 @@ class YAFARAY4_TEXTURE_PT_influence(YAFARAY4_TextureSlotPanel, Panel):
             factor_but(col, "use_map_zenith_down", "zenith_down_factor", "Zenith Down")
 
         if not isinstance(idblock, ParticleSettings) and not isinstance(idblock, World):
-            split = layout.split()
+            split = self.layout.split()
 
             col = split.column()
             col.prop(tex, "blend_type", text="Blend")
@@ -815,28 +850,28 @@ class YAFARAY4_TEXTURE_PT_influence(YAFARAY4_TextureSlotPanel, Panel):
             col.prop(tex, "use_stencil")
 
         if isinstance(idblock, Material) or isinstance(idblock, World):
-            layout.separator()
-            layout.row().prop(tex, "default_value", text="Default Value", slider=True)
+            self.layout.separator()
+            self.layout.row().prop(tex, "default_value", text="Default Value", slider=True)
 
 
 classes = (
-    YAFARAY4_TEXTURE_PT_context_texture,
-    YAFARAY4_TEXTURE_PT_preview,
-    YAFARAY4_PT_preview_texture_controls,
-    YAFARAY4_TEXTURE_PT_colors,
-    YAFARAY4_TEXTURE_PT_clouds,
-    YAFARAY4_TEXTURE_PT_wood,
-    YAFARAY4_TEXTURE_PT_marble,
-    YAFARAY4_TEXTURE_PT_blend,
-    YAFARAY4_TEXTURE_PT_image,
-    YAFARAY4_TEXTURE_PT_image_sampling,
-    YAFARAY4_TEXTURE_PT_image_mapping,
-    YAFARAY4_TEXTURE_PT_musgrave,
-    YAFARAY4_TEXTURE_PT_voronoi,
-    YAFARAY4_TEXTURE_PT_distortednoise,
-    YAFARAY4_TEXTURE_PT_ocean,
-    YAFARAY4_TEXTURE_PT_mapping,
-    YAFARAY4_TEXTURE_PT_influence,
+    Context,
+    Preview,
+    PreviewControls,
+    Colors,
+    TypeClouds,
+    TypeWood,
+    TypeMarble,
+    TypeBlend,
+    TypeImage,
+    TypeImageSampling,
+    TypeImageMapping,
+    TypeMusgrave,
+    TypeVoronoi,
+    TypeDistortedNoise,
+    TypeOcean,
+    SlotMapping,
+    SlotInfluence,
 )
 
 
@@ -852,5 +887,7 @@ def unregister():
         unregister_class(cls)
 
 
-if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, 
+    # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the 
+    # "libyafaray4_bindings" compiled module is installed on
     register()

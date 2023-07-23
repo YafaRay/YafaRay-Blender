@@ -1,21 +1,33 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import bpy
-from bpy.types import Panel, Menu
 from bl_ui.properties_material import MaterialButtonsPanel
+# noinspection PyUnresolvedReferences
+from bpy.types import Panel, Menu
 
-if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on.
-    # Assuming that the YafaRay-Plugin exporter is installed in a folder named "yafaray4" within the addons Blender directory
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, 
+    # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the 
+    # "libyafaray4_bindings" compiled module is installed on. Assuming that the YafaRay-Plugin exporter is installed 
+    # in a folder named "yafaray4" within the addons Blender directory
+    # noinspection PyUnresolvedReferences
     from yafaray4.ui.ior_values import ior_list
+    # noinspection PyUnresolvedReferences
     import yafaray4.prop.material
+
     yafaray4.prop.material.register()
+    # noinspection PyUnresolvedReferences
     import yafaray4.prop.texture
+
     yafaray4.prop.texture.register()
+    # noinspection PyUnresolvedReferences
     import yafaray4.prop.scene
+
     if hasattr(bpy.types, 'YafaRay4Properties'):
         yafaray4.prop.scene.unregister()
     yafaray4.prop.scene.register()
+    # noinspection PyUnresolvedReferences
     import yafaray4.ot.presets
+
     if hasattr(bpy.types, 'YAFARAY4_OT_render_presets'):
         yafaray4.ot.presets.unregister()
     yafaray4.ot.presets.register()
@@ -34,6 +46,7 @@ def material_from_context(context):
     if bpy.app.version >= (2, 80, 0):
         return context.material
     else:
+        # noinspection PyUnresolvedReferences
         from bl_ui.properties_material import active_node_mat
         return active_node_mat(context.material)
 
@@ -42,27 +55,32 @@ def material_check(material):
     if bpy.app.version >= (2, 80, 0):
         return material
     else:
+        # noinspection PyUnresolvedReferences
         from bl_ui.properties_material import check_material
         return check_material(material)
 
 
 def blend_one_draw(layout, mat):
+    # noinspection PyBroadException
     try:
         layout.prop_search(mat, "material1name", bpy.data, "materials")
-    except:
+    except Exception:
         return False
-    
+
     return True
+
 
 def blend_two_draw(layout, mat):
+    # noinspection PyBroadException
     try:
         layout.prop_search(mat, "material2name", bpy.data, "materials")
-    except:
+    except Exception:
         return False
     return True
 
 
-class YAFARAY4_PT_MaterialTypePanel(MaterialButtonsPanel, Panel):
+class Type(MaterialButtonsPanel, Panel):
+    bl_idname = "yafaray4.material_type"
     bl_label = ""
     bl_options = {'HIDE_HEADER'}
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -74,14 +92,15 @@ class YAFARAY4_PT_MaterialTypePanel(MaterialButtonsPanel, Panel):
         return material_check(yaf_mat) and (yaf_mat.mat_type in cls.material_type) and (engine in cls.COMPAT_ENGINES)
 
 
-class YAFARAY4_PT_context_material(MaterialButtonsPanel, Panel):
+class ContextMaterial(MaterialButtonsPanel, Panel):
+    bl_idname = "yafaray4.material_context"
     bl_label = ""
     bl_options = {'HIDE_HEADER'}
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     @classmethod
     def poll(cls, context):
-        # An exception, dont call the parent poll func because
+        # An exception, don't call the parent poll func because
         # this manages materials for all engine types
         engine = context.scene.render.engine
         return (context.material or context.object) and (engine in cls.COMPAT_ENGINES)
@@ -100,7 +119,8 @@ class YAFARAY4_PT_context_material(MaterialButtonsPanel, Panel):
 
             col = row.column(align=True)
             col.operator("object.material_slot_add", icon="ADD" if bpy.app.version >= (2, 80, 0) else "ZOOMIN", text="")
-            col.operator("object.material_slot_remove", icon="REMOVE" if bpy.app.version >= (2, 80, 0) else "ZOOMOUT", text="")
+            col.operator("object.material_slot_remove", icon="REMOVE" if bpy.app.version >= (2, 80, 0) else "ZOOMOUT",
+                         text="")
 
             # TODO: code own operators to copy yaf material settings...
             col.menu("MATERIAL_MT_specials", icon='DOWNARROW_HLT', text="")
@@ -131,30 +151,32 @@ class YAFARAY4_PT_context_material(MaterialButtonsPanel, Panel):
             layout.row().prop(yaf_mat, "clay_exclude")
 
 
-class YAFARAY4_MATERIAL_PT_preview(MaterialButtonsPanel, Panel):
+class Preview(MaterialButtonsPanel, Panel):
+    bl_idname = "yafaray4.material_preview"
     bl_label = "Preview"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
         self.layout.template_preview(context.material)
 
-class YAFARAY4_PT_preview_controls(MaterialButtonsPanel, Panel):
+
+class PreviewControls(MaterialButtonsPanel, Panel):
+    bl_idname = "yafaray4.material_preview_controls"
     bl_label = "Preview Controls"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
-    #bl_options = {'DEFAULT_CLOSED'}
+
+    # bl_options = {'DEFAULT_CLOSED'}
 
     def draw_header(self, context):
-        scene = context.scene
         self.layout.prop(context.scene.yafaray.preview, "enable", text="")
-    
+
     def draw(self, context):
         if context.scene.yafaray.preview.enable:
             layout = self.layout
-            yaf_mat = material_from_context(context)
-            split = layout.split() 
+            split = layout.split()
             col = split.column()
             col.label(text="Preview dynamic rotation/zoom")
-            split = layout.split() 
+            split = layout.split()
             col = split.column()
             col.prop(context.scene.yafaray.preview, "camRot", text="")
             col = split.column()
@@ -166,7 +188,7 @@ class YAFARAY4_PT_preview_controls(MaterialButtonsPanel, Panel):
             row.label(text="")
             row = col.row()
             row.operator("yafaray4.preview_camera_rotation_reset", text='Reset dynamic rotation/zoom')
-            split = layout.split() 
+            split = layout.split()
             col = split.column()
             col.label(text="Preview object control")
             split = layout.split()
@@ -176,7 +198,7 @@ class YAFARAY4_PT_preview_controls(MaterialButtonsPanel, Panel):
             col.prop(context.scene.yafaray.preview, "rotZ", text="Z Rotation")
             col = split.column()
             col.prop_search(context.scene.yafaray.preview, "previewObject", bpy.data, "objects", text="")
-            split = layout.split() 
+            split = layout.split()
             col = split.column()
             col.label(text="Preview lights control")
             col = split.column()
@@ -188,14 +210,14 @@ class YAFARAY4_PT_preview_controls(MaterialButtonsPanel, Panel):
             col.prop(context.scene.yafaray.preview, "keyLightPowerFactor", text="Power factor")
             col = split.column()
             col.prop(context.scene.yafaray.preview, "keyLightColor", text="")
-            split = layout.split() 
+            split = layout.split()
             col = split.column()
             col.label(text="Fill lights:")
             col = split.column()
             col.prop(context.scene.yafaray.preview, "fillLightPowerFactor", text="Power factor")
             col = split.column()
             col.prop(context.scene.yafaray.preview, "fillLightColor", text="")
-            split = layout.split() 
+            split = layout.split()
             col = split.column()
             col.label(text="Preview scene control")
             split = layout.split()
@@ -207,21 +229,24 @@ class YAFARAY4_PT_preview_controls(MaterialButtonsPanel, Panel):
             col.prop(context.scene.yafaray.preview, "previewBackground", text="")
 
 
-def draw_generator(ior_n):
+def draw_generator(ior):
+    # noinspection PyUnusedLocal
     def draw(self, context):
         sl = self.layout
-        for values in ior_n:
+        for values in ior:
             ior_name, ior_index = values
             props = sl.operator('material.yafaray4_preset_ior_list', text=ior_name)
             # two values given to ior preset operator
             props.index = ior_index
             props.name = ior_name
+
     return draw
+
 
 submenus = []
 
 for ior_group, ior_n in ior_list:
-    submenu_idname = 'YAFARAY4_MT_presets_ior_list_cat%d' % len(submenus)
+    submenu_idname = 'yafaray4.presets_ior_list_cat%d' % len(submenus)
     submenu = type(
         submenu_idname,
         (Menu,),
@@ -235,17 +260,20 @@ for ior_group, ior_n in ior_list:
     submenus.append(submenu)
 
 
-class YAFARAY4_MT_presets_ior_list(Menu):
+class PresetsIorList(Menu):
+    bl_idname = "yafaray4.presets_ior_list"
     bl_label = "Glass"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
+    # noinspection PyUnusedLocal
     def draw(self, context):
         sl = self.layout
         for sm in submenus:
             sl.menu(sm.bl_idname)
 
 
-class YAFARAY4_PT_shinydiffuse_diffuse(YAFARAY4_PT_MaterialTypePanel):
+class TypeShinyDiffuse(Type):
+    bl_idname = "yafaray4.material_shiny_diffuse_diffuse"
     bl_label = "Diffuse reflection"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'shinydiffusemat'
@@ -280,7 +308,8 @@ class YAFARAY4_PT_shinydiffuse_diffuse(YAFARAY4_PT_MaterialTypePanel):
         box.row().prop(yaf_mat, "transmit_filter", slider=True)
 
 
-class YAFARAY4_PT_shinydiffuse_specular(YAFARAY4_PT_MaterialTypePanel):
+class TypeShinyDiffuseSpecular(Type):
+    bl_idname = "yafaray4.material_shiny_diffuse_specular"
     bl_label = "Specular reflection"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'shinydiffusemat'
@@ -302,7 +331,8 @@ class YAFARAY4_PT_shinydiffuse_specular(YAFARAY4_PT_MaterialTypePanel):
         layout.row().prop(yaf_mat, "specular_reflect", slider=True)
 
 
-class YAFARAY4_PT_glossy_diffuse(YAFARAY4_PT_MaterialTypePanel):
+class TypeGlossyDiffuse(Type):
+    bl_idname = "yafaray4.material_glossy_diffuse"
     bl_label = "Diffuse reflection"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'glossy', 'coated_glossy'
@@ -325,7 +355,8 @@ class YAFARAY4_PT_glossy_diffuse(YAFARAY4_PT_MaterialTypePanel):
         layout.row().prop(yaf_mat, "diffuse_reflect", slider=True)
 
 
-class YAFARAY4_PT_glossy_specular(YAFARAY4_PT_MaterialTypePanel):
+class TypeGlossySpecular(Type):
+    bl_idname = "yafaray4.material_glossy_specular"
     bl_label = "Specular reflection"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'glossy', 'coated_glossy'
@@ -338,14 +369,14 @@ class YAFARAY4_PT_glossy_specular(YAFARAY4_PT_MaterialTypePanel):
         col = split.column()
         col.prop(yaf_mat, "glossy_color")
         exp = col.column()
-        exp.enabled = yaf_mat.anisotropic == False
+        exp.enabled = yaf_mat.anisotropic is False
         exp.prop(yaf_mat, "exponent")
 
         col = split.column()
         sub = col.column(align=True)
         sub.prop(yaf_mat, "anisotropic")
         ani = sub.column()
-        ani.enabled = yaf_mat.anisotropic == True
+        ani.enabled = yaf_mat.anisotropic is True
         ani.prop(yaf_mat, "exp_u")
         ani.prop(yaf_mat, "exp_v")
         layout.row().prop(yaf_mat, "glossy_reflect", slider=True)
@@ -366,7 +397,8 @@ class YAFARAY4_PT_glossy_specular(YAFARAY4_PT_MaterialTypePanel):
             layout.row().prop(yaf_mat, "specular_reflect", slider=True)
 
 
-class YAFARAY4_PT_glass_real(YAFARAY4_PT_MaterialTypePanel):
+class TypeGlassReal(Type):
+    bl_idname = "yafaray4.material_glass_real"
     bl_label = "Real glass settings"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'glass', 'rough_glass'
@@ -381,7 +413,7 @@ class YAFARAY4_PT_glass_real(YAFARAY4_PT_MaterialTypePanel):
         col.prop(yaf_mat, "IOR_refraction")
 
         col = split.column()
-        col.menu("YAFARAY4_MT_presets_ior_list", text=bpy.types.YAFARAY4_MT_presets_ior_list.bl_label)
+        col.menu("YAFARAY4_MT_presets_ior_list", text=bpy.types.PresetsIorList.bl_label)
 
         split = layout.split()
         col = split.column(align=True)
@@ -396,9 +428,10 @@ class YAFARAY4_PT_glass_real(YAFARAY4_PT_MaterialTypePanel):
             box = layout.box()
             box.label(text="Glass roughness:")
             box.row().prop(yaf_mat, "refr_roughness", slider=True)
-        
 
-class YAFARAY4_PT_glass_fake(YAFARAY4_PT_MaterialTypePanel):
+
+class TypeGlassFake(Type):
+    bl_idname = "yafaray4.material_glass_fake"
     bl_label = "Fake glass settings"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'glass', 'rough_glass'
@@ -416,7 +449,8 @@ class YAFARAY4_PT_glass_fake(YAFARAY4_PT_MaterialTypePanel):
         layout.row().prop(yaf_mat, "fake_shadows")
 
 
-class YAFARAY4_PT_blend(YAFARAY4_PT_MaterialTypePanel):
+class TypeBlend(Type):
+    bl_idname = "yafaray4.material_blend"
     bl_label = "Blend material settings"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'blend'
@@ -439,11 +473,12 @@ class YAFARAY4_PT_blend(YAFARAY4_PT_MaterialTypePanel):
         blend_two_draw(layout, yaf_mat)
 
 
-class YAFARAY4_PT_ZWireframe(MaterialButtonsPanel, Panel):
+class Wireframe(MaterialButtonsPanel, Panel):
+    bl_idname = "yafaray4.material_wireframe"
     bl_label = "Wireframe shading options"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
-    
+
     def draw(self, context):
         layout = self.layout
         yaf_mat = material_from_context(context)
@@ -457,11 +492,12 @@ class YAFARAY4_PT_ZWireframe(MaterialButtonsPanel, Panel):
         col.prop(yaf_mat, "wireframe_exponent", slider=True, text="Softness")
 
 
-class YAFARAY4_PT_ZAdvanced(MaterialButtonsPanel, Panel):
+class Advanced(MaterialButtonsPanel, Panel):
+    bl_idname = "yafaray4.material_advanced"
     bl_label = "Advanced settings"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
-    
+
     def draw(self, context):
         layout = self.layout
         yaf_mat = material_from_context(context)
@@ -469,19 +505,19 @@ class YAFARAY4_PT_ZAdvanced(MaterialButtonsPanel, Panel):
         layout.prop(yaf_mat, "pass_index")
 
         split = layout.split()
-        col = split.column()
+        split.column()
         layout.row().prop(yaf_mat, "visibility")
 
         split = layout.split()
-        col = split.column()
+        split.column()
         layout.row().prop(yaf_mat, "receive_shadows")
-        
+
         if yaf_mat.mat_type == "shinydiffusemat":
             split = layout.split()
-            col = split.column()
+            split.column()
             layout.row().prop(yaf_mat, "flat_material")
             split = layout.split()
-            col = split.column()
+            split.column()
             row = layout.row()
             row.prop(yaf_mat, "transparentbias_factor")
             col = row.column()
@@ -489,29 +525,28 @@ class YAFARAY4_PT_ZAdvanced(MaterialButtonsPanel, Panel):
 
         if yaf_mat.mat_type != "blend":
             split = layout.split()
-            col = split.column()
+            split.column()
             layout.row().prop(yaf_mat, "additionaldepth")
 
         split = layout.split()
-        col = split.column()
+        split.column()
         layout.row().prop(yaf_mat, "samplingfactor")
 
 
-
 classes = (
-    YAFARAY4_PT_context_material,
-    YAFARAY4_MATERIAL_PT_preview,
-    YAFARAY4_PT_preview_controls,
-    YAFARAY4_MT_presets_ior_list,
-    YAFARAY4_PT_shinydiffuse_diffuse,
-    YAFARAY4_PT_shinydiffuse_specular,
-    YAFARAY4_PT_glossy_diffuse,
-    YAFARAY4_PT_glossy_specular,
-    YAFARAY4_PT_glass_real,
-    YAFARAY4_PT_glass_fake,
-    YAFARAY4_PT_blend,
-    YAFARAY4_PT_ZWireframe,
-    YAFARAY4_PT_ZAdvanced,
+    ContextMaterial,
+    Preview,
+    PreviewControls,
+    PresetsIorList,
+    TypeShinyDiffuse,
+    TypeShinyDiffuseSpecular,
+    TypeGlossyDiffuse,
+    TypeGlossySpecular,
+    TypeGlassReal,
+    TypeGlassFake,
+    TypeBlend,
+    Wireframe,
+    Advanced,
 )
 
 
@@ -527,5 +562,7 @@ def unregister():
         unregister_class(cls)
 
 
-if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, 
+    # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the 
+    # "libyafaray4_bindings" compiled module is installed on
     register()

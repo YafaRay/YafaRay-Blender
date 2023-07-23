@@ -12,6 +12,7 @@ Scene = bpy.types.Scene
 
 
 # set file format for image saving on same format as in YafaRay, both have default PNG
+# noinspection PyUnusedLocal
 def call_update_file_format(self, context):
     scene = context.scene
     render = scene.render
@@ -36,13 +37,13 @@ def register():
     Scene.gs_accelerator = EnumProperty(
         name="Scene accelerator",
         description="Selects the scene accelerator algorithm",
-        items=(
+        items=[
             ('yafaray-kdtree-original', "KDTree single-thread",
              "KDTree single-thread (original/default, faster but single threaded)"),
             ('yafaray-kdtree-multi-thread', "KDTree multi-thread",
              "KDTree multi-thread (slower per thread, but might be faster for >= 8 cores)"),
             ('yafaray-simpletest', "Simple/Test", "Simple (for development TESTING ONLY, very slow renders!)"),
-        ),
+        ],
         default='yafaray-kdtree-original')
 
     Scene.gs_ray_depth = IntProperty(
@@ -79,12 +80,12 @@ def register():
     Scene.gs_tile_order = EnumProperty(
         name="Tile order",
         description="Selects tiles order type",
-        items=(
+        items=[
             ('linear', "Linear", "Render tiles appear in succesive lines until all render is complete."),
             ('random', "Random", "Render tiles appear at random locations until all render is complete."),
             ('centre', "Centre",
              "Render tiles appear around the centre of the image expanding until all render is complete.")
-        ),
+        ],
         default='centre')
 
     Scene.gs_auto_threads = BoolProperty(
@@ -146,57 +147,66 @@ def register():
 
     Scene.adv_auto_shadow_bias_enabled = BoolProperty(
         name="Shadow Bias Automatic",
-        description="Shadow Bias Automatic Calculation (recommended). Disable ONLY if artifacts or black dots due to bad self-shadowing, otherwise LEAVE THIS ENABLED FOR NORMAL SCENES",
+        description="Shadow Bias Automatic Calculation (recommended). Disable ONLY if artifacts or black dots due to "
+                    "bad self-shadowing, otherwise LEAVE THIS ENABLED FOR NORMAL SCENES",
         default=True)
 
     Scene.adv_shadow_bias_value = FloatProperty(
         name="Shadow Bias Factor",
-        description="Shadow Bias (default 0.0005). Change ONLY if artifacts or black dots due to bad self-shadowing. Increasing this value can led to artifacts and incorrect renders",
+        description="Shadow Bias (default 0.0005). Change ONLY if artifacts or black dots due to bad self-shadowing. "
+                    "Increasing this value can led to artifacts and incorrect renders",
         min=0.00000001, max=10000, default=0.0005)
 
     Scene.adv_auto_min_raydist_enabled = BoolProperty(
         name="Min Ray Dist Automatic",
-        description="Min Ray Dist Automatic Calculation (recommended), based on the Shadow Bias factor. Disable ONLY if artifacts or light leaks due to bad ray intersections, otherwise LEAVE THIS ENABLED FOR NORMAL SCENES",
+        description="Min Ray Dist Automatic Calculation (recommended), based on the Shadow Bias factor. Disable ONLY "
+                    "if artifacts or light leaks due to bad ray intersections, otherwise LEAVE THIS ENABLED FOR "
+                    "NORMAL SCENES",
         default=True)
 
     Scene.adv_min_raydist_value = FloatProperty(
         name="Min Ray Dist Factor",
-        description="Min Ray Dist (default 0.00005). Change ONLY if artifacts or light leaks due to bad ray intersections. Increasing this value can led to artifacts and incorrect renders",
+        description="Min Ray Dist (default 0.00005). Change ONLY if artifacts or light leaks due to bad ray "
+                    "intersections. Increasing this value can led to artifacts and incorrect renders",
         min=0.00000001, max=10000, default=0.00005)
 
     Scene.adv_base_sampling_offset = IntProperty(
         name="Base Sampling Offset",
-        description="For multi-computer film generation, set a different sampling offset in each computer so they don't \"repeat\" the same samples. Separate them enough (at least the number of samples each computer is supposed to calculate)",
+        description="For multi-computer film generation, set a different sampling offset in each computer so they"
+                    "don't \"repeat\" the same samples. Separate them enough (at least the number of samples each "
+                    "computer is supposed to calculate)",
         min=0, max=2000000000,
         default=0)
 
     Scene.adv_scene_type = EnumProperty(
         name="Scene Type/Renderer",
-        description="Selects the scene type/renderer, 'yafaray' by default. Other scene types/renderers might be added in the future.",
-        items=(
-            ('yafaray', "yafaray", "(default) YafaRay scene type/renderer will be used."),
-        ),
+        description="Selects the scene type/renderer, 'yafaray' by default. Other scene types/renderers might be "
+                    "added in the future.",
+        items=[
+            ('yafaray', "yafaray", "(default) YafaRay scene type/renderer will be used.")
+        ],
         default='yafaray')
 
     Scene.adv_scene_mesh_tesselation = EnumProperty(
         name="Mesh Tesselation",
         description="Selects the way that meshes are tesselated before being rendered by YafaRay.",
-        items=(
+        items=[
             ('triangles_quads', "Triangles + Quads",
              "(default) Meshes are internally tesselated as a mix of triangles and quads."),
             ('triangles_only', "Triangles Only", "Meshes are internally tesselated as triangles only."),
-        ),
+        ],
         default='triangles_quads')
 
     Scene.gs_premult = EnumProperty(
         name="Premultiply",
         description="Premultipy Alpha channel for renders with transparent background",
-        items=(
+        items=[
             ('yes', "Yes", "Apply Alpha channel Premultiply"),
             ('no', "No", "Don't apply Alpha channel Premultiply"),
             ('auto', "Auto",
-             "Automatically try to guess if Alpha channel Premultiply is needed depending on the file type (recommended)")
-        ),
+             "Automatically try to guess if Alpha channel Premultiply is needed depending on the file type ("
+             "recommended)")
+        ],
         default='auto')
 
     Scene.gs_transp_shad = BoolProperty(
@@ -212,13 +222,13 @@ def register():
     Scene.gs_type_render = EnumProperty(
         name="Render",
         description="Choose the render output method",
-        items=(
+        items=[
             ('file', "Image file", "Render the Scene and write it to an Image File when finished"),
             ('into_blender', "Into Blender", "Render the Scene into Blenders Renderbuffer"),
             ('xml', "Export to XML file", "Export the Scene to a XML File"),
             ('c', "Export to C file", "Export the Scene to an ANSI C89/C90 File"),
             ('python', "Export to Python file", "Export the Scene to a Python3 File"),
-        ),
+        ],
         default='into_blender')
 
     Scene.gs_secondary_file_output = BoolProperty(
@@ -229,17 +239,18 @@ def register():
     Scene.gs_tex_optimization = EnumProperty(
         name="Textures optimization",
         description="Textures optimization to reduce RAM usage, can be overriden by per-texture setting",
-        items=(
+        items=[
             ('compressed', "Compressed",
              "Lossy color compression, some color/transparency details will be lost, more RAM improvement"),
             ('optimized', "Optimized", "Lossless optimization, good RAM improvement"),
             ('none', "None", "No optimization, lossless and faster but high RAM usage")
-        ),
+        ],
         default='optimized')
 
     Scene.gs_images_autosave_interval_seconds = FloatProperty(
         name="Interval (s)",
-        description="Images AutoSave Interval (in seconds) to autosave partially rendered images. WARNING: short intervals can increase significantly render time.",
+        description="Images AutoSave Interval (in seconds) to autosave partially rendered images. WARNING: short "
+                    "intervals can increase significantly render time.",
         min=5.0, default=300.0, precision=1)
 
     Scene.gs_images_autosave_interval_passes = IntProperty(
@@ -250,27 +261,30 @@ def register():
     Scene.gs_images_autosave_interval_type = EnumProperty(
         name="Autosave interval",
         description="Images AutoSave: type of interval",
-        items=(
+        items=[
             ('pass-interval', "Passes interval", "Autosaves the image every X render AA passes"),
             ('time-interval', "Time interval", "Autosaves the image every X seconds"),
             ('none', "Disabled", "Image autosave will be disabled")
-        ),
+        ],
         default="none")
 
     Scene.gs_film_save_load = EnumProperty(
         name="Internal ImageFilm save/load",
-        description="Option to save / load the imageFilm, may be useful to continue interrupted renders. The ImageFilm file can be BIG and SLOW, especially when enabling many render passes.",
-        items=(
+        description="Option to save / load the imageFilm, may be useful to continue interrupted renders. The "
+                    "ImageFilm file can be BIG and SLOW, especially when enabling many render passes.",
+        items=[
             ('load-save', "Load and Save",
-             "Loads the internal ImageFilm files at start. USE WITH CARE! It will also save the ImageFilm with the images"),
+             "Loads the internal ImageFilm files at start. USE WITH CARE! It will also save the ImageFilm with the "
+             "images"),
             ('save', "Save", "Saves the internal ImageFilm with the images"),
             ('none', "Disabled", "Image autosave will be disabled")
-        ),
+        ],
         default="none")
 
     Scene.gs_film_autosave_interval_seconds = FloatProperty(
         name="Interval (s)",
-        description="Internal ImageFilm AutoSave Interval (in seconds). WARNING: short intervals can increase significantly render time.",
+        description="Internal ImageFilm AutoSave Interval (in seconds). WARNING: short intervals can increase"
+                    "significantly render time.",
         min=5.0, default=300.0, precision=1)
 
     Scene.gs_film_autosave_interval_passes = IntProperty(
@@ -281,25 +295,25 @@ def register():
     Scene.gs_film_autosave_interval_type = EnumProperty(
         name="Autosave interval",
         description="Internal ImageFilm AutoSave: type of interval",
-        items=(
+        items=[
             ('pass-interval', "Passes interval", "Autosaves the image every X render AA passes"),
             ('time-interval', "Time interval", "Autosaves the image every X seconds"),
             ('none', "Disabled", "Image autosave will be disabled")
-        ),
+        ],
         default="none")
 
     # YafaRay's own image output property
     Scene.img_output = EnumProperty(
         name="Image File Type",
         description="Image will be saved in this file format",
-        items=(
+        items=[
             ('PNG', " PNG (Portable Network Graphics)", ""),
             ('TARGA', " TGA (Truevision TARGA)", ""),
             ('JPEG', " JPEG (Joint Photographic Experts Group)", ""),
             ('TIFF', " TIFF (Tag Image File Format)", ""),
             ('OPEN_EXR', " EXR (IL&M OpenEXR)", ""),
             ('HDR', " HDR (Radiance RGBE)", "")
-        ),
+        ],
         default='PNG', update=call_update_file_format)
 
     Scene.img_multilayer = BoolProperty(
@@ -314,17 +328,20 @@ def register():
 
     Scene.img_denoiseHLum = IntProperty(
         name="Denoise hLum",
-        description="Denoise h (luminance) property. Increase it to reduce brightness noise (but could blur the image!)",
+        description="Denoise h (luminance) property. Increase it to reduce brightness noise"
+                    " (but could blur the image!)",
         min=1, max=40, default=5)
 
     Scene.img_denoiseHCol = IntProperty(
         name="Denoise hCol",
-        description="Denoise h (chrominance) property. Increase it to reduce color noise (but could blur the colors in the image!)",
+        description="Denoise h (chrominance) property. Increase it to reduce color noise (but could blur the colors "
+                    "in the image!)",
         min=1, max=40, default=5)
 
     Scene.img_denoiseMix = FloatProperty(
         name="Denoise Mix",
-        description="Proportion of denoised and original image. Recommended approx 0.8 (80% denoised + 20% original) to avoid banding artifacts in fully denoised images",
+        description="Proportion of denoised and original image. Recommended approx 0.8 (80% denoised + 20% original) "
+                    "to avoid banding artifacts in fully denoised images",
         min=0.0, max=1.0, default=0.8, precision=2)
 
     Scene.img_save_with_blend_file = BoolProperty(
@@ -345,14 +362,14 @@ def register():
     # YafaRay's integrator properties
     Scene.intg_light_method = EnumProperty(
         name="Lighting Method",
-        items=(
+        items=[
             ('Direct Lighting', "Direct Lighting", ""),
             ('Photon Mapping', "Photon Mapping", ""),
             ('Pathtracing', "Pathtracing", ""),
             ('Debug', "Debug", ""),
             ('Bidirectional', "Bidirectional (unstable)", ""),
             ('SPPM', "SPPM", "")
-        ),
+        ],
         default='Direct Lighting')
 
     Scene.intg_use_caustics = BoolProperty(
@@ -437,7 +454,9 @@ def register():
 
     Scene.intg_russian_roulette_min_bounces = IntProperty(
         name="Min bounces",
-        description="After this number of bounces, start using russian roulette to speed up path tracing. The lower this value, the faster but possibly noisier, especially in darker areas. To disable russian roulette, set Min bounces = Depth.",
+        description="After this number of bounces, start using russian roulette to speed up path tracing. The lower "
+                    "this value, the faster but possibly noisier, especially in darker areas. To disable russian "
+                    "roulette, set Min bounces = Depth.",
         min=0,
         default=2)
 
@@ -482,11 +501,11 @@ def register():
 
     Scene.intg_caustic_method = EnumProperty(
         name="Caustic Method",
-        items=(
+        items=[
             ('None', "None", ""),
             ('Path', "Path", ""),
             ('Path+Photon', "Path+Photon", ""),
-            ('Photon', "Photon", "")),
+            ('Photon', "Photon", "")],
         description="Choose caustic rendering method",
         default='None')
 
@@ -503,14 +522,14 @@ def register():
 
     Scene.intg_debug_type = EnumProperty(
         name="Debug type",
-        items=(
+        items=[
             ('N', "N", ""),
             ('dPdU', "dPdU", ""),
             ('dPdV', "dPdV", ""),
             ('NU', "NU", ""),
             ('NV', "NV", ""),
             ('dSdU', "dSdU", ""),
-            ('dSdV', "dSdV", "")),
+            ('dSdV', "dSdV", "")],
         default='dSdV')
 
     Scene.intg_show_perturbed_normals = BoolProperty(
@@ -572,12 +591,12 @@ def register():
 
     Scene.AA_filter_type = EnumProperty(
         name="Filter",
-        items=(
+        items=[
             ('box', "Box", "AA filter type"),
             ('mitchell', "Mitchell", "AA filter type"),
             ('gauss', "Gauss", "AA filter type"),
             ('lanczos', "Lanczos", "AA filter type")
-        ),
+        ],
         default="gauss")
 
     bpy.utils.register_class(YafaRay4Properties)

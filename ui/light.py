@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+# noinspection PyUnresolvedReferences
 from bpy.types import Panel
 import bpy
 
@@ -10,13 +11,18 @@ if bpy.app.version >= (2, 80, 0):
     DATA_PT_context_light.COMPAT_ENGINES.add('YAFARAY4_RENDER')
     del DATA_PT_context_light
 else:
+    # noinspection PyUnresolvedReferences
     from bl_ui.properties_data_lamp import DataButtonsPanel
+    # noinspection PyUnresolvedReferences
     from bl_ui.properties_data_lamp import DATA_PT_context_lamp
     DATA_PT_context_lamp.COMPAT_ENGINES.add('YAFARAY4_RENDER')
     del DATA_PT_context_lamp
 
-if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on.
-    # Assuming that the YafaRay-Plugin exporter is installed in a folder named "yafaray4" within the addons Blender directory
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, 
+    # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the 
+    # "libyafaray4_bindings" compiled module is installed on. Assuming that the YafaRay-Plugin exporter is installed 
+    # in a folder named "yafaray4" within the addons Blender directory
+    # noinspection PyUnresolvedReferences
     import yafaray4.prop.light
     yafaray4.prop.light.register()
 
@@ -28,7 +34,8 @@ def light_from_context(context):
         return context.lamp
 
 
-class YAFARAY4_PT_preview(Panel):
+class Preview(Panel):
+    bl_idname = "yafaray4.light_preview"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "data"
@@ -46,7 +53,8 @@ class YAFARAY4_PT_preview(Panel):
         self.layout.template_preview(light)
 
 
-class YAFARAY4_PT_light(DataButtonsPanel, Panel):
+class Light(DataButtonsPanel, Panel):
+    bl_idname = "yafaray4.light"
     bl_label = "Light"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -107,7 +115,8 @@ class YAFARAY4_PT_light(DataButtonsPanel, Panel):
                 layout.box().prop(light, "yaf_samples")
 
 
-class YAFARAY4_PT_area(DataButtonsPanel, Panel):
+class Area(DataButtonsPanel, Panel):
+    bl_idname = "yafaray4.light_area"
     bl_label = "Area Shape"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -132,7 +141,8 @@ class YAFARAY4_PT_area(DataButtonsPanel, Panel):
             sub.prop(light, "size_y", text="Size Y")
 
 
-class YAFARAY4_PT_spot(DataButtonsPanel, Panel):
+class Spot(DataButtonsPanel, Panel):
+    bl_idname = "yafaray4.light_spot"
     bl_label = "Spot Shape"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -163,7 +173,8 @@ class YAFARAY4_PT_spot(DataButtonsPanel, Panel):
             col.prop(light, "shadow_buffer_clip_end", text=" Clip End")
 
 
-class YAFARAY4_PT_light_advanced(DataButtonsPanel, Panel):
+class LightAdvanced(DataButtonsPanel, Panel):
+    bl_idname = "yafaray4.light_advanced"
     bl_label = "Advanced settings"
     bl_options = {'DEFAULT_CLOSED'}
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -186,11 +197,11 @@ class YAFARAY4_PT_light_advanced(DataButtonsPanel, Panel):
 
 
 classes = (
-    YAFARAY4_PT_preview,
-    YAFARAY4_PT_light,
-    YAFARAY4_PT_area,
-    YAFARAY4_PT_spot,
-    YAFARAY4_PT_light_advanced,
+    Preview,
+    Light,
+    Area,
+    Spot,
+    LightAdvanced,
 )
 
 
@@ -206,5 +217,7 @@ def unregister():
         unregister_class(cls)
 
 
-if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, 
+    # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the 
+    # "libyafaray4_bindings" compiled module is installed on
     register()

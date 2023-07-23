@@ -1,10 +1,12 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-from bpy.types import Panel
 from bl_ui.properties_render import RenderButtonsPanel
+# noinspection PyUnresolvedReferences
+from bpy.types import Panel
 
 
-class YAFARAY4_PT_render(RenderButtonsPanel, Panel):
+class Render(RenderButtonsPanel, Panel):
+    bl_idname = "yafaray4.integrator_render"
     bl_label = "Integrator"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -30,7 +32,6 @@ class YAFARAY4_PT_render(RenderButtonsPanel, Panel):
                 col.prop(scene, "intg_AO_color")
                 col.prop(scene, "intg_AO_samples")
                 col.prop(scene, "intg_AO_distance")
-
 
         elif scene.intg_light_method == "Photon Mapping":
             row = layout.row()
@@ -62,12 +63,11 @@ class YAFARAY4_PT_render(RenderButtonsPanel, Panel):
                     col.prop(scene, "intg_fg_samples")
                     col = layout.row()
                     col.prop(scene, "intg_show_map", toggle=True)
-                
 
         elif scene.intg_light_method == "Pathtracing":
             col = layout.row()
             col.prop(scene, "intg_caustic_method")
-                
+
             col = layout.row()
             if scene.intg_caustic_method in {"Path+Photon", "Photon"}:
                 col.prop(scene, "intg_photons", text="Photons")
@@ -76,7 +76,7 @@ class YAFARAY4_PT_render(RenderButtonsPanel, Panel):
                 col.prop(scene, "intg_caustic_depth", text="Caus. Depth")
                 col.prop(scene, "intg_caustic_radius", text="Caus. Radius")
                 split = layout.split()
-                col = split.column()
+                split.column()
 
             col = layout.row()
             col.prop(scene, "intg_path_samples")
@@ -107,8 +107,9 @@ class YAFARAY4_PT_render(RenderButtonsPanel, Panel):
             col.label(text="It might give unexpected and perhaps even incorrect render results.")
             col.label(text="Use at your own risk.")
 
+
 classes = (
-    YAFARAY4_PT_render,
+    Render,
 )
 
 
@@ -124,5 +125,7 @@ def unregister():
         unregister_class(cls)
 
 
-if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, 
+    # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the 
+    # "libyafaray4_bindings" compiled module is installed on
     register()

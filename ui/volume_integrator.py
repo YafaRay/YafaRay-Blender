@@ -1,10 +1,12 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-from bpy.types import Panel
 from bl_ui.properties_world import WorldButtonsPanel
+# noinspection PyUnresolvedReferences
+from bpy.types import Panel
 
 
-class YAFARAY4_PT_vol_integrator(WorldButtonsPanel, Panel):
+class VolumeIntegrator(WorldButtonsPanel, Panel):
+    bl_idname = "yafaray4.vol_integrator"
     bl_label = "YafaRay Volume Integrator"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -31,7 +33,7 @@ class YAFARAY4_PT_vol_integrator(WorldButtonsPanel, Panel):
 
 
 classes = (
-    YAFARAY4_PT_vol_integrator,
+    VolumeIntegrator,
 )
 
 
@@ -47,6 +49,7 @@ def unregister():
         unregister_class(cls)
 
 
-
-if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed,
+    # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the 
+    # "libyafaray4_bindings" compiled module is installed on
     register()

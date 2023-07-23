@@ -1,9 +1,11 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+# noinspection PyUnresolvedReferences
 from bpy.types import Panel
 
 
-class YAFARAY4_PT_strand_settings(Panel):
+class StrandSettings(Panel):
+    bl_idname = "yafaray4.strand_settings"
     bl_label = "Strand Settings"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
@@ -15,7 +17,7 @@ class YAFARAY4_PT_strand_settings(Panel):
 
         psys = context.object.particle_systems
         engine = context.scene.render.engine
-        return (psys and (engine in cls.COMPAT_ENGINES))
+        return psys and (engine in cls.COMPAT_ENGINES)
 
     def draw(self, context):
         layout = self.layout
@@ -31,7 +33,7 @@ class YAFARAY4_PT_strand_settings(Panel):
             sub.label(text="Size:")
             sub.prop(tan, "root_size", text="Root")
             sub.prop(tan, "tip_size", text="Tip")
-            sub = col.column()
+            col.column()
             col.prop(tan, "shape")
             col.prop(tan, "use_blender_units")
 
@@ -45,9 +47,8 @@ class YAFARAY4_PT_strand_settings(Panel):
                 col.prop(tan, "uv_layer", text="")
 
 
-
 classes = (
-    YAFARAY4_PT_strand_settings,
+    StrandSettings,
 )
 
 
@@ -63,5 +64,7 @@ def unregister():
         unregister_class(cls)
 
 
-if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, 
+    # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the 
+    # "libyafaray4_bindings" compiled module is installed on
     register()

@@ -504,7 +504,7 @@ def defineLayers(yi, depsgraph):
         if not os.path.exists(output_path):
             try:
                 os.makedirs(output_path)
-            except:
+            except Exception:
                 print("Unable to create directory...")
                 import traceback
                 traceback.print_exc()
@@ -543,7 +543,7 @@ def defineLayers(yi, depsgraph):
                       blender_result_buffers)
                 try:
                     blender_result_buffers.layers[0].passes[0].rect = tile_bitmap
-                except:
+                except Exception:
                     print("Exporter: Exception while rendering in " + callback_name + " function:")
                     traceback.print_exc()
             self.end_result(blender_result_buffers)

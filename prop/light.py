@@ -12,6 +12,8 @@ if bpy.app.version >= (2, 80, 0):
 else:
     Light = bpy.types.Lamp
 
+
+# noinspection PyUnusedLocal
 def update_preview(self, context):
     if bpy.app.version >= (2, 80, 0):
         light = context.light
@@ -20,6 +22,7 @@ def update_preview(self, context):
     light.type = light.type
 
 
+# noinspection PyUnusedLocal
 def call_light_type_update(self, context):
     if bpy.app.version >= (2, 80, 0):
         light = context.light
@@ -31,6 +34,7 @@ def call_light_type_update(self, context):
         light.type = switch_light_type.get(light.lamp_type)
 
 
+# noinspection PyUnusedLocal
 def set_shadow_method(self, context):
     if bpy.app.version >= (2, 80, 0):
         light = context.light
@@ -43,6 +47,7 @@ def set_shadow_method(self, context):
     light.type = light.type
 
 
+# noinspection PyUnusedLocal
 def sync_with_distance(self, context):
     if bpy.app.version >= (2, 80, 0):
         light = context.light
@@ -57,14 +62,14 @@ def register():
     Light.lamp_type = EnumProperty(
         name="Light type",
         description="Type of light",
-        items=(
+        items=[
             ('point', "Point", "Omnidirectional point light source"),
             ('sun', "Sun", "Constant direction parallel ray light source"),
             ('spot', "Spot", "Directional cone light source"),
             ('ies', "IES", "Directional cone light source from ies file"),
             ('area', "Area", "Directional area light source"),
             ('directional', "Directional", "Directional Sun light")
-        ),
+        ],
         default="point", update=call_light_type_update)
 
     Light.yaf_energy = FloatProperty(
@@ -146,7 +151,8 @@ def register():
 
     Light.cast_shadows = BoolProperty(
         update=update_preview, name="Cast shadows",
-        description="Enable casting shadows. This is the normal and expected behavior. Disable it only for special cases!",
+        description="Enable casting shadows. This is the normal and expected behavior."
+                    "Disable it only for special cases!",
         default=True)
 
     Light.caustic_photons = BoolProperty(

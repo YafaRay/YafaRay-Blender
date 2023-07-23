@@ -11,7 +11,10 @@ from bpy.props import (FloatProperty,
 Material = bpy.types.Material
 
 
-# This code is irrelevant after the change in the blend material to convert it from EnumProperty to StringProperty. I'm keeping this as a reference in case a better solution can be found for the blend material component materials references
+# This code is irrelevant after the change in the blend material to convert it from EnumProperty to StringProperty.
+# I'm keeping this as a reference in case a better solution can be found for the blend material component materials
+# references
+# noinspection PyUnusedLocal
 def items_mat1(self, context):
     a = []
     for mat in [m for m in bpy.data.materials if m.name not in self.name]:
@@ -19,13 +22,18 @@ def items_mat1(self, context):
     return a
 
 
-# This code is irrelevant after the change in the blend material to convert it from EnumProperty to StringProperty. I'm keeping this as a reference in case a better solution can be found for the blend material component materials references
+# This code is irrelevant after the change in the blend material to convert it from EnumProperty to StringProperty.
+# I'm keeping this as a reference in case a better solution can be found for the blend material component materials
+# references
+# noinspection PyUnusedLocal
 def items_mat2(self, context):
     a = []
     for mat in [m for m in bpy.data.materials if m.name not in self.name]:
         a.append((mat.name, mat.name, "Second blend material"))
     return a
 
+
+# noinspection PyUnusedLocal
 def update_preview(self, context):
     context.material.preview_render_type = context.material.preview_render_type
 
@@ -33,14 +41,14 @@ def update_preview(self, context):
 def register():
     Material.mat_type = EnumProperty(
         update=update_preview, name="Material type",
-        items=(
+        items=[
             ('shinydiffusemat', "Shiny Diffuse", "Assign a material type"),
             ('glossy', "Glossy", "Assign a material type"),
             ('coated_glossy', "Coated Glossy", "Assign a material type"),
             ('glass', "Glass", "Assign a material type"),
             ('rough_glass', "Rough Glass", "Assign a material type"),
             ('blend', "Blend", "Assign a material type")
-        ),
+        ],
         default='shinydiffusemat')
 
     Material.diffuse_reflect = FloatProperty(
@@ -82,10 +90,10 @@ def register():
 
     Material.brdf_type = EnumProperty(
         update=update_preview, name="Reflectance model",
-        items=(
+        items=[
             ('oren-nayar', "Oren-Nayar", "Reflectance Model"),
             ('lambert', "Lambert", "Reflectance Model"),
-        ),
+        ],
         default='lambert')
 
     Material.wireframe_amount = FloatProperty(
@@ -296,7 +304,8 @@ def register():
         description="Second blend material",
         items=items_mat2)
 
-    # New blend material component String references, when opening old scenes it should copy the old Enum Property materials to the new String Properties
+    # New blend material component String references, when opening old scenes it should copy the old Enum Property
+    # materials to the new String Properties
     Material.material1name = StringProperty(
         update=update_preview, name="Material one",
         description="First blend material")
@@ -309,13 +318,13 @@ def register():
 
     Material.visibility = EnumProperty(
         update=update_preview, name="Visibility",
-        items=(
+        items=[
             ('invisible', "Invisible", "Totally invisible"),
             ('shadow_only', "Shadows only", "Invisible but casting shadows"),
             ('no_shadows', "No shadows", "Visible but not casting shadows"),
             ('normal', "Normal", "Normal visibility - visible casting shadows"),
 
-        ),
+        ],
         default='normal')
 
     Material.receive_shadows = BoolProperty(
@@ -325,7 +334,8 @@ def register():
 
     Material.flat_material = BoolProperty(
         update=update_preview, name="Flat Material",
-        description="Flat Material is a special non-photorealistic material that does not multiply the surface color by the cosine of the angle with the light, as happens in real life. For special applications only",
+        description="Flat Material is a special non-photorealistic material that does not multiply the surface color "
+                    "by the cosine of the angle with the light, as happens in real life. For special applications only",
         default=False)
 
     Material.additionaldepth = IntProperty(
@@ -336,18 +346,28 @@ def register():
 
     Material.transparentbias_factor = FloatProperty(
         update=update_preview, name="Transparent Bias",
-        description="If this value is >0.0 an additional (non-realistic) 'bias' will be added to each ray when it hits a transparent surface. This could be useful to render many stacked transparent surfaces and avoid black artifacts in some cases BUT COULD CAUSE EASILY OTHER WEIRD ARTIFACTS, USE WITH CARE!!. If the ray hits a transparent surface, the next secondary ray will not start exactly after that surface but after this bias factor. So, subsequent transparent surfaces can be skipped and not rendered, but the objects behind will be rendered (unless they are too close, in that case they might not be rendered!).",
+        description="If this value is >0.0 an additional (non-realistic) 'bias' will be added to each ray when it "
+                    "hits a transparent surface. This could be useful to render many stacked transparent surfaces and "
+                    "avoid black artifacts in some cases BUT COULD CAUSE EASILY OTHER WEIRD ARTIFACTS, "
+                    "USE WITH CARE!!. If the ray hits a transparent surface, the next secondary ray will not start "
+                    "exactly after that surface but after this bias factor. So, subsequent transparent surfaces can "
+                    "be skipped and not rendered, but the objects behind will be rendered (unless they are too close, "
+                    "in that case they might not be rendered!).",
         min=0.0,
         default=0.0)
 
     Material.transparentbias_multiply_raydepth = BoolProperty(
         update=update_preview, name="Multiply Bias by Ray Depth",
-        description="If the Transparent Bias is used and this is disabled, the bias will be just added to each secondary ray initial position. If this parameter is enabled, the bias for each ray will be multiplied by the ray depth. That way, the first few surfaces will be rendered giving a better density but the further the secondary rays are generated, the bigger the bias will be.",
+        description="If the Transparent Bias is used and this is disabled, the bias will be just added to each "
+                    "secondary ray initial position. If this parameter is enabled, the bias for each ray will be "
+                    "multiplied by the ray depth. That way, the first few surfaces will be rendered giving a better "
+                    "density but the further the secondary rays are generated, the bigger the bias will be.",
         default=False)
 
     Material.samplingfactor = FloatProperty(
         update=update_preview, name="Sampling Factor",
-        description="The number of samples in the adaptative AA passes are multiplied by this per-material factor. This does not affect the first pass.",
+        description="The number of samples in the adaptative AA passes are multiplied by this per-material factor. "
+                    "This does not affect the first pass.",
         min=1.0,
         default=1.0)
 

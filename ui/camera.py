@@ -1,16 +1,22 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import bpy
-from bpy.types import Panel
 from bl_ui.properties_data_camera import CameraButtonsPanel
+# noinspection PyUnresolvedReferences
+from bpy.types import Panel
 
-if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on.
-    # Assuming that the YafaRay-Plugin exporter is installed in a folder named "yafaray4" within the addons Blender directory
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, 
+    # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the 
+    # "libyafaray4_bindings" compiled module is installed on. Assuming that the YafaRay-Plugin exporter is installed 
+    # in a folder named "yafaray4" within the addons Blender directory
+    # noinspection PyUnresolvedReferences
     import yafaray4.prop.camera
+
     yafaray4.prop.camera.register()
 
 
-class YAFARAY4_PT_lens(CameraButtonsPanel, Panel):
+class Lens(CameraButtonsPanel, Panel):
+    bl_idname = "yafaray4.camera_lens"
     bl_label = "Lens"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -66,7 +72,8 @@ class YAFARAY4_PT_lens(CameraButtonsPanel, Panel):
         sub.prop(camera, "clip_end", text="End")
 
 
-class YAFARAY4_PT_camera(CameraButtonsPanel, Panel):
+class Camera(CameraButtonsPanel, Panel):
+    bl_idname = "yafaray4.camera"
     bl_label = "Camera"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -99,7 +106,8 @@ class YAFARAY4_PT_camera(CameraButtonsPanel, Panel):
         col.prop(camera, "sensor_fit", text="")
 
 
-class YAFARAY4_PT_camera_display(CameraButtonsPanel, Panel):
+class CameraDisplay(CameraButtonsPanel, Panel):
+    bl_idname = "yafaray4.camera_display"
     bl_label = "Display"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -112,7 +120,8 @@ class YAFARAY4_PT_camera_display(CameraButtonsPanel, Panel):
 
         col = split.column()
         col.prop(camera, "show_limits", text="Limits")
-        #col.prop(camera, "show_title_safe", text="Title Safe") #FIXME: Disabled it as it's causing error messages "rna_uiItemR: property not found: Camera.show_title_safe". This line should probably have to be removed
+        # col.prop(camera, "show_title_safe", text="Title Safe") #FIXME: Disabled it as it's causing error messages
+        #  "rna_uiItemR: property not found: Camera.show_title_safe". This line should probably have to be removed
         col.prop(camera, "show_sensor", text="Sensor")
         col.prop(camera, "show_name", text="Name")
 
@@ -128,11 +137,10 @@ class YAFARAY4_PT_camera_display(CameraButtonsPanel, Panel):
         sub.prop(camera, "passepartout_alpha", text="Alpha", slider=True)
 
 
-
 classes = (
-    YAFARAY4_PT_lens,
-    YAFARAY4_PT_camera,
-    YAFARAY4_PT_camera_display,
+    Lens,
+    Camera,
+    CameraDisplay,
 )
 
 
@@ -148,5 +156,7 @@ def unregister():
         unregister_class(cls)
 
 
-if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, 
+    # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the 
+    # "libyafaray4_bindings" compiled module is installed on
     register()

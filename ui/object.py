@@ -1,9 +1,11 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+# noinspection PyUnresolvedReferences
 from bpy.types import Panel
 
 
-class YAFARAY4_PT_object_light(Panel):
+class ObjectLight(Panel):
+    bl_idname = "yafaray4.object_light"
     bl_label = "YafaRay Object Properties"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
@@ -14,7 +16,7 @@ class YAFARAY4_PT_object_light(Panel):
     def poll(cls, context):
 
         engine = context.scene.render.engine
-        return (context.object.type == "MESH" and (engine in cls.COMPAT_ENGINES))
+        return context.object.type == "MESH" and (engine in cls.COMPAT_ENGINES)
 
     def draw(self, context):
         layout = self.layout
@@ -60,10 +62,12 @@ class YAFARAY4_PT_object_light(Panel):
                 col.prop(ob, "vol_cover")
                 col.prop(ob, "vol_density")
 
-        #layout.prop(ob, "pass_index")  #no need for this, there is a pass_index field by default in the object properties panel, but just in case I'm leaving this here.
+        # layout.prop(ob, "pass_index")  #no need for this, there is a pass_index field by default
+        # in the object properties panel, but just in case I'm leaving this here.
+
 
 classes = (
-    YAFARAY4_PT_object_light,
+    ObjectLight,
 )
 
 
@@ -79,5 +83,7 @@ def unregister():
         unregister_class(cls)
 
 
-if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, 
+    # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the 
+    # "libyafaray4_bindings" compiled module is installed on
     register()

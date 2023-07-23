@@ -1,10 +1,12 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 from bl_ui.properties_scene import SceneButtonsPanel
+# noinspection PyUnresolvedReferences
 from bpy.types import Panel
 
 
-class YAFARAY4_PT_color_management(SceneButtonsPanel, Panel):
+class ColorManagement(SceneButtonsPanel, Panel):
+    bl_idname = "yafaray4.scene_color_management"
     bl_label = "Color Management"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -37,7 +39,7 @@ class YAFARAY4_PT_color_management(SceneButtonsPanel, Panel):
 
 
 classes = (
-    YAFARAY4_PT_color_management,
+    ColorManagement,
 )
 
 
@@ -53,5 +55,7 @@ def unregister():
         unregister_class(cls)
 
 
-if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the "libyafaray4_bindings" compiled module is installed on
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, 
+    # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the 
+    # "libyafaray4_bindings" compiled module is installed on
     register()

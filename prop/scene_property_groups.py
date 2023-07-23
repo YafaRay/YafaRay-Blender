@@ -112,6 +112,7 @@ class YafaRay4MaterialPreviewControlProperties(bpy.types.PropertyGroup):
         bl_label = "reset camera rotation/distance values to defaults"
         country = bpy.props.StringProperty()
 
+        # noinspection PyMethodMayBeStatic,PyUnusedLocal
         def execute(self, context):
             bpy.data.scenes[0].yafaray.is_preview.camRot = (0, 0, 1)
             bpy.data.scenes[0].yafaray.is_preview.camDist = 12
@@ -123,6 +124,7 @@ class YafaRay4MaterialPreviewControlProperties(bpy.types.PropertyGroup):
         bl_label = "reset camera rotation/distance values to defaults"
         country = bpy.props.StringProperty()
 
+        # noinspection PyMethodMayBeStatic,PyUnusedLocal
         def execute(self, context):
             bpy.data.scenes[0].yafaray.is_preview.camDist -= 0.5
             return {'FINISHED'}
@@ -133,6 +135,7 @@ class YafaRay4MaterialPreviewControlProperties(bpy.types.PropertyGroup):
         bl_label = "reset camera rotation/distance values to defaults"
         country = bpy.props.StringProperty()
 
+        # noinspection PyMethodMayBeStatic,PyUnusedLocal
         def execute(self, context):
             bpy.data.scenes[0].yafaray.is_preview.camDist += 0.5
             return {'FINISHED'}

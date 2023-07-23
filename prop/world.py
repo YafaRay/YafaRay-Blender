@@ -10,6 +10,7 @@ from bpy.props import (EnumProperty,
 World = bpy.types.World
 
 
+# noinspection PyUnusedLocal
 def update_preview(self, context):
     context.world.use_sky_paper = context.world.use_sky_paper
 
@@ -18,33 +19,33 @@ def register():
     # YafaRay's world background properties
     World.bg_type = EnumProperty(
         update=update_preview, name="Background",
-        items=(
+        items=[
             ('Gradient', "Gradient", "Gradient background"),
             ('Texture', "Texture", "Textured background"),
             ('Sunsky1', "Sunsky1", "Sunsky background"),
             ('Sunsky2', "Sunsky2", "New model of Sunsky background"),
             ('Single Color', "Single Color", "Single color background")
-        ),
+        ],
         default="Single Color")
 
     World.bg_color_space = EnumProperty(
         update=update_preview, name="Color space",
-        items=(
+        items=[
             ('CIE (E)', "CIE (E)", "Select color space model"),
             ('CIE (D50)', "CIE (D50)", "Select color space model"),
             ('sRGB (D65)', "sRGB (D65)", "Select color space model"),
             ('sRGB (D50)', "sRGB (D50)", "Select color space model")
-        ),
+        ],
         default="CIE (E)")
 
     # povman test: create a list of YafaRay mapping modes
     # 
     World.yaf_mapworld_type = EnumProperty(
         update=update_preview, name="Mapping Type",
-        items=(
+        items=[
             ('SPHERE', "Spherical", "Spherical mapping"),
             ('ANGMAP', "Angular", "Angular mapping")
-        ),
+        ],
         default='SPHERE')
 
     World.bg_zenith_color = FloatVectorProperty(
@@ -89,12 +90,14 @@ def register():
 
     World.bg_smartibl_blur = FloatProperty(
         update=update_preview, name="SmartIBL Blur factor",
-        description="SmartIBL blur factor to reduce noise. This only blurs the lighting and shadows, keeping the reflections sharp. High values allow less noise but might be less realistic and cause slowdowns",
+        description="SmartIBL blur factor to reduce noise. This only blurs the lighting and shadows, keeping the "
+                    "reflections sharp. High values allow less noise but might be less realistic and cause slowdowns",
         min=0.00, max=0.75, precision=2, default=0.00)
 
     World.ibl_clamp_sampling = FloatProperty(
         update=update_preview, name="IBL clamp sampling",
-        description="Trick to reduce light sampling noise at the expense of realism and inexact overall light. The lower, the less noise but worse realism and lighting. 0.f disables clamping (default).",
+        description="Trick to reduce light sampling noise at the expense of realism and inexact overall light. The "
+                    "lower, the less noise but worse realism and lighting. 0.f disables clamping (default).",
         min=0.00, precision=2, default=0.00)
 
     World.bg_with_caustic = BoolProperty(
@@ -232,23 +235,25 @@ def register():
 
     World.bg_cast_shadows = BoolProperty(
         update=update_preview, name="Background cast shadows",
-        description="Enable casting shadows from the Background environmental lighting. This is the normal and expected behavior. Disable it only for special cases!",
+        description="Enable casting shadows from the Background environmental lighting. This is the normal and "
+                    "expected behavior. Disable it only for special cases!",
         default=True)
 
     World.bg_cast_shadows_sun = BoolProperty(
         update=update_preview, name="Sun cast shadows",
-        description="Enable casting shadows from the Background Sun lighting. This is the normal and expected behavior. Disable it only for special cases!",
+        description="Enable casting shadows from the Background Sun lighting. This is the normal and expected "
+                    "behavior. Disable it only for special cases!",
         default=True)
 
     # YafaRay's volume integrator properties
     World.v_int_type = EnumProperty(
         update=update_preview, name="Volume integrator",
         description="Set the volume integrator",
-        items=(
+        items=[
             ('None', "None", ""),
             ('Sky', "Sky", ""),
             ('Single Scatter', "Single Scatter", "")
-        ),
+        ],
         default='None')
 
     World.v_int_step_size = FloatProperty(

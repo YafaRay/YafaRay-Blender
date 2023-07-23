@@ -106,33 +106,36 @@ class YafaRay4MaterialPreviewControlProperties(bpy.types.PropertyGroup):
     camDist = prop_defs.camDist
     camRot = prop_defs.camRot
 
-    class OBJECT_OT_CamRotReset(bpy.types.Operator):
+    class PreviewCamRotReset(bpy.types.Operator):
         """ Reset camera rotation/zoom to initial values. """
         bl_idname = "yafaray4.preview_camera_rotation_reset"
         bl_label = "reset camera rotation/distance values to defaults"
         country = bpy.props.StringProperty()
 
+        # noinspection PyMethodMayBeStatic,PyUnusedLocal
         def execute(self, context):
             bpy.data.scenes[0].yafaray.is_preview.camRot = (0, 0, 1)
             bpy.data.scenes[0].yafaray.is_preview.camDist = 12
             return {'FINISHED'}
 
-    class OBJECT_OT_CamZoomIn(bpy.types.Operator):
+    class PreviewCamZoomIn(bpy.types.Operator):
         """ Camera zoom in (reduces distance between camera and object) """
         bl_idname = "yafaray4.preview_camera_zoom_in"
         bl_label = "reset camera rotation/distance values to defaults"
         country = bpy.props.StringProperty()
 
+        # noinspection PyMethodMayBeStatic,PyUnusedLocal
         def execute(self, context):
             bpy.data.scenes[0].yafaray.is_preview.camDist -= 0.5
             return {'FINISHED'}
 
-    class OBJECT_OT_CamZoomOut(bpy.types.Operator):
+    class PreviewCamZoomOut(bpy.types.Operator):
         """ Camera zoom out (increases distance between camera and object) """
         bl_idname = "yafaray4.preview_camera_zoom_out"
         bl_label = "reset camera rotation/distance values to defaults"
         country = bpy.props.StringProperty()
 
+        # noinspection PyMethodMayBeStatic,PyUnusedLocal
         def execute(self, context):
             bpy.data.scenes[0].yafaray.is_preview.camDist += 0.5
             return {'FINISHED'}

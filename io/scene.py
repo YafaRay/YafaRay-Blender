@@ -64,14 +64,14 @@ class Scene:
                     blendmat_error = False
                     try:
                         mat1 = bpy.data.materials[mat_slot.material.material1name]
-                    except:
+                    except Exception:
                         self.yaf_logger.printWarning(
                             "Exporter: Problem with blend material:\"{0}\". Could not find the first material:\"{1}\"".format(
                                 mat_slot.material.name, mat_slot.material.material1name))
                         blendmat_error = True
                     try:
                         mat2 = bpy.data.materials[mat_slot.material.material2name]
-                    except:
+                    except Exception:
                         self.yaf_logger.printWarning(
                             "Exporter: Problem with blend material:\"{0}\". Could not find the second material:\"{1}\"".format(
                                 mat_slot.material.name, mat_slot.material.material2name))

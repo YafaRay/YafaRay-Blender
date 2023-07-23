@@ -8,6 +8,7 @@ from bpy.props import (FloatProperty,
 Camera = bpy.types.Camera
 
 
+# noinspection PyUnusedLocal
 def call_camera_update(self, context):
     camera = context.camera
     if camera is not None:
@@ -20,13 +21,13 @@ def call_camera_update(self, context):
 def register():
     Camera.camera_type = EnumProperty(
         name="Camera Type",
-        items=(
+        items=[
             ('perspective', "Perspective", ""),
             ('architect', "Architect", ""),
             ('angular', "Angular", ""),
             ('equirectangular', "Equirectangular", ""),
             ('orthographic', "Ortho", "")
-        ),
+        ],
         update=call_camera_update,
         default='perspective')
 
@@ -50,13 +51,13 @@ def register():
 
     Camera.angular_projection = EnumProperty(
         name="Angular projection",
-        items=(
+        items=[
             ('equidistant', "Equidistant (default)", ""),
             ('orthographic', "Orthographic (angle should be 90º or less)", ""),
             ('stereographic', "Stereographic (angle should be less than 180º)", ""),
             ('equisolid_angle', "Equisolid Angle", ""),
             ('rectilinear', "Rectilinear (angle should be less than 90º)", ""),
-        ),
+        ],
         default='equidistant')
 
     Camera.use_clipping = BoolProperty(
@@ -65,7 +66,7 @@ def register():
 
     Camera.bokeh_type = EnumProperty(
         name="Bokeh type",
-        items=(
+        items=[
             ('disk1', "Disk1", ""),
             ('disk2', "Disk2", ""),
             ('triangle', "Triangle", ""),
@@ -73,7 +74,7 @@ def register():
             ('pentagon', "Pentagon", ""),
             ('hexagon', "Hexagon", ""),
             ('ring', "Ring", "")
-        ),
+        ],
         default='disk1')
 
     Camera.aperture = FloatProperty(
@@ -88,11 +89,11 @@ def register():
 
     Camera.bokeh_bias = EnumProperty(
         name="Bokeh bias",
-        items=(
+        items=[
             ('uniform', "Uniform", ""),
             ('center', "Center", ""),
             ('edge', "Edge", "")
-        ),
+        ],
         default='uniform')
 
 
