@@ -6,7 +6,7 @@ from bpy.types import Panel
 
 
 class AASettings(RenderButtonsPanel, Panel):
-    bl_idname = "yafaray4.aa_settings"
+    bl_idname = "YAFARAY4_PT_aa_settings"
     bl_label = "Anti-Aliasing / Noise control"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 

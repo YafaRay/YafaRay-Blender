@@ -80,7 +80,7 @@ def blend_two_draw(layout, mat):
 
 
 class Type(MaterialButtonsPanel, Panel):
-    bl_idname = "yafaray4.material_type"
+    bl_idname = "YAFARAY4_PT_material_type"
     bl_label = ""
     bl_options = {'HIDE_HEADER'}
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -93,7 +93,7 @@ class Type(MaterialButtonsPanel, Panel):
 
 
 class ContextMaterial(MaterialButtonsPanel, Panel):
-    bl_idname = "yafaray4.material_context"
+    bl_idname = "YAFARAY4_PT_material_context"
     bl_label = ""
     bl_options = {'HIDE_HEADER'}
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -152,7 +152,7 @@ class ContextMaterial(MaterialButtonsPanel, Panel):
 
 
 class Preview(MaterialButtonsPanel, Panel):
-    bl_idname = "yafaray4.material_preview"
+    bl_idname = "YAFARAY4_PT_material_preview"
     bl_label = "Preview"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -161,7 +161,7 @@ class Preview(MaterialButtonsPanel, Panel):
 
 
 class PreviewControls(MaterialButtonsPanel, Panel):
-    bl_idname = "yafaray4.material_preview_controls"
+    bl_idname = "YAFARAY4_PT_material_preview_controls"
     bl_label = "Preview Controls"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -181,13 +181,13 @@ class PreviewControls(MaterialButtonsPanel, Panel):
             col.prop(context.scene.yafaray.preview, "camRot", text="")
             col = split.column()
             row = col.row()
-            row.operator("yafaray4.preview_camera_zoom_out", text='Zoom Out', icon='ZOOM_OUT')
+            row.operator("yafaray4.material_preview_camera_zoom_out", text='Zoom Out', icon='ZOOM_OUT')
             col2 = row.column()
-            col2.operator("yafaray4.preview_camera_zoom_in", text='Zoom In', icon='ZOOM_IN')
+            col2.operator("yafaray4.material_preview_camera_zoom_in", text='Zoom In', icon='ZOOM_IN')
             row = col.row()
             row.label(text="")
             row = col.row()
-            row.operator("yafaray4.preview_camera_rotation_reset", text='Reset dynamic rotation/zoom')
+            row.operator("yafaray4.material_preview_camera_rotation_reset", text='Reset dynamic rotation/zoom')
             split = layout.split()
             col = split.column()
             col.label(text="Preview object control")
@@ -235,7 +235,7 @@ def draw_generator(ior):
         sl = self.layout
         for values in ior:
             ior_name, ior_index = values
-            props = sl.operator('material.yafaray4_preset_ior_list', text=ior_name)
+            props = sl.operator('yafaray4.material_preset_ior_list', text=ior_name)
             # two values given to ior preset operator
             props.index = ior_index
             props.name = ior_name
@@ -246,7 +246,7 @@ def draw_generator(ior):
 submenus = []
 
 for ior_group, ior_n in ior_list:
-    submenu_idname = 'yafaray4.presets_ior_list_cat%d' % len(submenus)
+    submenu_idname = 'YAFARAY4_MT_presets_ior_list_cat%d' % len(submenus)
     submenu = type(
         submenu_idname,
         (Menu,),
@@ -261,7 +261,7 @@ for ior_group, ior_n in ior_list:
 
 
 class PresetsIorList(Menu):
-    bl_idname = "yafaray4.presets_ior_list"
+    bl_idname = "YAFARAY4_MT_presets_ior_list"
     bl_label = "Glass"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -273,7 +273,7 @@ class PresetsIorList(Menu):
 
 
 class TypeShinyDiffuse(Type):
-    bl_idname = "yafaray4.material_shiny_diffuse_diffuse"
+    bl_idname = "YAFARAY4_PT_material_shiny_diffuse_diffuse"
     bl_label = "Diffuse reflection"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'shinydiffusemat'
@@ -309,7 +309,7 @@ class TypeShinyDiffuse(Type):
 
 
 class TypeShinyDiffuseSpecular(Type):
-    bl_idname = "yafaray4.material_shiny_diffuse_specular"
+    bl_idname = "YAFARAY4_PT_material_shiny_diffuse_specular"
     bl_label = "Specular reflection"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'shinydiffusemat'
@@ -332,7 +332,7 @@ class TypeShinyDiffuseSpecular(Type):
 
 
 class TypeGlossyDiffuse(Type):
-    bl_idname = "yafaray4.material_glossy_diffuse"
+    bl_idname = "YAFARAY4_PT_material_glossy_diffuse"
     bl_label = "Diffuse reflection"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'glossy', 'coated_glossy'
@@ -356,7 +356,7 @@ class TypeGlossyDiffuse(Type):
 
 
 class TypeGlossySpecular(Type):
-    bl_idname = "yafaray4.material_glossy_specular"
+    bl_idname = "YAFARAY4_PT_material_glossy_specular"
     bl_label = "Specular reflection"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'glossy', 'coated_glossy'
@@ -398,7 +398,7 @@ class TypeGlossySpecular(Type):
 
 
 class TypeGlassReal(Type):
-    bl_idname = "yafaray4.material_glass_real"
+    bl_idname = "YAFARAY4_PT_material_glass_real"
     bl_label = "Real glass settings"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'glass', 'rough_glass'
@@ -413,7 +413,7 @@ class TypeGlassReal(Type):
         col.prop(yaf_mat, "IOR_refraction")
 
         col = split.column()
-        col.menu("YAFARAY4_MT_presets_ior_list", text=bpy.types.PresetsIorList.bl_label)
+        col.menu("YAFARAY4_MT_presets_ior_list", text=bpy.types.YAFARAY4_MT_presets_ior_list.bl_label)
 
         split = layout.split()
         col = split.column(align=True)
@@ -431,7 +431,7 @@ class TypeGlassReal(Type):
 
 
 class TypeGlassFake(Type):
-    bl_idname = "yafaray4.material_glass_fake"
+    bl_idname = "YAFARAY4_PT_material_glass_fake"
     bl_label = "Fake glass settings"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'glass', 'rough_glass'
@@ -450,7 +450,7 @@ class TypeGlassFake(Type):
 
 
 class TypeBlend(Type):
-    bl_idname = "yafaray4.material_blend"
+    bl_idname = "YAFARAY4_PT_material_blend"
     bl_label = "Blend material settings"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     material_type = 'blend'
@@ -474,7 +474,7 @@ class TypeBlend(Type):
 
 
 class Wireframe(MaterialButtonsPanel, Panel):
-    bl_idname = "yafaray4.material_wireframe"
+    bl_idname = "YAFARAY4_PT_material_wireframe"
     bl_label = "Wireframe shading options"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
@@ -493,7 +493,7 @@ class Wireframe(MaterialButtonsPanel, Panel):
 
 
 class Advanced(MaterialButtonsPanel, Panel):
-    bl_idname = "yafaray4.material_advanced"
+    bl_idname = "YAFARAY4_PT_material_advanced"
     bl_label = "Advanced settings"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}

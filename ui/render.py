@@ -14,7 +14,7 @@ def ui_split(ui_item, factor):
 
 
 class Render(RenderButtonsPanel, Panel):
-    bl_idname = "yafaray4.render"
+    bl_idname = "YAFARAY4_PT_render"
     bl_label = "Render"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -48,7 +48,7 @@ class Render(RenderButtonsPanel, Panel):
 
 
 class Dimensions(RenderButtonsPanel, Panel):
-    bl_idname = "yafaray4.render_dimensions"
+    bl_idname = "YAFARAY4_PT_render_dimensions"
     bl_label = "Dimensions"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
@@ -92,7 +92,7 @@ class Dimensions(RenderButtonsPanel, Panel):
 
 
 class Output(RenderButtonsPanel, Panel):
-    bl_idname = "yafaray4.render_output"
+    bl_idname = "YAFARAY4_PT_render_output"
     bl_label = "Output"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -201,7 +201,7 @@ class Output(RenderButtonsPanel, Panel):
 
 
 class PostProcessing(RenderButtonsPanel, Panel):
-    bl_idname = "yafaray4.render_post_processing"
+    bl_idname = "YAFARAY4_PT_render_post_processing"
     bl_label = "Post Processing"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
@@ -222,7 +222,7 @@ class PostProcessing(RenderButtonsPanel, Panel):
 
 
 class ConvertOldSettings(RenderButtonsPanel, Panel):
-    bl_idname = "yafaray4.render_convert_old_settings"
+    bl_idname = "YAFARAY4_PT_render_convert_old_settings"
     bl_label = "Convert old YafaRay Settings"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -233,7 +233,7 @@ class ConvertOldSettings(RenderButtonsPanel, Panel):
 
 
 class Advanced(RenderButtonsPanel, Panel):
-    bl_idname = "yafaray4.render_advanced"
+    bl_idname = "YAFARAY4_PT_render_advanced"
     bl_label = "Advanced Settings - only for experts"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}

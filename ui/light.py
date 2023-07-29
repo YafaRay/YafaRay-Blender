@@ -35,7 +35,7 @@ def light_from_context(context):
 
 
 class Preview(Panel):
-    bl_idname = "yafaray4.light_preview"
+    bl_idname = "YAFARAY4_PT_light_preview"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "data"
@@ -54,7 +54,7 @@ class Preview(Panel):
 
 
 class Light(DataButtonsPanel, Panel):
-    bl_idname = "yafaray4.light"
+    bl_idname = "YAFARAY4_PT_light"
     bl_label = "Light"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -116,7 +116,7 @@ class Light(DataButtonsPanel, Panel):
 
 
 class Area(DataButtonsPanel, Panel):
-    bl_idname = "yafaray4.light_area"
+    bl_idname = "YAFARAY4_PT_light_area"
     bl_label = "Area Shape"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -142,7 +142,7 @@ class Area(DataButtonsPanel, Panel):
 
 
 class Spot(DataButtonsPanel, Panel):
-    bl_idname = "yafaray4.light_spot"
+    bl_idname = "YAFARAY4_PT_light_spot"
     bl_label = "Spot Shape"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -174,7 +174,7 @@ class Spot(DataButtonsPanel, Panel):
 
 
 class LightAdvanced(DataButtonsPanel, Panel):
-    bl_idname = "yafaray4.light_advanced"
+    bl_idname = "YAFARAY4_PT_light_advanced"
     bl_label = "Advanced settings"
     bl_options = {'DEFAULT_CLOSED'}
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}

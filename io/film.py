@@ -109,12 +109,12 @@ class Film:
         yaf_param_map.set_int("resx", x)
         yaf_param_map.set_int("resy", y)
 
-        if self.is_preview and bpy.data.scenes[0].yafaray.is_preview.enable:
+        if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable:
 
                 #incl = bpy.data.scenes[0].yafaray.preview.camRotIncl
                 #azi = bpy.data.scenes[0].yafaray.preview.camRotAzi
-                rot = bpy.data.scenes[0].yafaray.is_preview.camRot
-                dist = bpy.data.scenes[0].yafaray.is_preview.camDist
+                rot = bpy.data.scenes[0].yafaray.preview.camRot
+                dist = bpy.data.scenes[0].yafaray.preview.camDist
 
                 #pos = (dist*math.sin(incl)*math.cos(azi), dist*math.sin(incl)*math.sin(azi), dist*math.cos(incl))
                 #up = (math.sin(rotZ), 0, math.cos(rotZ))
@@ -202,8 +202,8 @@ def exportAA(yi, bl_scene, yaf_param_map):
     yaf_param_map.set_float("AA_clamp_indirect", bl_scene.yafaray.noise_control.clamp_indirect)
     yaf_param_map.set_bool("background_resampling", bl_scene.yafaray.noise_control.background_resampling)
 
-    if bl_scene.name == "preview" and bpy.data.scenes[0].yafaray.is_preview.enable:
-        yaf_param_map.set_int("AA_passes", bpy.data.scenes[0].yafaray.is_preview.previewAApasses)
+    if bl_scene.name == "preview" and bpy.data.scenes[0].yafaray.preview.enable:
+        yaf_param_map.set_int("AA_passes", bpy.data.scenes[0].yafaray.preview.previewAApasses)
         yaf_param_map.set_float("AA_threshold", 0.01)
 
 
@@ -231,7 +231,7 @@ def exportRenderSettings(yi, depsgraph, render_path, render_filename):
 
     yaf_param_map.set_bool("show_sam_pix", scene.gs_show_sam_pix)
 
-    if scene.name == "preview" and bpy.data.scenes[0].yafaray.is_preview.enable:
+    if scene.name == "preview" and bpy.data.scenes[0].yafaray.preview.enable:
         yaf_param_map.set_bool("show_sam_pix", False)
 
     yaf_param_map.set_int("tile_size", scene.gs_tile_size)

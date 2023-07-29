@@ -18,7 +18,7 @@ if __name__ == "__main__":  # Only used when editing and testing "live" within B
     # noinspection PyUnresolvedReferences
     import yafaray4.ot.presets
 
-    if hasattr(bpy.types, 'RENDER_OT_yafaray4_presets'):
+    if hasattr(bpy.types, 'YAFARAY4_OT_render_presets'):
         yafaray4.ot.presets.unregister()
     yafaray4.ot.presets.register()
     # noinspection PyUnresolvedReferences
@@ -35,7 +35,7 @@ def ui_split(ui_item, factor):
 
 
 class PresetsRender(Menu):
-    bl_idname = "yafaray4.presets_render"
+    bl_idname = "YAFARAY4_MT_presets_render"
     bl_label = "Yafaray Render Presets"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -45,7 +45,7 @@ class PresetsRender(Menu):
 
 
 class GeneralSettings(RenderButtonsPanel, Panel):
-    bl_idname = "yafaray4.general_settings"
+    bl_idname = "YAFARAY4_PT_general_settings"
     bl_label = "General Settings"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -58,7 +58,7 @@ class GeneralSettings(RenderButtonsPanel, Panel):
         if bpy.app.version >= (2, 80, 0):
             pass  # FIXME BLENDER 2.80-3.00
         else:
-            row.menu("YAFARAY4_MT_presets_render", text=bpy.types.PresetsRender.bl_label)
+            row.menu("YAFARAY4_MT_presets_render", text=bpy.types.YAFARAY4_MT_presets_render.bl_label)
             row.operator("yafaray4.render_presets", text="", icon="ADD" if bpy.app.version >= (2, 80, 0) else "ZOOMIN")
 
         layout.separator()
@@ -157,7 +157,7 @@ class GeneralSettings(RenderButtonsPanel, Panel):
 
 
 class Accelerator(RenderButtonsPanel, Panel):
-    bl_idname = "yafaray4.accelerator"
+    bl_idname = "YAFARAY4_PT_accelerator"
     bl_label = "Scene accelerator settings"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -171,7 +171,7 @@ class Accelerator(RenderButtonsPanel, Panel):
 
 
 class Logging(RenderButtonsPanel, Panel):
-    bl_idname = "yafaray4.logging"
+    bl_idname = "YAFARAY4_PT_logging"
     bl_label = "Logging / Params Badge Settings"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -239,7 +239,7 @@ class Logging(RenderButtonsPanel, Panel):
 
 
 class ClayRender(RenderButtonsPanel, Panel):
-    bl_idname = "yafaray4.clay_render"
+    bl_idname = "YAFARAY4_PT_clay_render"
     bl_label = "Clay Render Settings"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 

@@ -5,7 +5,7 @@ from bpy.types import Panel
 
 
 class ObjectLight(Panel):
-    bl_idname = "yafaray4.object_light"
+    bl_idname = "YAFARAY4_PT_object_light"
     bl_label = "YafaRay Object Properties"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'

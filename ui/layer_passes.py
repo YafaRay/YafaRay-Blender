@@ -8,7 +8,7 @@ from bpy.types import Panel
 
 
 class Layers(RenderLayerButtonsPanel, Panel):
-    bl_idname = "yafaray4.layers"
+    bl_idname = "YAFARAY4_PT_layers"
     bl_label = "Layers"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -47,7 +47,7 @@ class Layers(RenderLayerButtonsPanel, Panel):
 
 
 class LayerPasses(RenderLayerButtonsPanel, Panel):
-    bl_idname = "yafaray4.layer_passes"
+    bl_idname = "YAFARAY4_PT_layer_passes"
     bl_label = "Render Passes"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -288,7 +288,7 @@ class LayerPasses(RenderLayerButtonsPanel, Panel):
 
 
 class Views(RenderLayerButtonsPanel, Panel):
-    bl_idname = "yafaray4.views"
+    bl_idname = "YAFARAY4_PT_views"
     bl_label = "Views"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 

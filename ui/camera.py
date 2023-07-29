@@ -16,7 +16,7 @@ if __name__ == "__main__":  # Only used when editing and testing "live" within B
 
 
 class Lens(CameraButtonsPanel, Panel):
-    bl_idname = "yafaray4.camera_lens"
+    bl_idname = "YAFARAY4_PT_camera_lens"
     bl_label = "Lens"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -73,7 +73,7 @@ class Lens(CameraButtonsPanel, Panel):
 
 
 class Camera(CameraButtonsPanel, Panel):
-    bl_idname = "yafaray4.camera"
+    bl_idname = "YAFARAY4_PT_camera"
     bl_label = "Camera"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -107,7 +107,7 @@ class Camera(CameraButtonsPanel, Panel):
 
 
 class CameraDisplay(CameraButtonsPanel, Panel):
-    bl_idname = "yafaray4.camera_display"
+    bl_idname = "YAFARAY4_PT_camera_display"
     bl_label = "Display"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 

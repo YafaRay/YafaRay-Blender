@@ -78,34 +78,34 @@ class Light:
             if name == "Light" or name == "Lamp":
                 pos = (-6, -4, 8, 1.0)
                 power = 5
-                if bpy.data.scenes[0].yafaray.is_preview.enable:
-                    power *= bpy.data.scenes[0].yafaray.is_preview.fillLightPowerFactor
-                    color = bpy.data.scenes[0].yafaray.is_preview.fillLightColor
+                if bpy.data.scenes[0].yafaray.preview.enable:
+                    power *= bpy.data.scenes[0].yafaray.preview.fillLightPowerFactor
+                    color = bpy.data.scenes[0].yafaray.preview.fillLightColor
 
             elif name == "Light.001" or name == "Lamp.001":
                 pos = (6, -6, -2, 1.0)
                 power = 6
-                if bpy.data.scenes[0].yafaray.is_preview.enable:
-                    power *= bpy.data.scenes[0].yafaray.is_preview.fillLightPowerFactor
-                    color = bpy.data.scenes[0].yafaray.is_preview.fillLightColor
+                if bpy.data.scenes[0].yafaray.preview.enable:
+                    power *= bpy.data.scenes[0].yafaray.preview.fillLightPowerFactor
+                    color = bpy.data.scenes[0].yafaray.preview.fillLightColor
                     
             elif name == "Light.002" or name == "Lamp.002":
                 pos = (-2.9123109, -7.270790733, 4.439187765, 1.0)
                 to = (-0.0062182024121284485, 0.6771485209465027, 1.8015732765197754, 1.0)
                 power = 5
-                if bpy.data.scenes[0].yafaray.is_preview.enable:
-                    power *= bpy.data.scenes[0].yafaray.is_preview.keyLightPowerFactor
-                    color = bpy.data.scenes[0].yafaray.is_preview.keyLightColor
+                if bpy.data.scenes[0].yafaray.preview.enable:
+                    power *= bpy.data.scenes[0].yafaray.preview.keyLightPowerFactor
+                    color = bpy.data.scenes[0].yafaray.preview.keyLightColor
                     
             elif name == "Light.008" or name == "Lamp.008":
                 lightType = "sun"
                 power = 0.8
-                if bpy.data.scenes[0].yafaray.is_preview.enable:
-                    power *= bpy.data.scenes[0].yafaray.is_preview.keyLightPowerFactor
-                    color = bpy.data.scenes[0].yafaray.is_preview.keyLightColor
+                if bpy.data.scenes[0].yafaray.preview.enable:
+                    power *= bpy.data.scenes[0].yafaray.preview.keyLightPowerFactor
+                    color = bpy.data.scenes[0].yafaray.preview.keyLightColor
             
-            if bpy.data.scenes[0].yafaray.is_preview.enable:
-                matrix2 = mathutils.Matrix.Rotation(bpy.data.scenes[0].yafaray.is_preview.lightRotZ, 4, 'Z')
+            if bpy.data.scenes[0].yafaray.preview.enable:
+                matrix2 = mathutils.Matrix.Rotation(bpy.data.scenes[0].yafaray.preview.lightRotZ, 4, 'Z')
                 pos = multiplyMatrix4x4Vector4(matrix2, mathutils.Vector((pos[0], pos[1], pos[2], pos[3])))
 
         self.yaf_logger.printInfo("Exporting Light: {0} [{1}]".format(name, lightType))

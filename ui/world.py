@@ -39,7 +39,7 @@ else:
 
 
 class World(WorldButtonsPanel, Panel):
-    bl_idname = "yafaray4.world"
+    bl_idname = "YAFARAY4_PT_world"
     bl_label = "Background Settings"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     ibl = True
@@ -281,7 +281,7 @@ class World(WorldButtonsPanel, Panel):
 
 
 class Advanced(WorldButtonsPanel, Panel):
-    bl_idname = "yafaray4.world_advanced"
+    bl_idname = "YAFARAY4_PT_world_advanced"
     bl_label = "Advanced settings"
     bl_options = {'DEFAULT_CLOSED'}
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}

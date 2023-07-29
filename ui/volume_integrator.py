@@ -6,7 +6,7 @@ from bpy.types import Panel
 
 
 class VolumeIntegrator(WorldButtonsPanel, Panel):
-    bl_idname = "yafaray4.vol_integrator"
+    bl_idname = "YAFARAY4_PT_vol_integrator"
     bl_label = "YafaRay Volume Integrator"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 

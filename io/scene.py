@@ -49,8 +49,8 @@ class Scene:
         self.object.setDepsgraph(self.bl_depsgraph)
         self.export_objects()
 
-        if self.is_preview and bpy.data.scenes[0].yafaray.is_preview.enable and bpy.data.scenes[
-            0].yafaray.is_preview.previewBackground == "world":
+        if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable and bpy.data.scenes[
+            0].yafaray.preview.previewBackground == "world":
             self.world.export(bpy.data.scenes[0], self.is_preview)
         else:
             self.world.export(self.bl_scene, self.yaf_scene, self.is_preview)

@@ -28,7 +28,7 @@ def material_from_context(context):
 
 
 class TextureButtons:
-    bl_idname = "yafaray4.texture_buttons"
+    bl_idname = "YAFARAY4_PT_texture_buttons"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "texture"
@@ -42,7 +42,7 @@ class TextureButtons:
 
 
 class Context(TextureButtons, Panel):
-    bl_idname = "yafaray4.texture_context"
+    bl_idname = "YAFARAY4_PT_texture_context"
     bl_label = "YafaRay Textures"
     bl_options = {'HIDE_HEADER'}
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -155,7 +155,7 @@ class Context(TextureButtons, Panel):
 
 
 class Preview(TextureButtons, Panel):
-    bl_idname = "yafaray4.texture_preview"
+    bl_idname = "YAFARAY4_PT_texture_preview"
     bl_label = "Preview"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -177,7 +177,7 @@ class Preview(TextureButtons, Panel):
 
 
 class PreviewControls(TextureButtons, Panel):
-    bl_idname = "yafaray4.texture_preview_controls"
+    bl_idname = "YAFARAY4_PT_texture_preview_controls"
     bl_label = "Preview Controls"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -197,13 +197,13 @@ class PreviewControls(TextureButtons, Panel):
             col.prop(context.scene.yafaray.preview, "camRot", text="")
             col = split.column()
             row = col.row()
-            row.operator("yafaray4.preview_camera_zoom_out", text='Zoom Out', icon='ZOOM_OUT')
+            row.operator("yafaray4.material_preview_camera_zoom_out", text='Zoom Out', icon='ZOOM_OUT')
             col2 = row.column()
-            col2.operator("yafaray4.preview_camera_zoom_in", text='Zoom In', icon='ZOOM_IN')
+            col2.operator("yafaray4.material_preview_camera_zoom_in", text='Zoom In', icon='ZOOM_IN')
             row = col.row()
             row.label(text="")
             row = col.row()
-            row.operator("yafaray4.preview_camera_rotation_reset", text='Reset dynamic rotation/zoom')
+            row.operator("yafaray4.material_preview_camera_rotation_reset", text='Reset dynamic rotation/zoom')
             split = layout.split()
             col = split.column()
             col.label(text="Preview object control")
@@ -246,7 +246,7 @@ class PreviewControls(TextureButtons, Panel):
 
 
 class Colors(TextureButtons, Panel):
-    bl_idname = "yafaray4.texture_colors"
+    bl_idname = "YAFARAY4_PT_texture_colors"
     bl_label = "Colors"
     bl_options = {'DEFAULT_CLOSED'}
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -299,7 +299,7 @@ class Colors(TextureButtons, Panel):
 
 
 class Slot(TextureButtons):
-    bl_idname = "yafaray4.texture_slot"
+    bl_idname = "YAFARAY4_PT_texture_slot"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     @classmethod
@@ -312,7 +312,7 @@ class Slot(TextureButtons):
 
 
 class Type(TextureButtons):
-    bl_idname = "yafaray4.texture_type"
+    bl_idname = "YAFARAY4_PT_texture_type"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     @classmethod
@@ -324,7 +324,7 @@ class Type(TextureButtons):
 
 # --- YafaRay's own Texture Type Panels --- #
 class TypeClouds(Type, Panel):
-    bl_idname = "yafaray4.texture_type_clouds"
+    bl_idname = "YAFARAY4_PT_texture_type_clouds"
     bl_label = "Clouds"
     tex_type = 'CLOUDS'
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -347,7 +347,7 @@ class TypeClouds(Type, Panel):
 
 
 class TypeWood(Type, Panel):
-    bl_idname = "yafaray4.texture_type_wood"
+    bl_idname = "YAFARAY4_PT_texture_type_wood"
     bl_label = "Wood"
     tex_type = 'WOOD'
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -375,7 +375,7 @@ class TypeWood(Type, Panel):
 
 
 class TypeMarble(Type, Panel):
-    bl_idname = "yafaray4.texture_type_marble"
+    bl_idname = "YAFARAY4_PT_texture_type_marble"
     bl_label = "Marble"
     tex_type = 'MARBLE'
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -400,7 +400,7 @@ class TypeMarble(Type, Panel):
 
 
 class TypeBlend(Type, Panel):
-    bl_idname = "yafaray4.texture_type_blend"
+    bl_idname = "YAFARAY4_PT_texture_type_blend"
     bl_label = "Blend"
     tex_type = 'BLEND'
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -419,7 +419,7 @@ class TypeBlend(Type, Panel):
 
 
 class TypeImage(Type, Panel):
-    bl_idname = "yafaray4.texture_type_image"
+    bl_idname = "YAFARAY4_PT_texture_type_image"
     bl_label = "Map Image"
     tex_type = 'IMAGE'
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -460,7 +460,7 @@ class TypeImage(Type, Panel):
 
 
 class TypeImageSampling(Type, Panel):
-    bl_idname = "yafaray4.texture_type_image_sampling"
+    bl_idname = "YAFARAY4_PT_texture_type_image_sampling"
     bl_label = "Image Sampling"
     bl_options = {'DEFAULT_CLOSED'}
     tex_type = 'IMAGE'
@@ -493,7 +493,7 @@ class TypeImageSampling(Type, Panel):
 
 
 class TypeImageMapping(Type, Panel):
-    bl_idname = "yafaray4.texture_type_image_mapping"
+    bl_idname = "YAFARAY4_PT_texture_type_image_mapping"
     bl_label = "Image Mapping"
     bl_options = {'DEFAULT_CLOSED'}
     tex_type = 'IMAGE'
@@ -548,7 +548,7 @@ class TypeImageMapping(Type, Panel):
 
 
 class TypeMusgrave(Type, Panel):
-    bl_idname = "yafaray4.texture_type_musgrave"
+    bl_idname = "YAFARAY4_PT_texture_type_musgrave"
     bl_label = "Musgrave"
     tex_type = 'MUSGRAVE'
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -585,7 +585,7 @@ class TypeMusgrave(Type, Panel):
 
 
 class TypeVoronoi(Type, Panel):
-    bl_idname = "yafaray4.texture_type_voronoi"
+    bl_idname = "YAFARAY4_PT_texture_type_voronoi"
     bl_label = "Voronoi"
     tex_type = 'VORONOI'
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -621,7 +621,7 @@ class TypeVoronoi(Type, Panel):
 
 
 class TypeDistortedNoise(Type, Panel):
-    bl_idname = "yafaray4.texture_type_distorted_noise"
+    bl_idname = "YAFARAY4_PT_texture_type_distorted_noise"
     bl_label = "Distorted Noise"
     tex_type = 'DISTORTED_NOISE'
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -642,7 +642,7 @@ class TypeDistortedNoise(Type, Panel):
 
 
 class TypeOcean(Type, Panel):
-    bl_idname = "yafaray4.texture_type_ocean"
+    bl_idname = "YAFARAY4_PT_texture_type_ocean"
     bl_label = "Ocean"
     tex_type = 'OCEAN'
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -659,7 +659,7 @@ class TypeOcean(Type, Panel):
 
 
 class SlotMapping(Slot, Panel):
-    bl_idname = "yafaray4.texture_slot_mapping"
+    bl_idname = "YAFARAY4_PT_texture_slot_mapping"
     bl_label = "YafaRay Mapping (Map Input)"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
@@ -754,7 +754,7 @@ class SlotMapping(Slot, Panel):
 
 
 class SlotInfluence(Slot, Panel):
-    bl_idname = "yafaray4.texture_slot_influence"
+    bl_idname = "YAFARAY4_PT_texture_slot_influence"
     bl_label = "YafaRay Influence (Map To)"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 

@@ -5,7 +5,7 @@ from bpy.types import Panel
 
 
 class StrandSettings(Panel):
-    bl_idname = "yafaray4.strand_settings"
+    bl_idname = "YAFARAY4_PT_strand_settings"
     bl_label = "Strand Settings"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'

@@ -6,7 +6,7 @@ from bpy.types import Panel
 
 
 class Render(RenderButtonsPanel, Panel):
-    bl_idname = "yafaray4.integrator_render"
+    bl_idname = "YAFARAY4_PT_integrator_render"
     bl_label = "Integrator"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 

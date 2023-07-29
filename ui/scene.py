@@ -6,7 +6,7 @@ from bpy.types import Panel
 
 
 class ColorManagement(SceneButtonsPanel, Panel):
-    bl_idname = "yafaray4.scene_color_management"
+    bl_idname = "YAFARAY4_PT_scene_color_management"
     bl_label = "Color Management"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
