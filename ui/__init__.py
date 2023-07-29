@@ -2,10 +2,7 @@
 
 import bpy
 
-from . import aa_settings
 from . import camera
-from . import general_settings
-from . import integrator
 from . import light
 from . import material
 from . import object
@@ -21,9 +18,6 @@ else:
     from . import layer_passes
 
 modules = (
-    general_settings,
-    aa_settings,
-    integrator,
     render,
     camera,
     material,
