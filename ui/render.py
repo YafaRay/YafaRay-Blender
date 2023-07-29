@@ -56,21 +56,8 @@ class Render(RenderButtonsPanel, Panel):
 
         layout = self.layout
         rd = context.scene.render
+        scene = context.scene
 
-        if context.scene.img_save_with_blend_file:
-            row = layout.row()
-            row.label(text="Parameter 'Save with Blend file' is enabled in the Output options.", icon="INFO")
-            row = layout.row()
-            row.label(
-                text="Be aware that the first time you render, it will change *automatically* the image output folder",
-                icon="INFO")
-        if context.scene.gs_secondary_file_output:
-            row = layout.row()
-            row.label(text="Parameter 'Secondary File Output' is enabled in the General Settings options.", icon="INFO")
-            row = layout.row()
-            row.label(
-                text="Be aware that even when rendering into Blender, it will save images to the image output folder",
-                icon="INFO")
         row = layout.row()
         row.operator("yafaray4.render_still", text="Image", icon='RENDER_STILL')
         row.operator("yafaray4.render_animation", text="Animation", icon='RENDER_ANIMATION')
@@ -79,6 +66,13 @@ class Render(RenderButtonsPanel, Panel):
             pass  # FIXME BLENDER 2.80-3.00
         else:
             layout.prop(rd, "display_mode", text="Display")
+
+        row = layout.row()
+        sub = row.column(align=True)
+        sub.label(text="Frame Range:")
+        sub.prop(scene, "frame_start", text="Start")
+        sub.prop(scene, "frame_end", text="End")
+        sub.prop(scene, "frame_step", text="Step")
 
 
 class RenderPresets(RenderButtonsPanel, Panel):
@@ -113,9 +107,9 @@ class Dimensions(RenderButtonsPanel, Panel):
         if bpy.app.version >= (2, 80, 0):
             pass  # FIXME BLENDER 2.80-3.00
         else:
-            row.menu("RENDER_MT_presets", text=bpy.types.RENDER_MT_presets.bl_label)
-            row.operator("yafaray4.render_presets", text="", icon="ADD" if bpy.app.version >= (2, 80, 0) else "ZOOMIN")
-            row.operator("yafaray4.render_presets", text="",
+            row.menu("RENDER_MT_presets", text="Dimension Presets")
+            row.operator("render.preset_add", text="", icon="ADD" if bpy.app.version >= (2, 80, 0) else "ZOOMIN")
+            row.operator("render.preset_add", text="",
                          icon="REMOVE" if bpy.app.version >= (2, 80, 0) else "ZOOMOUT").remove_active = True
 
         split = layout.split()
@@ -132,13 +126,6 @@ class Dimensions(RenderButtonsPanel, Panel):
         sub = row.row()
         sub.active = rd.use_border
         sub.prop(rd, "use_crop_to_border", text="Crop")
-
-        col = split.column()
-        sub = col.column(align=True)
-        sub.label(text="Frame Range:")
-        sub.prop(scene, "frame_start", text="Start")
-        sub.prop(scene, "frame_end", text="End")
-        sub.prop(scene, "frame_step", text="Step")
 
 
 class AASettings(RenderButtonsPanel, Panel):
@@ -552,6 +539,22 @@ class Output(OutputPanel):
     def draw(self, context):
         layout = self.layout
         scene = context.scene
+
+        if context.scene.img_save_with_blend_file:
+            row = layout.row()
+            row.label(text="Parameter 'Save with Blend file' is enabled.", icon="INFO")
+            row = layout.row()
+            row.label(
+                text="Be aware that the first time you render, it will change *automatically* the image output folder",
+                icon="INFO")
+        if context.scene.gs_secondary_file_output:
+            row = layout.row()
+            row.label(text="Parameter 'Secondary File Output' is enabled.", icon="INFO")
+            row = layout.row()
+            row.label(
+                text="Be aware that even when rendering into Blender, it will save images to the image output folder",
+                icon="INFO")
+
         col = layout.column()
 
         sub = col.column()
@@ -726,6 +729,7 @@ class PostProcessing(OutputPanel):
 classes = (
     PresetsRender,
     RenderPresets,
+    Render,
     Dimensions,
     GeneralSettings,
     Output,
@@ -734,7 +738,6 @@ classes = (
     Accelerator,
     Logging,
     ClayRender,
-    Render,
     AASettings,
     ConvertOldSettings,
     Advanced,
