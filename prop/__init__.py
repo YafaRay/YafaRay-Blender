@@ -10,10 +10,8 @@ from . import texture
 from . import world
 if bpy.app.version >= (2, 80, 0):
     from . import preferences
-    from . import scene_property_groups
 else:
     from . import preferences_279
-    from . import scene_property_groups_279
 
 modules = (
     object,
@@ -27,10 +25,8 @@ modules = (
 
 if bpy.app.version >= (2, 80, 0):
     modules = modules + (preferences, )
-    modules = modules + (scene_property_groups, )
 else:
     modules = modules + (preferences_279, )
-    modules = modules + (scene_property_groups_279, )
 
 
 def register():
