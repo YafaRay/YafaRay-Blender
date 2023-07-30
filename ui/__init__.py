@@ -213,9 +213,7 @@ for member in dir(
         pass
 del properties_physics_rigidbody_constraint
 
-if bpy.app.version >= (2, 80, 0):
-    pass  # FIXME BLENDER >= v2.80
-else:
+if bpy.app.version < (2, 80, 0): # No smoke physics panel in Blender 2.80+
     # noinspection PyUnresolvedReferences
     from bl_ui import properties_physics_smoke as properties_physics_smoke
 
