@@ -11,12 +11,7 @@ from . import scene
 from . import strand
 from . import texture
 from . import world
-
-if bpy.app.version >= (2, 80, 0):
-    from . import layer_passes
-    pass  # FIXME BLENDER >= v2.80
-else:
-    from . import layer_passes
+from . import layer_passes
 
 modules = (
     render,

@@ -384,7 +384,7 @@ class Accelerator(RenderButtonsPanel, Panel):
         col.prop(scene, "gs_accelerator")
 
 
-class Logging(RenderButtonsPanel, Panel):
+class Logging(OutputPanel, Panel):
     bl_idname = "YAFARAY4_PT_logging"
     bl_label = "Logging / Params Badge Settings"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
@@ -779,6 +779,58 @@ class PostProcessing(OutputPanel):
         col.prop(rd, "dither_intensity", text="Dither", slider=True)
 
 
+class Views(OutputPanel, Panel):
+    bl_idname = "YAFARAY4_PT_views"
+    bl_label = "Stereoscopy / Multi-View"
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
+
+    def draw_header(self, context):
+        rd = context.scene.render
+        self.layout.prop(rd, "use_multiview", text="")
+
+    def draw(self, context):
+        layout = self.layout
+
+        scene = context.scene
+        rd = scene.render
+        rv = rd.views.active
+
+        if rd.use_multiview:
+            layout.active = rd.use_multiview
+            basic_stereo = rd.views_format == 'STEREO_3D'
+
+            row = layout.row()
+            row.prop(rd, "views_format", expand=True)
+
+            if bpy.app.version >= (2, 80, 0):
+                renderviews_template_name = "RENDER_UL_renderviews"
+            else:
+                renderviews_template_name = "RENDERLAYER_UL_renderviews"
+
+            if basic_stereo:
+                row = layout.row()
+                row.template_list(renderviews_template_name, "name", rd, "stereo_views", rd.views, "active_index",
+                                  rows=2)
+
+                row = layout.row()
+                row.label(text="File Suffix:")
+                row.prop(rv, "file_suffix", text="")
+
+            else:
+                row = layout.row()
+                row.template_list(renderviews_template_name, "name", rd, "views", rd.views, "active_index", rows=2)
+
+                col = row.column(align=True)
+                col.operator("scene.render_view_add", icon="ADD" if bpy.app.version >= (2, 80, 0) else "ZOOMIN",
+                             text="")
+                col.operator("scene.render_view_remove", icon="REMOVE" if bpy.app.version >= (2, 80, 0) else "ZOOMOUT",
+                             text="")
+
+                row = layout.row()
+                row.label(text="Camera Suffix:")
+                row.prop(rv, "camera_suffix", text="")
+
+
 classes = (
     PresetsRender,
     RenderPresets,
@@ -787,10 +839,11 @@ classes = (
     FrameRange,
     GeneralSettings,
     Output,
+    Logging,
+    Views,
     PostProcessing,
     Integrator,
     Accelerator,
-    Logging,
     ClayRender,
     AASettings,
     ConvertOldSettings,
