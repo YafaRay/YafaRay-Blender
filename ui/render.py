@@ -356,10 +356,7 @@ class GeneralSettings(RenderButtonsPanel, Panel):
         else:
             sub.label(text="")
         col.prop(scene, "gs_show_sam_pix", toggle=True)
-        if bpy.app.version >= (2, 80, 0):
-            pass  # FIXME BLENDER >= v2.80
-        else:
-            col.prop(render, "use_instances", text="Use instances", toggle=True)
+        col.prop(scene, "use_instances", text="Use instances", toggle=True)
 
         split = ui_split(layout, 0.5)
         col = split.column()

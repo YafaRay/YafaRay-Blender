@@ -157,7 +157,7 @@ class Scene:
             if obj_is_instancer:
                 self.yaf_logger.printVerbose("Processing duplis for: {0}".format(obj.name))
                 frame_current = self.bl_scene.frame_current
-                if self.bl_scene.render.use_instances:
+                if self.bl_scene.use_instances:
                     time_steps = 3
                 else:
                     time_steps = 1
@@ -172,7 +172,7 @@ class Scene:
                             if mat_slot.material not in self.materials:
                                 self.export_material(mat_slot.material)
 
-                        if not self.bl_scene.render.use_instances:
+                        if not self.bl_scene.use_instances:
                             matrix = obj_dupli.matrix.copy()
                             self.object.writeMesh(obj_dupli.object, matrix,
                                                   obj_dupli.object.name + "_" + str(self.yaf_scene.getNextFreeId()))
@@ -207,7 +207,7 @@ class Scene:
                 continue
 
             # Exporting objects with shared mesh data blocks as instances
-            elif obj.data.users > 1 and self.bl_scene.render.use_instances:
+            elif obj.data.users > 1 and self.bl_scene.use_instances:
                 self.yaf_logger.printVerbose("Processing shared mesh data node object: {0}".format(obj.name))
                 if obj.data.name not in base_ids:
                     base_ids[obj.data.name] = self.object.writeInstanceBase(obj.data.name, obj)

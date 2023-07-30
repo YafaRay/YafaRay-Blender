@@ -599,6 +599,13 @@ def register():
         ],
         default="gauss")
 
+    Scene.use_instances = BoolProperty(
+        name="Use Instances for Rendering",
+        description="Use Instances during rendering for instanced objects."
+                    "If disabled it generates internally full copies of the "
+                    "base object in memory instead of instances.",
+        default=True)
+
     bpy.utils.register_class(YafaRay4Properties)
     bpy.types.Scene.yafaray = PointerProperty(type=YafaRay4Properties)
 
@@ -716,3 +723,4 @@ def unregister():
     del Scene.AA_threshold
     del Scene.AA_pixelwidth
     del Scene.AA_filter_type
+    del Scene.use_instances
