@@ -101,12 +101,7 @@ del properties_data_speaker
 from bl_ui import properties_scene as properties_scene
 
 for member in dir(properties_scene):
-
     if member != "SCENE_PT_color_management":  # YafaRay Color management panel is customized in scene.
-        # FIXME: The customized YafaRay panel appears at the end of the Blender scene tab panels, I don't know how to
-        #  rearrange the panels to keep YafaRay color management in the same place as Blender Color Management panel
-        #  was.
-
         subclass = getattr(properties_scene, member)
         # noinspection PyBroadException
         try:
