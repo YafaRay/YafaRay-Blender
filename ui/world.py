@@ -7,8 +7,6 @@ from bl_ui.properties_world import WorldButtonsPanel
 # noinspection PyUnresolvedReferences
 from bpy.types import Panel
 
-WORLD_PT_context_world.COMPAT_ENGINES.add('YAFARAY4_RENDER')
-del WORLD_PT_context_world
 
 if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, 
     # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the 
@@ -27,15 +25,18 @@ def ui_split(ui_item, factor):
         return ui_item.split(percentage=factor)
 
 
-# Inherit World Preview Panel
-if bpy.app.version >= (2, 80, 0):
-    pass  # FIXME BLENDER >= v2.80
-else:
-    # noinspection PyUnresolvedReferences
-    from bl_ui.properties_world import WORLD_PT_preview
+class WorldPreview(WorldButtonsPanel, Panel):
+    bl_idname = "YAFARAY4_PT_world_preview"
+    bl_label = "Preview"
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
-    WORLD_PT_preview.COMPAT_ENGINES.add('YAFARAY4_RENDER')
-    del WORLD_PT_preview
+    @classmethod
+    def poll(cls, context):
+        rd = context.scene.render
+        return (context.world) and (rd.engine in cls.COMPAT_ENGINES)
+
+    def draw(self, context):
+        self.layout.template_preview(context.world)
 
 
 class World(WorldButtonsPanel, Panel):
@@ -299,6 +300,7 @@ class Advanced(WorldButtonsPanel, Panel):
 
 
 classes = (
+    WorldPreview,
     World,
     Advanced,
 )
