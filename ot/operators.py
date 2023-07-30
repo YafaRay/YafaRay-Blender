@@ -267,7 +267,7 @@ class MaterialPreviewCamZoomOut(bpy.types.Operator):
         return {'FINISHED'}
 
 
-classes = (WorldGetSunPosition, WorldGetSunAngle, RenderView, RenderAnimation, RenderStill, MaterialPresetsIorList, MaterialPreviewCamRotReset, MaterialPreviewCamZoomIn, MaterialPreviewCamZoomOut, )
+classes = (WorldGetSunPosition, WorldGetSunAngle, WorldUpdateSunPositionAndAngle, RenderView, RenderAnimation, RenderStill, MaterialPresetsIorList, MaterialPreviewCamRotReset, MaterialPreviewCamZoomIn, MaterialPreviewCamZoomOut, )
 
 
 def register():

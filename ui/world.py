@@ -170,9 +170,9 @@ class World(WorldButtonsPanel, Panel):
             col = split.column()
             col.label(text=" ")
             sub = col.column(align=True)
-            sub.operator("world.get_position", text="Get from Location")
-            sub.operator("world.get_angle", text="Get from Angle")
-            sub.operator("world.update_sun", text="Update Light in 3D View")
+            sub.operator("yafaray4.world_get_position", text="Get from Location")
+            sub.operator("yafaray4.world_get_angle", text="Get from Angle")
+            sub.operator("yafaray4.world_update_sun", text="Update Light in 3D View")
 
             layout.separator()
 
@@ -216,9 +216,9 @@ class World(WorldButtonsPanel, Panel):
             col = split.column()
             col.label(text=" ")
             sub = col.column(align=True)
-            sub.operator("world.get_position", text="Get from Location")
-            sub.operator("world.get_angle", text="Get from Angle")
-            sub.operator("world.update_sun", text="Update Light in 3D View")
+            sub.operator("yafaray4.world_get_position", text="Get from Location")
+            sub.operator("yafaray4.world_get_angle", text="Get from Angle")
+            sub.operator("yafaray4.world_update_sun", text="Update Light in 3D View")
             col.prop(world, "bg_dsaltitude")
 
             layout.separator()
