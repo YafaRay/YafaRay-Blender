@@ -13,12 +13,14 @@ from . import texture
 from . import world
 
 if bpy.app.version >= (2, 80, 0):
+    from . import layer_passes
     pass  # FIXME BLENDER >= v2.80
 else:
     from . import layer_passes
 
 modules = (
     render,
+    layer_passes,
     camera,
     material,
     texture,
@@ -28,11 +30,6 @@ modules = (
     light,
     scene
 )
-
-if bpy.app.version >= (2, 80, 0):
-    pass  # FIXME BLENDER >= v2.80
-else:
-    modules = modules + (layer_passes,)
 
 
 def register():
