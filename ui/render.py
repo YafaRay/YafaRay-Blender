@@ -70,13 +70,6 @@ class Render(RenderButtonsPanel, Panel):
         else:
             layout.prop(rd, "display_mode", text="Display")
 
-        row = layout.row()
-        sub = row.column(align=True)
-        sub.label(text="Frame Range:")
-        sub.prop(scene, "frame_start", text="Start")
-        sub.prop(scene, "frame_end", text="End")
-        sub.prop(scene, "frame_step", text="Step")
-
 
 class RenderPresets(RenderButtonsPanel, Panel):
     bl_idname = "YAFARAY4_PT_render_presets"
@@ -95,18 +88,15 @@ class RenderPresets(RenderButtonsPanel, Panel):
                      icon="REMOVE" if bpy.app.version >= (2, 80, 0) else "ZOOMOUT").remove_active = True
 
 
-class Dimensions(RenderButtonsPanel, Panel):
+class Format(OutputPanel, Panel):
     bl_idname = "YAFARAY4_PT_render_dimensions"
-    bl_label = "Dimensions"
+    bl_label = "Format"
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
-    bl_options = {'DEFAULT_CLOSED'}
+    # bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
         layout = self.layout
-
-        scene = context.scene
-        rd = scene.render
-
+        rd = context.scene.render
         row = layout.row(align=True)
         if bpy.app.version >= (2, 80, 0):
             pass  # FIXME BLENDER >= v2.80
@@ -115,9 +105,7 @@ class Dimensions(RenderButtonsPanel, Panel):
             row.operator("render.preset_add", text="", icon="ADD" if bpy.app.version >= (2, 80, 0) else "ZOOMIN")
             row.operator("render.preset_add", text="",
                          icon="REMOVE" if bpy.app.version >= (2, 80, 0) else "ZOOMOUT").remove_active = True
-
         split = layout.split()
-
         col = split.column()
         sub = col.column(align=True)
         sub.label(text="Resolution:")
@@ -130,6 +118,23 @@ class Dimensions(RenderButtonsPanel, Panel):
         sub = row.row()
         sub.active = rd.use_border
         sub.prop(rd, "use_crop_to_border", text="Crop")
+
+
+class FrameRange(OutputPanel, Panel):
+    bl_idname = "YAFARAY4_PT_render_frame_range"
+    bl_label = "Frame Range"
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
+    # bl_options = {'DEFAULT_CLOSED'}
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        row = layout.row()
+        sub = row.column(align=True)
+        sub.label(text="Frame Range:")
+        sub.prop(scene, "frame_start", text="Start")
+        sub.prop(scene, "frame_end", text="End")
+        sub.prop(scene, "frame_step", text="Step")
 
 
 class AASettings(RenderButtonsPanel, Panel):
@@ -778,7 +783,8 @@ classes = (
     PresetsRender,
     RenderPresets,
     Render,
-    Dimensions,
+    Format,
+    FrameRange,
     GeneralSettings,
     Output,
     PostProcessing,
