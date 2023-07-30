@@ -1,7 +1,10 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+import os
+
 import bpy
 from bl_ui.properties_render import RenderButtonsPanel
+from bpy.path import display_name
 # noinspection PyUnresolvedReferences
 from bpy.types import Panel, Menu
 
@@ -24,7 +27,7 @@ if __name__ == "__main__":  # Only used when editing and testing "live" within B
     # noinspection PyUnresolvedReferences
     from yafaray4.ot import presets
 else:
-    from ..ot import presets
+    pass
 
 if bpy.app.version >= (2, 80, 0):
     from bl_ui.properties_output import RenderOutputButtonsPanel  # FIXME BLENDER 2.80-3.00
@@ -81,14 +84,15 @@ class RenderPresets(RenderButtonsPanel, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
     bl_options = {'DEFAULT_CLOSED'}
 
+    # noinspection PyUnusedLocal
     def draw(self, context):
         layout = self.layout
         row = layout.row(align=True)
-        if bpy.app.version >= (2, 80, 0):
-            pass  # FIXME BLENDER 2.80-3.00
-        else:
-            row.menu("YAFARAY4_MT_presets_render", text=bpy.types.YAFARAY4_MT_presets_render.bl_label)
-            row.operator("yafaray4.render_presets", text="", icon="ADD" if bpy.app.version >= (2, 80, 0) else "ZOOMIN")
+        row.menu("YAFARAY4_MT_presets_render", text=bpy.types.YAFARAY4_MT_presets_render.bl_label)
+        row.operator("yafaray4.render_presets", text="",
+                     icon="ADD" if bpy.app.version >= (2, 80, 0) else "ZOOMIN").remove_active = False
+        row.operator("yafaray4.render_presets", text="",
+                     icon="REMOVE" if bpy.app.version >= (2, 80, 0) else "ZOOMOUT").remove_active = True
 
 
 class Dimensions(RenderButtonsPanel, Panel):
@@ -258,7 +262,51 @@ class PresetsRender(Menu):
 
     preset_subdir = "render"
     preset_operator = "script.execute_preset"
-    draw = presets.YafarayMenu.draw_preset
+
+    # noinspection PyUnusedLocal
+
+    def path_menu(self, search_paths, operator, props_default=None):
+        if props_default is None:
+            props_default = {}
+        layout = self.layout
+
+        if not search_paths:
+            layout.label(text="* Missing Paths *")
+
+        # collect paths
+        files = []
+        for directory in search_paths:
+            files.extend([(f, os.path.join(directory, f)) for f in os.listdir(directory)])
+
+        files.sort()
+
+        for f, filepath in files:
+
+            if f.startswith(".") or f.startswith("_"):
+                continue
+
+            preset_name = display_name(f)
+            props = layout.operator(operator, text=preset_name)
+
+            for attr, value in props_default.items():
+                setattr(props, attr, value)
+
+            props.filepath = filepath
+            if operator == "script.execute_preset":
+                props.menu_idname = self.bl_idname
+
+    # noinspection PyUnusedLocal
+    def draw(self, context):
+        """Define these on the subclass
+         - preset_operator
+         - preset_subdir
+        """
+        home_dir = os.path.expanduser("~")
+        search_path = [os.path.join(home_dir, "yafaray4_userdata", "presets", self.preset_subdir)]
+        if not os.path.exists(search_path[0]):
+            os.makedirs(search_path[0])
+
+        self.path_menu(search_path, self.preset_operator)
 
 
 class GeneralSettings(RenderButtonsPanel, Panel):

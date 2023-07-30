@@ -6,8 +6,11 @@ import bpy
 from bpy.path import clean_name, display_name
 # noinspection PyUnresolvedReferences
 from bpy.types import Operator
-# noinspection PyUnresolvedReferences,PyProtectedMember
-from bpy_types import StructRNA, _GenericUI, RNAMeta
+
+if bpy.app.version >= (2, 80, 0):
+    from .render_presets_base import RenderPresetsBase
+else:
+    from .render_presets_base_279 import RenderPresetsBase
 
 
 # noinspection PyUnusedLocal
@@ -15,7 +18,7 @@ def preset_find(name, preset_path, disp_name=False):
     if not name:
         return None
 
-    if display_name:
+    if disp_name:
         filename = ""
         for fn in os.listdir(preset_path):
             if fn.endswith(".py") and name == display_name(fn):
@@ -30,7 +33,7 @@ def preset_find(name, preset_path, disp_name=False):
             return filepath
 
 
-class RenderPresets(Operator):
+class RenderPresets(RenderPresetsBase, Operator):
     """List of render presets. Also allows to add a Yafaray Render Preset in user home
     folder->yafaray4_user_data/presets/render. To delete or modify presets, modify the .py files directly in that
     folder"""
@@ -38,9 +41,6 @@ class RenderPresets(Operator):
     bl_label = "Yafaray Render Presets"
     bl_options = {'REGISTER'}  # only because invoke_props_popup requires.
     preset_menu = "YAFARAY4_MT_presets_render"
-    name = bpy.props.StringProperty(name="Name", description="Name of the preset, used to make the path name",
-                                    maxlen=64, default="")
-    remove_active = bpy.props.BoolProperty(default=False, options={'HIDDEN'})
     preset_defines = [
         "scene = bpy.context.scene"
     ]
@@ -128,35 +128,6 @@ class RenderPresets(Operator):
         "scene.yafaray.noise_control.variance_pixels",
         "scene.yafaray.noise_control.clamp_samples",
         "scene.yafaray.noise_control.clamp_indirect",
-        "scene.render.layers[0].use_pass_z",
-        "scene.render.layers[0].use_pass_vector",
-        "scene.render.layers[0].use_pass_normal",
-        "scene.render.layers[0].use_pass_uv",
-        "scene.render.layers[0].use_pass_color",
-        "scene.render.layers[0].use_pass_emit",
-        "scene.render.layers[0].use_pass_mist",
-        "scene.render.layers[0].use_pass_diffuse",
-        "scene.render.layers[0].use_pass_specular",
-        "scene.render.layers[0].use_pass_ambient_occlusion",
-        "scene.render.layers[0].use_pass_environment",
-        "scene.render.layers[0].use_pass_indirect",
-        "scene.render.layers[0].use_pass_shadow",
-        "scene.render.layers[0].use_pass_reflection",
-        "scene.render.layers[0].use_pass_refraction",
-        "scene.render.layers[0].use_pass_object_index",
-        "scene.render.layers[0].use_pass_material_index",
-        "scene.render.layers[0].use_pass_diffuse_direct",
-        "scene.render.layers[0].use_pass_diffuse_indirect",
-        "scene.render.layers[0].use_pass_diffuse_color",
-        "scene.render.layers[0].use_pass_glossy_direct",
-        "scene.render.layers[0].use_pass_glossy_indirect",
-        "scene.render.layers[0].use_pass_glossy_color",
-        "scene.render.layers[0].use_pass_transmission_direct",
-        "scene.render.layers[0].use_pass_transmission_indirect",
-        "scene.render.layers[0].use_pass_transmission_color",
-        "scene.render.layers[0].use_pass_subsurface_direct",
-        "scene.render.layers[0].use_pass_subsurface_indirect",
-        "scene.render.layers[0].use_pass_subsurface_color",
         "scene.yafaray.passes.pass_enable",
         "scene.yafaray.passes.pass_mask_obj_index",
         "scene.yafaray.passes.pass_mask_mat_index",
@@ -193,6 +164,40 @@ class RenderPresets(Operator):
         "scene.yafaray.passes.pass_SubsurfaceInd",
         "scene.yafaray.passes.pass_SubsurfaceCol"
     ]
+    if bpy.app.version >= (2, 80, 0):
+        pass  # FIXME BLENDER 2.80-3.00
+    else:
+        preset_values = preset_values + [
+            "scene.render.layers[0].use_pass_z",
+            "scene.render.layers[0].use_pass_vector",
+            "scene.render.layers[0].use_pass_normal",
+            "scene.render.layers[0].use_pass_uv",
+            "scene.render.layers[0].use_pass_color",
+            "scene.render.layers[0].use_pass_emit",
+            "scene.render.layers[0].use_pass_mist",
+            "scene.render.layers[0].use_pass_diffuse",
+            "scene.render.layers[0].use_pass_specular",
+            "scene.render.layers[0].use_pass_ambient_occlusion",
+            "scene.render.layers[0].use_pass_environment",
+            "scene.render.layers[0].use_pass_indirect",
+            "scene.render.layers[0].use_pass_shadow",
+            "scene.render.layers[0].use_pass_reflection",
+            "scene.render.layers[0].use_pass_refraction",
+            "scene.render.layers[0].use_pass_object_index",
+            "scene.render.layers[0].use_pass_material_index",
+            "scene.render.layers[0].use_pass_diffuse_direct",
+            "scene.render.layers[0].use_pass_diffuse_indirect",
+            "scene.render.layers[0].use_pass_diffuse_color",
+            "scene.render.layers[0].use_pass_glossy_direct",
+            "scene.render.layers[0].use_pass_glossy_indirect",
+            "scene.render.layers[0].use_pass_glossy_color",
+            "scene.render.layers[0].use_pass_transmission_direct",
+            "scene.render.layers[0].use_pass_transmission_indirect",
+            "scene.render.layers[0].use_pass_transmission_color",
+            "scene.render.layers[0].use_pass_subsurface_direct",
+            "scene.render.layers[0].use_pass_subsurface_indirect",
+            "scene.render.layers[0].use_pass_subsurface_color",
+        ]
     preset_subdir = "render"
 
     def execute(self, context):
@@ -293,16 +298,13 @@ class RenderPresets(Operator):
                 file_preset.write("%s\n" % rna_path)
             file_preset.write("\n")
 
-        if bpy.app.version >= (2, 80, 0):
-            pass  # FIXME BLENDER 2.80-3.00
-        else:
-            self.write_presets_to_file(file_preset)
+        self.write_presets_to_file(file_preset)
 
         file_preset.close()
 
     def write_presets_to_file(self, file_preset):
         for rna_path in self.preset_values:
-            value = eval(rna_path)
+            value = eval("bpy.context." + rna_path)
             if type(value) == float:  # formatting of the floating point values
                 value = round(value, 4)
             if str(value).startswith('Color'):  # formatting of the Color Vectors (r,g,b)
@@ -315,54 +317,6 @@ class RenderPresets(Operator):
                 except Exception:
                     pass
                 file_preset.write("%s = %r\n" % (rna_path, value))
-
-
-class YafarayMenu(StructRNA, _GenericUI,
-                  metaclass=RNAMeta):  # YafaRay's own Preset Menu drawing: search method for files changed
-    __slots__ = ()
-
-    def path_menu(self, search_paths, operator, props_default=None):
-        if props_default is None:
-            props_default = {}
-        layout = self.layout
-
-        if not search_paths:
-            layout.label(text="* Missing Paths *")
-
-        # collect paths
-        files = []
-        for directory in search_paths:
-            files.extend([(f, os.path.join(directory, f)) for f in os.listdir(directory)])
-
-        files.sort()
-
-        for f, filepath in files:
-
-            if f.startswith("."):
-                continue
-
-            preset_name = display_name(f)
-            props = layout.operator(operator, text=preset_name)
-
-            for attr, value in props_default.items():
-                setattr(props, attr, value)
-
-            props.filepath = filepath
-            if operator == "script.execute_preset":
-                props.menu_idname = self.bl_idname
-
-    # noinspection PyUnusedLocal
-    def draw_preset(self, context):
-        """Define these on the subclass
-         - preset_operator
-         - preset_subdir
-        """
-        home_dir = os.path.expanduser("~")
-        search_path = [os.path.join(home_dir, "yafaray4_userdata", "presets", self.preset_subdir)]
-        if not os.path.exists(search_path[0]):
-            os.makedirs(search_path[0])
-
-        self.path_menu(search_path, self.preset_operator)
 
 
 classes = (
