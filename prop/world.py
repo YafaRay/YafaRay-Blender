@@ -12,7 +12,7 @@ World = bpy.types.World
 
 # noinspection PyUnusedLocal
 def update_preview(self, context):
-    context.world.use_sky_paper = context.world.use_sky_paper
+    context.world.update_tag()
 
 
 def register():

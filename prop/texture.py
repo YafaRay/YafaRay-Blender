@@ -12,7 +12,7 @@ Texture = bpy.types.Texture
 
 # noinspection PyUnusedLocal
 def update_preview(self, context):
-    context.texture.saturation = context.texture.saturation
+    context.texture.update_tag()
 
 
 # try to update Blender property texture.type to YafaRay's texture.yaf_tex_type

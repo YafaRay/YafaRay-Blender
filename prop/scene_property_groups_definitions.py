@@ -10,9 +10,9 @@ from bpy.props import (IntProperty,
 # noinspection PyUnusedLocal
 def update_preview(self, context):
     if hasattr(context, "material") and context.material is not None:
-        context.material.preview_render_type = context.material.preview_render_type
+        context.material.update_tag()
     elif len(bpy.data.materials) > 0:
-        bpy.data.materials[0].preview_render_type = bpy.data.materials[0].preview_render_type
+        bpy.data.materials[0].update_tag()
 
 
 # noinspection PyTypeChecker

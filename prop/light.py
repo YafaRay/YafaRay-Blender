@@ -19,7 +19,7 @@ def update_preview(self, context):
         light = context.light
     else:
         light = context.lamp
-    light.type = light.type
+    light.update_tag()
 
 
 # noinspection PyUnusedLocal

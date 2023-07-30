@@ -35,7 +35,7 @@ def items_mat2(self, context):
 
 # noinspection PyUnusedLocal
 def update_preview(self, context):
-    context.material.preview_render_type = context.material.preview_render_type
+    context.material.update_tag()
 
 
 def register():
