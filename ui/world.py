@@ -29,7 +29,7 @@ def ui_split(ui_item, factor):
 
 # Inherit World Preview Panel
 if bpy.app.version >= (2, 80, 0):
-    pass  # FIXME BLENDER 2.80-3.00
+    pass  # FIXME BLENDER >= v2.80
 else:
     # noinspection PyUnresolvedReferences
     from bl_ui.properties_world import WORLD_PT_preview
@@ -80,7 +80,7 @@ class World(WorldButtonsPanel, Panel):
 
         elif world.bg_type == "Texture":
             if bpy.app.version >= (2, 80, 0):
-                return  # FIXME BLENDER 2.80-3.00
+                return  # FIXME BLENDER >= v2.80
 
             tex = context.scene.world.active_texture
             if tex is not None:

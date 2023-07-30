@@ -85,7 +85,7 @@ class Camera(CameraButtonsPanel, Panel):
         row = layout.row(align=True)
 
         if bpy.app.version >= (2, 80, 0):
-            pass  # FIXME BLENDER 2.80-3.00
+            pass  # FIXME BLENDER >= v2.80
         else:
             row.menu("CAMERA_MT_presets", text=bpy.types.CAMERA_MT_presets.bl_label)
             row.operator("camera.preset_add", text="", icon="ZOOMIN")
@@ -127,7 +127,7 @@ class CameraDisplay(CameraButtonsPanel, Panel):
 
         col = split.column()
         if bpy.app.version >= (2, 80, 0):
-            pass  # FIXME BLENDER 2.80-3.00
+            pass  # FIXME BLENDER >= v2.80
         else:
             col.prop_menu_enum(camera, "show_guide")
             col.prop(camera, "draw_size", text="Size")

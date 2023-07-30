@@ -224,7 +224,7 @@ class Object(object):
 
         self.yaf_scene.createVolumeRegion("VR.{0}-{1}".format(obj.name, str(obj.__hash__())), yaf_param_map)
         if bpy.app.version >= (2, 80, 0):
-            pass  # FIXME BLENDER 2.80-3.00
+            pass  # FIXME BLENDER >= v2.80
         else:
             bpy.data.meshes.remove(mesh, do_unlink=False)
 
@@ -238,7 +238,7 @@ class Object(object):
             uv_texture = mesh.uv_layers if 'uv_layers' in dir(mesh) else mesh.uv_textures
             # test for faces after BMesh API changes
             face_attr = 'polygons' if 'polygons' in dir(mesh) else 'loop_triangles'
-            hasUV = False  # FIXME BLENDER 2.80-3.00 #len(uv_texture) > 0  # check for UV's
+            hasUV = False  # FIXME BLENDER >= v2.80 #len(uv_texture) > 0  # check for UV's
 
             if face_attr == 'loop_triangles':
                 if not mesh.loop_triangles and mesh.polygons:
@@ -278,7 +278,7 @@ class Object(object):
                     return
 
         if bpy.app.version >= (2, 80, 0):
-            pass  # FIXME BLENDER 2.80-3.00
+            pass  # FIXME BLENDER >= v2.80
         else:
             # Check if the object has an orco mapped texture
             for mat in [mmat for mmat in mesh.materials if mmat is not None]:
@@ -394,7 +394,7 @@ class Object(object):
         auto_smooth_angle = mesh.auto_smooth_angle
 
         if bpy.app.version >= (2, 80, 0):
-            pass  # FIXME BLENDER 2.80-3.00
+            pass  # FIXME BLENDER >= v2.80
         else:
             bpy.data.meshes.remove(mesh, do_unlink=False)
 
@@ -412,7 +412,7 @@ class Object(object):
                     else:
                         self.yaf_scene.addVertexTimeStep(object_id, v.co[0], v.co[1], v.co[2], time_step)
                 if bpy.app.version >= (2, 80, 0):
-                    pass  # FIXME BLENDER 2.80-3.00
+                    pass  # FIXME BLENDER >= v2.80
                 else:
                     bpy.data.meshes.remove(mesh, do_unlink=False)
             self.scene.frame_set(frame_current, 0.0)
@@ -452,7 +452,7 @@ class Object(object):
         # Check for hair particles:
         for pSys in object.particle_systems:
             if bpy.app.version >= (2, 80, 0):
-                continue  # FIXME BLENDER 2.80-3.00
+                continue  # FIXME BLENDER >= v2.80
             for mod in [m for m in object.modifiers if (m is not None) and (m.type == 'PARTICLE_SYSTEM')]:
                 if (pSys.settings.render_type == 'PATH') and mod.show_render and (pSys.name == mod.particle_system.name):
                     self.yaf_logger.printInfo("Exporter: Creating Hair Particle System {!r}".format(pSys.name))

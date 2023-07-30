@@ -83,7 +83,7 @@ class Film:
                 # DOF params, only valid for real camera
                 # use DOF object distance if present or fixed DOF
                 if bpy.app.version >= (2, 80, 0):
-                    pass  # FIXME BLENDER 2.80-3.00
+                    pass  # FIXME BLENDER >= v2.80
                 else:
                     if bl_camera.dof_object is not None:
                         # use DOF object distance
@@ -261,7 +261,7 @@ def exportRenderSettings(yi, depsgraph, render_path, render_filename):
     yaf_param_map.set_float("adv_min_raydist_value", scene.adv_min_raydist_value)
     yaf_param_map.set_int("adv_base_sampling_offset", scene.adv_base_sampling_offset)
     if bpy.app.version >= (2, 80, 0):
-        pass   # FIXME BLENDER 2.80-3.00
+        pass   # FIXME BLENDER >= v2.80
     else:
         yaf_param_map.set_int("adv_computer_node", bpy.context.user_preferences.addons["yafaray4"].preferences.yafaray_computer_node)
 

@@ -31,7 +31,7 @@ class Material:
             if material.node_tree and False:
                 for node in material.node_tree.nodes:
                     pprint(getmembers(node))
-                    if node.type.startswith("TEX_IMAGE"):   # FIXME BLENDER 2.80-3.00 TEX_ but later getting .texture attribute does not work
+                    if node.type.startswith("TEX_IMAGE"):   # FIXME BLENDER >= v2.80 TEX_ but later getting .texture attribute does not work
                         used_textures.append(node)
         else:
             for tex_slot in material.texture_slots:

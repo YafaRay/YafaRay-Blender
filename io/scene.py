@@ -57,7 +57,7 @@ class Scene:
 
         def export_texture(self, obj):
             if bpy.app.version >= (2, 80, 0):
-                return None  # FIXME BLENDER 2.80-3.00
+                return None  # FIXME BLENDER >= v2.80
             # First export the textures of the materials type 'blend'
             for mat_slot in [m for m in obj.material_slots if m.material is not None]:
                 if mat_slot.material.mat_type == 'blend':
@@ -94,7 +94,7 @@ class Scene:
 
     def object_on_visible_layer(self, obj):
         if bpy.app.version >= (2, 80, 0):
-            return None  # FIXME BLENDER 2.80-3.00
+            return None  # FIXME BLENDER >= v2.80
         obj_visible = False
         for layer_visible in [object_layers and scene_layers for object_layers, scene_layers in
                               zip(obj.layers, self.bl_scene.layers)]:

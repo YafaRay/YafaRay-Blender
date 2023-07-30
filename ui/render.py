@@ -30,13 +30,13 @@ else:
     pass
 
 if bpy.app.version >= (2, 80, 0):
-    from bl_ui.properties_output import RenderOutputButtonsPanel  # FIXME BLENDER 2.80-3.00
+    from bl_ui.properties_output import RenderOutputButtonsPanel  # FIXME BLENDER >= v2.80
 
 
     class OutputPanel(RenderOutputButtonsPanel, Panel):
         pass
 else:
-    from bl_ui.properties_render import RenderButtonsPanel  # FIXME BLENDER 2.80-3.00
+    from bl_ui.properties_render import RenderButtonsPanel  # FIXME BLENDER >= v2.80
 
 
     class OutputPanel(RenderButtonsPanel, Panel):
@@ -66,7 +66,7 @@ class Render(RenderButtonsPanel, Panel):
         row.operator("yafaray4.render_animation", text="Animation", icon='RENDER_ANIMATION')
         layout.row().operator("yafaray4.render_view", text="Render 3D View", icon='VIEW3D')
         if bpy.app.version >= (2, 80, 0):
-            pass  # FIXME BLENDER 2.80-3.00
+            pass  # FIXME BLENDER >= v2.80
         else:
             layout.prop(rd, "display_mode", text="Display")
 
@@ -109,7 +109,7 @@ class Dimensions(RenderButtonsPanel, Panel):
 
         row = layout.row(align=True)
         if bpy.app.version >= (2, 80, 0):
-            pass  # FIXME BLENDER 2.80-3.00
+            pass  # FIXME BLENDER >= v2.80
         else:
             row.menu("RENDER_MT_presets", text="Dimension Presets")
             row.operator("render.preset_add", text="", icon="ADD" if bpy.app.version >= (2, 80, 0) else "ZOOMIN")
@@ -352,7 +352,7 @@ class GeneralSettings(RenderButtonsPanel, Panel):
             sub.label(text="")
         col.prop(scene, "gs_show_sam_pix", toggle=True)
         if bpy.app.version >= (2, 80, 0):
-            pass  # FIXME BLENDER 2.80-3.00
+            pass  # FIXME BLENDER >= v2.80
         else:
             col.prop(render, "use_instances", text="Use instances", toggle=True)
 

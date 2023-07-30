@@ -165,7 +165,7 @@ class RenderPresets(RenderPresetsBase, Operator):
         "scene.yafaray.passes.pass_SubsurfaceCol"
     ]
     if bpy.app.version >= (2, 80, 0):
-        pass  # FIXME BLENDER 2.80-3.00
+        pass  # FIXME BLENDER >= v2.80
     else:
         preset_values = preset_values + [
             "scene.render.layers[0].use_pass_z",

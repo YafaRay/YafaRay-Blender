@@ -13,7 +13,7 @@ from . import texture
 from . import world
 
 if bpy.app.version >= (2, 80, 0):
-    pass  # FIXME BLENDER 2.80-3.00
+    pass  # FIXME BLENDER >= v2.80
 else:
     from . import layer_passes
 
@@ -30,7 +30,7 @@ modules = (
 )
 
 if bpy.app.version >= (2, 80, 0):
-    pass  # FIXME BLENDER 2.80-3.00
+    pass  # FIXME BLENDER >= v2.80
 else:
     modules = modules + (layer_passes,)
 
@@ -227,7 +227,7 @@ for member in dir(
 del properties_physics_rigidbody_constraint
 
 if bpy.app.version >= (2, 80, 0):
-    pass  # FIXME BLENDER 2.80-3.00
+    pass  # FIXME BLENDER >= v2.80
 else:
     # noinspection PyUnresolvedReferences
     from bl_ui import properties_physics_smoke as properties_physics_smoke
