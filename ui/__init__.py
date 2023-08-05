@@ -12,6 +12,7 @@ from . import strand
 from . import texture
 from . import world
 from . import layer_passes
+from . import shader_nodes
 
 modules = (
     render,
@@ -23,7 +24,8 @@ modules = (
     strand,
     object,
     light,
-    scene
+    scene,
+    shader_nodes,
 )
 
 

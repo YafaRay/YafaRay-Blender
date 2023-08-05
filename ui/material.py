@@ -92,6 +92,27 @@ class Type(MaterialButtonsPanel, Panel):
         return material_check(yaf_mat) and (yaf_mat.mat_type in cls.material_type) and (engine in cls.COMPAT_ENGINES)
 
 
+def find_node(material, node_type):
+    if material and material.node_tree:
+        node_tree = material.node_tree
+        active_output_node = None
+        for tree_node in node_tree.nodes:
+            if getattr(tree_node, "type", None) == node_type:
+                if getattr(tree_node, "is_active_output", True):
+                    return tree_node
+                if not active_output_node:
+                    active_output_node = tree_node
+        return active_output_node
+    return None
+
+
+def find_node_input(node, name):
+    for node_input in node.inputs:
+        if node_input.name == name:
+            return node_input
+    return None
+
+
 class ContextMaterial(MaterialButtonsPanel, Panel):
     bl_idname = "YAFARAY4_PT_material_context"
     bl_label = ""
@@ -147,8 +168,23 @@ class ContextMaterial(MaterialButtonsPanel, Panel):
 
         if yaf_mat:
             layout.separator()
-            layout.prop(yaf_mat, "mat_type")
             layout.row().prop(yaf_mat, "clay_exclude")
+            layout.prop(yaf_mat, "use_nodes", icon='NODETREE')
+            layout.separator()
+            if not yaf_mat.use_nodes:
+                layout.prop(yaf_mat, "mat_type")
+            else:
+                layout.prop(yaf_mat, "diffuse_color", text="Viewport color (not used for rendering)")
+            layout.separator()
+
+        node_tree = yaf_mat.node_tree
+
+        node = find_node(yaf_mat, 'YAFARAY4_SHADER_OUTPUT')
+        if not node:
+            layout.label(text="No output node")
+        else:
+            node_input = find_node_input(node, 'Surface')
+            layout.template_node_view(node_tree, node, node_input)
 
 
 class Preview(MaterialButtonsPanel, Panel):
