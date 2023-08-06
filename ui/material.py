@@ -93,13 +93,13 @@ class Type(MaterialButtonsPanel, Panel):
 
 
 def find_node(material, node_type):
-    if material and material.node_tree:
-        node_tree = material.node_tree
+    if material and material.yafaray_nodes:
+        node_tree = material.yafaray_nodes
         active_output_node = None
         for tree_node in node_tree.nodes:
-            if getattr(tree_node, "type", None) == node_type:
-                if getattr(tree_node, "is_active_output", True):
-                    return tree_node
+            if getattr(tree_node, "bl_idname", None).startswith(node_type):
+                #if getattr(tree_node, "is_active_output", True):
+                #    return tree_node
                 if not active_output_node:
                     active_output_node = tree_node
         return active_output_node
@@ -144,7 +144,7 @@ class ContextMaterial(MaterialButtonsPanel, Panel):
                          text="")
 
             # TODO: code own operators to copy yaf material settings...
-            col.menu("MATERIAL_MT_specials", icon='DOWNARROW_HLT', text="")
+            # FIXME BLENDER >= v2.80 col.menu("MATERIAL_MT_specials", icon='DOWNARROW_HLT', text="")
 
             if ob.mode == 'EDIT':
                 row = layout.row(align=True)
@@ -177,13 +177,12 @@ class ContextMaterial(MaterialButtonsPanel, Panel):
                 layout.prop(yaf_mat, "diffuse_color", text="Viewport color (not used for rendering)")
             layout.separator()
 
-        node_tree = yaf_mat.node_tree
-
-        node = find_node(yaf_mat, 'YAFARAY4_SHADER_OUTPUT')
+        node_tree = yaf_mat.yafaray_nodes
+        node = find_node(yaf_mat, 'YafaRay4Material')
         if not node:
-            layout.label(text="No output node")
+            layout.label(text="No material node")
         else:
-            node_input = find_node_input(node, 'Surface')
+            node_input = find_node_input(node, 'YafaRay4ShaderNodeSocketInputColorRGBA')
             layout.template_node_view(node_tree, node, node_input)
 
 

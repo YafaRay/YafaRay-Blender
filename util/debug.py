@@ -21,17 +21,17 @@
 # To Process and select blender. Then set the breakpoints as desired Continue debugging in the Python IDE. When the
 # C/C++ breakpoint is reached the C/C++ debugger should show the debugged code
 
+if True:
+    import sys
+    # noinspection PyUnresolvedReferences
+    import pathlib
+    # pydev_source_dir = str(pathlib.Path.home()) + \
+    #                   "/snap/eclipse/67/amd64/plugins/org.python.pydev.core_10.2.1.202307021217/pysrc"
+    pydev_source_dir = "/opt/JetBrains/ToolBox/apps/IDEA-U/ch-0/231.9161.38.plugins/python/helpers/pydev"
 
-import sys
-# noinspection PyUnresolvedReferences
-import pathlib
-# pydev_source_dir = str(pathlib.Path.home()) + \
-#                   "/snap/eclipse/67/amd64/plugins/org.python.pydev.core_10.2.1.202307021217/pysrc"
-pydev_source_dir = "/opt/JetBrains/ToolBox/apps/IDEA-U/ch-0/231.9161.38.plugins/python/helpers/pydev"
+    if pydev_source_dir not in sys.path:
+        sys.path.append(pydev_source_dir)
 
-if pydev_source_dir not in sys.path:
-    sys.path.append(pydev_source_dir)
-
-# noinspection PyUnresolvedReferences
-import pydevd
-pydevd.settrace('localhost')  # Using port 5678
+    # noinspection PyUnresolvedReferences
+    import pydevd
+    pydevd.settrace('localhost')  # Using port 5678
