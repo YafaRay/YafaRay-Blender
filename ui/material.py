@@ -174,6 +174,7 @@ class ContextMaterial(MaterialButtonsPanel, Panel):
             if not yaf_mat.use_nodes:
                 layout.prop(yaf_mat, "mat_type")
             else:
+                layout.prop_search(yaf_mat, "material2name", bpy.data, "node_groups")
                 layout.prop(yaf_mat, "diffuse_color", text="Viewport color (not used for rendering)")
             layout.separator()
 
