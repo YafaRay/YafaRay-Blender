@@ -175,17 +175,18 @@ class ContextMaterial(MaterialButtonsPanel, Panel):
                 layout.prop(yaf_mat, "mat_type")
             else:
                 # layout.prop(yaf_mat, "diffuse_color", text="Viewport color (not used for rendering)")
-                layout.template_ID(yaf_mat, "yafaray_nodes", new="node.new_node_tree")
-            layout.separator()
-
-        node_tree = yaf_mat.yafaray_nodes
-        node = find_node(yaf_mat, 'YafaRay4Material')
-        if not node:
-            layout.label(text="No material node")
-            #layout.template_ID(node_tree, "nodes", new="node.add_node")
-        else:
-            node_input = find_node_input(node, 'YafaRay4ShaderNodeSocketInputColorRGBA')
-            layout.template_node_view(node_tree, node, node_input)
+                layout.template_ID(yaf_mat, "yafaray_nodes", new="yafaray4.new_node_tree")
+                op = layout.operator("yafaray4.show_node_tree_window")
+                op.node_tree_name = yaf_mat.yafaray_nodes.name
+                node_tree = yaf_mat.yafaray_nodes
+                node = find_node(yaf_mat, 'YafaRay4Material')
+                if not node:
+                    layout.label(text="No material node")
+                    #layout.template_ID(node_tree, "nodes", new="node.add_node")
+                else:
+                    node_input = find_node_input(node, 'YafaRay4ShaderNodeSocketInputColorRGBA')
+                    layout.template_node_view(node_tree, node, node_input)
+        layout.separator()
 
 
 class Preview(MaterialButtonsPanel, Panel):

@@ -7,7 +7,6 @@ from bpy.props import (FloatProperty,
                        FloatVectorProperty,
                        PointerProperty)
 from nodeitems_utils import NodeCategory, NodeItem
-
 from ..util.properties_annotations import replace_properties_with_annotations
 
 

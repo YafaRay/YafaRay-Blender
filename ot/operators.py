@@ -4,6 +4,8 @@ import bpy
 import mathutils
 # noinspection PyUnresolvedReferences
 from bpy.types import Operator
+from bpy.props import (StringProperty)
+from ..util.properties_annotations import replace_properties_with_annotations
 
 if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed,
     # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the
@@ -13,6 +15,34 @@ if __name__ == "__main__":  # Only used when editing and testing "live" within B
     from yafaray4 import global_vars
 else:
     from .. import global_vars
+
+
+class CreateNode(Operator):
+    bl_idname = "yafaray4.new_node_tree"
+    bl_label = "Create YafaRay Node Tree"
+    bl_description = "Creates a new YafaRay Node Tree"
+
+    # noinspection PyUnusedLocal
+    def execute(self, context):
+        bpy.ops.node.new_node_tree(type="YAFARAY4_SHADER_NODE_TREE")
+        return {'FINISHED'}
+
+
+@replace_properties_with_annotations
+class ShowNodeTreeWindow(Operator):
+    bl_idname = "yafaray4.show_node_tree_window"
+    bl_label = "Show Node Tree Window"
+    bl_description = "Shows the YafaRay Node Tree Window for the selected Node Tree"
+    node_tree_name = StringProperty()
+
+    # noinspection PyUnusedLocal
+    def execute(self, context):
+        bpy.ops.screen.userpref_show("INVOKE_DEFAULT")
+        context.window_manager.windows[-1].screen.areas[0].type = "NODE_EDITOR"
+        bpy.context.window_manager.windows[-1].screen.areas[0].spaces[0].tree_type = 'YAFARAY4_SHADER_NODE_TREE'
+        #bpy.context.window_manager.windows[-1].screen.areas[0].spaces[0].node_tree = bpy.data.node_groups['NodeTree']
+        bpy.context.window_manager.windows[-1].screen.areas[0].spaces[0].node_tree = bpy.data.node_groups[self.node_tree_name]
+        return {'FINISHED'}
 
 
 class WorldGetSunPosition(Operator):
@@ -267,7 +297,11 @@ class MaterialPreviewCamZoomOut(bpy.types.Operator):
         return {'FINISHED'}
 
 
-classes = (WorldGetSunPosition, WorldGetSunAngle, WorldUpdateSunPositionAndAngle, RenderView, RenderAnimation, RenderStill, MaterialPresetsIorList, MaterialPreviewCamRotReset, MaterialPreviewCamZoomIn, MaterialPreviewCamZoomOut, )
+classes = (
+    CreateNode, ShowNodeTreeWindow, WorldGetSunPosition, WorldGetSunAngle, WorldUpdateSunPositionAndAngle, RenderView,
+    RenderAnimation,
+    RenderStill, MaterialPresetsIorList, MaterialPreviewCamRotReset, MaterialPreviewCamZoomIn,
+    MaterialPreviewCamZoomOut,)
 
 
 def register():
