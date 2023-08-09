@@ -37,11 +37,17 @@ class ShowNodeTreeWindow(Operator):
 
     # noinspection PyUnusedLocal
     def execute(self, context):
-        bpy.ops.screen.userpref_show("INVOKE_DEFAULT")
-        context.window_manager.windows[-1].screen.areas[0].type = "NODE_EDITOR"
-        bpy.context.window_manager.windows[-1].screen.areas[0].spaces[0].tree_type = 'YAFARAY4_SHADER_NODE_TREE'
-        #bpy.context.window_manager.windows[-1].screen.areas[0].spaces[0].node_tree = bpy.data.node_groups['NodeTree']
-        bpy.context.window_manager.windows[-1].screen.areas[0].spaces[0].node_tree = bpy.data.node_groups[self.node_tree_name]
+        node_editor_area = None
+        for area in context.window_manager.windows[-1].screen.areas:
+            if area.type == 'NODE_EDITOR':
+                node_editor_area = area
+                break
+        if node_editor_area is None:
+            bpy.ops.screen.userpref_show("INVOKE_DEFAULT")
+            node_editor_area = context.window_manager.windows[-1].screen.areas[0]
+            node_editor_area.type = "NODE_EDITOR"
+        node_editor_area.spaces[0].tree_type = 'YAFARAY4_SHADER_NODE_TREE'
+        node_editor_area.spaces[0].node_tree = bpy.data.node_groups[self.node_tree_name]
         return {'FINISHED'}
 
 
