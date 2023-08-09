@@ -54,7 +54,10 @@ class ShaderNodeSocketInput(ShaderNodeSocket):
         pass
 
     def draw(self, context, layout, node, text):
-        layout.prop(self, "default_value", text=text)  # , slider=self.slider)
+        if self.is_linked:
+            layout.label(text=text)
+        else:
+            layout.prop(self, "default_value", text=text)  # , slider=self.slider)
 
 
 class ShaderNodeSocketOutput(ShaderNodeSocket):

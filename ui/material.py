@@ -182,10 +182,10 @@ class ContextMaterial(MaterialButtonsPanel, Panel):
                 node = find_node(yaf_mat, 'YafaRay4Material')
                 if not node:
                     layout.label(text="No material node")
-                    #layout.template_ID(node_tree, "nodes", new="node.add_node")
+                    layout.label(text="Show the Node Editor and add a Material Node, "
+                                      "optionally connected to Texture Nodes", icon='INFO')
                 else:
-                    node_input = find_node_input(node, 'YafaRay4ShaderNodeSocketInputColorRGBA')
-                    layout.template_node_view(node_tree, node, node_input)
+                    layout.template_node_view(node_tree, node, None)
         layout.separator()
 
 
