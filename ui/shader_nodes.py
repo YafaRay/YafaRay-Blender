@@ -2,7 +2,6 @@
 
 import bpy
 import nodeitems_utils
-from bl_ui.properties_material import MaterialButtonsPanel
 from bpy.props import (FloatProperty,
                        FloatVectorProperty,
                        PointerProperty)
@@ -10,6 +9,7 @@ from nodeitems_utils import NodeCategory, NodeItem
 from ..util.properties_annotations import replace_properties_with_annotations
 
 
+@replace_properties_with_annotations
 class ShaderNodeTree(bpy.types.NodeTree):
     bl_idname = "YAFARAY4_SHADER_NODE_TREE"
     bl_label = "YafaRay Nodes"
@@ -21,6 +21,7 @@ class ShaderNodeTree(bpy.types.NodeTree):
         return context.scene.render.engine == "YAFARAY4_RENDER"
 
 
+@replace_properties_with_annotations
 class ShaderNodeCategory(NodeCategory):
     bl_idname = "YafaRay4ShaderNodeCategory"
 
@@ -29,6 +30,7 @@ class ShaderNodeCategory(NodeCategory):
         return context.space_data.tree_type == "YAFARAY4_SHADER_NODE_TREE"
 
 
+@replace_properties_with_annotations
 class ShaderNodeSocket(bpy.types.NodeSocket):
     bl_idname = "YafaRay4ShaderNodeSocket"
 
@@ -44,6 +46,7 @@ class ShaderNodeSocket(bpy.types.NodeSocket):
             return 1.0, 0.4, 0.216, 0.5
 
 
+@replace_properties_with_annotations
 class ShaderNodeSocketInput(ShaderNodeSocket):
     bl_idname = "YafaRay4ShaderNodeSocketInput"
 
@@ -60,6 +63,7 @@ class ShaderNodeSocketInput(ShaderNodeSocket):
             layout.prop(self, "default_value", text=text)  # , slider=self.slider)
 
 
+@replace_properties_with_annotations
 class ShaderNodeSocketOutput(ShaderNodeSocket):
     bl_idname = "YafaRay4ShaderNodeSocketOutput"
 
@@ -127,6 +131,7 @@ class ShaderNodeSocketOutputColorRGBA(ShaderNodeSocketOutput):
         super().__init__(socket_color=(0.3, 0.3, 0.5, 1.0))
 
 
+@replace_properties_with_annotations
 class GenericNode(bpy.types.Node):
     bl_idname = "YafaRay4GenericNode"
     bl_label = "Generic YafaRay node"
@@ -143,6 +148,7 @@ class GenericNode(bpy.types.Node):
         self.outputs.new(output_type, output_name)
 
 
+@replace_properties_with_annotations
 class MaterialNode1(GenericNode):
     bl_idname = "YafaRay4MaterialNode1"
     bl_label = "YafaRay Material 1"
@@ -160,6 +166,7 @@ class MaterialNode1(GenericNode):
         layout.prop(self, "test_var")
 
 
+@replace_properties_with_annotations
 class TextureNode1(GenericNode):
     bl_idname = "YafaRay4TextureNode1"
     bl_label = "YafaRay Texture 1"
