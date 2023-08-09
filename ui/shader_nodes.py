@@ -11,7 +11,7 @@ from ..util.properties_annotations import replace_properties_with_annotations
 
 class NodeTree(bpy.types.NodeTree):
     bl_idname = "YAFARAY4_NODE_TREE"
-    bl_label = "YafaRay Shader Nodes"
+    bl_label = "YafaRay Node Trees"
     bl_icon = 'NODETREE'
 
     @classmethod
@@ -24,78 +24,7 @@ class NodeCategory(BlenderNodeCategory):
 
     @classmethod
     def poll(cls, context):
-        return True # context.space_data.tree_type == "YAFARAY4_NODE_TREE"
-
-
-class NodeSocketInput(bpy.types.NodeSocket):
-    bl_idname = "YafaRay4NodeSocketInput"
-
-    def draw(self, context, layout, node, text):
-        if self.is_linked:
-            layout.label(text=text)
-        else:
-            layout.prop(self, "default_value", text=text)  # , slider=self.slider)
-
-
-class NodeSocketOutput(bpy.types.NodeSocket):
-    bl_idname = "YafaRay4NodeSocketOutput"
-
-    def draw(self, context, layout, node, text):
-        layout.label(text=text)
-
-
-@replace_properties_with_annotations
-class NodeSocketInputValue(NodeSocketInput):
-    bl_idname = "YafaRay4NodeSocketInputValue"
-    default_value = FloatProperty()
-
-    def draw_color(self, context, node):
-        return 1.0, 0.4, 0.216, 0.5
-
-
-@replace_properties_with_annotations
-class NodeSocketInputColorRGB(NodeSocketInput):
-    bl_idname = "YafaRay4NodeSocketInputColorRGB"
-    default_value = FloatVectorProperty(
-        subtype='COLOR', size=3,  # size=3 for RGB
-        min=0.0, max=1.0, default=(1.0, 1.0, 1.0),
-    )
-
-    def draw_color(self, context, node):
-        return 0.1, 0.3, 0.5, 1.0
-
-
-@replace_properties_with_annotations
-class NodeSocketInputColorRGBA(NodeSocketInput):
-    bl_idname = "YafaRay4NodeSocketInputColorRGBA"
-    default_value = FloatVectorProperty(
-        subtype='COLOR', size=4,  # size=4 for RGBA
-        min=0.0, max=1.0, default=(1.0, 1.0, 1.0, 1.0),
-    )
-
-    def draw_color(self, context, node):
-        return 0.3, 0.3, 0.5, 1.0
-
-
-class NodeSocketOutputValue(NodeSocketOutput):
-    bl_idname = "YafaRay4NodeSocketOutputValue"
-
-    def draw_color(self, context, node):
-        return 1.0, 0.4, 0.216, 0.5
-
-
-class NodeSocketOutputColorRGB(NodeSocketOutput):
-    bl_idname = "YafaRay4NodeSocketOutputColorRGB"
-
-    def draw_color(self, context, node):
-        return 0.1, 0.3, 0.5, 1.0
-
-
-class NodeSocketOutputColorRGBA(NodeSocketOutput):
-    bl_idname = "YafaRay4NodeSocketOutputColorRGBA"
-
-    def draw_color(self, context, node):
-        return 0.3, 0.3, 0.5, 1.0
+        return context.space_data.tree_type == "YAFARAY4_NODE_TREE"
 
 
 class GenericNode(bpy.types.Node):
@@ -104,7 +33,7 @@ class GenericNode(bpy.types.Node):
 
     @classmethod
     def poll(cls, tree):
-        return True #tree.bl_idname == "YAFARAY4_NODE_TREE"
+        return tree.bl_idname == "YAFARAY4_NODE_TREE"
 
     def new_input(self, node_input_type, node_input_name, default_value):
         node_input = self.inputs.new(node_input_type, node_input_name)
@@ -124,9 +53,10 @@ class MaterialNode1(GenericNode):
     )
 
     def init(self, context):
-        self.new_input("YafaRay4NodeSocketInputColorRGB", "Color1", (0.7, 0.7, 0.7))
-        self.new_input("YafaRay4NodeSocketInputColorRGBA", "Color2", (0.7, 0.7, 0.7, 0.5))
-        self.new_input("YafaRay4NodeSocketInputValue", "Param1", 0)
+        self.inputs.new("NodeSocketColor", "Color1").default_value = (1,0,1,0.8)
+        self.inputs.new("NodeSocketColor", "Color2").default_value = (0,1,0.5,0.3)
+        self.inputs.new("NodeSocketFloat", "Param1").default_value = 11.2
+        # self.outputs.new("NodeSocketShader", "Mat")
 
     def draw_buttons(self, context, layout):
         layout.prop(self, "test_var")
@@ -136,26 +66,18 @@ class MaterialNode1(GenericNode):
 class TextureNode1(GenericNode):
     bl_idname = "YafaRay4TextureNode1"
     bl_label = "YafaRay Texture 1"
-    type = 'TEXTURE'
-    bl_static_type = type
 
     def init(self, context):
-        self.new_input("YafaRay4NodeSocketInputColorRGB", "Color1i", (0.7, 0.7, 0.7))
-        self.new_input("YafaRay4NodeSocketInputColorRGBA", "Color2i", (0.7, 0.7, 0.7, 0.5))
-        self.new_input("YafaRay4NodeSocketInputValue", "Param1i", 0)
-        self.new_output("YafaRay4NodeSocketOutputColorRGB", "Color1o")
-        self.new_output("YafaRay4NodeSocketOutputColorRGBA", "Color2o")
-        self.new_output("YafaRay4NodeSocketOutputValue", "Param1o")
+        self.inputs.new("NodeSocketColor", "Color1").default_value = (0,1,1,0.2)
+        self.inputs.new("NodeSocketColor", "Color2").default_value = (0,1,0,0.5)
+        self.inputs.new("NodeSocketFloat", "Param1").default_value = 13.5
+        self.outputs.new("NodeSocketColor", "Color1")
+        self.outputs.new("NodeSocketColor", "Color2")
+        self.outputs.new("NodeSocketFloat", "Param1")
 
 
 classes = (
     NodeTree,
-    NodeSocketInputValue,
-    NodeSocketInputColorRGB,
-    NodeSocketInputColorRGBA,
-    NodeSocketOutputValue,
-    NodeSocketOutputColorRGB,
-    NodeSocketOutputColorRGBA,
     MaterialNode1,
     TextureNode1,
 )
@@ -177,7 +99,9 @@ def register():
     register_classes()
     shader_node_categories = [
         NodeCategory("YAFARAY4_MATERIAL", "Material", items=[
-            NodeItem("YafaRay4MaterialNode1")
+            NodeItem("YafaRay4MaterialNode1", settings={
+                "test_var": repr((1,0,0,1)),
+            })
         ]),
         NodeCategory("YAFARAY4_TEXTURE", "Texture", items=[
             NodeItem("YafaRay4TextureNode1")

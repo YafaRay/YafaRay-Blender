@@ -176,20 +176,17 @@ class ContextMaterial(MaterialButtonsPanel, Panel):
             else:
                 # layout.prop(yaf_mat, "diffuse_color", text="Viewport color (not used for rendering)")
                 layout.template_ID(yaf_mat, "yafaray_nodes", new="yafaray4.new_node_tree")
-                op = layout.operator("yafaray4.show_node_tree_window")
-                op.node_tree_name = yaf_mat.yafaray_nodes.name
-                node_tree = yaf_mat.yafaray_nodes
-                node = find_node(yaf_mat, 'YafaRay4Material')
-                if not node:
-                    layout.label(text="No material node")
-                    layout.label(text="Show the Node Editor and add a Material Node, "
-                                      "optionally connected to Texture Nodes", icon='INFO')
-                else:
-                    pass
-                    # FIXME BLENDER >= v2.80
-                    # default node view panel hardcoded in Blender and unreliable, not working at all in 2.80+
-                    # layout.template_node_view(node_tree, node, None)
-        layout.separator()
+                if yaf_mat.yafaray_nodes:
+                    op = layout.operator("yafaray4.show_node_tree_window")
+                    op.node_tree_name = yaf_mat.yafaray_nodes.name
+                    node_tree = yaf_mat.yafaray_nodes
+                    node = find_node(yaf_mat, 'YafaRay4Material')
+                    if not node:
+                        layout.label(text="No material node")
+                        layout.label(text="Show the Node Editor and add a Material Node, "
+                                          "optionally connected to Texture Nodes", icon='INFO')
+                    else:
+                        layout.template_node_view(node_tree, node, None)
 
 
 class Preview(MaterialButtonsPanel, Panel):
