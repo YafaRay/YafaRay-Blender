@@ -146,11 +146,18 @@ class GenericNode(bpy.types.Node):
 class MaterialNode1(GenericNode):
     bl_idname = "YafaRay4MaterialNode1"
     bl_label = "YafaRay Material 1"
+    test_var = FloatVectorProperty(
+        subtype='COLOR', size=4,  # size=4 for RGBA
+        min=0.0, max=1.0, default=(1.0, 1.0, 1.0, 1.0),
+    )
 
     def init(self, context):
         self.new_input("YafaRay4ShaderNodeSocketInputColorRGB", "Color1", (0.7, 0.7, 0.7))
         self.new_input("YafaRay4ShaderNodeSocketInputColorRGBA", "Color2", (0.7, 0.7, 0.7, 0.5))
         self.new_input("YafaRay4ShaderNodeSocketInputValue", "Param1", 0)
+
+    def draw_buttons(self, context, layout):
+        layout.prop(self, "test_var")
 
 
 class TextureNode1(GenericNode):
