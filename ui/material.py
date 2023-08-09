@@ -144,7 +144,7 @@ class ContextMaterial(MaterialButtonsPanel, Panel):
                          text="")
 
             # TODO: code own operators to copy yaf material settings...
-            # FIXME BLENDER >= v2.80 col.menu("MATERIAL_MT_specials", icon='DOWNARROW_HLT', text="")
+            # FIXME BLENDER >= v2.80 # col.menu("MATERIAL_MT_specials", icon='DOWNARROW_HLT', text="")
 
             if ob.mode == 'EDIT':
                 row = layout.row(align=True)
@@ -185,7 +185,10 @@ class ContextMaterial(MaterialButtonsPanel, Panel):
                     layout.label(text="Show the Node Editor and add a Material Node, "
                                       "optionally connected to Texture Nodes", icon='INFO')
                 else:
-                    layout.template_node_view(node_tree, node, None)
+                    pass
+                    # FIXME BLENDER >= v2.80
+                    # default node view panel hardcoded in Blender and unreliable, not working at all in 2.80+
+                    # layout.template_node_view(node_tree, node, None)
         layout.separator()
 
 
@@ -317,33 +320,34 @@ class TypeShinyDiffuse(Type):
     material_type = 'shinydiffusemat'
 
     def draw(self, context):
-        layout = self.layout
-        yaf_mat = material_from_context(context)
+        if not context.material.use_nodes:
+            layout = self.layout
+            yaf_mat = material_from_context(context)
 
-        split = layout.split()
-        col = split.column()
-        col.prop(yaf_mat, "diffuse_color")
-        col.prop(yaf_mat, "emit")
-        layout.row().prop(yaf_mat, "diffuse_reflect", slider=True)
+            split = layout.split()
+            col = split.column()
+            col.prop(yaf_mat, "diffuse_color")
+            col.prop(yaf_mat, "emit")
+            layout.row().prop(yaf_mat, "diffuse_reflect", slider=True)
 
-        col = split.column()
-        sub = col.column()
-        sub.label(text="Reflectance model:")
-        sub.prop(yaf_mat, "brdf_type", text="")
-        brdf = sub.column()
-        brdf.enabled = yaf_mat.brdf_type == "oren-nayar"
-        brdf.prop(yaf_mat, "sigma")
+            col = split.column()
+            sub = col.column()
+            sub.label(text="Reflectance model:")
+            sub.prop(yaf_mat, "brdf_type", text="")
+            brdf = sub.column()
+            brdf.enabled = yaf_mat.brdf_type == "oren-nayar"
+            brdf.prop(yaf_mat, "sigma")
 
-        layout.separator()
+            layout.separator()
 
-        box = layout.box()
-        box.label(text="Transparency and translucency:")
-        split = box.split()
-        col = split.column()
-        col.prop(yaf_mat, "transparency", slider=True)
-        col = split.column()
-        col.prop(yaf_mat, "translucency", slider=True)
-        box.row().prop(yaf_mat, "transmit_filter", slider=True)
+            box = layout.box()
+            box.label(text="Transparency and translucency:")
+            split = box.split()
+            col = split.column()
+            col.prop(yaf_mat, "transparency", slider=True)
+            col = split.column()
+            col.prop(yaf_mat, "translucency", slider=True)
+            box.row().prop(yaf_mat, "transmit_filter", slider=True)
 
 
 class TypeShinyDiffuseSpecular(Type):
@@ -353,20 +357,21 @@ class TypeShinyDiffuseSpecular(Type):
     material_type = 'shinydiffusemat'
 
     def draw(self, context):
-        layout = self.layout
-        yaf_mat = material_from_context(context)
+        if not context.material.use_nodes:
+            layout = self.layout
+            yaf_mat = material_from_context(context)
 
-        split = layout.split()
-        col = split.column()
-        col.label(text="Mirror color:")
-        col.prop(yaf_mat, "mirror_color", text="")
+            split = layout.split()
+            col = split.column()
+            col.label(text="Mirror color:")
+            col.prop(yaf_mat, "mirror_color", text="")
 
-        col = split.column()
-        col.prop(yaf_mat, "fresnel_effect")
-        sub = col.column()
-        sub.enabled = yaf_mat.fresnel_effect
-        sub.prop(yaf_mat, "IOR_reflection", slider=True)
-        layout.row().prop(yaf_mat, "specular_reflect", slider=True)
+            col = split.column()
+            col.prop(yaf_mat, "fresnel_effect")
+            sub = col.column()
+            sub.enabled = yaf_mat.fresnel_effect
+            sub.prop(yaf_mat, "IOR_reflection", slider=True)
+            layout.row().prop(yaf_mat, "specular_reflect", slider=True)
 
 
 class TypeGlossyDiffuse(Type):
@@ -376,21 +381,22 @@ class TypeGlossyDiffuse(Type):
     material_type = 'glossy', 'coated_glossy'
 
     def draw(self, context):
-        layout = self.layout
-        yaf_mat = material_from_context(context)
+        if not context.material.use_nodes:
+            layout = self.layout
+            yaf_mat = material_from_context(context)
 
-        split = layout.split()
-        col = split.column()
-        col.prop(yaf_mat, "diffuse_color")
+            split = layout.split()
+            col = split.column()
+            col.prop(yaf_mat, "diffuse_color")
 
-        col = split.column()
-        ref = col.column(align=True)
-        ref.label(text="Reflectance model:")
-        ref.prop(yaf_mat, "brdf_type", text="")
-        sig = col.column()
-        sig.enabled = yaf_mat.brdf_type == "oren-nayar"
-        sig.prop(yaf_mat, "sigma")
-        layout.row().prop(yaf_mat, "diffuse_reflect", slider=True)
+            col = split.column()
+            ref = col.column(align=True)
+            ref.label(text="Reflectance model:")
+            ref.prop(yaf_mat, "brdf_type", text="")
+            sig = col.column()
+            sig.enabled = yaf_mat.brdf_type == "oren-nayar"
+            sig.prop(yaf_mat, "sigma")
+            layout.row().prop(yaf_mat, "diffuse_reflect", slider=True)
 
 
 class TypeGlossySpecular(Type):
@@ -400,39 +406,40 @@ class TypeGlossySpecular(Type):
     material_type = 'glossy', 'coated_glossy'
 
     def draw(self, context):
-        layout = self.layout
-        yaf_mat = material_from_context(context)
+        if not context.material.use_nodes:
+            layout = self.layout
+            yaf_mat = material_from_context(context)
 
-        split = layout.split()
-        col = split.column()
-        col.prop(yaf_mat, "glossy_color")
-        exp = col.column()
-        exp.enabled = yaf_mat.anisotropic is False
-        exp.prop(yaf_mat, "exponent")
-
-        col = split.column()
-        sub = col.column(align=True)
-        sub.prop(yaf_mat, "anisotropic")
-        ani = sub.column()
-        ani.enabled = yaf_mat.anisotropic is True
-        ani.prop(yaf_mat, "exp_u")
-        ani.prop(yaf_mat, "exp_v")
-        layout.row().prop(yaf_mat, "glossy_reflect", slider=True)
-        layout.row().prop(yaf_mat, "as_diffuse")
-
-        layout.separator()
-
-        if yaf_mat.mat_type == "coated_glossy":
-            box = layout.box()
-            box.label(text="Coated layer for glossy:")
-            split = box.split()
+            split = layout.split()
             col = split.column()
-            col.prop(yaf_mat, "coat_mir_col")
-            col = split.column(align=True)
-            col.label(text="Fresnel reflection:")
-            col.prop(yaf_mat, "IOR_reflection")
-            col.label()
-            layout.row().prop(yaf_mat, "specular_reflect", slider=True)
+            col.prop(yaf_mat, "glossy_color")
+            exp = col.column()
+            exp.enabled = yaf_mat.anisotropic is False
+            exp.prop(yaf_mat, "exponent")
+
+            col = split.column()
+            sub = col.column(align=True)
+            sub.prop(yaf_mat, "anisotropic")
+            ani = sub.column()
+            ani.enabled = yaf_mat.anisotropic is True
+            ani.prop(yaf_mat, "exp_u")
+            ani.prop(yaf_mat, "exp_v")
+            layout.row().prop(yaf_mat, "glossy_reflect", slider=True)
+            layout.row().prop(yaf_mat, "as_diffuse")
+
+            layout.separator()
+
+            if yaf_mat.mat_type == "coated_glossy":
+                box = layout.box()
+                box.label(text="Coated layer for glossy:")
+                split = box.split()
+                col = split.column()
+                col.prop(yaf_mat, "coat_mir_col")
+                col = split.column(align=True)
+                col.label(text="Fresnel reflection:")
+                col.prop(yaf_mat, "IOR_reflection")
+                col.label()
+                layout.row().prop(yaf_mat, "specular_reflect", slider=True)
 
 
 class TypeGlassReal(Type):
@@ -442,30 +449,31 @@ class TypeGlassReal(Type):
     material_type = 'glass', 'rough_glass'
 
     def draw(self, context):
-        layout = self.layout
-        yaf_mat = material_from_context(context)
+        if not context.material.use_nodes:
+            layout = self.layout
+            yaf_mat = material_from_context(context)
 
-        layout.label(text="Refraction and Reflections:")
-        split = layout.split()
-        col = split.column()
-        col.prop(yaf_mat, "IOR_refraction")
+            layout.label(text="Refraction and Reflections:")
+            split = layout.split()
+            col = split.column()
+            col.prop(yaf_mat, "IOR_refraction")
 
-        col = split.column()
-        col.menu("YAFARAY4_MT_presets_ior_list", text=bpy.types.YAFARAY4_MT_presets_ior_list.bl_label)
+            col = split.column()
+            col.menu("YAFARAY4_MT_presets_ior_list", text=bpy.types.YAFARAY4_MT_presets_ior_list.bl_label)
 
-        split = layout.split()
-        col = split.column(align=True)
-        col.prop(yaf_mat, "absorption")
-        col.prop(yaf_mat, "absorption_dist")
+            split = layout.split()
+            col = split.column(align=True)
+            col.prop(yaf_mat, "absorption")
+            col.prop(yaf_mat, "absorption_dist")
 
-        col = split.column(align=True)
-        col.label(text="Dispersion:")
-        col.prop(yaf_mat, "dispersion_power")
+            col = split.column(align=True)
+            col.label(text="Dispersion:")
+            col.prop(yaf_mat, "dispersion_power")
 
-        if yaf_mat.mat_type == "rough_glass":
-            box = layout.box()
-            box.label(text="Glass roughness:")
-            box.row().prop(yaf_mat, "refr_roughness", slider=True)
+            if yaf_mat.mat_type == "rough_glass":
+                box = layout.box()
+                box.label(text="Glass roughness:")
+                box.row().prop(yaf_mat, "refr_roughness", slider=True)
 
 
 class TypeGlassFake(Type):
@@ -475,16 +483,17 @@ class TypeGlassFake(Type):
     material_type = 'glass', 'rough_glass'
 
     def draw(self, context):
-        layout = self.layout
-        yaf_mat = material_from_context(context)
+        if not context.material.use_nodes:
+            layout = self.layout
+            yaf_mat = material_from_context(context)
 
-        split = layout.split()
-        col = split.column()
-        col.prop(yaf_mat, "filter_color")
-        col = split.column()
-        col.prop(yaf_mat, "glass_mir_col")
-        layout.row().prop(yaf_mat, "glass_transmit", slider=True)
-        layout.row().prop(yaf_mat, "fake_shadows")
+            split = layout.split()
+            col = split.column()
+            col.prop(yaf_mat, "filter_color")
+            col = split.column()
+            col.prop(yaf_mat, "glass_mir_col")
+            layout.row().prop(yaf_mat, "glass_transmit", slider=True)
+            layout.row().prop(yaf_mat, "fake_shadows")
 
 
 class TypeBlend(Type):
@@ -494,21 +503,22 @@ class TypeBlend(Type):
     material_type = 'blend'
 
     def draw(self, context):
-        layout = self.layout
-        yaf_mat = material_from_context(context)
+        if not context.material.use_nodes:
+            layout = self.layout
+            yaf_mat = material_from_context(context)
 
-        split = layout.split()
-        col = split.column()
-        col.label(text="")
-        col.prop(yaf_mat, "blend_value", slider=True)
+            split = layout.split()
+            col = split.column()
+            col.label(text="")
+            col.prop(yaf_mat, "blend_value", slider=True)
 
-        layout.separator()
+            layout.separator()
 
-        box = layout.box()
-        box.label(text="Choose the two materials you wish to blend.")
+            box = layout.box()
+            box.label(text="Choose the two materials you wish to blend.")
 
-        blend_one_draw(layout, yaf_mat)
-        blend_two_draw(layout, yaf_mat)
+            blend_one_draw(layout, yaf_mat)
+            blend_two_draw(layout, yaf_mat)
 
 
 class Wireframe(MaterialButtonsPanel, Panel):
