@@ -9,19 +9,16 @@ from nodeitems_utils import NodeCategory, NodeItem
 from ..util.properties_annotations import replace_properties_with_annotations
 
 
-@replace_properties_with_annotations
 class ShaderNodeTree(bpy.types.NodeTree):
     bl_idname = "YAFARAY4_SHADER_NODE_TREE"
     bl_label = "YafaRay Nodes"
     bl_icon = 'NODETREE'
-    requested_links = set()
 
     @classmethod
     def poll(cls, context):
         return context.scene.render.engine == "YAFARAY4_RENDER"
 
 
-@replace_properties_with_annotations
 class ShaderNodeCategory(NodeCategory):
     bl_idname = "YafaRay4ShaderNodeCategory"
 
@@ -30,31 +27,15 @@ class ShaderNodeCategory(NodeCategory):
         return context.space_data.tree_type == "YAFARAY4_SHADER_NODE_TREE"
 
 
-@replace_properties_with_annotations
 class ShaderNodeSocket(bpy.types.NodeSocket):
     bl_idname = "YafaRay4ShaderNodeSocket"
 
-    def __init__(self, socket_color, slider=False):
-        if bpy.app.version >= (2, 80, 0):
-            self.socket_color = socket_color
-        pass
-
     def draw_color(self, context, node):
-        if bpy.app.version >= (2, 80, 0):
-            return self.socket_color
-        else:
-            return 1.0, 0.4, 0.216, 0.5
+        return 1.0, 0.4, 0.216, 0.5
 
 
-@replace_properties_with_annotations
 class ShaderNodeSocketInput(ShaderNodeSocket):
     bl_idname = "YafaRay4ShaderNodeSocketInput"
-
-    def __init__(self, socket_color, slider=False):
-        super().__init__(socket_color=socket_color)
-        if bpy.app.version >= (2, 80, 0):
-            self.slider = slider
-        pass
 
     def draw(self, context, layout, node, text):
         if self.is_linked:
@@ -63,12 +44,8 @@ class ShaderNodeSocketInput(ShaderNodeSocket):
             layout.prop(self, "default_value", text=text)  # , slider=self.slider)
 
 
-@replace_properties_with_annotations
 class ShaderNodeSocketOutput(ShaderNodeSocket):
     bl_idname = "YafaRay4ShaderNodeSocketOutput"
-
-    def __init__(self, socket_color):
-        super().__init__(socket_color=socket_color)
 
     def draw(self, context, layout, node, text):
         layout.label(text=text)
@@ -79,9 +56,6 @@ class ShaderNodeSocketInputValue(ShaderNodeSocketInput):
     bl_idname = "YafaRay4ShaderNodeSocketInputValue"
     default_value = FloatProperty()
 
-    def __init__(self):
-        super().__init__(socket_color=(0.5, 0.3, 0.1, 1.0), slider=True)
-
 
 @replace_properties_with_annotations
 class ShaderNodeSocketInputColorRGB(ShaderNodeSocketInput):
@@ -91,8 +65,8 @@ class ShaderNodeSocketInputColorRGB(ShaderNodeSocketInput):
         min=0.0, max=1.0, default=(1.0, 1.0, 1.0),
     )
 
-    def __init__(self):
-        super().__init__(socket_color=(0.1, 0.3, 0.5, 1.0))
+    def draw_color(self, context, node):
+        return 0.1, 0.3, 0.5, 1.0
 
 
 @replace_properties_with_annotations
@@ -103,35 +77,28 @@ class ShaderNodeSocketInputColorRGBA(ShaderNodeSocketInput):
         min=0.0, max=1.0, default=(1.0, 1.0, 1.0, 1.0),
     )
 
-    def __init__(self):
-        super().__init__(socket_color=(0.3, 0.3, 0.5, 1.0))
+    def draw_color(self, context, node):
+        return 0.3, 0.3, 0.5, 1.0
 
 
-@replace_properties_with_annotations
 class ShaderNodeSocketOutputValue(ShaderNodeSocketOutput):
     bl_idname = "YafaRay4ShaderNodeSocketOutputValue"
 
-    def __init__(self):
-        super().__init__(socket_color=(0.5, 0.3, 0.1, 1.0))
 
-
-@replace_properties_with_annotations
 class ShaderNodeSocketOutputColorRGB(ShaderNodeSocketOutput):
     bl_idname = "YafaRay4ShaderNodeSocketOutputColorRGB"
 
-    def __init__(self):
-        super().__init__(socket_color=(0.1, 0.3, 0.5, 1.0))
+    def draw_color(self, context, node):
+        return 0.1, 0.3, 0.5, 1.0
 
 
-@replace_properties_with_annotations
 class ShaderNodeSocketOutputColorRGBA(ShaderNodeSocketOutput):
     bl_idname = "YafaRay4ShaderNodeSocketOutputColorRGBA"
 
-    def __init__(self):
-        super().__init__(socket_color=(0.3, 0.3, 0.5, 1.0))
+    def draw_color(self, context, node):
+        return 0.3, 0.3, 0.5, 1.0
 
 
-@replace_properties_with_annotations
 class GenericNode(bpy.types.Node):
     bl_idname = "YafaRay4GenericNode"
     bl_label = "Generic YafaRay node"
