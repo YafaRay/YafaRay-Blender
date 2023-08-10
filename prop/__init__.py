@@ -8,10 +8,7 @@ from . import scene
 from . import camera
 from . import texture
 from . import world
-if bpy.app.version >= (2, 80, 0):
-    from . import preferences
-else:
-    from . import preferences_279
+from . import preferences
 
 modules = (
     object,
@@ -21,12 +18,8 @@ modules = (
     camera,
     texture,
     world,
+    preferences,
 )
-
-if bpy.app.version >= (2, 80, 0):
-    modules = modules + (preferences, )
-else:
-    modules = modules + (preferences_279, )
 
 
 def register():
