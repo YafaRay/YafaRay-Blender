@@ -47,14 +47,12 @@ if sys.platform == 'win32':  # I think this is the easiest and most flexible way
 # Importing and registering modules from add-on sub-folders
 import bpy
 from . import prop
-from . import nodes
 from . import io
 from . import ui
 from .ot import migration
 
 modules = (
     prop,
-    nodes,
     io,
     ui,
     ot,
@@ -64,6 +62,8 @@ modules = (
 def register():
     for module in modules:
         module.register()
+    from . import nodes
+    nodes.register()
     # noinspection PyTypeChecker
     bpy.app.handlers.load_post.append(migration)
     # register keys for 'render 3d view', 'render still' and 'render animation'
@@ -87,5 +87,7 @@ def unregister():
                 kma.keymap_items.remove(kmi)
     # noinspection PyTypeChecker
     bpy.app.handlers.load_post.remove(migration)
+    from . import nodes
+    nodes.unregister()
     for module in reversed(modules):
         module.unregister()

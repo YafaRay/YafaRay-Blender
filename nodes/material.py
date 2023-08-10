@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+import bpy
 from bpy.props import FloatVectorProperty
 from ..util.properties_annotations import replace_properties_with_annotations
 from nodeitems_utils import NodeItem
@@ -8,33 +9,34 @@ from .common import NodeCategory
 
 
 @replace_properties_with_annotations
-class MaterialNode1(GenericNode):
-    bl_idname = "YafaRay4MaterialNode1"
-    bl_label = "YafaRay Material 1"
-    test_var = FloatVectorProperty(
-        subtype='COLOR', size=4,  # size=4 for RGBA
-        min=0.0, max=1.0, default=(1.0, 1.0, 1.0, 1.0),
-    )
-    test_var2 = FloatVectorProperty(
-        subtype='COLOR', size=4,  # size=4 for RGBA
-        min=0.0, max=1.0, default=(1.0, 1.0, 1.0, 1.0),
-    )
+class MaterialNodeShinyDiffuse(GenericNode):
+    bl_idname = "YafaRay4MaterialShinyDiffuse"
+    bl_label = "Shiny Diffuse Material"
+    brdf_type = bpy.types.Material.brdf_type
+    fresnel_effect = bpy.types.Material.fresnel_effect
 
     def init(self, context):
-        self.inputs.new("NodeSocketColor", "Color1").default_value = (1, 0, 1, 0.8)
-        self.inputs.new("NodeSocketColor", "Color2").default_value = (0, 1, 0.5, 0.3)
-        self.inputs.new("NodeSocketFloat", "Param1").default_value = 11.2
+        self.inputs.new("NodeSocketColor", "Diffuse Color").default_value = (0.8, 0.8, 0.8, 1)
+        self.inputs.new("NodeSocketFloat", "Diffuse Amount").default_value = 1
+        self.inputs.new("NodeSocketFloat", "Oren-Nayar Sigma").default_value = 0.1
+        self.inputs.new("NodeSocketColor", "Mirror Color").default_value = (1, 1, 1, 1)
+        self.inputs.new("NodeSocketFloat", "Mirror Amount").default_value = 0.1
+        self.inputs.new("NodeSocketFloat", "IOR").default_value = 1.8
+        self.inputs.new("NodeSocketFloat", "Transparency Amount").default_value = 0
+        self.inputs.new("NodeSocketFloat", "Translucency Amount").default_value = 0
+        self.inputs.new("NodeSocketFloat", "Bump Amount").default_value = 0
+        self.inputs.new("NodeSocketFloat", "Wireframe Amount").default_value = 0
         # self.outputs.new("NodeSocketShader", "Mat")
-        self.test_var = (1, 0, 0, 1)
-        self.test_var2 = (0, 0.5, 0.7, 0.5)
+        self.brdf_type = 'lambert'
+        self.fresnel_effect = False
 
     def draw_buttons(self, context, layout):
-        layout.prop(self, "test_var")
-        layout.prop(self, "test_var2")
+        layout.prop(self, "brdf_type")
+        layout.prop(self, "fresnel_effect")
 
 
 classes = (
-    MaterialNode1,
+    MaterialNodeShinyDiffuse,
 )
 
 

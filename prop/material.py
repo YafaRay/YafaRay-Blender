@@ -7,6 +7,7 @@ from bpy.props import (FloatProperty,
                        EnumProperty,
                        FloatVectorProperty,
                        StringProperty)
+from ..util.properties_annotations import replace_properties_with_annotations
 
 Material = bpy.types.Material
 
