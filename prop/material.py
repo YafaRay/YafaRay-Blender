@@ -36,7 +36,8 @@ def items_mat2(self, context):
 
 # noinspection PyUnusedLocal
 def update_preview(self, context):
-    context.material.update_tag()
+    pass
+    #    context.material.update_tag()
 
 
 def register():
