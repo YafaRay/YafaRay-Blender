@@ -7,6 +7,8 @@ from bpy.props import (IntProperty,
                        EnumProperty,
                        BoolProperty,
                        PointerProperty)
+from .scene_property_groups import YafaRay4LayersProperties, YafaRay4MaterialPreviewControlProperties, \
+    YafaRay4NoiseControlProperties, YafaRay4LoggingProperties
 
 Scene = bpy.types.Scene
 
@@ -22,14 +24,6 @@ def call_update_file_format(self, context):
 
 class YafaRay4Properties(bpy.types.PropertyGroup):
     pass
-
-
-if bpy.app.version >= (2, 80, 0):
-    from .scene_property_groups import YafaRay4LayersProperties, YafaRay4MaterialPreviewControlProperties, \
-        YafaRay4NoiseControlProperties, YafaRay4LoggingProperties
-else:
-    from .scene_property_groups_279 import YafaRay4LayersProperties, YafaRay4MaterialPreviewControlProperties, \
-        YafaRay4NoiseControlProperties, YafaRay4LoggingProperties
 
 
 def register():
