@@ -6,11 +6,7 @@ import bpy
 from bpy.path import clean_name, display_name
 # noinspection PyUnresolvedReferences
 from bpy.types import Operator
-
-if bpy.app.version >= (2, 80, 0):
-    from .render_presets_base import RenderPresetsBase
-else:
-    from .render_presets_base_279 import RenderPresetsBase
+from ..util.properties_annotations import replace_properties_with_annotations
 
 
 # noinspection PyUnusedLocal
@@ -33,7 +29,8 @@ def preset_find(name, preset_path, disp_name=False):
             return filepath
 
 
-class RenderPresets(RenderPresetsBase, Operator):
+@replace_properties_with_annotations
+class RenderPresets(Operator):
     """List of render presets. Also allows to add a Yafaray Render Preset in user home
     folder->yafaray4_user_data/presets/render. To delete or modify presets, modify the .py files directly in that
     folder"""
@@ -41,6 +38,9 @@ class RenderPresets(RenderPresetsBase, Operator):
     bl_label = "Yafaray Render Presets"
     bl_options = {'REGISTER'}  # only because invoke_props_popup requires.
     preset_menu = "YAFARAY4_MT_presets_render"
+    name = bpy.props.StringProperty(name="Name", description="Name of the preset, used to make the path name",
+                                    maxlen=64, default="")
+    remove_active = bpy.props.BoolProperty(default=False, options={'HIDDEN'})
     preset_defines = [
         "scene = bpy.context.scene"
     ]
