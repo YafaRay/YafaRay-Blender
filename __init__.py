@@ -47,12 +47,14 @@ if sys.platform == 'win32':  # I think this is the easiest and most flexible way
 # Importing and registering modules from add-on sub-folders
 import bpy
 from . import prop
+from . import nodes
 from . import io
 from . import ui
 from .ot import migration
 
 modules = (
     prop,
+    nodes,
     io,
     ui,
     ot,
