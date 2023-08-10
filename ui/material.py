@@ -92,27 +92,6 @@ class Type(MaterialButtonsPanel, Panel):
         return material_check(yaf_mat) and (yaf_mat.mat_type in cls.material_type) and (engine in cls.COMPAT_ENGINES)
 
 
-def find_node(material, node_type):
-    if material and material.yafaray_nodes:
-        node_tree = material.yafaray_nodes
-        active_output_node = None
-        for tree_node in node_tree.nodes:
-            if getattr(tree_node, "bl_idname", None).startswith(node_type):
-                #if getattr(tree_node, "is_active_output", True):
-                #    return tree_node
-                if not active_output_node:
-                    active_output_node = tree_node
-        return active_output_node
-    return None
-
-
-def find_node_input(node, name):
-    for node_input in node.inputs:
-        if node_input.name == name:
-            return node_input
-    return None
-
-
 class ContextMaterial(MaterialButtonsPanel, Panel):
     bl_idname = "YAFARAY4_PT_material_context"
     bl_label = ""
@@ -179,14 +158,16 @@ class ContextMaterial(MaterialButtonsPanel, Panel):
                 if yaf_mat.yafaray_nodes:
                     op = layout.operator("yafaray4.show_node_tree_window")
                     op.node_tree_name = yaf_mat.yafaray_nodes.name
-                    node_tree = yaf_mat.yafaray_nodes
-                    node = find_node(yaf_mat, 'YafaRay4Material')
-                    if not node:
+                    node_displayed = None
+                    for node in yaf_mat.yafaray_nodes.nodes:
+                        if getattr(node, "bl_idname").startswith('YafaRay4Material'):
+                            node_displayed = node
+                    if not node_displayed:
                         layout.label(text="No material node")
                         layout.label(text="Show the Node Editor and add a Material Node, "
                                           "optionally connected to Texture Nodes", icon='INFO')
                     else:
-                        layout.template_node_view(node_tree, node, None)
+                        layout.template_node_view(yaf_mat.yafaray_nodes, node_displayed, None)
 
 
 class Preview(MaterialButtonsPanel, Panel):
