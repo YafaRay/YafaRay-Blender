@@ -11,6 +11,7 @@ from . import scene
 from . import strand
 from . import texture
 from . import world
+from . import volume_integrator
 from . import layer_passes
 
 modules = (
@@ -20,6 +21,7 @@ modules = (
     material,
     texture,
     world,
+    volume_integrator,
     strand,
     object,
     light,

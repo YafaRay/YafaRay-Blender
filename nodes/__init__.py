@@ -6,6 +6,7 @@ from bpy.props import PointerProperty
 from . import material
 from . import texture
 from . import world
+from . import color
 from .common import NodeTree
 
 modules = (
@@ -13,6 +14,7 @@ modules = (
     material,
     texture,
     world,
+    color,
 )
 
 
