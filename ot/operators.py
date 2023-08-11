@@ -2,9 +2,10 @@
 
 import bpy
 import mathutils
+from bpy.props import (StringProperty)
 # noinspection PyUnresolvedReferences
 from bpy.types import Operator
-from bpy.props import (StringProperty)
+
 from ..util.properties_annotations import replace_properties_with_annotations
 
 if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed,
@@ -25,6 +26,34 @@ class CreateNode(Operator):
     # noinspection PyUnusedLocal
     def execute(self, context):
         bpy.ops.node.new_node_tree(type="YAFARAY4_NODE_TREE")
+        return {'FINISHED'}
+
+
+class NewMaterial(Operator):
+    bl_idname = "yafaray4.material_new"
+    bl_label = "Create New Material"
+    bl_description = "Creates a new YafaRay material or clones existing selected material"
+
+    # noinspection PyUnusedLocal
+    def execute(self, context):
+        if context.material is not None:
+            context.active_object.active_material = context.material.copy()
+            if context.material.yafaray_nodes is not None:
+                context.active_object.active_material.yafaray_nodes = context.material.yafaray_nodes.copy()
+                node_editor_area = None
+                for area in context.window_manager.windows[-1].screen.areas:
+                    if area.type == 'NODE_EDITOR':
+                        node_editor_area = area
+                        break
+                if node_editor_area is None:
+                    bpy.ops.screen.userpref_show("INVOKE_DEFAULT")
+                    node_editor_area = context.window_manager.windows[-1].screen.areas[0]
+                    node_editor_area.type = "NODE_EDITOR"
+                node_editor_area.spaces[0].tree_type = 'YAFARAY4_NODE_TREE'
+                node_editor_area.spaces[0].node_tree = bpy.data.node_groups[context.active_object.active_material.yafaray_nodes.name]
+                return {'FINISHED'}
+        else:
+            context.active_object.active_material = bpy.data.materials.new("Material")
         return {'FINISHED'}
 
 
@@ -304,10 +333,10 @@ class MaterialPreviewCamZoomOut(bpy.types.Operator):
 
 
 classes = (
-    CreateNode, ShowNodeTreeWindow, WorldGetSunPosition, WorldGetSunAngle, WorldUpdateSunPositionAndAngle, RenderView,
-    RenderAnimation,
-    RenderStill, MaterialPresetsIorList, MaterialPreviewCamRotReset, MaterialPreviewCamZoomIn,
-    MaterialPreviewCamZoomOut,)
+    CreateNode, NewMaterial, ShowNodeTreeWindow,
+    WorldGetSunPosition, WorldGetSunAngle, WorldUpdateSunPositionAndAngle,
+    RenderView, RenderAnimation, RenderStill,
+    MaterialPresetsIorList, MaterialPreviewCamRotReset, MaterialPreviewCamZoomIn, MaterialPreviewCamZoomOut,)
 
 
 def register():

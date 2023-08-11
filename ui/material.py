@@ -134,7 +134,7 @@ class ContextMaterial(MaterialButtonsPanel, Panel):
         split = ui_split(layout, 0.75)
 
         if ob:
-            split.template_ID(ob, "active_material", new="material.new")
+            split.template_ID(ob, "active_material", new="yafaray4.material_new")
             row = split.row()
             if slot:
                 row.prop(slot, "link", text="")
