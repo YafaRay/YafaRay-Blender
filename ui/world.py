@@ -80,51 +80,70 @@ class World(WorldButtonsPanel, Panel):
                 row.prop(world, "bg_with_caustic")
 
         elif world.bg_type == "Texture":
-            if bpy.app.version >= (2, 80, 0):
-                return  # FIXME BLENDER >= v2.80
-
-            tex = context.scene.world.active_texture
-            if tex is not None:
-                #
-                layout.template_ID(context.world, "active_texture")
-                #
-                if tex.yaf_tex_type == "IMAGE":  # it allows to change the used image
-                    #
-                    layout.template_image(tex, "image", tex.image_user, compact=True)
-
-                    if tex.image.colorspace_settings.name == "sRGB" \
-                            or tex.image.colorspace_settings.name == "Linear" \
-                            or tex.image.colorspace_settings.name == "Non-Color":
-                        pass
-
-                    elif tex.image.colorspace_settings.name == "XYZ":
-                        row = layout.row(align=True)
-                        row.label(text="YafaRay 'XYZ' support is experimental and may not give the expected results",
-                                  icon="ERROR")
-
-                    elif tex.image.colorspace_settings.name == "Linear ACES":
-                        row = layout.row(align=True)
-                        row.label(
-                            text="YafaRay doesn't support '" + tex.image.colorspace_settings.name
-                                 + "', assuming linear RGB",
-                            icon="ERROR")
-
-                    elif tex.image.colorspace_settings.name == "Raw":
-                        row = layout.row(align=True)
-                        row.prop(tex, "yaf_gamma_input", text="Texture gamma input correction")
-
+            layout.prop(world, "use_nodes", icon='NODETREE')
+            layout.separator()
+            if world.use_nodes:
+                layout.template_ID(world, "yafaray_nodes", new="yafaray4.new_node_tree")
+                if world.yafaray_nodes:
+                    op = layout.operator("yafaray4.show_node_tree_window")
+                    op.node_tree_name = world.yafaray_nodes.name
+                    node_displayed = None
+                    for node in world.yafaray_nodes.nodes:
+                        if getattr(node, "bl_idname").startswith('YafaRay4World'):
+                            node_displayed = node
+                    if not node_displayed:
+                        layout.label(text="No world node")
+                        layout.label(text="Show the Node Editor and add a World Node, "
+                                          "connected to Texture Nodes", icon='INFO')
                     else:
-                        row = layout.row(align=True)
-                        row.label(
-                            text="YafaRay doesn't support '" + tex.image.colorspace_settings.name + "', assuming sRGB",
-                            icon="ERROR")
+                        layout.template_node_view(world.yafaray_nodes, node_displayed, None)
 
+            elif bpy.app.version < (2, 80, 0):
+                tex = context.scene.world.active_texture
+                if tex is not None:
                     #
+                    layout.template_ID(context.world, "active_texture")
+                    #
+                    if tex.yaf_tex_type == "IMAGE":  # it allows to change the used image
+                        #
+                        layout.template_image(tex, "image", tex.image_user, compact=True)
+
+                        if tex.image.colorspace_settings.name == "sRGB" \
+                                or tex.image.colorspace_settings.name == "Linear" \
+                                or tex.image.colorspace_settings.name == "Non-Color":
+                            pass
+
+                        elif tex.image.colorspace_settings.name == "XYZ":
+                            row = layout.row(align=True)
+                            row.label(text="YafaRay 'XYZ' support is experimental and may not give the expected results",
+                                      icon="ERROR")
+
+                        elif tex.image.colorspace_settings.name == "Linear ACES":
+                            row = layout.row(align=True)
+                            row.label(
+                                text="YafaRay doesn't support '" + tex.image.colorspace_settings.name
+                                     + "', assuming linear RGB",
+                                icon="ERROR")
+
+                        elif tex.image.colorspace_settings.name == "Raw":
+                            row = layout.row(align=True)
+                            row.prop(tex, "yaf_gamma_input", text="Texture gamma input correction")
+
+                        else:
+                            row = layout.row(align=True)
+                            row.label(
+                                text="YafaRay doesn't support '" + tex.image.colorspace_settings.name + "', assuming sRGB",
+                                icon="ERROR")
+
+                        #
+                    else:
+                        # TODO: create message about not allow texture type
+                        pass
                 else:
-                    # TODO: create message about not allow texture type
-                    pass
+                    layout.template_ID(context.world, "active_texture", new="texture.new")
             else:
-                layout.template_ID(context.world, "active_texture", new="texture.new")
+                layout.label(text="In Blender 2.80 or higher, Texture World can only work with nodes.", icon='ERROR')
+                layout.label(text="Click 'Use Nodes' and create a World node connected to Texture node(s)", icon='ERROR')
 
             layout.label(text="Background Texture controls")
             layout.prop(world, "bg_rotation")

@@ -22,9 +22,11 @@ def register():
         module.register(node_categories)
     nodeitems_utils.register_node_categories("YAFARAY4_NODES", node_categories)
     bpy.types.Material.yafaray_nodes = PointerProperty(type=NodeTree)
+    bpy.types.World.yafaray_nodes = PointerProperty(type=NodeTree)
 
 
 def unregister():
+    del bpy.types.World.yafaray_nodes
     del bpy.types.Material.yafaray_nodes
     nodeitems_utils.unregister_node_categories("YAFARAY4_NODES")
     for module in reversed(modules):

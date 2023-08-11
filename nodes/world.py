@@ -11,16 +11,12 @@ from ..util.properties_annotations import replace_properties_with_annotations
 class WorldNode(GenericNode):
     bl_idname = "YafaRay4WorldNode"
     bl_label = "YafaRay World"
-    test_var = FloatVectorProperty(name="Test Variable", subtype='COLOR', size=4, min=0.0, max=1.0)
 
     def init(self, context):
-        self.inputs.new("NodeSocketColor", "Color1").default_value = (1, 0, 1, 0.8)
-        self.inputs.new("NodeSocketColor", "Color2").default_value = (0, 1, 0.5, 0.3)
-        self.inputs.new("NodeSocketFloat", "Param1").default_value = 11.2
-        self.test_var = (1, 0, 0, 1)
+        self.inputs.new("NodeSocketColor", "Background Color", "BackCol").default_value = (1, 1, 1, 1)
 
     def draw_buttons(self, context, layout):
-        layout.prop(self, "test_var")
+        pass
 
 
 classes = (
