@@ -13,6 +13,7 @@ class WorldNode(bpy.types.Node):
 
     def init(self, context):
         self.inputs.new("NodeSocketColor", "Background Color", "BackCol").default_value = (1, 1, 1, 1)
+        self.outputs.new("NodeSocketShader", "BSDF", "BSDF")
 
     def draw_buttons(self, context, layout):
         pass

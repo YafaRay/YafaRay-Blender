@@ -62,7 +62,7 @@ class ShowNodeTreeWindow(Operator):
     bl_idname = "yafaray4.show_node_tree_window"
     bl_label = "Show Node Tree Window"
     bl_description = "Shows the YafaRay Node Tree Window for the selected Node Tree"
-    node_tree_name = StringProperty()
+    shader_type = StringProperty()
 
     # noinspection PyUnusedLocal
     def execute(self, context):
@@ -75,8 +75,8 @@ class ShowNodeTreeWindow(Operator):
             bpy.ops.screen.userpref_show("INVOKE_DEFAULT")
             node_editor_area = context.window_manager.windows[-1].screen.areas[0]
             node_editor_area.type = "NODE_EDITOR"
-        node_editor_area.spaces[0].tree_type = 'YAFARAY4_NODE_TREE'
-        node_editor_area.spaces[0].node_tree = bpy.data.node_groups[self.node_tree_name]
+        node_editor_area.spaces[0].tree_type = 'ShaderNodeTree'
+        node_editor_area.spaces[0].shader_type = self.shader_type
         return {'FINISHED'}
 
 

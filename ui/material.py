@@ -154,10 +154,10 @@ class ContextMaterial(MaterialButtonsPanel, Panel):
                 layout.prop(yaf_mat, "mat_type")
             else:
                 # layout.prop(yaf_mat, "diffuse_color", text="Viewport color (not used for rendering)")
-                layout.template_ID(yaf_mat, "node_tree", new="yafaray4.new_node_tree")
+                # layout.template_ID(yaf_mat, "node_tree", new="yafaray4.new_node_tree")
                 if yaf_mat.node_tree:
                     op = layout.operator("yafaray4.show_node_tree_window")
-                    op.node_tree_name = yaf_mat.node_tree.name
+                    op.shader_type = 'OBJECT'
                     node_displayed = None
                     for node in yaf_mat.node_tree.nodes:
                         if getattr(node, "type", None) == 'OUTPUT_MATERIAL':
