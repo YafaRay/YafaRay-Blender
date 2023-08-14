@@ -154,20 +154,21 @@ class ContextMaterial(MaterialButtonsPanel, Panel):
                 layout.prop(yaf_mat, "mat_type")
             else:
                 # layout.prop(yaf_mat, "diffuse_color", text="Viewport color (not used for rendering)")
-                layout.template_ID(yaf_mat, "yafaray_nodes", new="yafaray4.new_node_tree")
-                if yaf_mat.yafaray_nodes:
+                layout.template_ID(yaf_mat, "node_tree", new="yafaray4.new_node_tree")
+                if yaf_mat.node_tree:
                     op = layout.operator("yafaray4.show_node_tree_window")
-                    op.node_tree_name = yaf_mat.yafaray_nodes.name
+                    op.node_tree_name = yaf_mat.node_tree.name
                     node_displayed = None
-                    for node in yaf_mat.yafaray_nodes.nodes:
-                        if getattr(node, "bl_idname").startswith('YafaRay4Material'):
-                            node_displayed = node
+                    for node in yaf_mat.node_tree.nodes:
+                        if getattr(node, "type", None) == 'OUTPUT_MATERIAL':
+                            if getattr(node, "is_active_output", True):
+                                node_displayed = node
                     if not node_displayed:
                         layout.label(text="No material node")
                         layout.label(text="Show the Node Editor and add a Material Node, "
                                           "optionally connected to Texture Nodes", icon='INFO')
                     else:
-                        layout.template_node_view(yaf_mat.yafaray_nodes, node_displayed, None)
+                        layout.template_node_view(yaf_mat.node_tree, node_displayed, None)
 
 
 class Preview(MaterialButtonsPanel, Panel):

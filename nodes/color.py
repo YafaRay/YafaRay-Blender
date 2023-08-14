@@ -1,15 +1,14 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+import bpy
 from bpy.props import EnumProperty, BoolProperty
 from nodeitems_utils import NodeItem
-
-from .common import GenericNode
 from .common import NodeCategory
 from ..util.properties_annotations import replace_properties_with_annotations
 
 
 @replace_properties_with_annotations
-class ColorBlendNode(GenericNode):
+class ColorBlendNode(bpy.types.Node):
     bl_idname = "YafaRay4ColorBlendNode"
     bl_label = "YafaRay Color Blend Node"
     blend_type = EnumProperty(
@@ -34,9 +33,9 @@ class ColorBlendNode(GenericNode):
     # default_value = FloatProperty(name="Default Value", default=1)
 
     def init(self, context):
-        self.inputs.new("NodeSocketColor", "Color 1", "Col1").default_value = (1, 1, 1, 1)
-        self.inputs.new("NodeSocketColor", "Color 2", "Col2").default_value = (1, 1, 1, 1)
-        self.outputs.new("NodeSocketColor", "Output", "Output")
+        self.inputs.new("NodeSocketColor", "Color 1", "Color1").default_value = (1, 1, 1, 1)
+        self.inputs.new("NodeSocketColor", "Color 2", "Color2").default_value = (1, 1, 1, 1)
+        self.outputs.new("NodeSocketColor", "Color", "OutColor")
         self.blend_type = 'MIX'
         self.invert = False
         self.use_stencil = False
@@ -64,7 +63,7 @@ def register(node_categories):
     for cls in classes:
         register_class(cls)
         node_categories_items.append(NodeItem(cls.bl_idname))
-    node_categories.append(NodeCategory("YAFARAY4_COLOR", "Color", items=node_categories_items))
+    node_categories.append(NodeCategory("YAFARAY4_COLOR", "YafaRay Color", items=node_categories_items))
 
 
 def unregister():

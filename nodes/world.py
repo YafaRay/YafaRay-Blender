@@ -1,14 +1,13 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-from bpy.props import FloatVectorProperty
+import bpy
 from nodeitems_utils import NodeItem
-from .common import GenericNode
 from .common import NodeCategory
 from ..util.properties_annotations import replace_properties_with_annotations
 
 
 @replace_properties_with_annotations
-class WorldNode(GenericNode):
+class WorldNode(bpy.types.Node):
     bl_idname = "YafaRay4WorldNode"
     bl_label = "YafaRay World"
 
@@ -30,7 +29,7 @@ def register(node_categories):
     for cls in classes:
         register_class(cls)
         node_categories_items.append(NodeItem(cls.bl_idname))
-    node_categories.append(NodeCategory("YAFARAY4_WORLD", "World", items=node_categories_items))
+    node_categories.append(NodeCategory("YAFARAY4_WORLD", "YafaRay World", items=node_categories_items))
 
 
 def unregister():

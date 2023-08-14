@@ -3,13 +3,12 @@
 import bpy
 from ..util.properties_annotations import replace_properties_with_annotations
 from nodeitems_utils import NodeItem
-from .common import GenericNode
 from .common import NodeCategory
 from ..ui.material import blend_one_draw, blend_two_draw, material_from_context
 
 
 @replace_properties_with_annotations
-class MaterialNodeShinyDiffuse(GenericNode):
+class MaterialNodeShinyDiffuse(bpy.types.Node):
     bl_idname = "YafaRay4MaterialShinyDiffuse"
     bl_label = "Shiny Diffuse Material"
     brdf_type = bpy.types.Material.brdf_type
@@ -26,7 +25,7 @@ class MaterialNodeShinyDiffuse(GenericNode):
         self.inputs.new("NodeSocketFloat", "Translucency Amount", "Transl").default_value = 0
         self.inputs.new("NodeSocketFloat", "Bump Amount", "Bump").default_value = 0
         self.inputs.new("NodeSocketFloat", "Wireframe Amount", "Wireframe").default_value = 0
-        # self.outputs.new("NodeSocketShader", "Mat")
+        self.outputs.new("NodeSocketShader", "BSDF", "BSDF")
         self.brdf_type = 'lambert'
         self.fresnel_effect = False
 
@@ -36,7 +35,7 @@ class MaterialNodeShinyDiffuse(GenericNode):
 
 
 @replace_properties_with_annotations
-class MaterialNodeGlossy(GenericNode):
+class MaterialNodeGlossy(bpy.types.Node):
     bl_idname = "YafaRay4MaterialGlossy"
     bl_label = "Glossy Material"
     brdf_type = bpy.types.Material.brdf_type
@@ -54,6 +53,7 @@ class MaterialNodeGlossy(GenericNode):
         self.inputs.new("NodeSocketFloat", "Glossy Aniso.Exp.V", "ExpV").default_value = 50
         self.inputs.new("NodeSocketFloat", "Bump Amount", "Bump").default_value = 0
         self.inputs.new("NodeSocketFloat", "Wireframe Amount", "Wireframe").default_value = 0
+        self.outputs.new("NodeSocketShader", "BSDF", "BSDF")
         self.brdf_type = 'lambert'
         self.anisotropic = False
         self.as_diffuse = False
@@ -65,7 +65,7 @@ class MaterialNodeGlossy(GenericNode):
 
 
 @replace_properties_with_annotations
-class MaterialNodeCoatedGlossy(GenericNode):
+class MaterialNodeCoatedGlossy(bpy.types.Node):
     bl_idname = "YafaRay4MaterialCoatedGlossy"
     bl_label = "Coated Glossy Material"
     brdf_type = bpy.types.Material.brdf_type
@@ -86,6 +86,7 @@ class MaterialNodeCoatedGlossy(GenericNode):
         self.inputs.new("NodeSocketFloat", "IOR Additional Amount", "IOR").default_value = 1.8
         self.inputs.new("NodeSocketFloat", "Bump Amount", "Bump").default_value = 0
         self.inputs.new("NodeSocketFloat", "Wireframe Amount", "Wireframe").default_value = 0
+        self.outputs.new("NodeSocketShader", "BSDF", "BSDF")
         self.brdf_type = 'lambert'
         self.anisotropic = False
         self.as_diffuse = False
@@ -97,7 +98,7 @@ class MaterialNodeCoatedGlossy(GenericNode):
 
 
 @replace_properties_with_annotations
-class MaterialNodeGlass(GenericNode):
+class MaterialNodeGlass(bpy.types.Node):
     bl_idname = "YafaRay4MaterialGlass"
     bl_label = "Glass Material"
     absorption_color = bpy.types.Material.absorption
@@ -113,6 +114,7 @@ class MaterialNodeGlass(GenericNode):
         self.inputs.new("NodeSocketFloat", "IOR Additional Amount", "IOR").default_value = 1.8
         self.inputs.new("NodeSocketFloat", "Bump Amount", "Bump").default_value = 0
         self.inputs.new("NodeSocketFloat", "Wireframe Amount", "Wireframe").default_value = 0
+        self.outputs.new("NodeSocketShader", "BSDF", "BSDF")
         self.absorption_color = (1, 1, 1)
         self.absorption_dist = 1
         self.dispersion_power = 0
@@ -126,7 +128,7 @@ class MaterialNodeGlass(GenericNode):
 
 
 @replace_properties_with_annotations
-class MaterialNodeRoughGlass(GenericNode):
+class MaterialNodeRoughGlass(bpy.types.Node):
     bl_idname = "YafaRay4MaterialRoughGlass"
     bl_label = "Rough Glass Material"
     absorption_color = bpy.types.Material.absorption
@@ -143,6 +145,7 @@ class MaterialNodeRoughGlass(GenericNode):
         self.inputs.new("NodeSocketFloat", "Roughness Exponent", "Roughness").default_value = 0.2
         self.inputs.new("NodeSocketFloat", "Bump Amount", "Bump").default_value = 0
         self.inputs.new("NodeSocketFloat", "Wireframe Amount", "Wireframe").default_value = 0
+        self.outputs.new("NodeSocketShader", "BSDF", "BSDF")
         self.absorption_color = (1, 1, 1)
         self.absorption_dist = 1
         self.dispersion_power = 0
@@ -156,7 +159,7 @@ class MaterialNodeRoughGlass(GenericNode):
 
 
 @replace_properties_with_annotations
-class MaterialNodeBlend(GenericNode):
+class MaterialNodeBlend(bpy.types.Node):
     bl_idname = "YafaRay4MaterialBlend"
     bl_label = "Blend Material"
     material1name = bpy.types.Material.material1name
@@ -164,6 +167,7 @@ class MaterialNodeBlend(GenericNode):
 
     def init(self, context):
         self.inputs.new("NodeSocketFloat", "Blend Amount", "Blend").default_value = 0.5
+        self.outputs.new("NodeSocketShader", "BSDF", "BSDF")
 
     def draw_buttons(self, context, layout):
         box = layout.box()
@@ -188,7 +192,7 @@ def register(node_categories):
     for cls in classes:
         register_class(cls)
         node_categories_items.append(NodeItem(cls.bl_idname))
-    node_categories.append(NodeCategory("YAFARAY4_MATERIAL", "Material", items=node_categories_items))
+    node_categories.append(NodeCategory("YAFARAY4_MATERIAL", "YafaRay Material", items=node_categories_items))
 
 
 def unregister():
