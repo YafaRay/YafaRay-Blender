@@ -591,10 +591,9 @@ class TypeVoronoi(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        layout = self.layout
+        self.draw2(context.texture, self.layout)
 
-        tex = context.texture
-
+    def draw2(self, tex, layout):
         split = layout.split()
 
         col = split.column()

@@ -10,7 +10,7 @@ from ..ui.material import blend_one_draw, blend_two_draw, material_from_context
 @replace_properties_with_annotations
 class MaterialNodeShinyDiffuse(bpy.types.Node):
     bl_idname = "YafaRay4MaterialShinyDiffuse"
-    bl_label = "Shiny Diffuse Material"
+    bl_label = "YafaRay Shiny Diffuse Material"
     brdf_type = bpy.types.Material.brdf_type
     fresnel_effect = bpy.types.Material.fresnel_effect
 
@@ -37,7 +37,7 @@ class MaterialNodeShinyDiffuse(bpy.types.Node):
 @replace_properties_with_annotations
 class MaterialNodeGlossy(bpy.types.Node):
     bl_idname = "YafaRay4MaterialGlossy"
-    bl_label = "Glossy Material"
+    bl_label = "YafaRay Glossy Material"
     brdf_type = bpy.types.Material.brdf_type
     anisotropic = bpy.types.Material.anisotropic
     as_diffuse = bpy.types.Material.as_diffuse
@@ -67,7 +67,7 @@ class MaterialNodeGlossy(bpy.types.Node):
 @replace_properties_with_annotations
 class MaterialNodeCoatedGlossy(bpy.types.Node):
     bl_idname = "YafaRay4MaterialCoatedGlossy"
-    bl_label = "Coated Glossy Material"
+    bl_label = "YafaRay Coated Glossy Material"
     brdf_type = bpy.types.Material.brdf_type
     anisotropic = bpy.types.Material.anisotropic
     as_diffuse = bpy.types.Material.as_diffuse
@@ -100,7 +100,7 @@ class MaterialNodeCoatedGlossy(bpy.types.Node):
 @replace_properties_with_annotations
 class MaterialNodeGlass(bpy.types.Node):
     bl_idname = "YafaRay4MaterialGlass"
-    bl_label = "Glass Material"
+    bl_label = "YafaRay Glass Material"
     absorption_color = bpy.types.Material.absorption
     absorption_dist = bpy.types.Material.absorption_dist
     dispersion_power = bpy.types.Material.dispersion_power
@@ -130,7 +130,7 @@ class MaterialNodeGlass(bpy.types.Node):
 @replace_properties_with_annotations
 class MaterialNodeRoughGlass(bpy.types.Node):
     bl_idname = "YafaRay4MaterialRoughGlass"
-    bl_label = "Rough Glass Material"
+    bl_label = "YafaRay Rough Glass Material"
     absorption_color = bpy.types.Material.absorption
     absorption_dist = bpy.types.Material.absorption_dist
     dispersion_power = bpy.types.Material.dispersion_power
@@ -161,7 +161,7 @@ class MaterialNodeRoughGlass(bpy.types.Node):
 @replace_properties_with_annotations
 class MaterialNodeBlend(bpy.types.Node):
     bl_idname = "YafaRay4MaterialBlend"
-    bl_label = "Blend Material"
+    bl_label = "YafaRay Blend Material"
     material1name = bpy.types.Material.material1name
     material2name = bpy.types.Material.material2name
 

@@ -18,8 +18,28 @@ class TextureNode1(bpy.types.Node):
         self.outputs.new("NodeSocketColor", "Color", "OutColor")
 
 
+@replace_properties_with_annotations
+class TextureNodeVoronoi(bpy.types.ShaderNodeTexVoronoi):
+    bl_idname = "YafaRay4TextureNodeVoronoi"
+    bl_label = "YafaRay Voronoi Texture"
+    tex = bpy.props.PointerProperty(type=bpy.types.Texture)
+    coll = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
+    def init(self, context):
+        super().__init__(context)
+        print(dir(super))
+        self.inputs.new("NodeSocketColor", "Color 3", "Color3").default_value = (0, 1, 1, 0.2)
+        self.outputs.new("NodeSocketColor", "Color", "OutColor")
+
+    def draw_buttons(self, context, layout):
+        layout.template_ID_preview(self, "tex")
+        layout.prop(self, "coll")
+        layout.operator("yafaray4.show_texture_window")
+        bpy.types.YAFARAY4_PT_texture_type_voronoi.draw2(None, self.tex, layout)
+
+
 classes = (
     TextureNode1,
+    TextureNodeVoronoi,
 )
 
 
@@ -29,6 +49,7 @@ def register(node_categories):
     for cls in classes:
         register_class(cls)
         node_categories_items.append(NodeItem(cls.bl_idname))
+    node_categories_items.append(NodeItem("ShaderNodeTexVoronoi", "YafaRay Voronoi Native Texture"))
     node_categories.append(NodeCategory("YAFARAY4_TEXTURE", "YafaRay Texture", items=node_categories_items))
 
 

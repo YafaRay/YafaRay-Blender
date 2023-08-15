@@ -80,6 +80,28 @@ class ShowNodeTreeWindow(Operator):
         return {'FINISHED'}
 
 
+@replace_properties_with_annotations
+class ShowTextureWindow(Operator):
+    bl_idname = "yafaray4.show_texture_window"
+    bl_label = "Show Texture Window"
+    bl_description = "Shows the YafaRay Texture Window for the selected texture"
+    texture_name = StringProperty()
+
+    # noinspection PyUnusedLocal
+    def execute(self, context):
+        node_editor_area = None
+        for area in context.window_manager.windows[-1].screen.areas:
+            if area.type == 'PROPERTIES':
+                node_editor_area = area
+                break
+        if node_editor_area is None:
+            bpy.ops.screen.userpref_show("INVOKE_DEFAULT")
+            node_editor_area = context.window_manager.windows[-1].screen.areas[0]
+            node_editor_area.type = "PROPERTIES"
+        node_editor_area.spaces[0].context = 'TEXTURE'
+        #node_editor_area.spaces[0].shader_type = self.texture_name
+        return {'FINISHED'}
+
 class WorldGetSunPosition(Operator):
     bl_idname = "yafaray4.world_get_position"
     bl_label = "From( get position )"
@@ -333,7 +355,7 @@ class MaterialPreviewCamZoomOut(bpy.types.Operator):
 
 
 classes = (
-    CreateNode, NewMaterial, ShowNodeTreeWindow,
+    CreateNode, NewMaterial, ShowNodeTreeWindow, ShowTextureWindow,
     WorldGetSunPosition, WorldGetSunAngle, WorldUpdateSunPositionAndAngle,
     RenderView, RenderAnimation, RenderStill,
     MaterialPresetsIorList, MaterialPreviewCamRotReset, MaterialPreviewCamZoomIn, MaterialPreviewCamZoomOut,)
