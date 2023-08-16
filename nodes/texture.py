@@ -2,6 +2,7 @@
 
 import bpy
 from nodeitems_utils import NodeItem
+
 from .common import NodeCategory
 from ..util.properties_annotations import replace_properties_with_annotations
 
@@ -12,10 +13,10 @@ class TextureNode1(bpy.types.Node):
     bl_label = "YafaRay Texture 1"
 
     def init(self, context):
-        self.inputs.new("NodeSocketColor", "Color 1", "Color1").default_value = (0, 1, 1, 0.2)
-        self.inputs.new("NodeSocketColor", "Color 2", "Color2").default_value = (0, 1, 0, 0.5)
-        self.inputs.new("NodeSocketFloat", "Param 1", "Param1").default_value = 13.5
-        self.outputs.new("NodeSocketColor", "Color", "OutColor")
+        self.inputs.new(type="NodeSocketColor", name="Color 1", identifier="Color1").default_value = (0, 1, 1, 0.2)
+        self.inputs.new(type="NodeSocketColor", name="Color 2", identifier="Color2").default_value = (0, 1, 0, 0.5)
+        self.inputs.new(type="NodeSocketFloat", name="Param 1", identifier="Param1").default_value = 13.5
+        self.outputs.new(type="NodeSocketColor", name="Color", identifier="OutColor")
 
 
 @replace_properties_with_annotations
@@ -24,13 +25,15 @@ class MyPropertyGroup(bpy.types.PropertyGroup):
     custom_1 = bpy.props.FloatProperty(name="My Float")
     custom_2 = bpy.props.IntProperty(name="My Int")
 
+
 class OBJECT_UL_List(bpy.types.UIList):
     bl_idname = "OBJECT_UL_List"
+
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname):
         if self.layout_type in {'DEFAULT', 'COMPACT'}:
             layout.prop(item, "custom_1")
             layout.prop(item, "custom_2")
-            #layout.prop(ob, "name", text="", emboss=False, icon_value=layout.icon(ob))
+            # layout.prop(ob, "name", text="", emboss=False, icon_value=layout.icon(ob))
 
 
 @replace_properties_with_annotations
@@ -40,11 +43,12 @@ class TextureNodeVoronoi(bpy.types.ShaderNodeTexVoronoi):
     tex = bpy.props.PointerProperty(type=bpy.types.Texture)
     coll = bpy.props.CollectionProperty(type=MyPropertyGroup)
     idx = bpy.props.IntProperty()
+
     def init(self, context):
         super().__init__(context)
         print(dir(super))
-        self.inputs.new("NodeSocketColor", "Color 3", "Color3").default_value = (0, 1, 1, 0.2)
-        self.outputs.new("NodeSocketColor", "Color", "OutColor")
+        self.inputs.new(type="NodeSocketColor", name="Color 3", identifier="Color3").default_value = (0, 1, 1, 0.2)
+        self.outputs.new(type="NodeSocketColor", name="Color", identifier="OutColor")
         item = self.coll.add()
         item.custom_1 = 25.4
         item.custom_2 = 2
@@ -54,16 +58,14 @@ class TextureNodeVoronoi(bpy.types.ShaderNodeTexVoronoi):
         self.idx = 0
 
     def draw_buttons(self, context, layout):
-        #layout.template_ID_preview(self, "tex")
+        # layout.template_ID_preview(self, "tex")
         layout.template_list("OBJECT_UL_List", "test_coll", self, "coll", self, "idx")
-        #layout.operator("yafaray4.show_texture_window")
-        #bpy.types.YAFARAY4_PT_texture_colors.draw2(None, self.tex, layout)
-        #bpy.types.YAFARAY4_PT_texture_type_voronoi.draw2(None, self.tex, layout)
+        # layout.operator("yafaray4.show_texture_window")
+        # bpy.types.YAFARAY4_PT_texture_colors.draw2(None, self.tex, layout)
+        # bpy.types.YAFARAY4_PT_texture_type_voronoi.draw2(None, self.tex, layout)
 
 
 classes = (
-    OBJECT_UL_List,
-    MyPropertyGroup,
     TextureNode1,
     TextureNodeVoronoi,
 )
@@ -71,11 +73,13 @@ classes = (
 
 def register(node_categories):
     from bpy.utils import register_class
+    register_class(OBJECT_UL_List)
+    register_class(MyPropertyGroup)
     node_categories_items = []
     for cls in classes:
         register_class(cls)
         node_categories_items.append(NodeItem(cls.bl_idname))
-    node_categories_items.append(NodeItem("ShaderNodeTexVoronoi", "YafaRay Voronoi Native Texture"))
+    # node_categories_items.append(NodeItem("ShaderNodeTexVoronoi", "YafaRay Voronoi Native Texture"))
     node_categories.append(NodeCategory("YAFARAY4_TEXTURE", "YafaRay Texture", items=node_categories_items))
 
 

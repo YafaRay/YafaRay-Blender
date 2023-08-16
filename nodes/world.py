@@ -12,8 +12,8 @@ class WorldNode(bpy.types.Node):
     bl_label = "YafaRay World"
 
     def init(self, context):
-        self.inputs.new("NodeSocketColor", "Background Color", "BackCol").default_value = (1, 1, 1, 1)
-        self.outputs.new("NodeSocketShader", "BSDF", "BSDF")
+        self.inputs.new(type="NodeSocketColor", name="Background Color", identifier="BackCol").default_value = (1, 1, 1, 1)
+        self.outputs.new(type="NodeSocketShader", name="BSDF", identifier="BSDF")
 
     def draw_buttons(self, context, layout):
         pass

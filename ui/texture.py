@@ -113,7 +113,7 @@ class Context(TextureButtons, Panel):
                         split.prop(tex, "type", text="")
             return
 
-        tex_collection = (pin_id is None) and (node is None) and (not isinstance(idblock, Brush))
+        tex_collection = (pin_id is None) and (node is None) #and (not isinstance(idblock, Brush))
 
         if tex_collection:
             row = layout.row()

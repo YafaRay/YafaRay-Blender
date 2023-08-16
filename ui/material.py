@@ -160,7 +160,7 @@ class ContextMaterial(MaterialButtonsPanel, Panel):
                     op.shader_type = 'OBJECT'
                     node_displayed = None
                     for node in yaf_mat.node_tree.nodes:
-                        if getattr(node, "type", None) == 'OUTPUT_MATERIAL':
+                        if getattr(node, "yaf_type", None) == 'OUTPUT_MATERIAL':
                             if getattr(node, "is_active_output", True):
                                 node_displayed = node
                     if not node_displayed:
@@ -168,6 +168,7 @@ class ContextMaterial(MaterialButtonsPanel, Panel):
                         layout.label(text="Show the Node Editor and add a Material Node, "
                                           "optionally connected to Texture Nodes", icon='INFO')
                     else:
+                        layout.label(text=node_displayed.name)
                         layout.template_node_view(yaf_mat.node_tree, node_displayed, None)
 
 
