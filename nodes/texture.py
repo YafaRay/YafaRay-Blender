@@ -58,11 +58,11 @@ class TextureNodeVoronoi(bpy.types.ShaderNodeTexVoronoi):
         self.idx = 0
 
     def draw_buttons(self, context, layout):
-        # layout.template_ID_preview(self, "tex")
+        layout.template_ID_preview(self, "tex")
         layout.template_list("OBJECT_UL_List", "test_coll", self, "coll", self, "idx")
-        # layout.operator("yafaray4.show_texture_window")
-        # bpy.types.YAFARAY4_PT_texture_colors.draw2(None, self.tex, layout)
-        # bpy.types.YAFARAY4_PT_texture_type_voronoi.draw2(None, self.tex, layout)
+        layout.operator("yafaray4.show_texture_window")
+        bpy.types.YAFARAY4_PT_texture_colors.draw_panel(self.tex, layout)
+        bpy.types.YAFARAY4_PT_texture_type_voronoi.draw_panel(self.tex, layout)
 
 
 classes = (

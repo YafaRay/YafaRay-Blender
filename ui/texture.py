@@ -252,9 +252,10 @@ class Colors(TextureButtons, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        self.draw2(context.texture, self.layout)
+        self.draw_panel(context.texture, self.layout)
 
-    def draw2(self, tex, layout):
+    @staticmethod
+    def draw_panel(tex, layout):
         layout.prop(tex, "use_color_ramp", text="Ramp")
         if tex.use_color_ramp:
             if tex.yaf_tex_type == "IMAGE":
@@ -590,9 +591,10 @@ class TypeVoronoi(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        self.draw2(context.texture, self.layout)
+        self.draw_panel(context.texture, self.layout)
 
-    def draw2(self, tex, layout):
+    @staticmethod
+    def draw_panel(tex, layout):
         split = layout.split()
 
         col = split.column()
