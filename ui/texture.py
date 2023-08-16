@@ -252,10 +252,9 @@ class Colors(TextureButtons, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        layout = self.layout
+        self.draw2(context.texture, self.layout)
 
-        tex = context.texture
-
+    def draw2(self, tex, layout):
         layout.prop(tex, "use_color_ramp", text="Ramp")
         if tex.use_color_ramp:
             if tex.yaf_tex_type == "IMAGE":
