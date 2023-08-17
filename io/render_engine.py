@@ -16,7 +16,8 @@ class RenderEngine(bpy.types.RenderEngine):
     bl_label = "YafaRay v4 Render"
     bl_use_preview = True  # Render engine supports being used for rendering previews of materials, lights and worlds
     bl_use_shading_nodes_custom = False  # Do not use custom node trees
-    #bl_use_shading_nodes = False  # Do not expose Blender shading nodes in the node editor user interface
+    bl_use_shading_nodes = True  # Expose Blender shading nodes in the node editor user interface and show the shader
+    # type node editor options (object, world)
 
     # Init is called whenever a new render engine instance is created. Multiple
     # instances may exist at the same time, for example for a viewport and final
@@ -64,7 +65,7 @@ class RenderEngine(bpy.types.RenderEngine):
     # Blender callback. Update on data changes for viewport render
     # For viewport renders, this method gets called once at the start and
     # whenever the scene or 3D viewport changes. This method is where data
-    # should be read from Blender in the same thread. Typically a render
+    # should be read from Blender in the same thread. Typically, a render
     # thread will be started to do the work while keeping Blender responsive.
 
     if bpy.app.version >= (2, 80, 0):
@@ -82,7 +83,7 @@ class RenderEngine(bpy.types.RenderEngine):
             print("view_draw", self, bl_context, bl_depsgraph)
 
     # Blender callback. Compile shader script node
-    #def update_script_node(self, bl_node=None):
+    # def update_script_node(self, bl_node=None):
     #    print("update_script_node", self, bl_node)
 
     # Blender callback. Update the render passes that will be generated
@@ -111,4 +112,3 @@ if __name__ == "__main__":  # Only used when editing and testing "live" within B
     # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the 
     # "libyafaray4_bindings" compiled module is installed on
     register()
-

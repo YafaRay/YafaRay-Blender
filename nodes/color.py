@@ -11,6 +11,7 @@ from ..util.properties_annotations import replace_properties_with_annotations
 class ColorBlendNode(bpy.types.Node):
     bl_idname = "YafaRay4ColorBlendNode"
     bl_label = "YafaRay Color Blend Node"
+    yafaray_type = 'COLOR'
     blend_type = EnumProperty(
         name="Blend Type",
         items=[

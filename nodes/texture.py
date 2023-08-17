@@ -11,6 +11,7 @@ from ..util.properties_annotations import replace_properties_with_annotations
 class TextureNode1(bpy.types.Node):
     bl_idname = "YafaRay4TextureNode1"
     bl_label = "YafaRay Texture 1"
+    yafaray_type = 'TEXTURE'
 
     def init(self, context):
         self.inputs.new(type="NodeSocketColor", name="Color 1", identifier="Color1").default_value = (0, 1, 1, 0.2)
@@ -19,63 +20,13 @@ class TextureNode1(bpy.types.Node):
         self.outputs.new(type="NodeSocketColor", name="Color", identifier="OutColor")
 
 
-@replace_properties_with_annotations
-class MyPropertyGroup(bpy.types.PropertyGroup):
-    bl_idname = "MyPropertyGroup"
-    custom_1 = bpy.props.FloatProperty(name="My Float")
-    custom_2 = bpy.props.IntProperty(name="My Int")
-
-
-class OBJECT_UL_List(bpy.types.UIList):
-    bl_idname = "OBJECT_UL_List"
-
-    def draw_item(self, context, layout, data, item, icon, active_data, active_propname):
-        if self.layout_type in {'DEFAULT', 'COMPACT'}:
-            layout.prop(item, "custom_1")
-            layout.prop(item, "custom_2")
-            # layout.prop(ob, "name", text="", emboss=False, icon_value=layout.icon(ob))
-
-
-@replace_properties_with_annotations
-class TextureNodeVoronoi(bpy.types.ShaderNodeTexVoronoi):
-    bl_idname = "YafaRay4TextureNodeVoronoi"
-    bl_label = "YafaRay Voronoi Texture"
-    tex = bpy.props.PointerProperty(type=bpy.types.Texture)
-    coll = bpy.props.CollectionProperty(type=MyPropertyGroup)
-    idx = bpy.props.IntProperty()
-
-    def init(self, context):
-        super().__init__(context)
-        print(dir(super))
-        self.inputs.new(type="NodeSocketColor", name="Color 3", identifier="Color3").default_value = (0, 1, 1, 0.2)
-        self.outputs.new(type="NodeSocketColor", name="Color", identifier="OutColor")
-        item = self.coll.add()
-        item.custom_1 = 25.4
-        item.custom_2 = 2
-        item = self.coll.add()
-        item.custom_1 = -12.8
-        item.custom_2 = -89
-        self.idx = 0
-
-    def draw_buttons(self, context, layout):
-        layout.template_ID_preview(self, "tex", new="texture.new")
-        layout.prop(self.tex, "yaf_tex_type")
-        layout.template_list("OBJECT_UL_List", "test_coll", self, "coll", self, "idx")
-        layout.operator("yafaray4.show_texture_window")
-        bpy.types.YAFARAY4_PT_texture_colors.draw_panel(self.tex, layout)
-        #bpy.types.YAFARAY4_PT_texture_type_voronoi.draw_panel(self.tex, layout)
-
-
 classes = (
     TextureNode1,
-    TextureNodeVoronoi,
 )
 
 
 def register(node_categories):
     from bpy.utils import register_class
-    register_class(OBJECT_UL_List)
-    register_class(MyPropertyGroup)
     node_categories_items = []
     for cls in classes:
         register_class(cls)

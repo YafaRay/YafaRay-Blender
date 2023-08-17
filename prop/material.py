@@ -12,10 +12,6 @@ from ..util.properties_annotations import replace_properties_with_annotations
 
 Material = bpy.types.Material
 
-class yaf(bpy.types.PropertyGroup):
-    bl_idname = "YafType"
-    bl_label = "Yaf type"
-
 # This code is irrelevant after the change in the blend material to convert it from EnumProperty to StringProperty.
 # I'm keeping this as a reference in case a better solution can be found for the blend material component materials
 # references
@@ -398,13 +394,8 @@ def register():
             description="",
             default=False)
 
-    bpy.utils.register_class(yaf)
-    Material.yaf_texture_slots = CollectionProperty(type=yaf)
-
 
 def unregister():
-    del Material.yaf_texture_slots
-    bpy.utils.unregister_class(yaf)
     del Material.mat_type
     del Material.diffuse_reflect
     del Material.specular_reflect

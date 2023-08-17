@@ -11,7 +11,7 @@ from ..ui.material import blend_one_draw, blend_two_draw, material_from_context
 class MaterialNodeShinyDiffuse(bpy.types.Node):
     bl_idname = "YafaRay4MaterialShinyDiffuse"
     bl_label = "YafaRay Shiny Diffuse Material"
-    yaf_type = "OUTPUT_MATERIAL"
+    yafaray_type = 'MATERIAL'
     brdf_type = bpy.types.Material.brdf_type
     fresnel_effect = bpy.types.Material.fresnel_effect
 
@@ -26,7 +26,7 @@ class MaterialNodeShinyDiffuse(bpy.types.Node):
         self.inputs.new(type="NodeSocketFloat", name="Translucency Amount", identifier="Transl").default_value = 0
         self.inputs.new(type="NodeSocketFloat", name="Bump Amount", identifier="Bump").default_value = 0
         self.inputs.new(type="NodeSocketFloat", name="Wireframe Amount", identifier="Wireframe").default_value = 0
-        self.outputs.new(type="NodeSocketShader", name="BSDF", identifier="BSDF")
+        # self.outputs.new(type="NodeSocketShader", name="BSDF", identifier="BSDF")
         self.brdf_type = 'lambert'
         self.fresnel_effect = False
 
@@ -39,7 +39,7 @@ class MaterialNodeShinyDiffuse(bpy.types.Node):
 class MaterialNodeGlossy(bpy.types.Node):
     bl_idname = "YafaRay4MaterialGlossy"
     bl_label = "YafaRay Glossy Material"
-    yaf_type = "OUTPUT_MATERIAL"
+    yafaray_type = 'MATERIAL'
     brdf_type = bpy.types.Material.brdf_type
     anisotropic = bpy.types.Material.anisotropic
     as_diffuse = bpy.types.Material.as_diffuse
@@ -55,7 +55,7 @@ class MaterialNodeGlossy(bpy.types.Node):
         self.inputs.new(type="NodeSocketFloat", name="Glossy Aniso.Exp.V", identifier="ExpV").default_value = 50
         self.inputs.new(type="NodeSocketFloat", name="Bump Amount", identifier="Bump").default_value = 0
         self.inputs.new(type="NodeSocketFloat", name="Wireframe Amount", identifier="Wireframe").default_value = 0
-        self.outputs.new(type="NodeSocketShader", name="BSDF", identifier="BSDF")
+        # self.outputs.new(type="NodeSocketShader", name="BSDF", identifier="BSDF")
         self.brdf_type = 'lambert'
         self.anisotropic = False
         self.as_diffuse = False
@@ -70,7 +70,7 @@ class MaterialNodeGlossy(bpy.types.Node):
 class MaterialNodeCoatedGlossy(bpy.types.Node):
     bl_idname = "YafaRay4MaterialCoatedGlossy"
     bl_label = "YafaRay Coated Glossy Material"
-    yaf_type = "OUTPUT_MATERIAL"
+    yafaray_type = 'MATERIAL'
     brdf_type = bpy.types.Material.brdf_type
     anisotropic = bpy.types.Material.anisotropic
     as_diffuse = bpy.types.Material.as_diffuse
@@ -89,7 +89,7 @@ class MaterialNodeCoatedGlossy(bpy.types.Node):
         self.inputs.new(type="NodeSocketFloat", name="IOR Additional Amount", identifier="IOR").default_value = 1.8
         self.inputs.new(type="NodeSocketFloat", name="Bump Amount", identifier="Bump").default_value = 0
         self.inputs.new(type="NodeSocketFloat", name="Wireframe Amount", identifier="Wireframe").default_value = 0
-        self.outputs.new(type="NodeSocketShader", name="BSDF", identifier="BSDF")
+        # self.outputs.new(type="NodeSocketShader", name="BSDF", identifier="BSDF")
         self.brdf_type = 'lambert'
         self.anisotropic = False
         self.as_diffuse = False
@@ -104,7 +104,7 @@ class MaterialNodeCoatedGlossy(bpy.types.Node):
 class MaterialNodeGlass(bpy.types.Node):
     bl_idname = "YafaRay4MaterialGlass"
     bl_label = "YafaRay Glass Material"
-    yaf_type = "OUTPUT_MATERIAL"
+    yafaray_type = 'MATERIAL'
     absorption_color = bpy.types.Material.absorption
     absorption_dist = bpy.types.Material.absorption_dist
     dispersion_power = bpy.types.Material.dispersion_power
@@ -118,7 +118,7 @@ class MaterialNodeGlass(bpy.types.Node):
         self.inputs.new(type="NodeSocketFloat", name="IOR Additional Amount", identifier="IOR").default_value = 1.8
         self.inputs.new(type="NodeSocketFloat", name="Bump Amount", identifier="Bump").default_value = 0
         self.inputs.new(type="NodeSocketFloat", name="Wireframe Amount", identifier="Wireframe").default_value = 0
-        self.outputs.new(type="NodeSocketShader", name="BSDF", identifier="BSDF")
+        # self.outputs.new(type="NodeSocketShader", name="BSDF", identifier="BSDF")
         self.absorption_color = (1, 1, 1)
         self.absorption_dist = 1
         self.dispersion_power = 0
@@ -135,7 +135,7 @@ class MaterialNodeGlass(bpy.types.Node):
 class MaterialNodeRoughGlass(bpy.types.Node):
     bl_idname = "YafaRay4MaterialRoughGlass"
     bl_label = "YafaRay Rough Glass Material"
-    yaf_type = "OUTPUT_MATERIAL"
+    yafaray_type = 'MATERIAL'
     absorption_color = bpy.types.Material.absorption
     absorption_dist = bpy.types.Material.absorption_dist
     dispersion_power = bpy.types.Material.dispersion_power
@@ -150,7 +150,7 @@ class MaterialNodeRoughGlass(bpy.types.Node):
         self.inputs.new(type="NodeSocketFloat", name="Roughness Exponent", identifier="Roughness").default_value = 0.2
         self.inputs.new(type="NodeSocketFloat", name="Bump Amount", identifier="Bump").default_value = 0
         self.inputs.new(type="NodeSocketFloat", name="Wireframe Amount", identifier="Wireframe").default_value = 0
-        self.outputs.new(type="NodeSocketShader", name="BSDF", identifier="BSDF")
+        # self.outputs.new(type="NodeSocketShader", name="BSDF", identifier="BSDF")
         self.absorption_color = (1, 1, 1)
         self.absorption_dist = 1
         self.dispersion_power = 0
@@ -167,13 +167,13 @@ class MaterialNodeRoughGlass(bpy.types.Node):
 class MaterialNodeBlend(bpy.types.Node):
     bl_idname = "YafaRay4MaterialBlend"
     bl_label = "YafaRay Blend Material"
-    yaf_type = "OUTPUT_MATERIAL"
+    yafaray_type = 'MATERIAL'
     material1name = bpy.types.Material.material1name
     material2name = bpy.types.Material.material2name
 
     def init(self, context):
         self.inputs.new(type="NodeSocketFloat", name="Blend Amount", identifier="Blend").default_value = 0.5
-        self.outputs.new(type="NodeSocketShader", name="BSDF", identifier="BSDF")
+        # self.outputs.new(type="NodeSocketShader", name="BSDF", identifier="BSDF")
 
     def draw_buttons(self, context, layout):
         box = layout.box()

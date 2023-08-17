@@ -10,6 +10,7 @@ from ..util.properties_annotations import replace_properties_with_annotations
 class WorldNode(bpy.types.Node):
     bl_idname = "YafaRay4WorldNode"
     bl_label = "YafaRay World"
+    yafaray_type = 'WORLD'
 
     def init(self, context):
         self.inputs.new(type="NodeSocketColor", name="Background Color", identifier="BackCol").default_value = (1, 1, 1, 1)

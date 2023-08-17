@@ -160,12 +160,12 @@ class ContextMaterial(MaterialButtonsPanel, Panel):
                     op.shader_type = 'OBJECT'
                     node_displayed = None
                     for node in yaf_mat.node_tree.nodes:
-                        if getattr(node, "yaf_type", None) == 'OUTPUT_MATERIAL':
+                        if getattr(node, "yafaray_type", None) == 'MATERIAL':
                             if getattr(node, "is_active_output", True):
                                 node_displayed = node
                     if not node_displayed:
                         layout.label(text="No material node")
-                        layout.label(text="Show the Node Editor and add a Material Node, "
+                        layout.label(text="Show the Node Editor and add a YafaRay Material Node, "
                                           "optionally connected to Texture Nodes", icon='INFO')
                     else:
                         layout.label(text=node_displayed.name)

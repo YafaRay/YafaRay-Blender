@@ -89,12 +89,12 @@ class World(WorldButtonsPanel, Panel):
                     op.shader_type = 'WORLD'
                     node_displayed = None
                     for node in world.node_tree.nodes:
-                        if getattr(node, "type", None) == 'OUTPUT_WORLD':
+                        if getattr(node, "yafaray_type", None) == 'WORLD':
                             if getattr(node, "is_active_output", True):
                                 node_displayed = node
                     if not node_displayed:
                         layout.label(text="No world node")
-                        layout.label(text="Show the Node Editor and add a World Node, "
+                        layout.label(text="Show the Node Editor and add a YafaRay World Node, "
                                           "connected to Texture Nodes", icon='INFO')
                     else:
                         layout.template_node_view(world.node_tree, node_displayed, None)

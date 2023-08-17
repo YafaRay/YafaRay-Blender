@@ -113,7 +113,7 @@ class Context(TextureButtons, Panel):
                         split.prop(tex, "type", text="")
             return
 
-        tex_collection = (pin_id is None) and (node is None) #and (not isinstance(idblock, Brush))
+        tex_collection = (pin_id is None) and (node is None) and (not isinstance(idblock, Brush))
 
         if tex_collection:
             row = layout.row()
@@ -252,10 +252,8 @@ class Colors(TextureButtons, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        self.draw_panel(context.texture, self.layout)
-
-    @staticmethod
-    def draw_panel(tex, layout):
+        tex = context.texture
+        layout = self.layout
         layout.prop(tex, "use_color_ramp", text="Ramp")
         if tex.use_color_ramp:
             if tex.yaf_tex_type == "IMAGE":
@@ -591,10 +589,8 @@ class TypeVoronoi(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        self.draw_panel(context.texture, self.layout)
-
-    @staticmethod
-    def draw_panel(tex, layout):
+        tex = context.texture
+        layout = self.layout
         split = layout.split()
 
         col = split.column()
