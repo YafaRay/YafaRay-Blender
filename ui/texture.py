@@ -8,22 +8,16 @@ from bpy.types import (Panel,
                        Material,
                        World,
                        ParticleSettings)
+from .common import ui_split
 
 
-def ui_split(ui_item, factor):
-    if bpy.app.version >= (2, 80, 0):
-        return ui_item.split(factor=factor)
+def get_idblock_from_context(context):
+    if context.space_data.texture_context == 'MATERIAL':
+        return context.active_object.active_material
+    elif context.space_data.texture_context == 'WORLD':
+        return context.scene.world
     else:
-        return ui_item.split(percentage=factor)
-
-
-def material_from_context(context):
-    if bpy.app.version >= (2, 80, 0):
-        return context.material
-    else:
-        # noinspection PyUnresolvedReferences
-        from bl_ui.properties_material import active_node_mat
-        return active_node_mat(context.material)
+        return None
 
 
 class TextureButtons:
@@ -35,16 +29,9 @@ class TextureButtons:
 
     @classmethod
     def poll(cls, context):
-        if not (context.space_data.texture_context == 'MATERIAL' or context.space_data.texture_context == 'WORLD'):
-            return False
-        if context.space_data.texture_context == 'MATERIAL':
-            idblock = context.active_object.active_material
-        elif context.space_data.texture_context == 'WORLD':
-            idblock = context.scene.world
-        else:
-            return
+        idblock = get_idblock_from_context(context)
         if idblock is None:
-            return False
+            return
         tex = idblock.active_texture
         return tex and (tex.yaf_tex_type not in 'NONE' or tex.use_nodes) and (
                 context.scene.render.engine in cls.COMPAT_ENGINES)
@@ -59,115 +46,29 @@ class Context(TextureButtons, Panel):
     @classmethod
     def poll(cls, context):
         engine = context.scene.render.engine
-        # if not (hasattr(context, "texture_slot") or hasattr(context, "texture_node")):
-        #     return False
-        if bpy.app.version >= (2, 80, 0):
-            light = context.light
-        else:
-            light = context.lamp
-        return ((context.material or
-                 context.world or
-                 light or
-                 context.texture or
-                 context.line_style or
-                 context.particle_system or
-                 isinstance(context.space_data.pin_id, ParticleSettings) or
-                 context.texture_user) and
-                (engine in cls.COMPAT_ENGINES))
+        return context.space_data.context == 'TEXTURE' and engine in cls.COMPAT_ENGINES
 
     def draw(self, context):
         layout = self.layout
-        slot = getattr(context, "texture_slot", None)
-        node = getattr(context, "texture_node", None)
-        space = context.space_data
-        layout.prop(space, "texture_context", expand=True)
-        if context.space_data.texture_context == 'MATERIAL':
-            idblock = context.active_object.active_material
-        elif context.space_data.texture_context == 'WORLD':
-            idblock = context.scene.world
-        else:
-            return
+        layout.prop(context.space_data, "texture_context", expand=True)
+        idblock = get_idblock_from_context(context)
         if idblock is None:
             return
-        tex = idblock.active_texture
-        # idblock = context_tex_datablock(context)
-        pin_id = space.pin_id
-
-        space.use_limited_texture_context = True
-
-        if space.use_pin_id and not isinstance(pin_id, Texture):
-            # noinspection PyUnresolvedReferences
-            # idblock = id_tex_datablock(pin_id)
-            pin_id = None
-
-        if not space.use_pin_id:
-            pin_id = None
-
-        if space.texture_context == 'OTHER':
-            if not pin_id:
-                layout.template_texture_user()
-            user = context.texture_user
-            if user or pin_id:
-                layout.separator()
-
-                row = layout.row()
-
-                if pin_id:
-                    row.template_ID(space, "pin_id")
-                else:
-                    propname = context.texture_user_property.identifier
-                    row.template_ID(user, propname, new="texture.new")
-
-                if tex:
-                    split = ui_split(layout, 0.2)
-                    if tex.use_nodes:
-                        if slot:
-                            split.label(text="Output:")
-                            split.prop(slot, "output_node", text="")
-                    else:
-                        split.label(text="Type:")
-                        split.prop(tex, "type", text="")
-            return
-
-        tex_collection = (pin_id is None) and (node is None)
-
-        if tex_collection:
-            row = layout.row()
+        using_nodes = isinstance(idblock, Material) and idblock.use_nodes
+        row = layout.row()
+        if not using_nodes:
             row.template_list("TEXTURE_UL_texslots", "", idblock, "texture_slots", idblock, "active_texture_index",
                               rows=2)
-
             col = row.column(align=True)
             col.operator("texture.slot_move", text="", icon='TRIA_UP').type = 'UP'
             col.operator("texture.slot_move", text="", icon='TRIA_DOWN').type = 'DOWN'
             col.menu("TEXTURE_MT_specials", icon='DOWNARROW_HLT', text="")
-
         split = ui_split(layout, 0.65)
         col = split.column()
-
-        if tex_collection:
-            col.template_ID(idblock, "active_texture", new="texture.new")
-        elif node:
-            col.template_ID(node, "texture", new="texture.new")
-        elif idblock:
-            col.template_ID(idblock, "texture", new="texture.new")
-
-        if pin_id:
-            col.template_ID(space, "pin_id")
-
-        split.column()
-
-        if tex:
-            split = ui_split(layout, 0.2)
-
-            if tex.use_nodes:
-
-                if slot:
-                    split.label(text="Output:")
-                    split.prop(slot, "output_node", text="")
-
-            else:
-                split.label(text="Type:")
-                split.prop(tex, "yaf_tex_type", text="")
+        col.template_ID(idblock, "active_texture", new="texture.new")
+        split = ui_split(layout, 0.2)
+        split.label(text="Type:")
+        split.prop(idblock.active_texture, "yaf_tex_type", text="")
 
 
 class Preview(TextureButtons, Panel):
@@ -176,32 +77,13 @@ class Preview(TextureButtons, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        layout = self.layout
-
-        if context.space_data.texture_context == 'MATERIAL':
-            idblock = context.active_object.active_material
-        elif context.space_data.texture_context == 'WORLD':
-            idblock = context.scene.world
-        else:
-            return
+        idblock = get_idblock_from_context(context)
         if idblock is None:
-            return False
+            return
+        layout = self.layout
         tex = idblock.active_texture
         slot = getattr(context, "texture_slot", None)
-
-        if context.space_data.texture_context == 'MATERIAL':
-            idblock = context.active_object.active_material
-        elif context.space_data.texture_context == 'WORLD':
-            idblock = context.scene.world
-        else:
-            return
-        if idblock is None:
-            return False
-
-        if idblock:
-            layout.template_preview(tex, parent=idblock, slot=slot)
-        else:
-            layout.template_preview(tex, slot=slot)
+        layout.template_preview(tex, parent=idblock, slot=slot)
 
 
 class PreviewControls(TextureButtons, Panel):
@@ -280,14 +162,9 @@ class Colors(TextureButtons, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        if context.space_data.texture_context == 'MATERIAL':
-            idblock = context.active_object.active_material
-        elif context.space_data.texture_context == 'WORLD':
-            idblock = context.scene.world
-        else:
-            return
+        idblock = get_idblock_from_context(context)
         if idblock is None:
-            return False
+            return
         tex = idblock.active_texture
         layout = self.layout
         layout.prop(tex, "use_color_ramp", text="Ramp")
@@ -351,16 +228,9 @@ class Type(TextureButtons):
 
     @classmethod
     def poll(cls, context):
-        if not (context.space_data.texture_context == 'MATERIAL' or context.space_data.texture_context == 'WORLD'):
-            return False
-        if context.space_data.texture_context == 'MATERIAL':
-            idblock = context.active_object.active_material
-        elif context.space_data.texture_context == 'WORLD':
-            idblock = context.scene.world
-        else:
-            return
+        idblock = get_idblock_from_context(context)
         if idblock is None:
-            return False
+            return
         tex = idblock.active_texture
         engine = context.scene.render.engine
         return tex and ((tex.yaf_tex_type == cls.tex_type and not tex.use_nodes) and (engine in cls.COMPAT_ENGINES))
@@ -374,16 +244,10 @@ class TypeClouds(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        layout = self.layout
-
-        if context.space_data.texture_context == 'MATERIAL':
-            idblock = context.active_object.active_material
-        elif context.space_data.texture_context == 'WORLD':
-            idblock = context.scene.world
-        else:
-            return
+        idblock = get_idblock_from_context(context)
         if idblock is None:
-            return False
+            return
+        layout = self.layout
         tex = idblock.active_texture
 
         layout.prop(tex, "cloud_type", expand=True)
@@ -405,16 +269,10 @@ class TypeWood(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        layout = self.layout
-
-        if context.space_data.texture_context == 'MATERIAL':
-            idblock = context.active_object.active_material
-        elif context.space_data.texture_context == 'WORLD':
-            idblock = context.scene.world
-        else:
-            return
+        idblock = get_idblock_from_context(context)
         if idblock is None:
-            return False
+            return
+        layout = self.layout
         tex = idblock.active_texture
 
         layout.prop(tex, "noise_basis_2", expand=True)
@@ -441,16 +299,10 @@ class TypeMarble(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        layout = self.layout
-
-        if context.space_data.texture_context == 'MATERIAL':
-            idblock = context.active_object.active_material
-        elif context.space_data.texture_context == 'WORLD':
-            idblock = context.scene.world
-        else:
-            return
+        idblock = get_idblock_from_context(context)
         if idblock is None:
-            return False
+            return
+        layout = self.layout
         tex = idblock.active_texture
 
         layout.prop(tex, "marble_type", expand=True)
@@ -474,16 +326,10 @@ class TypeBlend(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        layout = self.layout
-
-        if context.space_data.texture_context == 'MATERIAL':
-            idblock = context.active_object.active_material
-        elif context.space_data.texture_context == 'WORLD':
-            idblock = context.scene.world
-        else:
-            return
+        idblock = get_idblock_from_context(context)
         if idblock is None:
-            return False
+            return
+        layout = self.layout
         tex = idblock.active_texture
 
         layout.prop(tex, "progression")
@@ -501,16 +347,10 @@ class TypeImage(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        layout = self.layout
-
-        if context.space_data.texture_context == 'MATERIAL':
-            idblock = context.active_object.active_material
-        elif context.space_data.texture_context == 'WORLD':
-            idblock = context.scene.world
-        else:
-            return
+        idblock = get_idblock_from_context(context)
         if idblock is None:
-            return False
+            return
+        layout = self.layout
         tex = idblock.active_texture
         layout.template_image(tex, "image", tex.image_user)
 
@@ -551,17 +391,10 @@ class TypeImageSampling(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        layout = self.layout
-
-        if context.space_data.texture_context == 'MATERIAL':
-            idblock = context.active_object.active_material
-        elif context.space_data.texture_context == 'WORLD':
-            idblock = context.scene.world
-        else:
-            return
+        idblock = get_idblock_from_context(context)
         if idblock is None:
-            return False
-
+            return
+        layout = self.layout
         tex = idblock.active_texture
         layout.label(text="Image:")
         row = layout.row(align=True)
@@ -592,16 +425,10 @@ class TypeImageMapping(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        layout = self.layout
-
-        if context.space_data.texture_context == 'MATERIAL':
-            idblock = context.active_object.active_material
-        elif context.space_data.texture_context == 'WORLD':
-            idblock = context.scene.world
-        else:
-            return
+        idblock = get_idblock_from_context(context)
         if idblock is None:
-            return False
+            return
+        layout = self.layout
         tex = idblock.active_texture
 
         layout.prop(tex, "extension")
@@ -654,16 +481,10 @@ class TypeMusgrave(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        layout = self.layout
-
-        if context.space_data.texture_context == 'MATERIAL':
-            idblock = context.active_object.active_material
-        elif context.space_data.texture_context == 'WORLD':
-            idblock = context.scene.world
-        else:
-            return
+        idblock = get_idblock_from_context(context)
         if idblock is None:
-            return False
+            return
+        layout = self.layout
         tex = idblock.active_texture
 
         layout.prop(tex, "musgrave_type")
@@ -699,14 +520,9 @@ class TypeVoronoi(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        if context.space_data.texture_context == 'MATERIAL':
-            idblock = context.active_object.active_material
-        elif context.space_data.texture_context == 'WORLD':
-            idblock = context.scene.world
-        else:
-            return
+        idblock = get_idblock_from_context(context)
         if idblock is None:
-            return False
+            return
         tex = idblock.active_texture
         layout = self.layout
         split = layout.split()
@@ -741,17 +557,10 @@ class TypeDistortedNoise(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        layout = self.layout
-
-        if context.space_data.texture_context == 'MATERIAL':
-            idblock = context.active_object.active_material
-        elif context.space_data.texture_context == 'WORLD':
-            idblock = context.scene.world
-        else:
-            return
+        idblock = get_idblock_from_context(context)
         if idblock is None:
-            return False
-        
+            return
+        layout = self.layout
         tex = idblock.active_texture
 
         layout.prop(tex, "noise_distortion")
@@ -771,16 +580,10 @@ class TypeOcean(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        layout = self.layout
-
-        if context.space_data.texture_context == 'MATERIAL':
-            idblock = context.active_object.active_material
-        elif context.space_data.texture_context == 'WORLD':
-            idblock = context.scene.world
-        else:
-            return
+        idblock = get_idblock_from_context(context)
         if idblock is None:
-            return False
+            return
+        layout = self.layout
         tex = idblock.active_texture
         ot = tex.ocean
 
@@ -796,27 +599,19 @@ class SlotMapping(Slot, Panel):
 
     @classmethod
     def poll(cls, context):
-        if not (context.space_data.texture_context == 'MATERIAL' or context.space_data.texture_context == 'WORLD'):
-            return False
-
+        idblock = get_idblock_from_context(context)
+        if idblock is None:
+            return
         if not getattr(context, "texture_slot", None):
             return False
-
         engine = context.scene.render.engine
         return engine in cls.COMPAT_ENGINES
 
     def draw(self, context):
-        layout = self.layout
-
-        if context.space_data.texture_context == 'MATERIAL':
-            idblock = context.active_object.active_material
-        elif context.space_data.texture_context == 'WORLD':
-            idblock = context.scene.world
-        else:
-            return
+        idblock = get_idblock_from_context(context)
         if idblock is None:
-            return False
-
+            return
+        layout = self.layout
         tex = idblock.active_texture_slot
         # textype = context.texture
 
@@ -887,23 +682,16 @@ class SlotInfluence(Slot, Panel):
 
     @classmethod
     def poll(cls, context):
-        if not (context.space_data.texture_context == 'MATERIAL' or context.space_data.texture_context == 'WORLD'):
-            return False
-
+        idblock = get_idblock_from_context(context)
+        if idblock is None:
+            return
         engine = context.scene.render.engine
         return engine in cls.COMPAT_ENGINES
 
     def draw(self, context):
-        # idblock = context_tex_datablock(context)
-        if context.space_data.texture_context == 'MATERIAL':
-            idblock = context.active_object.active_material
-        elif context.space_data.texture_context == 'WORLD':
-            idblock = context.scene.world
-        else:
-            return False
+        idblock = get_idblock_from_context(context)
         if idblock is None:
-            return False
-
+            return
         tex = idblock.texture_slots[idblock.active_texture_index]
         texture = idblock.active_texture
 

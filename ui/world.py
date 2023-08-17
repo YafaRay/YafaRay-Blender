@@ -6,6 +6,7 @@ from bl_ui.properties_world import WORLD_PT_context_world
 from bl_ui.properties_world import WorldButtonsPanel
 # noinspection PyUnresolvedReferences
 from bpy.types import Panel
+from .common import ui_split
 
 
 if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, 
@@ -16,13 +17,6 @@ if __name__ == "__main__":  # Only used when editing and testing "live" within B
     import yafaray4.prop.world
 
     yafaray4.prop.world.register()
-
-
-def ui_split(ui_item, factor):
-    if bpy.app.version >= (2, 80, 0):
-        return ui_item.split(factor=factor)
-    else:
-        return ui_item.split(percentage=factor)
 
 
 class WorldPreview(WorldButtonsPanel, Panel):

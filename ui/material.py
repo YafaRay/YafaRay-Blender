@@ -4,6 +4,7 @@ import bpy
 from bl_ui.properties_material import MaterialButtonsPanel
 # noinspection PyUnresolvedReferences
 from bpy.types import Panel, Menu
+from .common import ui_split, material_from_context
 
 if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed, 
     # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the 
@@ -33,22 +34,6 @@ if __name__ == "__main__":  # Only used when editing and testing "live" within B
     yafaray4.ot.presets.register()
 else:
     from .ior_values import ior_list
-
-
-def ui_split(ui_item, factor):
-    if bpy.app.version >= (2, 80, 0):
-        return ui_item.split(factor=factor)
-    else:
-        return ui_item.split(percentage=factor)
-
-
-def material_from_context(context):
-    if bpy.app.version >= (2, 80, 0):
-        return context.material
-    else:
-        # noinspection PyUnresolvedReferences
-        from bl_ui.properties_material import active_node_mat
-        return active_node_mat(context.material)
 
 
 def material_check(material):

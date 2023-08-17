@@ -7,6 +7,7 @@ from bl_ui.properties_render import RenderButtonsPanel
 from bpy.path import display_name
 # noinspection PyUnresolvedReferences
 from bpy.types import Panel, Menu
+from .common import ui_split
 
 if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed,
     # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the
@@ -41,13 +42,6 @@ else:
 
     class OutputPanel(RenderButtonsPanel, Panel):
         pass
-
-
-def ui_split(ui_item, factor):
-    if bpy.app.version >= (2, 80, 0):
-        return ui_item.split(factor=factor)
-    else:
-        return ui_item.split(percentage=factor)
 
 
 class Render(RenderButtonsPanel, Panel):
