@@ -12,10 +12,14 @@ from .common import ui_split
 
 
 def get_idblock_from_context(context):
+    if bpy.app.version >= (2, 80, 0):
+        return None
     if context.space_data.texture_context == 'MATERIAL':
         return context.active_object.active_material
     elif context.space_data.texture_context == 'WORLD':
         return context.scene.world
+    elif context.space_data.texture_context == 'OTHER':
+        return context.scene
     else:
         return None
 
@@ -50,13 +54,19 @@ class Context(TextureButtons, Panel):
 
     def draw(self, context):
         layout = self.layout
-        layout.prop(context.space_data, "texture_context", expand=True)
+        if bpy.app.version < (2, 80, 0):
+            layout.prop(context.space_data, "texture_context", expand=True)
         idblock = get_idblock_from_context(context)
         if idblock is None:
             return
-        using_nodes = isinstance(idblock, Material) and idblock.use_nodes
+        using_nodes = hasattr(idblock, "use_nodes") and idblock.use_nodes
         row = layout.row()
-        if not using_nodes:
+        if isinstance(idblock, bpy.types.Scene):
+            col = row.column(align=True)
+            col.label("Generic YafaRay Texture Editor")
+            col.label("This editor allows to edit any textures from the scene or create new textures, not associated"
+                      "to any objects")
+        if hasattr(idblock, "texture_slots") and not using_nodes:
             row.template_list("TEXTURE_UL_texslots", "", idblock, "texture_slots", idblock, "active_texture_index",
                               rows=2)
             col = row.column(align=True)
@@ -68,7 +78,8 @@ class Context(TextureButtons, Panel):
         col.template_ID(idblock, "active_texture", new="texture.new")
         split = ui_split(layout, 0.2)
         split.label(text="Type:")
-        split.prop(idblock.active_texture, "yaf_tex_type", text="")
+        if idblock.active_texture is not None:
+            split.prop(idblock.active_texture, "yaf_tex_type", text="")
 
 
 class Preview(TextureButtons, Panel):
@@ -690,7 +701,7 @@ class SlotInfluence(Slot, Panel):
 
     def draw(self, context):
         idblock = get_idblock_from_context(context)
-        if idblock is None:
+        if idblock is None or not isinstance(idblock, bpy.types.TextureSlot):
             return
         tex = idblock.texture_slots[idblock.active_texture_index]
         texture = idblock.active_texture

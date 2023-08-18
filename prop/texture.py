@@ -19,7 +19,14 @@ def update_preview(self, context):
 # noinspection PyUnusedLocal,PyBroadException
 def call_tex_type_update(self, context):
     try:
-        tex = context.texture
+        if context.space_data.texture_context == 'MATERIAL':
+            tex = context.active_object.active_material.active_texture
+        elif context.space_data.texture_context == 'WORLD':
+            tex = context.scene.world.active_texture
+        elif context.space_data.texture_context == 'OTHER':
+            tex = context.scene.active_texture
+        else:
+            tex = None
         if tex is not None:
             tex.type = tex.yaf_tex_type
     except Exception:

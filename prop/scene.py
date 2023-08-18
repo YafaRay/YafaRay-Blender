@@ -600,6 +600,8 @@ def register():
                     "base object in memory instead of instances.",
         default=True)
 
+    Scene.active_texture = PointerProperty(name="YafaRay Generic Texture Editor", type=bpy.types.Texture)
+
     bpy.utils.register_class(YafaRay4Properties)
     bpy.types.Scene.yafaray = PointerProperty(type=YafaRay4Properties)
 
@@ -718,3 +720,4 @@ def unregister():
     del Scene.AA_pixelwidth
     del Scene.AA_filter_type
     del Scene.use_instances
+    del Scene.active_texture

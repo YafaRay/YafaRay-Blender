@@ -2,7 +2,7 @@
 
 import bpy
 import mathutils
-from bpy.props import (StringProperty)
+from bpy.props import StringProperty
 # noinspection PyUnresolvedReferences
 from bpy.types import Operator
 
@@ -50,7 +50,8 @@ class NewMaterial(Operator):
                     node_editor_area = context.window_manager.windows[-1].screen.areas[0]
                     node_editor_area.type = "NODE_EDITOR"
                 node_editor_area.spaces[0].tree_type = 'YAFARAY4_NODE_TREE'
-                node_editor_area.spaces[0].node_tree = bpy.data.node_groups[context.active_object.active_material.yafaray_nodes.name]
+                node_editor_area.spaces[0].node_tree = bpy.data.node_groups[
+                    context.active_object.active_material.yafaray_nodes.name]
                 return {'FINISHED'}
         else:
             context.active_object.active_material = bpy.data.materials.new("Material")
@@ -98,9 +99,15 @@ class ShowTextureWindow(Operator):
             bpy.ops.screen.userpref_show("INVOKE_DEFAULT")
             node_editor_area = context.window_manager.windows[-1].screen.areas[0]
             node_editor_area.type = "PROPERTIES"
-        node_editor_area.spaces[0].context = 'TEXTURE'
-        #node_editor_area.spaces[0].shader_type = self.texture_name
+            # print("node_editor_area.spaces[0].context", node_editor_area.spaces[0].context)
+        context.scene.active_texture = bpy.data.textures[self.texture_name]
+        try:
+            node_editor_area.spaces[0].context = 'TEXTURE'
+            node_editor_area.spaces[0].texture_context = 'OTHER'
+        except Exception:
+            pass
         return {'FINISHED'}
+
 
 class WorldGetSunPosition(Operator):
     bl_idname = "yafaray4.world_get_position"
