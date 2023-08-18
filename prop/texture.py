@@ -19,7 +19,9 @@ def update_preview(self, context):
 # noinspection PyUnusedLocal,PyBroadException
 def call_tex_type_update(self, context):
     try:
-        if context.space_data.texture_context == 'MATERIAL':
+        if not hasattr(context.space_data, "texture_context"):
+            tex = context.scene.active_texture
+        elif context.space_data.texture_context == 'MATERIAL':
             tex = context.active_object.active_material.active_texture
         elif context.space_data.texture_context == 'WORLD':
             tex = context.scene.world.active_texture

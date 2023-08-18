@@ -22,11 +22,11 @@ class TextureNode1(bpy.types.Node):
         self.outputs.new(type="NodeSocketColor", name="Color", identifier="OutColor")
 
     def draw_buttons(self, context, layout):
-        layout.prop(self, "texture")
+        layout.template_ID(self, "texture", new="texture.new")
         op = layout.operator("yafaray4.show_texture_window")
         if self.texture is not None:
             op.texture_name = self.texture.name
-        layout.label("If a new Properties window appears, click again to show the editor for the selected texture", icon="INFO")
+        layout.label(text="If a new Properties window appears, click again to show the editor for the selected texture", icon="INFO")
 
 
 classes = (

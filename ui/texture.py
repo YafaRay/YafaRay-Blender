@@ -13,7 +13,7 @@ from .common import ui_split
 
 def get_idblock_from_context(context):
     if bpy.app.version >= (2, 80, 0):
-        return None
+        return context.scene
     if context.space_data.texture_context == 'MATERIAL':
         return context.active_object.active_material
     elif context.space_data.texture_context == 'WORLD':
@@ -63,9 +63,11 @@ class Context(TextureButtons, Panel):
         row = layout.row()
         if isinstance(idblock, bpy.types.Scene):
             col = row.column(align=True)
-            col.label("Generic YafaRay Texture Editor")
-            col.label("This editor allows to edit any textures from the scene or create new textures, not associated"
-                      "to any objects")
+            col.label(text="Generic YafaRay Texture Editor")
+            col.label(text="This editor allows to edit any textures from the scene or create new textures, "
+                           "not associated to any objects")
+            if bpy.app.version >= (2, 80, 0):
+                col.label(text="Ignore Brush and texture fields at the top (unrelated to YafaRay)", icon='INFO')
         if hasattr(idblock, "texture_slots") and not using_nodes:
             row.template_list("TEXTURE_UL_texslots", "", idblock, "texture_slots", idblock, "active_texture_index",
                               rows=2)
@@ -73,7 +75,9 @@ class Context(TextureButtons, Panel):
             col.operator("texture.slot_move", text="", icon='TRIA_UP').type = 'UP'
             col.operator("texture.slot_move", text="", icon='TRIA_DOWN').type = 'DOWN'
             col.menu("TEXTURE_MT_specials", icon='DOWNARROW_HLT', text="")
-        split = ui_split(layout, 0.65)
+        split = ui_split(layout, 0.25)
+        col = split.column()
+        col.label(text="Texture to edit:")
         col = split.column()
         col.template_ID(idblock, "active_texture", new="texture.new")
         split = ui_split(layout, 0.2)
@@ -693,25 +697,27 @@ class SlotInfluence(Slot, Panel):
 
     @classmethod
     def poll(cls, context):
+        if bpy.app.version >= (2, 80, 0) or context.space_data.texture_context == 'OTHER':
+            return
         idblock = get_idblock_from_context(context)
-        if idblock is None:
+        if idblock is None or (hasattr(idblock, "use_nodes") and idblock.use_nodes):
             return
         engine = context.scene.render.engine
         return engine in cls.COMPAT_ENGINES
 
     def draw(self, context):
         idblock = get_idblock_from_context(context)
-        if idblock is None or not isinstance(idblock, bpy.types.TextureSlot):
+        if idblock is None or not hasattr(idblock, "texture_slots"):
             return
-        tex = idblock.texture_slots[idblock.active_texture_index]
+        texture_slot = idblock.texture_slots[idblock.active_texture_index]
         texture = idblock.active_texture
 
         def factor_but(layout, toggle, factor, name):
             row = layout.row(align=True)
-            row.prop(tex, toggle, text="")
+            row.prop(texture_slot, toggle, text="")
             sub = row.row()
-            sub.active = getattr(tex, toggle)
-            sub.prop(tex, factor, text=name, slider=True)
+            sub.active = getattr(texture_slot, toggle)
+            sub.prop(texture_slot, factor, text=name, slider=True)
             return sub  # XXX, temp. use_map_normal needs to override.
 
         shader_nodes = dict()
@@ -753,7 +759,7 @@ class SlotInfluence(Slot, Panel):
             for node in nodes:
                 value = shader_nodes[node]
                 factor_but(col, value[0], value[1], value[2])
-                if node == "Bump" and getattr(tex, "use_map_normal") and texture.yaf_tex_type == 'IMAGE':
+                if node == "Bump" and getattr(texture_slot, "use_map_normal") and texture.yaf_tex_type == 'IMAGE':
                     col.prop(texture, "yaf_is_normal_map", "Use map as normal map")
 
         elif isinstance(idblock, World):  # for setup world texture
@@ -771,17 +777,17 @@ class SlotInfluence(Slot, Panel):
             split = self.layout.split()
 
             col = split.column()
-            col.prop(tex, "blend_type", text="Blend")
-            col.prop(tex, "use_rgb_to_intensity", text="No RGB")
-            col.prop(tex, "color", text="")
+            col.prop(texture_slot, "blend_type", text="Blend")
+            col.prop(texture_slot, "use_rgb_to_intensity", text="No RGB")
+            col.prop(texture_slot, "color", text="")
 
             col = split.column()
-            col.prop(tex, "invert", text="Negative")
-            col.prop(tex, "use_stencil")
+            col.prop(texture_slot, "invert", text="Negative")
+            col.prop(texture_slot, "use_stencil")
 
         if isinstance(idblock, Material) or isinstance(idblock, World):
             self.layout.separator()
-            self.layout.row().prop(tex, "default_value", text="Default Value", slider=True)
+            self.layout.row().prop(texture_slot, "default_value", text="Default Value", slider=True)
 
 
 classes = (

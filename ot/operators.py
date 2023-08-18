@@ -84,8 +84,8 @@ class ShowNodeTreeWindow(Operator):
 @replace_properties_with_annotations
 class ShowTextureWindow(Operator):
     bl_idname = "yafaray4.show_texture_window"
-    bl_label = "Show Texture Window"
-    bl_description = "Shows the YafaRay Texture Window for the selected texture"
+    bl_label = "Show Texture Parameters Window"
+    bl_description = "Shows the YafaRay Texture Parameters Window for the selected texture"
     texture_name = StringProperty()
 
     # noinspection PyUnusedLocal
@@ -103,7 +103,8 @@ class ShowTextureWindow(Operator):
         context.scene.active_texture = bpy.data.textures[self.texture_name]
         try:
             node_editor_area.spaces[0].context = 'TEXTURE'
-            node_editor_area.spaces[0].texture_context = 'OTHER'
+            if bpy.app.version < (2, 80, 0):
+                node_editor_area.spaces[0].texture_context = 'OTHER'
         except Exception:
             pass
         return {'FINISHED'}
