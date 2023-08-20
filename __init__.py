@@ -26,8 +26,8 @@ YAFARAY_VERSION_SUFFIX = {
     -1: "Release Candidate",
     -0: ""  # Normal release
 }
-YAFARAY_BLENDER_VERSION = str(bl_info['version'][0]) + "." + str(bl_info['version'][1]) + "." + str(
-    bl_info['version'][2]) + " " + YAFARAY_VERSION_SUFFIX[bl_info['version'][3]]
+YAFARAY_BLENDER_VERSION = str(bl_info["version"][0]) + "." + str(bl_info["version"][1]) + "." + str(
+    bl_info["version"][2]) + " " + YAFARAY_VERSION_SUFFIX[bl_info["version"][3]]
 
 import os
 import sys
@@ -51,6 +51,7 @@ from . import io
 from . import ui
 from .ot import migration
 
+
 modules = (
     prop,
     io,
@@ -65,7 +66,7 @@ def register():
     from . import nodes
     nodes.register()
     # noinspection PyTypeChecker
-    bpy.app.handlers.load_post.append(migration)
+    bpy.app.handlers.load_post.append(migration.migration)
     # register keys for 'render 3d view', 'render still' and 'render animation'
     if bpy.context.window_manager.keyconfigs.addon is not None:
         km = bpy.context.window_manager.keyconfigs.addon.keymaps.new(name='Screen')
@@ -86,7 +87,7 @@ def unregister():
                     or kmi.idname == 'yafaray4.render_still':
                 kma.keymap_items.remove(kmi)
     # noinspection PyTypeChecker
-    bpy.app.handlers.load_post.remove(migration)
+    bpy.app.handlers.load_post.remove(migration.migration)
     from . import nodes
     nodes.unregister()
     for module in reversed(modules):

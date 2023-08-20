@@ -8,7 +8,7 @@ from bpy.props import (IntProperty,
                        BoolProperty,
                        PointerProperty)
 from .scene_property_groups import YafaRay4LayersProperties, YafaRay4MaterialPreviewControlProperties, \
-    YafaRay4NoiseControlProperties, YafaRay4LoggingProperties
+    YafaRay4NoiseControlProperties, YafaRay4LoggingProperties, YafaRay4MigrationProperties
 
 Scene = bpy.types.Scene
 
@@ -603,7 +603,7 @@ def register():
     Scene.active_texture = PointerProperty(name="YafaRay Generic Texture Editor", type=bpy.types.Texture)
 
     bpy.utils.register_class(YafaRay4Properties)
-    bpy.types.Scene.yafaray = PointerProperty(type=YafaRay4Properties)
+    bpy.types.Scene.yafaray4 = PointerProperty(type=YafaRay4Properties)
 
     bpy.utils.register_class(YafaRay4LayersProperties)
     YafaRay4Properties.passes = PointerProperty(type=YafaRay4LayersProperties)
@@ -617,8 +617,13 @@ def register():
     bpy.utils.register_class(YafaRay4MaterialPreviewControlProperties)
     YafaRay4Properties.preview = PointerProperty(type=YafaRay4MaterialPreviewControlProperties)
 
+    bpy.utils.register_class(YafaRay4MigrationProperties)
+    YafaRay4Properties.migration = PointerProperty(type=YafaRay4MigrationProperties)
+
 
 def unregister():
+    del YafaRay4Properties.migration
+    bpy.utils.unregister_class(YafaRay4MigrationProperties)
     del YafaRay4Properties.preview
     bpy.utils.unregister_class(YafaRay4MaterialPreviewControlProperties)
     del YafaRay4Properties.logging
@@ -627,7 +632,7 @@ def unregister():
     bpy.utils.unregister_class(YafaRay4NoiseControlProperties)
     del YafaRay4Properties.passes
     bpy.utils.unregister_class(YafaRay4LayersProperties)
-    del bpy.types.Scene.yafaray
+    del bpy.types.Scene.yafaray4
     bpy.utils.unregister_class(YafaRay4Properties)
 
     del Scene.gs_accelerator

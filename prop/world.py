@@ -5,14 +5,15 @@ from bpy.props import (EnumProperty,
                        FloatProperty,
                        FloatVectorProperty,
                        IntProperty,
-                       BoolProperty)
+                       BoolProperty,
+                       PointerProperty)
 
 World = bpy.types.World
 
 
 # noinspection PyUnusedLocal
 def update_preview(self, context):
-    context.world.update_tag()
+    context.scene.world.update_tag()
 
 
 def register():
@@ -296,6 +297,11 @@ def register():
         update=update_preview, name="Turbidity",
         description="",
         default=3.0)
+
+    World.texture = PointerProperty(
+        type=bpy.types.Texture,
+        update=update_preview, name="Texture",
+        description="Texture used for the YafaRay scene background")
 
 
 def unregister():

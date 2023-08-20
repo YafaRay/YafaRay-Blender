@@ -143,9 +143,9 @@ class AASettings(RenderButtonsPanel, Panel):
 
         split = layout.split()
         col = split.column()
-        col.prop(scene.yafaray.noise_control, "clamp_samples")
+        col.prop(scene.yafaray4.noise_control, "clamp_samples")
         col = split.column()
-        col.prop(scene.yafaray.noise_control, "clamp_indirect")
+        col.prop(scene.yafaray4.noise_control, "clamp_indirect")
 
         split = layout.split()
         col = split.column()
@@ -170,37 +170,37 @@ class AASettings(RenderButtonsPanel, Panel):
         sub_nosppm_morethan1pass.enabled = scene.intg_light_method != "SPPM" and scene.AA_passes > 1
         sub_nosppm.prop(scene, "AA_passes")
         sub_nosppm_morethan1pass.prop(scene, "AA_inc_samples")
-        sub_nosppm_morethan1pass.prop(scene.yafaray.noise_control, "background_resampling")
+        sub_nosppm_morethan1pass.prop(scene.yafaray4.noise_control, "background_resampling")
 
         row = layout.row()
         row.enabled = scene.intg_light_method != "SPPM" and scene.AA_passes > 1
 
-        row.prop(scene.yafaray.noise_control, "dark_detection_type")
+        row.prop(scene.yafaray4.noise_control, "dark_detection_type")
         col = row.column()
-        if scene.yafaray.noise_control.dark_detection_type == "curve":
+        if scene.yafaray4.noise_control.dark_detection_type == "curve":
             col.label(text="")
-        elif scene.yafaray.noise_control.dark_detection_type == "linear":
+        elif scene.yafaray4.noise_control.dark_detection_type == "linear":
             col.prop(scene, "AA_threshold")
-            col.prop(scene.yafaray.noise_control, "dark_threshold_factor")
+            col.prop(scene.yafaray4.noise_control, "dark_threshold_factor")
         else:
             col.prop(scene, "AA_threshold")
 
         row = layout.row()
         row.enabled = scene.intg_light_method != "SPPM" and scene.AA_passes > 1
 
-        row.prop(scene.yafaray.noise_control, "detect_color_noise")
+        row.prop(scene.yafaray4.noise_control, "detect_color_noise")
 
         row = layout.row()
         row.enabled = scene.intg_light_method != "SPPM" and scene.AA_passes > 1
 
         col = row.column()
-        col.prop(scene.yafaray.noise_control, "sample_multiplier_factor")
-        col.prop(scene.yafaray.noise_control, "light_sample_multiplier_factor")
-        col.prop(scene.yafaray.noise_control, "indirect_sample_multiplier_factor")
+        col.prop(scene.yafaray4.noise_control, "sample_multiplier_factor")
+        col.prop(scene.yafaray4.noise_control, "light_sample_multiplier_factor")
+        col.prop(scene.yafaray4.noise_control, "indirect_sample_multiplier_factor")
         col = row.column()
-        col.prop(scene.yafaray.noise_control, "resampled_floor")
-        col.prop(scene.yafaray.noise_control, "variance_edge_size")
-        col.prop(scene.yafaray.noise_control, "variance_pixels")
+        col.prop(scene.yafaray4.noise_control, "resampled_floor")
+        col.prop(scene.yafaray4.noise_control, "variance_edge_size")
+        col.prop(scene.yafaray4.noise_control, "variance_pixels")
 
 
 class ConvertOldSettings(RenderButtonsPanel, Panel):
@@ -386,31 +386,31 @@ class Logging(OutputPanel, Panel):
 
         split = ui_split(layout, 0.43)
         col = split.column()
-        col.prop(scene.yafaray.logging, "paramsBadgePosition")
+        col.prop(scene.yafaray4.logging, "paramsBadgePosition")
         col = split.column()
-        col.prop(scene.yafaray.logging, "drawRenderSettings")
+        col.prop(scene.yafaray4.logging, "drawRenderSettings")
         col = split.column()
-        col.prop(scene.yafaray.logging, "drawAANoiseSettings")
+        col.prop(scene.yafaray4.logging, "drawAANoiseSettings")
 
         split = layout.split()
         col = split.column()
-        col.prop(scene.yafaray.logging, "logPrintDateTime")
+        col.prop(scene.yafaray4.logging, "logPrintDateTime")
         col = split.column()
-        col.prop(scene.yafaray.logging, "consoleVerbosity")
+        col.prop(scene.yafaray4.logging, "consoleVerbosity")
         col = split.column()
-        col.prop(scene.yafaray.logging, "logVerbosity")
+        col.prop(scene.yafaray4.logging, "logVerbosity")
 
         split = layout.split()
         col = split.column()
-        col.prop(scene.yafaray.logging, "saveLog")
+        col.prop(scene.yafaray4.logging, "saveLog")
         col = split.column()
-        col.prop(scene.yafaray.logging, "saveHTML")
+        col.prop(scene.yafaray4.logging, "saveHTML")
         col = split.column()
-        col.prop(scene.yafaray.logging, "savePreset")
+        col.prop(scene.yafaray4.logging, "savePreset")
 
-        if scene.yafaray.logging.saveLog or scene.yafaray.logging.saveHTML or scene.yafaray.logging.savePreset \
-                or scene.yafaray.logging.paramsBadgePosition == "top" \
-                or scene.yafaray.logging.paramsBadgePosition == "bottom":
+        if scene.yafaray4.logging.saveLog or scene.yafaray4.logging.saveHTML or scene.yafaray4.logging.savePreset \
+                or scene.yafaray4.logging.paramsBadgePosition == "top" \
+                or scene.yafaray4.logging.paramsBadgePosition == "bottom":
             if scene.gs_type_render == "into_blender" and not scene.gs_secondary_file_output:
                 row = layout.row()
                 row.label(text="Params badge and saving log/html/preset files only works when exporting to image file.",
@@ -420,27 +420,27 @@ class Logging(OutputPanel, Panel):
                     text="To get the badge/logs, render to image or render into Blender+enable Secondary File Output.",
                     icon='ERROR')
 
-            if scene.yafaray.logging.paramsBadgePosition == "bottom" and scene.gs_type_render == "file":
+            if scene.yafaray4.logging.paramsBadgePosition == "bottom" and scene.gs_type_render == "file":
                 row = layout.row()
                 row.label(text="Image with Params Badge at bottom will appear CROPPED in Blender,", icon='INFO')
                 row = layout.row()
                 row.label(text="  but will be CORRECT in the exported image file.", icon='INFO')
 
             row = layout.row()
-            row.prop(scene.yafaray.logging, "title")
+            row.prop(scene.yafaray4.logging, "title")
             row = layout.row()
-            row.prop(scene.yafaray.logging, "author")
+            row.prop(scene.yafaray4.logging, "author")
             row = layout.row()
-            row.prop(scene.yafaray.logging, "contact")
+            row.prop(scene.yafaray4.logging, "contact")
             row = layout.row()
-            row.prop(scene.yafaray.logging, "comments")
+            row.prop(scene.yafaray4.logging, "comments")
             row = layout.row()
-            row.prop(scene.yafaray.logging, "customIcon")
+            row.prop(scene.yafaray4.logging, "customIcon")
             row = layout.row()
             col = row.column()
-            col.prop(scene.yafaray.logging, "customFont")
+            col.prop(scene.yafaray4.logging, "customFont")
             col = row.column()
-            col.prop(scene.yafaray.logging, "fontScale")
+            col.prop(scene.yafaray4.logging, "fontScale")
 
 
 class ClayRender(RenderButtonsPanel, Panel):
@@ -629,9 +629,9 @@ class Output(OutputPanel):
                 icon="INFO")
 
         if (
-                scene.yafaray.logging.saveLog or scene.yafaray.logging.saveHTML or scene.yafaray.logging.savePreset or
-                scene.yafaray.logging.paramsBadgePosition == "top"
-                or scene.yafaray.logging.paramsBadgePosition == "bottom") \
+                scene.yafaray4.logging.saveLog or scene.yafaray4.logging.saveHTML or scene.yafaray4.logging.savePreset or
+                scene.yafaray4.logging.paramsBadgePosition == "top"
+                or scene.yafaray4.logging.paramsBadgePosition == "bottom") \
                 and scene.gs_type_render == "into_blender" and not scene.gs_secondary_file_output:
             row = layout.row()
             row.label(text="Params badge and saving log/html/preset files only works when exporting to image file.",
@@ -642,7 +642,7 @@ class Output(OutputPanel):
                 icon='INFO')
             layout.row()
 
-        if scene.yafaray.logging.paramsBadgePosition == "bottom" and scene.gs_type_render == "file":
+        if scene.yafaray4.logging.paramsBadgePosition == "bottom" and scene.gs_type_render == "file":
             row = layout.row()
             row.label(text="Image with Params Badge at bottom will appear CROPPED in Blender,", icon='INFO')
             row = layout.row()

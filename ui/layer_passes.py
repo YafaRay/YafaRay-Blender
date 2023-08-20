@@ -67,7 +67,7 @@ class LayerPasses(LayersPanel, Panel):
 
     def draw_header(self, context):
         scene = context.scene
-        self.layout.prop(scene.yafaray.passes, "pass_enable", text="")
+        self.layout.prop(scene.yafaray4.passes, "pass_enable", text="")
 
     def draw(self, context):
         layout = self.layout
@@ -80,69 +80,69 @@ class LayerPasses(LayersPanel, Panel):
             # noinspection PyUnresolvedReferences
             view_layer = context.scene.render.layers.active
 
-        if scene.yafaray.passes.pass_enable:
+        if scene.yafaray4.passes.pass_enable:
             layout.row()  # (align=True)
             row = layout.row()  # (align=True)
             row.prop(view_layer, "use_pass_z")  # , "Z-depth")
             if view_layer.use_pass_z:
                 sub = row.column(align=True)
-                sub.prop(scene.yafaray.passes, "pass_Depth", text="")
+                sub.prop(scene.yafaray4.passes, "pass_Depth", text="")
 
             row = layout.row()
             row.prop(view_layer, "use_pass_vector")
             if view_layer.use_pass_vector:
                 sub = row.column(align=True)
-                sub.prop(scene.yafaray.passes, "pass_Vector", text="")
+                sub.prop(scene.yafaray4.passes, "pass_Vector", text="")
 
             row = layout.row()
             row.prop(view_layer, "use_pass_normal")
             if view_layer.use_pass_normal:
                 sub = row.column(align=True)
-                sub.prop(scene.yafaray.passes, "pass_Normal", text="")
+                sub.prop(scene.yafaray4.passes, "pass_Normal", text="")
 
             row = layout.row()
             row.prop(view_layer, "use_pass_uv")
             if view_layer.use_pass_uv:
                 sub = row.column(align=True)
-                sub.prop(scene.yafaray.passes, "pass_UV", text="")
+                sub.prop(scene.yafaray4.passes, "pass_UV", text="")
 
             if bpy.app.version < (2, 80, 0):
                 row = layout.row()
                 row.prop(view_layer, "use_pass_color")
                 if view_layer.use_pass_color:
                     sub = row.column(align=True)
-                    sub.prop(scene.yafaray.passes, "pass_Color", text="")
+                    sub.prop(scene.yafaray4.passes, "pass_Color", text="")
 
             row = layout.row()
             row.prop(view_layer, "use_pass_emit")
             if view_layer.use_pass_emit:
                 sub = row.column(align=True)
-                sub.prop(scene.yafaray.passes, "pass_Emit", text="")
+                sub.prop(scene.yafaray4.passes, "pass_Emit", text="")
 
             row = layout.row()
             row.prop(view_layer, "use_pass_mist")
             if view_layer.use_pass_mist:
                 sub = row.column(align=True)
-                sub.prop(scene.yafaray.passes, "pass_Mist", text="")
+                sub.prop(scene.yafaray4.passes, "pass_Mist", text="")
 
             if bpy.app.version < (2, 80, 0):
                 row = layout.row()
                 row.prop(view_layer, "use_pass_diffuse")
                 if view_layer.use_pass_diffuse:
                     sub = row.column(align=True)
-                    sub.prop(scene.yafaray.passes, "pass_Diffuse", text="")
+                    sub.prop(scene.yafaray4.passes, "pass_Diffuse", text="")
 
                 row = layout.row()
                 row.prop(view_layer, "use_pass_specular")
                 if view_layer.use_pass_specular:
                     sub = row.column(align=True)
-                    sub.prop(scene.yafaray.passes, "pass_Spec", text="")
+                    sub.prop(scene.yafaray4.passes, "pass_Spec", text="")
 
             row = layout.row()
             row.prop(view_layer, "use_pass_ambient_occlusion")
             if view_layer.use_pass_ambient_occlusion:
                 sub = row.column(align=True)
-                sub.prop(scene.yafaray.passes, "pass_AO", text="")
+                sub.prop(scene.yafaray4.passes, "pass_AO", text="")
                 row = layout.row()
                 col = row.column()
                 col.prop(scene, "intg_AO_color")
@@ -153,159 +153,159 @@ class LayerPasses(LayersPanel, Panel):
             row.prop(view_layer, "use_pass_environment")
             if view_layer.use_pass_environment:
                 sub = row.column(align=True)
-                sub.prop(scene.yafaray.passes, "pass_Env", text="")
+                sub.prop(scene.yafaray4.passes, "pass_Env", text="")
 
             if bpy.app.version < (2, 80, 0):
                 row = layout.row()
                 row.prop(view_layer, "use_pass_indirect")
                 if view_layer.use_pass_indirect:
                     sub = row.column(align=True)
-                    sub.prop(scene.yafaray.passes, "pass_Indirect", text="")
+                    sub.prop(scene.yafaray4.passes, "pass_Indirect", text="")
 
             row = layout.row()
             row.prop(view_layer, "use_pass_shadow")
             if view_layer.use_pass_shadow:
                 sub = row.column(align=True)
-                sub.prop(scene.yafaray.passes, "pass_Shadow", text="")
+                sub.prop(scene.yafaray4.passes, "pass_Shadow", text="")
 
             if bpy.app.version < (2, 80, 0):
                 row = layout.row()
                 row.prop(view_layer, "use_pass_reflection")
                 if view_layer.use_pass_reflection:
                     sub = row.column(align=True)
-                    sub.prop(scene.yafaray.passes, "pass_Reflect", text="")
+                    sub.prop(scene.yafaray4.passes, "pass_Reflect", text="")
 
                 row = layout.row()
                 row.prop(view_layer, "use_pass_refraction")
                 if view_layer.use_pass_refraction:
                     sub = row.column(align=True)
-                    sub.prop(scene.yafaray.passes, "pass_Refract", text="")
+                    sub.prop(scene.yafaray4.passes, "pass_Refract", text="")
 
             row = layout.row()
             row.prop(view_layer, "use_pass_object_index")
             if view_layer.use_pass_object_index:
                 sub = row.column(align=True)
-                sub.prop(scene.yafaray.passes, "pass_IndexOB", text="")
+                sub.prop(scene.yafaray4.passes, "pass_IndexOB", text="")
 
             row = layout.row()
             row.prop(view_layer, "use_pass_material_index")
             if view_layer.use_pass_material_index:
                 sub = row.column(align=True)
-                sub.prop(scene.yafaray.passes, "pass_IndexMA", text="")
+                sub.prop(scene.yafaray4.passes, "pass_IndexMA", text="")
 
             row = layout.row()
             row.prop(view_layer, "use_pass_diffuse_direct")
             if view_layer.use_pass_diffuse_direct:
                 sub = row.column(align=True)
-                sub.prop(scene.yafaray.passes, "pass_DiffDir", text="")
+                sub.prop(scene.yafaray4.passes, "pass_DiffDir", text="")
 
             row = layout.row()
             row.prop(view_layer, "use_pass_diffuse_indirect")
             if view_layer.use_pass_diffuse_indirect:
                 sub = row.column(align=True)
-                sub.prop(scene.yafaray.passes, "pass_DiffInd", text="")
+                sub.prop(scene.yafaray4.passes, "pass_DiffInd", text="")
 
             row = layout.row()
             row.prop(view_layer, "use_pass_diffuse_color")
             if view_layer.use_pass_diffuse_color:
                 sub = row.column(align=True)
-                sub.prop(scene.yafaray.passes, "pass_DiffCol", text="")
+                sub.prop(scene.yafaray4.passes, "pass_DiffCol", text="")
 
             row = layout.row()
             row.prop(view_layer, "use_pass_glossy_direct")
             if view_layer.use_pass_glossy_direct:
                 sub = row.column(align=True)
-                sub.prop(scene.yafaray.passes, "pass_GlossDir", text="")
+                sub.prop(scene.yafaray4.passes, "pass_GlossDir", text="")
 
             row = layout.row()
             row.prop(view_layer, "use_pass_glossy_indirect")
             if view_layer.use_pass_glossy_indirect:
                 sub = row.column(align=True)
-                sub.prop(scene.yafaray.passes, "pass_GlossInd", text="")
+                sub.prop(scene.yafaray4.passes, "pass_GlossInd", text="")
 
             row = layout.row()
             row.prop(view_layer, "use_pass_glossy_color")
             if view_layer.use_pass_glossy_color:
                 sub = row.column(align=True)
-                sub.prop(scene.yafaray.passes, "pass_GlossCol", text="")
+                sub.prop(scene.yafaray4.passes, "pass_GlossCol", text="")
 
             row = layout.row()
             row.prop(view_layer, "use_pass_transmission_direct")
             if view_layer.use_pass_transmission_direct:
                 sub = row.column(align=True)
-                sub.prop(scene.yafaray.passes, "pass_TransDir", text="")
+                sub.prop(scene.yafaray4.passes, "pass_TransDir", text="")
 
             row = layout.row()
             row.prop(view_layer, "use_pass_transmission_indirect")
             if view_layer.use_pass_transmission_indirect:
                 sub = row.column(align=True)
-                sub.prop(scene.yafaray.passes, "pass_TransInd", text="")
+                sub.prop(scene.yafaray4.passes, "pass_TransInd", text="")
 
             row = layout.row()
             row.prop(view_layer, "use_pass_transmission_color")
             if view_layer.use_pass_transmission_color:
                 sub = row.column(align=True)
-                sub.prop(scene.yafaray.passes, "pass_TransCol", text="")
+                sub.prop(scene.yafaray4.passes, "pass_TransCol", text="")
 
             row = layout.row()
             row.prop(view_layer, "use_pass_subsurface_direct")
             if view_layer.use_pass_subsurface_direct:
                 sub = row.column(align=True)
-                sub.prop(scene.yafaray.passes, "pass_SubsurfaceDir", text="")
+                sub.prop(scene.yafaray4.passes, "pass_SubsurfaceDir", text="")
 
             row = layout.row()
             row.prop(view_layer, "use_pass_subsurface_indirect")
             if view_layer.use_pass_subsurface_indirect:
                 sub = row.column(align=True)
-                sub.prop(scene.yafaray.passes, "pass_SubsurfaceInd", text="")
+                sub.prop(scene.yafaray4.passes, "pass_SubsurfaceInd", text="")
 
             row = layout.row()
             row.prop(view_layer, "use_pass_subsurface_color")
             if view_layer.use_pass_subsurface_color:
                 sub = row.column(align=True)
-                sub.prop(scene.yafaray.passes, "pass_SubsurfaceCol", text="")
+                sub.prop(scene.yafaray4.passes, "pass_SubsurfaceCol", text="")
 
             box = layout.box()
             box.label(text="Masking Passes settings:")
 
             row = box.row()
-            row.prop(scene.yafaray.passes, "pass_mask_obj_index")
+            row.prop(scene.yafaray4.passes, "pass_mask_obj_index")
             sub = row.column(align=True)
-            sub.prop(scene.yafaray.passes, "pass_mask_mat_index")
+            sub.prop(scene.yafaray4.passes, "pass_mask_mat_index")
 
             row = box.row()
-            row.prop(scene.yafaray.passes, "pass_mask_invert")
+            row.prop(scene.yafaray4.passes, "pass_mask_invert")
             sub = row.column(align=True)
-            sub.prop(scene.yafaray.passes, "pass_mask_only")
+            sub.prop(scene.yafaray4.passes, "pass_mask_only")
 
             box = layout.box()
             box.label(text="Toon and Object Edge Passes settings:")
 
             row = box.row()
-            row.prop(scene.yafaray.passes, "objectEdgeThickness")
+            row.prop(scene.yafaray4.passes, "objectEdgeThickness")
             sub = row.column(align=True)
-            sub.prop(scene.yafaray.passes, "toonEdgeColor", text="")
+            sub.prop(scene.yafaray4.passes, "toonEdgeColor", text="")
             sub = row.column(align=True)
-            sub.prop(scene.yafaray.passes, "objectEdgeSmoothness")
+            sub.prop(scene.yafaray4.passes, "objectEdgeSmoothness")
             sub = row.column(align=True)
-            sub.prop(scene.yafaray.passes, "objectEdgeThreshold")
+            sub.prop(scene.yafaray4.passes, "objectEdgeThreshold")
 
             row = box.row()
-            row.prop(scene.yafaray.passes, "toonPreSmooth")
+            row.prop(scene.yafaray4.passes, "toonPreSmooth")
             sub = row.column(align=True)
-            sub.prop(scene.yafaray.passes, "toonQuantization")
+            sub.prop(scene.yafaray4.passes, "toonQuantization")
             sub = row.column(align=True)
-            sub.prop(scene.yafaray.passes, "toonPostSmooth")
+            sub.prop(scene.yafaray4.passes, "toonPostSmooth")
 
             box = layout.box()
             box.label(text="Faces Edge Pass settings:")
 
             row = box.row()
-            row.prop(scene.yafaray.passes, "facesEdgeThickness")
+            row.prop(scene.yafaray4.passes, "facesEdgeThickness")
             sub = row.column(align=True)
-            sub.prop(scene.yafaray.passes, "facesEdgeSmoothness")
+            sub.prop(scene.yafaray4.passes, "facesEdgeSmoothness")
             sub = row.column(align=True)
-            sub.prop(scene.yafaray.passes, "facesEdgeThreshold")
+            sub.prop(scene.yafaray4.passes, "facesEdgeThreshold")
 
 
 classes = (

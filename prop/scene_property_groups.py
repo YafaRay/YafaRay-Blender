@@ -19,6 +19,15 @@ def update_preview(self, context):
 
 # noinspection PyTypeChecker
 @replace_properties_with_annotations
+class YafaRay4MigrationProperties(bpy.types.PropertyGroup):
+    migrated_to_v4 = BoolProperty(
+        name="Migrated to YafaRay v4",
+        description="Flag indicating whether the scene has been already migrated to YafaRay v4",
+        default=False)
+
+
+# noinspection PyTypeChecker
+@replace_properties_with_annotations
 class YafaRay4LoggingProperties(bpy.types.PropertyGroup):
     paramsBadgePosition = EnumProperty(
         name="Params Badge position",

@@ -93,9 +93,13 @@ class World(WorldButtonsPanel, Panel):
                     else:
                         layout.template_node_view(world.node_tree, node_displayed, None)
 
-            elif bpy.app.version < (2, 80, 0):
-                tex = context.scene.world.active_texture
+            elif True:#bpy.app.version < (2, 80, 0):
+                layout.template_ID(context.scene.world, "texture", new="texture.new")
+                tex = context.scene.world.texture
                 if tex is not None:
+                    op = layout.operator("yafaray4.show_texture_window")
+                    op.texture_name = tex.name
+                    layout.label(text="If a new Properties window appears, click again to show the editor for the selected texture", icon="INFO")
                     #
                     layout.template_ID(context.world, "active_texture")
                     #
