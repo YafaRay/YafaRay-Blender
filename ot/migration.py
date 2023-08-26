@@ -2,16 +2,25 @@
 
 import bpy
 from bpy.app.handlers import persistent
+
 from .. import bl_info
 
 
-def copy_attributes(source, destination):
+def copy_attributes(source, destination, mapping):
     print("Copying attributes from", source, "to", destination)
-    attributes = [a for a in dir(source) if not (a.startswith("__") or "rna" in a.lower())]
+    attributes = [a for a in dir(source) if not a.startswith("__")]
     for attr in attributes:
-        attr_value = getattr(source, attr)
-        print("  Copying attribute:", attr, "with value:", attr_value)
-        setattr(destination, attr, attr_value)
+        if attr in mapping:
+            if mapping[attr] is None:
+                continue
+            else:
+                attr_v4 = mapping[attr]
+        else:
+            attr_v4 = attr
+        if hasattr(source, attr):
+            attr_value = getattr(source, attr)
+            print("  Copying attribute:", attr, "with value:", attr_value, "to attribute v4:", attr_v4)
+            setattr(destination, attr_v4, attr_value)
 
 
 @persistent
@@ -46,8 +55,39 @@ def migration(_dummy):
         scene.world.texture = scene.world.active_texture
         scene.yafaray4.migration.migrated_to_v4 = True
         if hasattr(scene, "yafaray"):
-            copy_attributes(scene.yafaray.logging, scene.yafaray4.logging)
-            copy_attributes(scene.yafaray.noise_control, scene.yafaray4.noise_control)
-            copy_attributes(scene.yafaray.preview, scene.yafaray4.preview)
-            copy_attributes(scene.yafaray.passes, scene.yafaray4.passes)
-
+            mapping = {
+                "name": None,
+                "bl_rna": None,
+                "rna_type": None,
+                "verbosityLevels": None,
+            }
+            copy_attributes(scene.yafaray.logging, scene.yafaray4.logging, mapping)
+            mapping = {
+                "name": None,
+                "bl_rna": None,
+                "rna_type": None,
+            }
+            copy_attributes(scene.yafaray.noise_control, scene.yafaray4.noise_control, mapping)
+            mapping = {
+                "name": None,
+                "bl_rna": None,
+                "rna_type": None,
+                "OBJECT_OT_CamRotReset": None,
+                "OBJECT_OT_CamZoomIn": None,
+                "OBJECT_OT_CamZoomOut": None,
+            }
+            copy_attributes(scene.yafaray.preview, scene.yafaray4.preview, mapping)
+            mapping = {
+                "name": None,
+                "bl_rna": None,
+                "rna_type": None,
+                "renderPassItemsBasic": None,
+                "renderInternalPassAdvanced": None,
+                "renderPassAllItems": None,
+                "renderPassItemsAO": None,
+                "renderPassItemsDisabled": None,
+                "renderPassItemsIndex": None,
+                "renderPassItemsDebug": None,
+                "renderPassItemsDepth": None,
+            }
+            copy_attributes(scene.yafaray.passes, scene.yafaray4.passes, mapping)
