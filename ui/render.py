@@ -386,31 +386,31 @@ class Logging(OutputPanel, Panel):
 
         split = ui_split(layout, 0.43)
         col = split.column()
-        col.prop(scene.yafaray4.logging, "paramsBadgePosition")
+        col.prop(scene.yafaray4.logging, "params_badge_position")
         col = split.column()
-        col.prop(scene.yafaray4.logging, "drawRenderSettings")
+        col.prop(scene.yafaray4.logging, "draw_render_settings")
         col = split.column()
-        col.prop(scene.yafaray4.logging, "drawAANoiseSettings")
+        col.prop(scene.yafaray4.logging, "draw_aa_noise_settings")
 
         split = layout.split()
         col = split.column()
-        col.prop(scene.yafaray4.logging, "logPrintDateTime")
+        col.prop(scene.yafaray4.logging, "log_print_date_time")
         col = split.column()
-        col.prop(scene.yafaray4.logging, "consoleVerbosity")
+        col.prop(scene.yafaray4.logging, "console_verbosity")
         col = split.column()
-        col.prop(scene.yafaray4.logging, "logVerbosity")
+        col.prop(scene.yafaray4.logging, "log_verbosity")
 
         split = layout.split()
         col = split.column()
-        col.prop(scene.yafaray4.logging, "saveLog")
+        col.prop(scene.yafaray4.logging, "save_log")
         col = split.column()
-        col.prop(scene.yafaray4.logging, "saveHTML")
+        col.prop(scene.yafaray4.logging, "save_html")
         col = split.column()
-        col.prop(scene.yafaray4.logging, "savePreset")
+        col.prop(scene.yafaray4.logging, "save_preset")
 
-        if scene.yafaray4.logging.saveLog or scene.yafaray4.logging.saveHTML or scene.yafaray4.logging.savePreset \
-                or scene.yafaray4.logging.paramsBadgePosition == "top" \
-                or scene.yafaray4.logging.paramsBadgePosition == "bottom":
+        if scene.yafaray4.logging.save_log or scene.yafaray4.logging.save_html or scene.yafaray4.logging.save_preset \
+                or scene.yafaray4.logging.params_badge_position == "top" \
+                or scene.yafaray4.logging.params_badge_position == "bottom":
             if scene.gs_type_render == "into_blender" and not scene.gs_secondary_file_output:
                 row = layout.row()
                 row.label(text="Params badge and saving log/html/preset files only works when exporting to image file.",
@@ -420,7 +420,7 @@ class Logging(OutputPanel, Panel):
                     text="To get the badge/logs, render to image or render into Blender+enable Secondary File Output.",
                     icon='ERROR')
 
-            if scene.yafaray4.logging.paramsBadgePosition == "bottom" and scene.gs_type_render == "file":
+            if scene.yafaray4.logging.params_badge_position == "bottom" and scene.gs_type_render == "file":
                 row = layout.row()
                 row.label(text="Image with Params Badge at bottom will appear CROPPED in Blender,", icon='INFO')
                 row = layout.row()
@@ -435,12 +435,12 @@ class Logging(OutputPanel, Panel):
             row = layout.row()
             row.prop(scene.yafaray4.logging, "comments")
             row = layout.row()
-            row.prop(scene.yafaray4.logging, "customIcon")
+            row.prop(scene.yafaray4.logging, "custom_icon")
             row = layout.row()
             col = row.column()
-            col.prop(scene.yafaray4.logging, "customFont")
+            col.prop(scene.yafaray4.logging, "custom_font")
             col = row.column()
-            col.prop(scene.yafaray4.logging, "fontScale")
+            col.prop(scene.yafaray4.logging, "font_scale")
 
 
 class ClayRender(RenderButtonsPanel, Panel):
@@ -629,9 +629,9 @@ class Output(OutputPanel):
                 icon="INFO")
 
         if (
-                scene.yafaray4.logging.saveLog or scene.yafaray4.logging.saveHTML or scene.yafaray4.logging.savePreset or
-                scene.yafaray4.logging.paramsBadgePosition == "top"
-                or scene.yafaray4.logging.paramsBadgePosition == "bottom") \
+                scene.yafaray4.logging.save_log or scene.yafaray4.logging.save_html or scene.yafaray4.logging.save_preset or
+                scene.yafaray4.logging.params_badge_position == "top"
+                or scene.yafaray4.logging.params_badge_position == "bottom") \
                 and scene.gs_type_render == "into_blender" and not scene.gs_secondary_file_output:
             row = layout.row()
             row.label(text="Params badge and saving log/html/preset files only works when exporting to image file.",
@@ -642,7 +642,7 @@ class Output(OutputPanel):
                 icon='INFO')
             layout.row()
 
-        if scene.yafaray4.logging.paramsBadgePosition == "bottom" and scene.gs_type_render == "file":
+        if scene.yafaray4.logging.params_badge_position == "bottom" and scene.gs_type_render == "file":
             row = layout.row()
             row.label(text="Image with Params Badge at bottom will appear CROPPED in Blender,", icon='INFO')
             row = layout.row()

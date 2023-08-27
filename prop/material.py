@@ -12,6 +12,7 @@ from ..util.properties_annotations import replace_properties_with_annotations
 
 Material = bpy.types.Material
 
+
 # This code is irrelevant after the change in the blend material to convert it from EnumProperty to StringProperty.
 # I'm keeping this as a reference in case a better solution can be found for the blend material component materials
 # references

@@ -113,8 +113,8 @@ class Film:
 
                 #incl = bpy.data.scenes[0].yafaray.preview.camRotIncl
                 #azi = bpy.data.scenes[0].yafaray.preview.camRotAzi
-                rot = bpy.data.scenes[0].yafaray.preview.camRot
-                dist = bpy.data.scenes[0].yafaray.preview.camDist
+                rot = bpy.data.scenes[0].yafaray.preview.cam_rot
+                dist = bpy.data.scenes[0].yafaray.preview.cam_dist
 
                 #pos = (dist*math.sin(incl)*math.cos(azi), dist*math.sin(incl)*math.sin(azi), dist*math.cos(incl))
                 #up = (math.sin(rotZ), 0, math.cos(rotZ))
@@ -203,7 +203,7 @@ def exportAA(yi, bl_scene, yaf_param_map):
     yaf_param_map.set_bool("background_resampling", bl_scene.yafaray4.noise_control.background_resampling)
 
     if bl_scene.name == "preview" and bpy.data.scenes[0].yafaray.preview.enable:
-        yaf_param_map.set_int("AA_passes", bpy.data.scenes[0].yafaray.preview.previewAApasses)
+        yaf_param_map.set_int("AA_passes", bpy.data.scenes[0].yafaray.preview.preview_aa_passes)
         yaf_param_map.set_float("AA_threshold", 0.01)
 
 
@@ -270,34 +270,34 @@ def exportRenderSettings(yi, depsgraph, render_path, render_filename):
     yaf_param_map.set_bool("layer_mask_invert", scene.yafaray4.passes.pass_mask_invert)
     yaf_param_map.set_bool("layer_mask_only", scene.yafaray4.passes.pass_mask_only)
 
-    yaf_param_map.set_int("layer_object_edge_thickness", scene.yafaray4.passes.objectEdgeThickness)
-    yaf_param_map.set_int("layer_faces_edge_thickness", scene.yafaray4.passes.facesEdgeThickness)
-    yaf_param_map.set_float("layer_object_edge_threshold", scene.yafaray4.passes.objectEdgeThreshold)
-    yaf_param_map.set_float("layer_faces_edge_threshold", scene.yafaray4.passes.facesEdgeThreshold)
-    yaf_param_map.set_float("layer_object_edge_smoothness", scene.yafaray4.passes.objectEdgeSmoothness)
-    yaf_param_map.set_float("layer_faces_edge_smoothness", scene.yafaray4.passes.facesEdgeSmoothness)
-    yaf_param_map.set_color("layer_toon_edge_color", scene.yafaray4.passes.toonEdgeColor[0],
-                           scene.yafaray4.passes.toonEdgeColor[1], scene.yafaray4.passes.toonEdgeColor[2])
-    yaf_param_map.set_float("layer_toon_pre_smooth", scene.yafaray4.passes.toonPreSmooth)
-    yaf_param_map.set_float("layer_toon_post_smooth", scene.yafaray4.passes.toonPostSmooth)
-    yaf_param_map.set_float("layer_toon_quantization", scene.yafaray4.passes.toonQuantization)
+    yaf_param_map.set_int("layer_object_edge_thickness", scene.yafaray4.passes.object_edge_thickness)
+    yaf_param_map.set_int("layer_faces_edge_thickness", scene.yafaray4.passes.faces_edge_thickness)
+    yaf_param_map.set_float("layer_object_edge_threshold", scene.yafaray4.passes.object_edge_threshold)
+    yaf_param_map.set_float("layer_faces_edge_threshold", scene.yafaray4.passes.faces_edge_threshold)
+    yaf_param_map.set_float("layer_object_edge_smoothness", scene.yafaray4.passes.object_edge_smoothness)
+    yaf_param_map.set_float("layer_faces_edge_smoothness", scene.yafaray4.passes.faces_edge_smoothness)
+    yaf_param_map.set_color("layer_toon_edge_color", scene.yafaray4.passes.toon_edge_color[0],
+                            scene.yafaray4.passes.toon_edge_color[1], scene.yafaray4.passes.toon_edge_color[2])
+    yaf_param_map.set_float("layer_toon_pre_smooth", scene.yafaray4.passes.toon_pre_smooth)
+    yaf_param_map.set_float("layer_toon_post_smooth", scene.yafaray4.passes.toon_post_smooth)
+    yaf_param_map.set_float("layer_toon_quantization", scene.yafaray4.passes.toon_quantization)
 
 
 def setLoggingAndBadgeSettings(yi, scene):
     self.yaf_logger.printVerbose("Exporting Logging and Badge settings")
-    yaf_param_map.set_bool("badge_draw_render_settings", scene.yafaray4.logging.drawRenderSettings)
-    yaf_param_map.set_bool("badge_draw_aa_noise_settings", scene.yafaray4.logging.drawAANoiseSettings)
-    yaf_param_map.set_bool("logging_save_txt", scene.yafaray4.logging.saveLog)
-    yaf_param_map.set_bool("logging_save_html", scene.yafaray4.logging.saveHTML)
-    yaf_param_map.set_string("badge_position", scene.yafaray4.logging.paramsBadgePosition)
+    yaf_param_map.set_bool("badge_draw_render_settings", scene.yafaray4.logging.draw_render_settings)
+    yaf_param_map.set_bool("badge_draw_aa_noise_settings", scene.yafaray4.logging.draw_aa_noise_settings)
+    yaf_param_map.set_bool("logging_save_txt", scene.yafaray4.logging.save_log)
+    yaf_param_map.set_bool("logging_save_html", scene.yafaray4.logging.save_html)
+    yaf_param_map.set_string("badge_position", scene.yafaray4.logging.params_badge_position)
     yaf_param_map.set_string("badge_title", scene.yafaray4.logging.title)
     yaf_param_map.set_string("badge_author", scene.yafaray4.logging.author)
     yaf_param_map.set_string("badge_contact", scene.yafaray4.logging.contact)
     yaf_param_map.set_string("badge_comment", scene.yafaray4.logging.comments)
-    if scene.yafaray4.logging.customIcon != "":
-        yaf_param_map.set_string("badge_icon_path", os.path.abspath(bpy.path.abspath(scene.yafaray4.logging.customIcon)))
-    yaf_param_map.set_string("badge_font_path", scene.yafaray4.logging.customFont)
-    yaf_param_map.set_float("badge_font_size_factor", scene.yafaray4.logging.fontScale)
+    if scene.yafaray4.logging.custom_icon != "":
+        yaf_param_map.set_string("badge_icon_path", os.path.abspath(bpy.path.abspath(scene.yafaray4.logging.custom_icon)))
+    yaf_param_map.set_string("badge_font_path", scene.yafaray4.logging.custom_font)
+    yaf_param_map.set_float("badge_font_size_factor", scene.yafaray4.logging.font_scale)
 
 
 def calc_alpha_premultiply(bl_scene):
@@ -383,91 +383,91 @@ def defineLayers(yi, depsgraph):
 
     if scene.yafaray4.passes.pass_enable:
         if scene.render.layers[0].use_pass_z:
-            defineLayer(scene.yafaray4.passes.pass_Depth, "Gray", "Depth")
+            defineLayer(scene.yafaray4.passes.pass_depth, "Gray", "Depth")
 
         if scene.render.layers[0].use_pass_vector:
-            defineLayer(scene.yafaray4.passes.pass_Vector, "ColorAlpha", "Vector")
+            defineLayer(scene.yafaray4.passes.pass_vector, "ColorAlpha", "Vector")
 
         if scene.render.layers[0].use_pass_normal:
-            defineLayer(scene.yafaray4.passes.pass_Normal, "Color", "Normal")
+            defineLayer(scene.yafaray4.passes.pass_normal, "Color", "Normal")
 
         if scene.render.layers[0].use_pass_uv:
-            defineLayer(scene.yafaray4.passes.pass_UV, "Color", "UV")
+            defineLayer(scene.yafaray4.passes.pass_uv, "Color", "UV")
 
         if scene.render.layers[0].use_pass_color:
-            defineLayer(scene.yafaray4.passes.pass_Color, "ColorAlpha", "Color")
+            defineLayer(scene.yafaray4.passes.pass_color, "ColorAlpha", "Color")
 
         if scene.render.layers[0].use_pass_emit:
-            defineLayer(scene.yafaray4.passes.pass_Emit, "Color", "Emit")
+            defineLayer(scene.yafaray4.passes.pass_emit, "Color", "Emit")
 
         if scene.render.layers[0].use_pass_mist:
-            defineLayer(scene.yafaray4.passes.pass_Mist, "Gray", "Mist")
+            defineLayer(scene.yafaray4.passes.pass_mist, "Gray", "Mist")
 
         if scene.render.layers[0].use_pass_diffuse:
-            defineLayer(scene.yafaray4.passes.pass_Diffuse, "Color", "Diffuse")
+            defineLayer(scene.yafaray4.passes.pass_diffuse, "Color", "Diffuse")
 
         if scene.render.layers[0].use_pass_specular:
-            defineLayer(scene.yafaray4.passes.pass_Spec, "Color", "Spec")
+            defineLayer(scene.yafaray4.passes.pass_spec, "Color", "Spec")
 
         if scene.render.layers[0].use_pass_ambient_occlusion:
-            defineLayer(scene.yafaray4.passes.pass_AO, "Color", "AO")
+            defineLayer(scene.yafaray4.passes.pass_ao, "Color", "AO")
 
         if scene.render.layers[0].use_pass_environment:
-            defineLayer(scene.yafaray4.passes.pass_Env, "Color", "Env")
+            defineLayer(scene.yafaray4.passes.pass_env, "Color", "Env")
 
         if scene.render.layers[0].use_pass_indirect:
-            defineLayer(scene.yafaray4.passes.pass_Indirect, "Color", "Indirect")
+            defineLayer(scene.yafaray4.passes.pass_indirect, "Color", "Indirect")
 
         if scene.render.layers[0].use_pass_shadow:
-            defineLayer(scene.yafaray4.passes.pass_Shadow, "Color", "Shadow")
+            defineLayer(scene.yafaray4.passes.pass_shadow, "Color", "Shadow")
 
         if scene.render.layers[0].use_pass_reflection:
-            defineLayer(scene.yafaray4.passes.pass_Reflect, "Color", "Reflect")
+            defineLayer(scene.yafaray4.passes.pass_reflect, "Color", "Reflect")
 
         if scene.render.layers[0].use_pass_refraction:
-            defineLayer(scene.yafaray4.passes.pass_Refract, "Color", "Refract")
+            defineLayer(scene.yafaray4.passes.pass_refract, "Color", "Refract")
 
         if scene.render.layers[0].use_pass_object_index:
-            defineLayer(scene.yafaray4.passes.pass_IndexOB, "Gray", "IndexOB")
+            defineLayer(scene.yafaray4.passes.pass_index_ob, "Gray", "IndexOB")
 
         if scene.render.layers[0].use_pass_material_index:
-            defineLayer(scene.yafaray4.passes.pass_IndexMA, "Gray", "IndexMA")
+            defineLayer(scene.yafaray4.passes.pass_index_ma, "Gray", "IndexMA")
 
         if scene.render.layers[0].use_pass_diffuse_direct:
-            defineLayer(scene.yafaray4.passes.pass_Depth, "pass_DiffDir", "DiffDir")
+            defineLayer(scene.yafaray4.passes.pass_depth, "pass_DiffDir", "DiffDir")
 
         if scene.render.layers[0].use_pass_diffuse_indirect:
-            defineLayer(scene.yafaray4.passes.pass_DiffInd, "Color", "DiffInd")
+            defineLayer(scene.yafaray4.passes.pass_diff_ind, "Color", "DiffInd")
 
         if scene.render.layers[0].use_pass_diffuse_color:
-            defineLayer(scene.yafaray4.passes.pass_DiffCol, "Color", "DiffCol")
+            defineLayer(scene.yafaray4.passes.pass_diff_col, "Color", "DiffCol")
 
         if scene.render.layers[0].use_pass_glossy_direct:
-            defineLayer(scene.yafaray4.passes.pass_GlossDir, "Color", "GlossDir")
+            defineLayer(scene.yafaray4.passes.pass_gloss_dir, "Color", "GlossDir")
 
         if scene.render.layers[0].use_pass_glossy_indirect:
-            defineLayer(scene.yafaray4.passes.pass_GlossInd, "Color", "GlossInd")
+            defineLayer(scene.yafaray4.passes.pass_gloss_ind, "Color", "GlossInd")
 
         if scene.render.layers[0].use_pass_glossy_color:
-            defineLayer(scene.yafaray4.passes.pass_GlossCol, "Color", "GlossCol")
+            defineLayer(scene.yafaray4.passes.pass_gloss_col, "Color", "GlossCol")
 
         if scene.render.layers[0].use_pass_transmission_direct:
-            defineLayer(scene.yafaray4.passes.pass_TransDir, "Color", "TransDir")
+            defineLayer(scene.yafaray4.passes.pass_trans_dir, "Color", "TransDir")
 
         if scene.render.layers[0].use_pass_transmission_indirect:
-            defineLayer(scene.yafaray4.passes.pass_TransInd, "Color", "TransInd")
+            defineLayer(scene.yafaray4.passes.pass_trans_ind, "Color", "TransInd")
 
         if scene.render.layers[0].use_pass_transmission_color:
-            defineLayer(scene.yafaray4.passes.pass_TransCol, "Color", "TransCol")
+            defineLayer(scene.yafaray4.passes.pass_trans_col, "Color", "TransCol")
 
         if scene.render.layers[0].use_pass_subsurface_direct:
-            defineLayer(scene.yafaray4.passes.pass_SubsurfaceDir, "Color", "SubsurfaceDir")
+            defineLayer(scene.yafaray4.passes.pass_subsurface_dir, "Color", "SubsurfaceDir")
 
         if scene.render.layers[0].use_pass_subsurface_indirect:
-            defineLayer(scene.yafaray4.passes.pass_SubsurfaceInd, "Color", "SubsurfaceInd")
+            defineLayer(scene.yafaray4.passes.pass_subsurface_ind, "Color", "SubsurfaceInd")
 
         if scene.render.layers[0].use_pass_subsurface_color:
-            defineLayer(scene.yafaray4.passes.pass_SubsurfaceCol, "Color", "SubsurfaceCol")
+            defineLayer(scene.yafaray4.passes.pass_subsurface_col, "Color", "SubsurfaceCol")
 
 
 

@@ -22,11 +22,11 @@ class Scene:
             self.bl_scene.bg_transp_refract = False  # to correct alpha problems in preview roughglass
         else:
             self.yaf_scene = libyafaray4_bindings.Scene(yaf_logger, "Blender Main Scene")
-            self.yaf_logger.enablePrintDateTime(self.bl_scene.yafaray4.logging.logPrintDateTime)
+            self.yaf_logger.enablePrintDateTime(self.bl_scene.yafaray4.logging.log_print_date_time)
             # self.yaf_logger.setConsoleVerbosityLevel(self.yaf_logger.logLevelFromString(self.scene.yafaray4.logging.consoleVerbosity))
             self.yaf_logger.setConsoleVerbosityLevel(self.yaf_logger.logLevelFromString("info"))
             self.yaf_logger.setLogVerbosityLevel(
-                self.yaf_logger.logLevelFromString(self.bl_scene.yafaray4.logging.logVerbosity))
+                self.yaf_logger.logLevelFromString(self.bl_scene.yafaray4.logging.log_verbosity))
             self.yaf_logger.printInfo("YafaRay-Blender (v" + YAFARAY_BLENDER_VERSION + ")")
             self.yaf_logger.printInfo(
                 "Exporter: Blender version " + str(bpy.app.version[0]) + "." + str(bpy.app.version[1]) + "." + str(
@@ -50,7 +50,7 @@ class Scene:
         self.export_objects()
 
         if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable and bpy.data.scenes[
-            0].yafaray.preview.previewBackground == "world":
+            0].yafaray.preview.preview_background == "world":
             self.world.export(bpy.data.scenes[0], self.is_preview)
         else:
             self.world.export(self.bl_scene, self.yaf_scene, self.is_preview)

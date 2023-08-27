@@ -333,8 +333,8 @@ class MaterialPreviewCamRotReset(bpy.types.Operator):
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def execute(self, context):
-        bpy.data.scenes[0].yafaray.preview.camRot = (0, 0, 1)
-        bpy.data.scenes[0].yafaray.preview.camDist = 12
+        bpy.data.scenes[0].yafaray.preview.cam_rot = (0, 0, 1)
+        bpy.data.scenes[0].yafaray.preview.cam_dist = 12
         return {'FINISHED'}
 
 
@@ -346,7 +346,7 @@ class MaterialPreviewCamZoomIn(bpy.types.Operator):
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def execute(self, context):
-        bpy.data.scenes[0].yafaray.preview.camDist -= 0.5
+        bpy.data.scenes[0].yafaray.preview.cam_dist -= 0.5
         return {'FINISHED'}
 
 
@@ -358,7 +358,7 @@ class MaterialPreviewCamZoomOut(bpy.types.Operator):
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def execute(self, context):
-        bpy.data.scenes[0].yafaray.preview.camDist += 0.5
+        bpy.data.scenes[0].yafaray.preview.cam_dist += 0.5
         return {'FINISHED'}
 
 

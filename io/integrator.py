@@ -20,7 +20,7 @@ class Integrator:
 
         yaf_param_map.set_int("raydepth", scene.gs_ray_depth)
         if scene.name == "preview" and bpy.data.scenes[0].yafaray.preview.enable:
-            yaf_param_map.set_int("raydepth", bpy.data.scenes[0].yafaray.preview.previewRayDepth)
+            yaf_param_map.set_int("raydepth", bpy.data.scenes[0].yafaray.preview.preview_ray_depth)
         yaf_param_map.set_int("shadowDepth", scene.gs_shadow_depth)
         yaf_param_map.set_bool("transpShad", scene.gs_transp_shad)
 
