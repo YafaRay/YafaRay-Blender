@@ -55,32 +55,26 @@ def migration(_dummy):
         scene.world.texture = scene.world.active_texture
         scene.yafaray4.migration.migrated_to_v4 = True
         if hasattr(scene, "yafaray"):
-            mapping = {
+            mapping_base = {
                 "name": None,
                 "bl_rna": None,
                 "rna_type": None,
+            }
+            mapping = {
                 "verbosityLevels": None,
             }
+            mapping.update(mapping_base)
             copy_attributes(scene.yafaray.logging, scene.yafaray4.logging, mapping)
-            mapping = {
-                "name": None,
-                "bl_rna": None,
-                "rna_type": None,
-            }
+            mapping = mapping_base
             copy_attributes(scene.yafaray.noise_control, scene.yafaray4.noise_control, mapping)
             mapping = {
-                "name": None,
-                "bl_rna": None,
-                "rna_type": None,
                 "OBJECT_OT_CamRotReset": None,
                 "OBJECT_OT_CamZoomIn": None,
                 "OBJECT_OT_CamZoomOut": None,
             }
+            mapping.update(mapping_base)
             copy_attributes(scene.yafaray.preview, scene.yafaray4.preview, mapping)
             mapping = {
-                "name": None,
-                "bl_rna": None,
-                "rna_type": None,
                 "renderPassItemsBasic": None,
                 "renderInternalPassAdvanced": None,
                 "renderPassAllItems": None,
@@ -90,4 +84,5 @@ def migration(_dummy):
                 "renderPassItemsDebug": None,
                 "renderPassItemsDepth": None,
             }
+            mapping.update(mapping_base)
             copy_attributes(scene.yafaray.passes, scene.yafaray4.passes, mapping)
