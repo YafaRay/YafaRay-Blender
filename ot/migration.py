@@ -151,3 +151,15 @@ def migration(_dummy):
             }
             mapping.update(mapping_base)
             copy_attributes(scene.yafaray.passes, scene.yafaray4.passes, mapping)
+
+            for material in bpy.data.materials:
+                print(material, material.name)
+                material.use_nodes = True
+                for texture_slot in material.texture_slots:
+                    if texture_slot is not None:
+                        #print(texture_slot, dir(texture_slot))
+                        for attr in dir(texture_slot):
+                            print(attr, getattr(texture_slot, attr))
+                        node_created = material.node_tree.nodes.new(type="YafaRay4TextureNode1")
+                        node_created.name = "test"
+
