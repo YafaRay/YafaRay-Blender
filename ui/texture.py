@@ -1,13 +1,13 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import bpy
-from bl_ui.properties_texture import context_tex_datablock
 # noinspection PyUnresolvedReferences
 from bpy.types import (Panel,
                        Texture,
                        Material,
                        World,
                        ParticleSettings)
+
 from .common import ui_split
 
 
@@ -41,6 +41,20 @@ class TextureButtons:
                 context.scene.render.engine in cls.COMPAT_ENGINES)
 
 
+class OBJECT_UL_List(bpy.types.UIList):
+    bl_idname = "OBJECT_UL_List"
+
+    def draw_item(self, context, layout, data, item, icon, active_data, active_propname):
+        if self.layout_type in {'DEFAULT', 'COMPACT'}:
+            if item.texture is not None:
+                layout.label(text=item.name, icon_value=layout.icon(item.texture))
+                layout.prop(item, "use", text="")
+                # layout.prop(item, "texture", text="Slot", icon_value=layout.icon(item.texture))
+            else:
+                layout.label(text=" ", icon='TEXTURE')
+                # layout.prop(item, "texture", text="Slot")
+
+
 class Context(TextureButtons, Panel):
     bl_idname = "YAFARAY4_PT_texture_context"
     bl_label = "YafaRay Textures"
@@ -61,6 +75,19 @@ class Context(TextureButtons, Panel):
             return
         using_nodes = hasattr(idblock, "use_nodes") and idblock.use_nodes
         row = layout.row()
+        if True:
+            material = context.active_object.active_material
+            if hasattr(material.yafaray4, "texture_slots") and not using_nodes:
+                row.prop(context.scene.yafaray4.migration, "migrated_to_v4")
+                row = layout.row()
+                # row.template_list("TEXTURE_UL_texslots", "", material.yafaray4, "texture_slots",
+                #                  material.yafaray4, "active_texture_index", rows=2)
+                row.template_list("OBJECT_UL_List", "test_coll", material.yafaray4, "texture_slots", material.yafaray4, "active_texture_index")
+                col = row.column(align=True)
+                col.operator("texture.slot_move", text="", icon='TRIA_UP').type = 'UP'
+                col.operator("texture.slot_move", text="", icon='TRIA_DOWN').type = 'DOWN'
+                # col.menu("TEXTURE_MT_specials", icon='DOWNARROW_HLT', text="")
+                row = layout.row()
         if isinstance(idblock, bpy.types.Scene):
             col = row.column(align=True)
             col.label(text="Generic YafaRay Texture Editor")
@@ -791,6 +818,7 @@ class SlotInfluence(Slot, Panel):
 
 
 classes = (
+    OBJECT_UL_List,
     Context,
     Preview,
     PreviewControls,

@@ -56,7 +56,7 @@ def migration(_dummy):
         scene.yafaray4.migration.migrated_to_v4 = True
         if hasattr(scene, "yafaray"):
             mapping_base = {
-                "name": None,
+                #"name": None,
                 "bl_rna": None,
                 "rna_type": None,
             }
@@ -152,14 +152,27 @@ def migration(_dummy):
             mapping.update(mapping_base)
             copy_attributes(scene.yafaray.passes, scene.yafaray4.passes, mapping)
 
+            # for material in bpy.data.materials:
+            #     print(material, material.name)
+            #     material.use_nodes = True
+            #     for texture_slot in material.texture_slots:
+            #         if texture_slot is not None:
+            #             #print(texture_slot, dir(texture_slot))
+            #             for attr in dir(texture_slot):
+            #                 print(attr, getattr(texture_slot, attr))
+            #             node_created = material.node_tree.nodes.new(type="YafaRay4TextureNode1")
+            #             node_created.name = "test"
+
+            mapping = {
+                "output_node": None,
+            }
+            mapping.update(mapping_base)
             for material in bpy.data.materials:
-                print(material, material.name)
-                material.use_nodes = True
+                for texture_slot_id in range(min(len(material.use_textures), len(material.yafaray4.use_textures))):
+                    material.yafaray4.use_textures[texture_slot_id] = material.use_textures[texture_slot_id]
+                material.yafaray4.texture_slots.clear()
                 for texture_slot in material.texture_slots:
-                    if texture_slot is not None:
-                        #print(texture_slot, dir(texture_slot))
-                        for attr in dir(texture_slot):
-                            print(attr, getattr(texture_slot, attr))
-                        node_created = material.node_tree.nodes.new(type="YafaRay4TextureNode1")
-                        node_created.name = "test"
+                    yaf4_texture_slot = material.yafaray4.texture_slots.add()
+                    copy_attributes(texture_slot, yaf4_texture_slot, mapping)
+
 

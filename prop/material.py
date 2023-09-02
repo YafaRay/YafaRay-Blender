@@ -7,10 +7,25 @@ from bpy.props import (FloatProperty,
                        EnumProperty,
                        FloatVectorProperty,
                        StringProperty,
-                       CollectionProperty)
+                       CollectionProperty,
+                       PointerProperty,
+                       BoolVectorProperty,)
 from ..util.properties_annotations import replace_properties_with_annotations
+from .material_texture_slot import YafaRay4MaterialTextureSlot
 
 Material = bpy.types.Material
+
+
+@replace_properties_with_annotations
+class YafaRay4Properties(bpy.types.PropertyGroup):
+
+    active_texture_index = IntProperty(
+        name="Active Material Texture Slot Index", description="Active material texture slot index", default=0
+    )
+
+    use_textures = BoolVectorProperty(
+        name="Use Textures", description="Enable/Disable each texture", size=18
+    )
 
 
 # This code is irrelevant after the change in the blend material to convert it from EnumProperty to StringProperty.
@@ -395,8 +410,18 @@ def register():
             description="",
             default=False)
 
+    bpy.utils.register_class(YafaRay4Properties)
+    bpy.types.Material.yafaray4 = PointerProperty(type=YafaRay4Properties)
+
+    bpy.utils.register_class(YafaRay4MaterialTextureSlot)
+    YafaRay4Properties.texture_slots = bpy.props.CollectionProperty(type=YafaRay4MaterialTextureSlot)
+
 
 def unregister():
+    del YafaRay4Properties.texture_slots
+    bpy.utils.unregister_class(YafaRay4MaterialTextureSlot)
+    del bpy.types.Material.yafaray4
+    bpy.utils.unregister_class(YafaRay4Properties)
     del Material.mat_type
     del Material.diffuse_reflect
     del Material.specular_reflect
