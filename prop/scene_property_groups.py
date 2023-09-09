@@ -4,7 +4,8 @@ from bpy.props import (IntProperty,
                        FloatVectorProperty,
                        EnumProperty,
                        BoolProperty,
-                       StringProperty)
+                       StringProperty,
+                       PointerProperty)
 
 from ..util.properties_annotations import replace_properties_with_annotations
 
@@ -19,11 +20,23 @@ def update_preview(self, context):
 
 # noinspection PyTypeChecker
 @replace_properties_with_annotations
-class YafaRay4MigrationProperties(bpy.types.PropertyGroup):
+class YafaRay4SceneProperties(bpy.types.PropertyGroup):
     migrated_to_v4 = BoolProperty(
         name="Migrated to YafaRay v4",
         description="Flag indicating whether the scene has been already migrated to YafaRay v4",
         default=False)
+    test = BoolProperty(
+        name="test",
+        description="Flag indicating whether the scene has been already migrated to YafaRay v4",
+        default=False)
+
+
+# noinspection PyTypeChecker
+@replace_properties_with_annotations
+class YafaRay4TexturePropertiesEdition(bpy.types.PropertyGroup):
+    texture_selected = PointerProperty(name="Texture selected",
+                                       description="Texture selected for properties edition",
+                                       type=bpy.types.Texture)
 
 
 # noinspection PyTypeChecker

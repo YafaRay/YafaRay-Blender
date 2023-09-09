@@ -25,8 +25,19 @@ def copy_attributes(source, destination, mapping):
 
 @persistent
 def migration(_dummy):
+    if not bpy.context.blend_data.filepath:
+        # If there is no blend file open, it might be the default "userpref.blend". In that case, do not do any migration
+        return
+
     scene = bpy.context.scene
-    print("scene.world.texture", scene.world.texture, "scene.world.texture", scene.world.texture)
+    if scene.yafaray4.migrated_to_v4:
+        if bpy.app.version >= (2, 80, 0):
+            # Removing old scene yafaray property tree
+            del scene["yafaray"]
+        return
+    else:
+        scene.yafaray4.migrated_to_v4 = True
+
     for tex in bpy.data.textures:
         if tex is not None:
             # set the correct texture type on file load....
@@ -47,121 +58,129 @@ def migration(_dummy):
     if scene.render.image_settings.file_format is not scene.img_output:
         scene.img_output = scene.render.image_settings.file_format
 
-    # convert old world texture slot to dedicated YafaRay world texture parameter
-    if bpy.app.version < (2, 80, 0) and not scene.yafaray4.migration.migrated_to_v4:
-        scene.yafaray4.migration.migrated_to_v4 = True
-        print(bl_info["name"], "Handler: Initial 'one-off' migration from Yafaray v3 parameters")
+    if bpy.app.version >= (2, 80, 0):
+        print("**Warning**: Migrating YafaRay v3 scenes to YafaRay v4 is not possible in Blender v2.80 or higher.")
+        print("**Warning**: DO NOT SAVE the YafaRay v3 scene in Blender v2.80 or higher as some important scene data WILL BE PERMANENTLY LOST.")
+        print("**Warning**: Open the YafaRay v3 Scene in Blender version v2.79b (exactly) so the migration from YafaRay v3 to v4 can take place.")
+        print("**Warning**: Then save the migrated YafaRay v4 with Blender v2.79b. The migrated YafaRay v4 blend file can later be opened in any Blender version v2.79b, v2.80 or higher.")
+        return
+
+    print(bl_info["name"], "Handler: Initial 'one-off' migration from Yafaray v3 parameters")
+
+    if hasattr(scene, "yafaray"):
+        mapping_base = {
+            "bl_rna": None,
+            "rna_type": None,
+        }
+
+        mapping = {
+            "verbosityLevels": None,
+            "paramsBadgePosition": "params_badge_position",
+            "saveLog": "save_log",
+            "saveHTML": "save_html",
+            "savePreset": "save_preset",
+            "logPrintDateTime": "log_print_date_time",
+            "consoleVerbosity": "console_verbosity",
+            "logVerbosity": "log_verbosity",
+            "drawRenderSettings": "draw_render_settings",
+            "drawAANoiseSettings": "draw_aa_noise_settings",
+            "customIcon": "custom_icon",
+            "customFont": "custom_font",
+            "fontScale": "font_scale",
+        }
+        mapping.update(mapping_base)
+        copy_attributes(scene.yafaray.logging, scene.yafaray4.logging, mapping)
+
+        mapping = mapping_base
+        copy_attributes(scene.yafaray.noise_control, scene.yafaray4.noise_control, mapping)
+
+        mapping = {
+            "OBJECT_OT_CamRotReset": None,
+            "OBJECT_OT_CamZoomIn": None,
+            "OBJECT_OT_CamZoomOut": None,
+            "objScale": "obj_scale",
+            "rotZ": "rot_z",
+            "lightRotZ": "light_rot_z",
+            "keyLightPowerFactor": "key_light_power_factor",
+            "fillLightPowerFactor": "fill_light_power_factor",
+            "keyLightColor": "key_light_color",
+            "fillLightColor": "fill_light_color",
+            "previewRayDepth": "preview_ray_depth",
+            "previewAApasses": "preview_aa_passes",
+            "previewBackground": "preview_background",
+            "previewObject": "preview_object",
+            "camDist": "cam_dist",
+            "camRot": "cam_rot",
+        }
+        mapping.update(mapping_base)
+        copy_attributes(scene.yafaray.preview, scene.yafaray4.preview, mapping)
+
+        mapping = {
+            "renderPassItemsBasic": None,
+            "renderInternalPassAdvanced": None,
+            "renderPassAllItems": None,
+            "renderPassItemsAO": None,
+            "renderPassItemsDisabled": None,
+            "renderPassItemsIndex": None,
+            "renderPassItemsDebug": None,
+            "renderPassItemsDepth": None,
+            "objectEdgeThickness": "object_edge_thickness",
+            "facesEdgeThickness": "faces_edge_thickness",
+            "objectEdgeThreshold": "object_edge_threshold",
+            "facesEdgeThreshold": "faces_edge_threshold",
+            "objectEdgeSmoothness": "object_edge_smoothness",
+            "facesEdgeSmoothness": "faces_edge_smoothness",
+            "toonEdgeColor": "toon_edge_color",
+            "toonPreSmooth": "toon_pre_smooth",
+            "toonPostSmooth": "toon_post_smooth",
+            "toonQuantization": "toon_quantization",
+            "pass_Combined": "pass_Combined",
+            "pass_Depth": "pass_depth",
+            "pass_Vector": "pass_vector",
+            "pass_Normal": "pass_normal",
+            "pass_UV": "pass_uv",
+            "pass_Color": "pass_color",
+            "pass_Emit": "pass_emit",
+            "pass_Mist": "pass_mist",
+            "pass_Diffuse": "pass_diffuse",
+            "pass_Spec": "pass_spec",
+            "pass_AO": "pass_ao",
+            "pass_Env": "pass_env",
+            "pass_Indirect": "pass_indirect",
+            "pass_Shadow": "pass_shadow",
+            "pass_Reflect": "pass_reflect",
+            "pass_Refract": "pass_refract",
+            "pass_IndexOB": "pass_index_ob",
+            "pass_IndexMA": "pass_index_ma",
+            "pass_DiffDir": "pass_diff_dir",
+            "pass_DiffInd": "pass_diff_ind",
+            "pass_DiffCol": "pass_diff_col",
+            "pass_GlossDir": "pass_gloss_dir",
+            "pass_GlossInd": "pass_gloss_ind",
+            "pass_GlossCol": "pass_gloss_col",
+            "pass_TransDir": "pass_trans_dir",
+            "pass_TransInd": "pass_trans_ind",
+            "pass_TransCol": "pass_trans_col",
+            "pass_SubsurfaceDir": "pass_subsurface_dir",
+            "pass_SubsurfaceInd": "pass_subsurface_ind",
+            "pass_SubsurfaceCol": "pass_subsurface_col",
+        }
+        mapping.update(mapping_base)
+        copy_attributes(scene.yafaray.passes, scene.yafaray4.passes, mapping)
+
+        mapping = {
+            "output_node": None,
+        }
+        mapping.update(mapping_base)
+
+        # convert old world texture slot to dedicated YafaRay world texture parameter
         scene.world.texture = scene.world.active_texture
-        if hasattr(scene, "yafaray"):
-            mapping_base = {
-                "bl_rna": None,
-                "rna_type": None,
-            }
 
-            mapping = {
-                "verbosityLevels": None,
-                "paramsBadgePosition": "params_badge_position",
-                "saveLog": "save_log",
-                "saveHTML": "save_html",
-                "savePreset": "save_preset",
-                "logPrintDateTime": "log_print_date_time",
-                "consoleVerbosity": "console_verbosity",
-                "logVerbosity": "log_verbosity",
-                "drawRenderSettings": "draw_render_settings",
-                "drawAANoiseSettings": "draw_aa_noise_settings",
-                "customIcon": "custom_icon",
-                "customFont": "custom_font",
-                "fontScale": "font_scale",
-            }
-            mapping.update(mapping_base)
-            copy_attributes(scene.yafaray.logging, scene.yafaray4.logging, mapping)
-
-            mapping = mapping_base
-            copy_attributes(scene.yafaray.noise_control, scene.yafaray4.noise_control, mapping)
-
-            mapping = {
-                "OBJECT_OT_CamRotReset": None,
-                "OBJECT_OT_CamZoomIn": None,
-                "OBJECT_OT_CamZoomOut": None,
-                "objScale": "obj_scale",
-                "rotZ": "rot_z",
-                "lightRotZ": "light_rot_z",
-                "keyLightPowerFactor": "key_light_power_factor",
-                "fillLightPowerFactor": "fill_light_power_factor",
-                "keyLightColor": "key_light_color",
-                "fillLightColor": "fill_light_color",
-                "previewRayDepth": "preview_ray_depth",
-                "previewAApasses": "preview_aa_passes",
-                "previewBackground": "preview_background",
-                "previewObject": "preview_object",
-                "camDist": "cam_dist",
-                "camRot": "cam_rot",
-            }
-            mapping.update(mapping_base)
-            copy_attributes(scene.yafaray.preview, scene.yafaray4.preview, mapping)
-
-            mapping = {
-                "renderPassItemsBasic": None,
-                "renderInternalPassAdvanced": None,
-                "renderPassAllItems": None,
-                "renderPassItemsAO": None,
-                "renderPassItemsDisabled": None,
-                "renderPassItemsIndex": None,
-                "renderPassItemsDebug": None,
-                "renderPassItemsDepth": None,
-                "objectEdgeThickness": "object_edge_thickness",
-                "facesEdgeThickness": "faces_edge_thickness",
-                "objectEdgeThreshold": "object_edge_threshold",
-                "facesEdgeThreshold": "faces_edge_threshold",
-                "objectEdgeSmoothness": "object_edge_smoothness",
-                "facesEdgeSmoothness": "faces_edge_smoothness",
-                "toonEdgeColor": "toon_edge_color",
-                "toonPreSmooth": "toon_pre_smooth",
-                "toonPostSmooth": "toon_post_smooth",
-                "toonQuantization": "toon_quantization",
-                "pass_Combined": "pass_Combined",
-                "pass_Depth": "pass_depth",
-                "pass_Vector": "pass_vector",
-                "pass_Normal": "pass_normal",
-                "pass_UV": "pass_uv",
-                "pass_Color": "pass_color",
-                "pass_Emit": "pass_emit",
-                "pass_Mist": "pass_mist",
-                "pass_Diffuse": "pass_diffuse",
-                "pass_Spec": "pass_spec",
-                "pass_AO": "pass_ao",
-                "pass_Env": "pass_env",
-                "pass_Indirect": "pass_indirect",
-                "pass_Shadow": "pass_shadow",
-                "pass_Reflect": "pass_reflect",
-                "pass_Refract": "pass_refract",
-                "pass_IndexOB": "pass_index_ob",
-                "pass_IndexMA": "pass_index_ma",
-                "pass_DiffDir": "pass_diff_dir",
-                "pass_DiffInd": "pass_diff_ind",
-                "pass_DiffCol": "pass_diff_col",
-                "pass_GlossDir": "pass_gloss_dir",
-                "pass_GlossInd": "pass_gloss_ind",
-                "pass_GlossCol": "pass_gloss_col",
-                "pass_TransDir": "pass_trans_dir",
-                "pass_TransInd": "pass_trans_ind",
-                "pass_TransCol": "pass_trans_col",
-                "pass_SubsurfaceDir": "pass_subsurface_dir",
-                "pass_SubsurfaceInd": "pass_subsurface_ind",
-                "pass_SubsurfaceCol": "pass_subsurface_col",
-            }
-            mapping.update(mapping_base)
-            copy_attributes(scene.yafaray.passes, scene.yafaray4.passes, mapping)
-
-            mapping = {
-                "output_node": None,
-            }
-            mapping.update(mapping_base)
-
-            for material in bpy.data.materials:
-                for texture_slot_id in range(min(len(material.use_textures), len(material.yafaray4.use_textures))):
-                    material.yafaray4.use_textures[texture_slot_id] = material.use_textures[texture_slot_id]
-                material.yafaray4.texture_slots.clear()
-                for texture_slot in material.texture_slots:
-                    yaf4_texture_slot = material.yafaray4.texture_slots.add()
-                    copy_attributes(texture_slot, yaf4_texture_slot, mapping)
+        # convert old material texture slots to dedicated YafaRay material texture slots parameters
+        for material in bpy.data.materials:
+            for texture_slot_id in range(min(len(material.use_textures), len(material.yafaray4.use_textures))):
+                material.yafaray4.use_textures[texture_slot_id] = material.use_textures[texture_slot_id]
+            material.yafaray4.texture_slots.clear()
+            for texture_slot in material.texture_slots:
+                yaf4_texture_slot = material.yafaray4.texture_slots.add()
+                copy_attributes(texture_slot, yaf4_texture_slot, mapping)

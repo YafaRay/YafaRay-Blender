@@ -53,8 +53,6 @@ class Render(RenderButtonsPanel, Panel):
 
         layout = self.layout
         rd = context.scene.render
-        scene = context.scene
-
         row = layout.row()
         row.operator("yafaray4.render_still", text="Image", icon='RENDER_STILL')
         row.operator("yafaray4.render_animation", text="Animation", icon='RENDER_ANIMATION')
@@ -822,7 +820,29 @@ class Views(OutputPanel, Panel):
                 row.prop(rv, "camera_suffix", text="")
 
 
+class MigrationWarning(RenderButtonsPanel, Panel):
+    bl_idname = "YAFARAY4_PT_migration_warning"
+    bl_label = "⚠⚠⚠ YafaRay v4 Migration Warning ⚠⚠⚠"
+    COMPAT_ENGINES = {'YAFARAY4_RENDER'}
+
+    @classmethod
+    def poll(cls, context):
+        return bpy.app.version >= (2, 80, 0) and not context.scene.yafaray4.migrated_to_v4
+
+    def draw(self, context):
+        layout = self.layout
+        layout.row().label(text="**Warning**: Migrating YafaRay v3 scenes to YafaRay v4 is not possible in "
+                                "Blender v2.80 or higher.", icon='ERROR')
+        layout.row().label(text="DO NOT SAVE the YafaRay v3 scene in Blender v2.80 or higher as some "
+                                "important scene data WILL BE PERMANENTLY LOST.", icon='ERROR')
+        layout.row().label(text="Open the YafaRay v3 Scene in Blender version v2.79b (exactly) so "
+                                "the migration from YafaRay v3 to v4 can take place.", icon='ERROR')
+        layout.row().label(text="Then save the migrated YafaRay v4 with Blender v2.79b. The migrated "
+                                    "YafaRay v4 blend file can later be opened in any Blender version v2.79b, "
+                                    "v2.80 or higher.", icon='ERROR')
+
 classes = (
+    MigrationWarning,
     PresetsRender,
     RenderPresets,
     Render,
