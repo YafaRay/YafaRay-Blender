@@ -15,9 +15,6 @@ class RenderEngine(bpy.types.RenderEngine):
     bl_idname = 'YAFARAY4_RENDER'
     bl_label = "YafaRay v4 Render"
     bl_use_preview = True  # Render engine supports being used for rendering previews of materials, lights and worlds
-    bl_use_shading_nodes_custom = False  # Do not use custom node trees
-    bl_use_shading_nodes = True  # Expose Blender shading nodes in the node editor user interface and show the shader
-    # type node editor options (object, world)
 
     # Init is called whenever a new render engine instance is created. Multiple
     # instances may exist at the same time, for example for a viewport and final

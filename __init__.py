@@ -63,8 +63,6 @@ modules = (
 def register():
     for module in modules:
         module.register()
-    from . import nodes
-    nodes.register()
     # noinspection PyTypeChecker
     bpy.app.handlers.load_post.append(migration.migration)
     # register keys for 'render 3d view', 'render still' and 'render animation'
@@ -88,7 +86,5 @@ def unregister():
                 kma.keymap_items.remove(kmi)
     # noinspection PyTypeChecker
     bpy.app.handlers.load_post.remove(migration.migration)
-    from . import nodes
-    nodes.unregister()
     for module in reversed(modules):
         module.unregister()

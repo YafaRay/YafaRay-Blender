@@ -133,28 +133,13 @@ class ContextMaterial(MaterialButtonsPanel, Panel):
         if yaf_mat:
             layout.separator()
             layout.row().prop(yaf_mat, "clay_exclude")
-            layout.prop(yaf_mat, "use_nodes", icon='NODETREE')
             layout.separator()
-            if not yaf_mat.use_nodes:
-                layout.prop(yaf_mat, "mat_type")
-            else:
-                # layout.prop(yaf_mat, "diffuse_color", text="Viewport color (not used for rendering)")
-                # layout.template_ID(yaf_mat, "node_tree", new="yafaray4.new_node_tree")
-                if yaf_mat.node_tree:
-                    op = layout.operator("yafaray4.show_node_tree_window")
-                    op.shader_type = 'OBJECT'
-                    node_displayed = None
-                    for node in yaf_mat.node_tree.nodes:
-                        if getattr(node, "yafaray_type", None) == 'MATERIAL':
-                            if getattr(node, "is_active_output", True):
-                                node_displayed = node
-                    if not node_displayed:
-                        layout.label(text="No material node")
-                        layout.label(text="Show the Node Editor and add a YafaRay Material Node, "
-                                          "optionally connected to Texture Nodes", icon='INFO')
-                    else:
-                        layout.label(text=node_displayed.name)
-                        layout.template_node_view(yaf_mat.node_tree, node_displayed, None)
+            layout.prop(yaf_mat, "mat_type")
+
+        if yaf_mat.use_nodes:
+            layout.row().label(text="Warning: material is set to use nodes, which are still unsupported in YafaRay.", icon='ERROR')
+            layout.row().label(text="Please switch to one of the Blender render engines and deactivate the 'use nodes'", icon='ERROR')
+            layout.row().label(text="material setting, and then select the YafaRay render engine again.", icon='ERROR')
 
 
 class Preview(MaterialButtonsPanel, Panel):

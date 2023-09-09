@@ -48,18 +48,16 @@ def migration(_dummy):
         scene.img_output = scene.render.image_settings.file_format
 
     # convert old world texture slot to dedicated YafaRay world texture parameter
-    if (bpy.app.version < (2, 80, 0)
-            and not scene.yafaray4.migration.migrated_to_v4
-            and scene.world.active_texture is not None):
+    if bpy.app.version < (2, 80, 0) and not scene.yafaray4.migration.migrated_to_v4:
+        scene.yafaray4.migration.migrated_to_v4 = True
         print(bl_info["name"], "Handler: Initial 'one-off' migration from Yafaray v3 parameters")
         scene.world.texture = scene.world.active_texture
-        scene.yafaray4.migration.migrated_to_v4 = True
         if hasattr(scene, "yafaray"):
             mapping_base = {
-                #"name": None,
                 "bl_rna": None,
                 "rna_type": None,
             }
+
             mapping = {
                 "verbosityLevels": None,
                 "paramsBadgePosition": "params_badge_position",
@@ -77,8 +75,10 @@ def migration(_dummy):
             }
             mapping.update(mapping_base)
             copy_attributes(scene.yafaray.logging, scene.yafaray4.logging, mapping)
+
             mapping = mapping_base
             copy_attributes(scene.yafaray.noise_control, scene.yafaray4.noise_control, mapping)
+
             mapping = {
                 "OBJECT_OT_CamRotReset": None,
                 "OBJECT_OT_CamZoomIn": None,
@@ -99,6 +99,7 @@ def migration(_dummy):
             }
             mapping.update(mapping_base)
             copy_attributes(scene.yafaray.preview, scene.yafaray4.preview, mapping)
+
             mapping = {
                 "renderPassItemsBasic": None,
                 "renderInternalPassAdvanced": None,
@@ -152,21 +153,11 @@ def migration(_dummy):
             mapping.update(mapping_base)
             copy_attributes(scene.yafaray.passes, scene.yafaray4.passes, mapping)
 
-            # for material in bpy.data.materials:
-            #     print(material, material.name)
-            #     material.use_nodes = True
-            #     for texture_slot in material.texture_slots:
-            #         if texture_slot is not None:
-            #             #print(texture_slot, dir(texture_slot))
-            #             for attr in dir(texture_slot):
-            #                 print(attr, getattr(texture_slot, attr))
-            #             node_created = material.node_tree.nodes.new(type="YafaRay4TextureNode1")
-            #             node_created.name = "test"
-
             mapping = {
                 "output_node": None,
             }
             mapping.update(mapping_base)
+
             for material in bpy.data.materials:
                 for texture_slot_id in range(min(len(material.use_textures), len(material.yafaray4.use_textures))):
                     material.yafaray4.use_textures[texture_slot_id] = material.use_textures[texture_slot_id]
@@ -174,5 +165,3 @@ def migration(_dummy):
                 for texture_slot in material.texture_slots:
                     yaf4_texture_slot = material.yafaray4.texture_slots.add()
                     copy_attributes(texture_slot, yaf4_texture_slot, mapping)
-
-

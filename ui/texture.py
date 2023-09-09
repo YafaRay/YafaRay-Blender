@@ -73,11 +73,10 @@ class Context(TextureButtons, Panel):
         idblock = get_idblock_from_context(context)
         if idblock is None:
             return
-        using_nodes = hasattr(idblock, "use_nodes") and idblock.use_nodes
         row = layout.row()
         if True:
             material = context.active_object.active_material
-            if hasattr(material.yafaray4, "texture_slots") and not using_nodes:
+            if hasattr(material.yafaray4, "texture_slots"):
                 row.prop(context.scene.yafaray4.migration, "migrated_to_v4")
                 row = layout.row()
                 # row.template_list("TEXTURE_UL_texslots", "", material.yafaray4, "texture_slots",
@@ -95,7 +94,7 @@ class Context(TextureButtons, Panel):
                            "not associated to any objects")
             if bpy.app.version >= (2, 80, 0):
                 col.label(text="Ignore Brush and texture fields at the top (unrelated to YafaRay)", icon='INFO')
-        if hasattr(idblock, "texture_slots") and not using_nodes:
+        if hasattr(idblock, "texture_slots"):
             row.template_list("TEXTURE_UL_texslots", "", idblock, "texture_slots", idblock, "active_texture_index",
                               rows=2)
             col = row.column(align=True)
@@ -654,6 +653,7 @@ class SlotMapping(Slot, Panel):
         if idblock is None:
             return
         layout = self.layout
+        return  # FIXME DAVID!
         tex = idblock.active_texture_slot
         # textype = context.texture
 
