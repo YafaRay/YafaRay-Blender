@@ -2,7 +2,7 @@
 
 import bpy
 from bpy.app.handlers import persistent
-
+from bpy.props import PointerProperty
 from .. import bl_info
 
 
@@ -26,7 +26,8 @@ def copy_attributes(source, destination, mapping):
 @persistent
 def migration(_dummy):
     if not bpy.context.blend_data.filepath:
-        # If there is no blend file open, it might be the default "userpref.blend". In that case, do not do any migration
+        # If there is no blend file open, it might be the default "userpref.blend".
+        # In that case, do not do any migration
         return
 
     scene = bpy.context.scene
@@ -60,12 +61,38 @@ def migration(_dummy):
 
     if bpy.app.version >= (2, 80, 0):
         print("**Warning**: Migrating YafaRay v3 scenes to YafaRay v4 is not possible in Blender v2.80 or higher.")
-        print("**Warning**: DO NOT SAVE the YafaRay v3 scene in Blender v2.80 or higher as some important scene data WILL BE PERMANENTLY LOST.")
-        print("**Warning**: Open the YafaRay v3 Scene in Blender version v2.79b (exactly) so the migration from YafaRay v3 to v4 can take place.")
-        print("**Warning**: Then save the migrated YafaRay v4 with Blender v2.79b. The migrated YafaRay v4 blend file can later be opened in any Blender version v2.79b, v2.80 or higher.")
+        print("**Warning**: DO NOT SAVE the YafaRay v3 scene in Blender v2.80 or higher as some important scene data "
+              "WILL BE PERMANENTLY LOST.")
+        print("**Warning**: Open the YafaRay v3 Scene in Blender version v2.79b (exactly) so the migration from "
+              "YafaRay v3 to v4 can take place.")
+        print("**Warning**: Then save the migrated YafaRay v4 with Blender v2.79b. The migrated YafaRay v4 blend file "
+              "can later be opened in any Blender version v2.79b, v2.80 or higher.")
         return
 
     print(bl_info["name"], "Handler: Initial 'one-off' migration from Yafaray v3 parameters")
+    
+    register_v3_yafaray_properties_needed = False
+
+    if not hasattr(scene, "yafaray"):
+        register_v3_yafaray_properties_needed = True
+        from ..prop.scene_property_groups_v3 import (YafaRay3SceneProperties, YafaRay3MaterialPreviewControlProperties,
+                                                     YafaRay3LayersProperties, YafaRay3LoggingProperties,
+                                                     YafaRay3NoiseControlProperties,)
+
+        bpy.utils.register_class(YafaRay3SceneProperties)
+        bpy.types.Scene.yafaray = PointerProperty(type=YafaRay3SceneProperties)
+    
+        bpy.utils.register_class(YafaRay3LayersProperties)
+        YafaRay3SceneProperties.passes = PointerProperty(type=YafaRay3LayersProperties)
+    
+        bpy.utils.register_class(YafaRay3NoiseControlProperties)
+        YafaRay3SceneProperties.noise_control = PointerProperty(type=YafaRay3NoiseControlProperties)
+    
+        bpy.utils.register_class(YafaRay3LoggingProperties)
+        YafaRay3SceneProperties.logging = PointerProperty(type=YafaRay3LoggingProperties)
+    
+        bpy.utils.register_class(YafaRay3MaterialPreviewControlProperties)
+        YafaRay3SceneProperties.preview = PointerProperty(type=YafaRay3MaterialPreviewControlProperties)
 
     if hasattr(scene, "yafaray"):
         mapping_base = {
@@ -184,3 +211,15 @@ def migration(_dummy):
             for texture_slot in material.texture_slots:
                 yaf4_texture_slot = material.yafaray4.texture_slots.add()
                 copy_attributes(texture_slot, yaf4_texture_slot, mapping)
+
+        if register_v3_yafaray_properties_needed:
+            del YafaRay3SceneProperties.preview
+            bpy.utils.unregister_class(YafaRay3MaterialPreviewControlProperties)
+            del YafaRay3SceneProperties.logging
+            bpy.utils.unregister_class(YafaRay3LoggingProperties)
+            del YafaRay3SceneProperties.noise_control
+            bpy.utils.unregister_class(YafaRay3NoiseControlProperties)
+            del YafaRay3SceneProperties.passes
+            bpy.utils.unregister_class(YafaRay3LayersProperties)
+            del bpy.types.Scene.yafaray
+            bpy.utils.unregister_class(YafaRay3SceneProperties)
