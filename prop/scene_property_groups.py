@@ -25,10 +25,16 @@ class YafaRay4SceneProperties(bpy.types.PropertyGroup):
         name="Migrated to YafaRay v4",
         description="Flag indicating whether the scene has been already migrated to YafaRay v4",
         default=False)
-    test = BoolProperty(
-        name="test",
-        description="Flag indicating whether the scene has been already migrated to YafaRay v4",
-        default=False)
+    texture_edition_panel = EnumProperty(
+        name="Select Generic Texture Edition Panel",
+        description="Property to select the Texture Edition Panel to be shown",
+        items=[
+            ('MATERIAL', "Material", "Shows the Material Texture Slots Properties panel"),
+            ('WORLD', "World",
+             "Shows the World Texture Properties panel"),
+            ('TEXTURE', "Texture", "Shows a generic Texture Properties panel")
+        ],
+        default='MATERIAL')
 
 
 # noinspection PyTypeChecker

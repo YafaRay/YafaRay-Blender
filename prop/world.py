@@ -298,9 +298,9 @@ def register():
         description="",
         default=3.0)
 
-    World.texture = PointerProperty(
+    World.background_texture = PointerProperty(
         type=bpy.types.Texture,
-        update=update_preview, name="Texture",
+        update=update_preview, name="Background Texture",
         description="Texture used for the YafaRay scene background")
 
 

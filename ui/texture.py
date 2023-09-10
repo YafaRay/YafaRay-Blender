@@ -11,15 +11,14 @@ from bpy.types import (Panel,
 from .common import ui_split
 
 
-def get_idblock_from_context(context):
-    if bpy.app.version >= (2, 80, 0):
-        return context.scene
-    if context.space_data.texture_context == 'MATERIAL':
-        return context.active_object.active_material
-    elif context.space_data.texture_context == 'WORLD':
-        return context.scene.world
-    elif context.space_data.texture_context == 'OTHER':
-        return context.scene
+def get_texture_from_context(context):
+    if context.scene.yafaray4.texture_edition_panel == 'MATERIAL':
+        material_properties = context.active_object.active_material.yafaray4
+        return material_properties.texture_slots[material_properties.active_texture_index].texture
+    elif context.scene.yafaray4.texture_edition_panel == 'WORLD':
+        return context.scene.world.background_texture
+    elif context.scene.yafaray4.texture_edition_panel == 'TEXTURE':
+        return context.scene.yafaray4.texture_properties_edition.texture_selected
     else:
         return None
 
@@ -33,10 +32,10 @@ class TextureButtons:
 
     @classmethod
     def poll(cls, context):
-        idblock = get_idblock_from_context(context)
-        if idblock is None:
+        tex = get_texture_from_context(context)
+        if tex is None:
             return
-        tex = idblock.active_texture
+
         return tex and (tex.yaf_tex_type not in 'NONE' or tex.use_nodes) and (
                 context.scene.render.engine in cls.COMPAT_ENGINES)
 
@@ -69,47 +68,42 @@ class Context(TextureButtons, Panel):
     def draw(self, context):
         layout = self.layout
         if bpy.app.version < (2, 80, 0):
-            layout.prop(context.space_data, "texture_context", expand=True)
-        idblock = get_idblock_from_context(context)
-        if idblock is None:
-            return
+            row = layout.row()
+            row.operator("yafaray4.select_texture_edition_panel_material", text="", icon='MATERIAL',
+                         emboss=context.scene.yafaray4.texture_edition_panel == 'MATERIAL')
+            row.operator("yafaray4.select_texture_edition_panel_world", text="", text_ctxt="", translate=True,
+                         icon='WORLD', emboss=context.scene.yafaray4.texture_edition_panel == 'WORLD', icon_value=0)
+            row.operator("yafaray4.select_texture_edition_panel_texture", text="", text_ctxt="", translate=True,
+                         icon='TEXTURE', emboss=context.scene.yafaray4.texture_edition_panel == 'TEXTURE', icon_value=0)
         row = layout.row()
-        if True:
+        if context.scene.yafaray4.texture_edition_panel == 'MATERIAL':
             material = context.active_object.active_material
             if hasattr(material.yafaray4, "texture_slots"):
-                row.prop(context.scene.yafaray4.migration, "migrated_to_v4")
+                row.prop(context.scene.yafaray4, "migrated_to_v4")
                 row = layout.row()
-                # row.template_list("TEXTURE_UL_texslots", "", material.yafaray4, "texture_slots",
-                #                  material.yafaray4, "active_texture_index", rows=2)
-                row.template_list("OBJECT_UL_List", "test_coll", material.yafaray4, "texture_slots", material.yafaray4, "active_texture_index")
+                row.template_list("OBJECT_UL_List", "test_coll", material.yafaray4, "texture_slots", material.yafaray4,
+                                  "active_texture_index")
                 col = row.column(align=True)
                 col.operator("texture.slot_move", text="", icon='TRIA_UP').type = 'UP'
                 col.operator("texture.slot_move", text="", icon='TRIA_DOWN').type = 'DOWN'
-                # col.menu("TEXTURE_MT_specials", icon='DOWNARROW_HLT', text="")
-                row = layout.row()
-        if isinstance(idblock, bpy.types.Scene):
+
+        elif context.scene.yafaray4.texture_edition_panel == 'TEXTURE':
+            texture_properties_edition = context.scene.yafaray4.texture_properties_edition
             col = row.column(align=True)
             col.label(text="Generic YafaRay Texture Editor")
             col.label(text="This editor allows to edit any textures from the scene or create new textures, "
                            "not associated to any objects")
             if bpy.app.version >= (2, 80, 0):
                 col.label(text="Ignore Brush and texture fields at the top (unrelated to YafaRay)", icon='INFO')
-        if hasattr(idblock, "texture_slots"):
-            row.template_list("TEXTURE_UL_texslots", "", idblock, "texture_slots", idblock, "active_texture_index",
-                              rows=2)
-            col = row.column(align=True)
-            col.operator("texture.slot_move", text="", icon='TRIA_UP').type = 'UP'
-            col.operator("texture.slot_move", text="", icon='TRIA_DOWN').type = 'DOWN'
-            col.menu("TEXTURE_MT_specials", icon='DOWNARROW_HLT', text="")
-        split = ui_split(layout, 0.25)
-        col = split.column()
-        col.label(text="Texture to edit:")
-        col = split.column()
-        col.template_ID(idblock, "active_texture", new="texture.new")
-        split = ui_split(layout, 0.2)
-        split.label(text="Type:")
-        if idblock.active_texture is not None:
-            split.prop(idblock.active_texture, "yaf_tex_type", text="")
+            split = ui_split(layout, 0.25)
+            col = split.column()
+            col.label(text="Texture to edit:")
+            col = split.column()
+            col.template_ID(texture_properties_edition, "texture_selected", new="texture.new")
+            split = ui_split(layout, 0.2)
+            split.label(text="Type:")
+            if texture_properties_edition.texture_selected is not None:
+                split.prop(texture_properties_edition.texture_selected, "yaf_tex_type", text="")
 
 
 class Preview(TextureButtons, Panel):
@@ -118,13 +112,11 @@ class Preview(TextureButtons, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        idblock = get_idblock_from_context(context)
-        if idblock is None:
+        tex = get_texture_from_context(context)
+        if tex is None:
             return
         layout = self.layout
-        tex = idblock.active_texture
-        slot = getattr(context, "texture_slot", None)
-        layout.template_preview(tex, parent=idblock, slot=slot)
+        layout.template_preview(tex)
 
 
 class PreviewControls(TextureButtons, Panel):
@@ -203,10 +195,10 @@ class Colors(TextureButtons, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        idblock = get_idblock_from_context(context)
-        if idblock is None:
+        tex = get_texture_from_context(context)
+        if tex is None:
             return
-        tex = idblock.active_texture
+
         layout = self.layout
         layout.prop(tex, "use_color_ramp", text="Ramp")
         if tex.use_color_ramp:
@@ -269,10 +261,10 @@ class Type(TextureButtons):
 
     @classmethod
     def poll(cls, context):
-        idblock = get_idblock_from_context(context)
-        if idblock is None:
+        tex = get_texture_from_context(context)
+        if tex is None:
             return
-        tex = idblock.active_texture
+
         engine = context.scene.render.engine
         return tex and ((tex.yaf_tex_type == cls.tex_type and not tex.use_nodes) and (engine in cls.COMPAT_ENGINES))
 
@@ -285,11 +277,10 @@ class TypeClouds(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        idblock = get_idblock_from_context(context)
-        if idblock is None:
+        tex = get_texture_from_context(context)
+        if tex is None:
             return
         layout = self.layout
-        tex = idblock.active_texture
 
         layout.prop(tex, "cloud_type", expand=True)
         layout.label(text="Noise:")
@@ -310,11 +301,10 @@ class TypeWood(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        idblock = get_idblock_from_context(context)
-        if idblock is None:
+        tex = get_texture_from_context(context)
+        if tex is None:
             return
         layout = self.layout
-        tex = idblock.active_texture
 
         layout.prop(tex, "noise_basis_2", expand=True)
         layout.prop(tex, "wood_type", expand=True)
@@ -340,11 +330,10 @@ class TypeMarble(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        idblock = get_idblock_from_context(context)
-        if idblock is None:
+        tex = get_texture_from_context(context)
+        if tex is None:
             return
         layout = self.layout
-        tex = idblock.active_texture
 
         layout.prop(tex, "marble_type", expand=True)
         layout.prop(tex, "noise_basis_2", expand=True)
@@ -367,11 +356,10 @@ class TypeBlend(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        idblock = get_idblock_from_context(context)
-        if idblock is None:
+        tex = get_texture_from_context(context)
+        if tex is None:
             return
         layout = self.layout
-        tex = idblock.active_texture
 
         layout.prop(tex, "progression")
 
@@ -388,11 +376,11 @@ class TypeImage(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        idblock = get_idblock_from_context(context)
-        if idblock is None:
+        tex = get_texture_from_context(context)
+        if tex is None:
             return
         layout = self.layout
-        tex = idblock.active_texture
+
         layout.template_image(tex, "image", tex.image_user)
 
         if hasattr(tex.image, "colorspace_settings"):
@@ -432,14 +420,14 @@ class TypeImageSampling(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        idblock = get_idblock_from_context(context)
-        if idblock is None:
+        tex = get_texture_from_context(context)
+        if tex is None:
             return
         layout = self.layout
-        tex = idblock.active_texture
+
         layout.label(text="Image:")
         row = layout.row(align=True)
-        if not isinstance(idblock, World):
+        if context.scene.yafaray4.texture_edition_panel != 'WORLD':
             '''povman: change layout to row for save space
                 and show only options in each context
             '''
@@ -466,11 +454,10 @@ class TypeImageMapping(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        idblock = get_idblock_from_context(context)
-        if idblock is None:
+        tex = get_texture_from_context(context)
+        if tex is None:
             return
         layout = self.layout
-        tex = idblock.active_texture
 
         layout.prop(tex, "extension")
 
@@ -522,11 +509,10 @@ class TypeMusgrave(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        idblock = get_idblock_from_context(context)
-        if idblock is None:
+        tex = get_texture_from_context(context)
+        if tex is None:
             return
         layout = self.layout
-        tex = idblock.active_texture
 
         layout.prop(tex, "musgrave_type")
 
@@ -561,10 +547,9 @@ class TypeVoronoi(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        idblock = get_idblock_from_context(context)
-        if idblock is None:
+        tex = get_texture_from_context(context)
+        if tex is None:
             return
-        tex = idblock.active_texture
         layout = self.layout
         split = layout.split()
 
@@ -598,11 +583,10 @@ class TypeDistortedNoise(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        idblock = get_idblock_from_context(context)
-        if idblock is None:
+        tex = get_texture_from_context(context)
+        if tex is None:
             return
         layout = self.layout
-        tex = idblock.active_texture
 
         layout.prop(tex, "noise_distortion")
         layout.prop(tex, "noise_basis", text="Basis")
@@ -621,11 +605,11 @@ class TypeOcean(Type, Panel):
     COMPAT_ENGINES = {'YAFARAY4_RENDER'}
 
     def draw(self, context):
-        idblock = get_idblock_from_context(context)
-        if idblock is None:
+        tex = get_texture_from_context(context)
+        if tex is None:
             return
         layout = self.layout
-        tex = idblock.active_texture
+
         ot = tex.ocean
 
         col = layout.column()
@@ -640,8 +624,8 @@ class SlotMapping(Slot, Panel):
 
     @classmethod
     def poll(cls, context):
-        idblock = get_idblock_from_context(context)
-        if idblock is None:
+        tex = get_texture_from_context(context)
+        if tex is None:
             return
         if not getattr(context, "texture_slot", None):
             return False
@@ -649,15 +633,15 @@ class SlotMapping(Slot, Panel):
         return engine in cls.COMPAT_ENGINES
 
     def draw(self, context):
-        idblock = get_idblock_from_context(context)
-        if idblock is None:
+        tex = get_texture_from_context(context)
+        if tex is None:
             return
         layout = self.layout
         return  # FIXME DAVID!
-        tex = idblock.active_texture_slot
+        _slot
         # textype = context.texture
 
-        if isinstance(idblock, World):
+        if context.scene.yafaray4.texture_edition_panel == 'WORLD':
             split = ui_split(layout, 0.3)
             col = split.column()
             world = context.world
@@ -689,7 +673,7 @@ class SlotMapping(Slot, Panel):
             split.label(text="Object:")
             split.prop(tex, "object", text="")
 
-        if isinstance(idblock, Material):
+        if context.scene.yafaray4.texture_edition_panel == 'MATERIAL':
             split = ui_split(layout, 0.3)
             split.label(text="Projection:")
             split.prop(tex, "mapping", text="")
@@ -711,7 +695,7 @@ class SlotMapping(Slot, Panel):
             row.prop(tex, "mapping_z", text="")
 
         # tes povman
-        if not isinstance(idblock, World):
+        if context.scene.yafaray4.texture_edition_panel != 'WORLD':
             row = layout.row()
             row.column().prop(tex, "offset")
             row.column().prop(tex, "scale")
@@ -724,20 +708,16 @@ class SlotInfluence(Slot, Panel):
 
     @classmethod
     def poll(cls, context):
-        if bpy.app.version >= (2, 80, 0) or context.space_data.texture_context == 'OTHER':
-            return
-        idblock = get_idblock_from_context(context)
-        if idblock is None or (hasattr(idblock, "use_nodes") and idblock.use_nodes):
+        tex = get_texture_from_context(context)
+        if tex is None or context.scene.yafaray4.texture_edition_panel != 'MATERIAL':
             return
         engine = context.scene.render.engine
         return engine in cls.COMPAT_ENGINES
 
     def draw(self, context):
-        idblock = get_idblock_from_context(context)
-        if idblock is None or not hasattr(idblock, "texture_slots"):
-            return
-        texture_slot = idblock.texture_slots[idblock.active_texture_index]
-        texture = idblock.active_texture
+        material = context.active_object.active_material
+        texture_slot = material.yafaray4.texture_slots[material.yafaray4.active_texture_index]
+        texture = texture_slot.texture
 
         def factor_but(layout, toggle, factor, name):
             row = layout.row(align=True)
@@ -779,8 +759,8 @@ class SlotInfluence(Slot, Panel):
                                                     "Wireframe"]
         material_shader_nodes["blend"] = ["BlendAmount"]
 
-        if isinstance(idblock, Material):
-            nodes = material_shader_nodes[idblock.mat_type]
+        if context.scene.yafaray4.texture_edition_panel == 'MATERIAL':
+            nodes = material_shader_nodes[material.mat_type]
             col = self.layout.column()
 
             for node in nodes:
@@ -789,7 +769,7 @@ class SlotInfluence(Slot, Panel):
                 if node == "Bump" and getattr(texture_slot, "use_map_normal") and texture.yaf_tex_type == 'IMAGE':
                     col.prop(texture, "yaf_is_normal_map", "Use map as normal map")
 
-        elif isinstance(idblock, World):  # for setup world texture
+        elif context.scene.yafaray4.texture_edition_panel == 'WORLD':  # for setup world texture
             split = self.layout.split()
 
             col = split.column()
@@ -800,7 +780,7 @@ class SlotInfluence(Slot, Panel):
             factor_but(col, "use_map_zenith_up", "zenith_up_factor", "Zenith Up")
             factor_but(col, "use_map_zenith_down", "zenith_down_factor", "Zenith Down")
 
-        if not isinstance(idblock, ParticleSettings) and not isinstance(idblock, World):
+        if context.scene.yafaray4.texture_edition_panel != 'WORLD':
             split = self.layout.split()
 
             col = split.column()
@@ -812,7 +792,7 @@ class SlotInfluence(Slot, Panel):
             col.prop(texture_slot, "invert", text="Negative")
             col.prop(texture_slot, "use_stencil")
 
-        if isinstance(idblock, Material) or isinstance(idblock, World):
+        if context.scene.yafaray4.texture_edition_panel == 'MATERIAL' or context.scene.yafaray4.texture_edition_panel == 'WORLD':
             self.layout.separator()
             self.layout.row().prop(texture_slot, "default_value", text="Default Value", slider=True)
 

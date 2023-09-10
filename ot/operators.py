@@ -82,6 +82,42 @@ class ShowNodeTreeWindow(Operator):
 
 
 @replace_properties_with_annotations
+class SelectTextureEditionPanelMaterial(Operator):
+    bl_idname = "yafaray4.select_texture_edition_panel_material"
+    bl_label = "Select Material Texture Edition Panel"
+    bl_description= "Select Material Texture Edition Panel"
+
+    # noinspection PyUnusedLocal
+    def execute(self, context):
+        context.scene.yafaray4.texture_edition_panel = 'MATERIAL'
+        return {'FINISHED'}
+
+
+@replace_properties_with_annotations
+class SelectTextureEditionPanelWorld(Operator):
+    bl_idname = "yafaray4.select_texture_edition_panel_world"
+    bl_label = "Select World Texture Edition Panel"
+    bl_description = "Select World Texture Edition Panel"
+
+    # noinspection PyUnusedLocal
+    def execute(self, context):
+        context.scene.yafaray4.texture_edition_panel = 'WORLD'
+        return {'FINISHED'}
+
+
+@replace_properties_with_annotations
+class SelectTextureEditionPanelTexture(Operator):
+    bl_idname = "yafaray4.select_texture_edition_panel_texture"
+    bl_label = "Select Generic Texture Edition Panel"
+    bl_description = "Select Generic Texture Edition Panel"
+
+    # noinspection PyUnusedLocal
+    def execute(self, context):
+        context.scene.yafaray4.texture_edition_panel = 'TEXTURE'
+        return {'FINISHED'}
+
+
+@replace_properties_with_annotations
 class ShowTextureWindow(Operator):
     bl_idname = "yafaray4.show_texture_window"
     bl_label = "Show Texture Parameters Window"
@@ -366,7 +402,8 @@ classes = (
     CreateNode, NewMaterial, ShowNodeTreeWindow, ShowTextureWindow,
     WorldGetSunPosition, WorldGetSunAngle, WorldUpdateSunPositionAndAngle,
     RenderView, RenderAnimation, RenderStill,
-    MaterialPresetsIorList, MaterialPreviewCamRotReset, MaterialPreviewCamZoomIn, MaterialPreviewCamZoomOut,)
+    MaterialPresetsIorList, MaterialPreviewCamRotReset, MaterialPreviewCamZoomIn, MaterialPreviewCamZoomOut,
+    SelectTextureEditionPanelMaterial, SelectTextureEditionPanelWorld, SelectTextureEditionPanelTexture,)
 
 
 def register():
