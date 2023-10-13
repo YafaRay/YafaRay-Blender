@@ -76,6 +76,7 @@ class World(WorldButtonsPanel, Panel):
         elif world.bg_type == "Texture":
             layout.separator()
             layout.prop(world, "use_nodes", icon='NODETREE')
+            layout.separator()
             if world.use_nodes:
                 layout.row().label(text="Warning: world texture nodes are still unsupported in YafaRay.", icon='ERROR')
                 layout.row().label(text="Please deactivate 'Use Nodes' for now.", icon='ERROR')
@@ -95,56 +96,46 @@ class World(WorldButtonsPanel, Panel):
                 #     else:
                 #         layout.template_node_view(world.node_tree, node_displayed, None)
 
-            elif True:#bpy.app.version < (2, 80, 0):
-                layout.template_ID(context.scene.world, "texture", new="texture.new")
-                tex = context.scene.world.texture
+            else:
+                layout.template_ID(context.scene.world, "background_texture", new="texture.new")
+                tex = context.scene.world.background_texture
                 if tex is not None:
-                    op = layout.operator("yafaray4.show_texture_window")
+                    op = layout.operator("yafaray4.show_texture_window", text="Show World Texture Parameters")
                     op.texture_name = tex.name
                     layout.label(text="If a new Properties window appears, click again to show the editor for the selected texture", icon="INFO")
-                    #
-                    layout.template_ID(context.world, "active_texture")
-                    #
+                    # layout.template_ID(context.world, "background_texture")
                     if tex.yaf_tex_type == "IMAGE":  # it allows to change the used image
-                        #
                         layout.template_image(tex, "image", tex.image_user, compact=True)
-
                         if tex.image.colorspace_settings.name == "sRGB" \
                                 or tex.image.colorspace_settings.name == "Linear" \
                                 or tex.image.colorspace_settings.name == "Non-Color":
                             pass
-
                         elif tex.image.colorspace_settings.name == "XYZ":
                             row = layout.row(align=True)
                             row.label(text="YafaRay 'XYZ' support is experimental and may not give the expected results",
                                       icon="ERROR")
-
                         elif tex.image.colorspace_settings.name == "Linear ACES":
                             row = layout.row(align=True)
                             row.label(
                                 text="YafaRay doesn't support '" + tex.image.colorspace_settings.name
                                      + "', assuming linear RGB",
                                 icon="ERROR")
-
                         elif tex.image.colorspace_settings.name == "Raw":
                             row = layout.row(align=True)
                             row.prop(tex, "yaf_gamma_input", text="Texture gamma input correction")
-
                         else:
                             row = layout.row(align=True)
                             row.label(
                                 text="YafaRay doesn't support '" + tex.image.colorspace_settings.name + "', assuming sRGB",
                                 icon="ERROR")
-
-                        #
                     else:
                         # TODO: create message about not allow texture type
                         pass
-                else:
-                    layout.template_ID(context.world, "active_texture", new="texture.new")
-            else:
-                layout.label(text="In Blender 2.80 or higher, Texture World can only work with nodes.", icon='ERROR')
-                layout.label(text="Click 'Use Nodes' and create a World node connected to Texture node(s)", icon='ERROR')
+                # else:
+                #     layout.template_ID(context.world, "background_texture", new="texture.new")
+            # else:
+            #     layout.label(text="In Blender 2.80 or higher, Texture World can only work with nodes.", icon='ERROR')
+            #     layout.label(text="Click 'Use Nodes' and create a World node connected to Texture node(s)", icon='ERROR')
 
             layout.label(text="Background Texture controls")
             layout.prop(world, "bg_rotation")

@@ -349,6 +349,7 @@ def unregister():
     del World.v_int_scale
     del World.v_int_alpha
     del World.v_int_dsturbidity
+    del World.background_texture
 
     # povman test --->
     del World.yaf_mapworld_type

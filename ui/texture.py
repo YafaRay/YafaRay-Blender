@@ -87,6 +87,9 @@ class Context(TextureButtons, Panel):
                 col.operator("texture.slot_move", text="", icon='TRIA_UP').type = 'UP'
                 col.operator("texture.slot_move", text="", icon='TRIA_DOWN').type = 'DOWN'
 
+        elif context.scene.yafaray4.texture_edition_panel == 'WORLD':
+            layout.template_ID(context.scene.world, "background_texture", new="texture.new")
+
         elif context.scene.yafaray4.texture_edition_panel == 'TEXTURE':
             texture_properties_edition = context.scene.yafaray4.texture_properties_edition
             col = row.column(align=True)

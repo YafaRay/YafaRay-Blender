@@ -141,6 +141,9 @@ class ContextMaterial(MaterialButtonsPanel, Panel):
         if yaf_mat.use_nodes:
             layout.row().label(text="Warning: material nodes are still unsupported in YafaRay.", icon='ERROR')
             layout.row().label(text="Please deactivate 'Use Nodes' for now.", icon='ERROR')
+        else:
+            layout.separator()
+            op = layout.operator("yafaray4.show_texture_window", text="Show Material Texture Slots")
 
 
 class Preview(MaterialButtonsPanel, Panel):
