@@ -68,6 +68,10 @@ class Context(TextureButtons, Panel):
     def draw(self, context):
         layout = self.layout
         row = layout.row()
+        if bpy.app.version >= (2, 80, 0):
+            col = row.column()
+            col.label(text="YafaRay **only** uses the panels below, ignore the 'Brush' and texture fields above", icon='INFO')
+        row = layout.row()
         row.operator("yafaray4.select_texture_edition_panel_material", text="", icon='MATERIAL',
                      emboss=context.scene.yafaray4.texture_edition_panel == 'MATERIAL')
         row.operator("yafaray4.select_texture_edition_panel_world", text="", text_ctxt="", translate=True,
@@ -95,8 +99,6 @@ class Context(TextureButtons, Panel):
             col.label(text="Generic YafaRay Texture Editor")
             col.label(text="This editor allows to edit any textures from the scene or create new textures, "
                            "not associated to any objects")
-            if bpy.app.version >= (2, 80, 0):
-                col.label(text="Ignore Brush and texture fields at the top (unrelated to YafaRay)", icon='INFO')
             split = ui_split(layout, 0.25)
             col = split.column()
             col.label(text="Texture to edit:")
