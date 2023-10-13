@@ -9,6 +9,7 @@ from bpy.types import (Panel,
                        ParticleSettings)
 
 from .common import ui_split
+from bl_ui.properties_texture import context_tex_datablock
 
 
 def get_texture_from_context(context):
@@ -120,7 +121,11 @@ class Preview(TextureButtons, Panel):
         if tex is None:
             return
         layout = self.layout
-        layout.template_preview(tex)
+        idblock = context_tex_datablock(context)
+        if idblock:
+            layout.template_preview(tex, parent=idblock)
+        else:
+            layout.template_preview(tex)
 
 
 class PreviewControls(TextureButtons, Panel):
