@@ -15,11 +15,7 @@ else:
 
 # noinspection PyUnusedLocal
 def update_preview(self, context):
-    if bpy.app.version >= (2, 80, 0):
-        light = context.light
-    else:
-        light = context.lamp
-    light.update_tag()
+    context.space_data.context = context.space_data.context  # To force redrawing the preview panel
 
 
 # noinspection PyUnusedLocal

@@ -16,11 +16,17 @@ from .material_texture_slot import YafaRay4MaterialTextureSlot
 Material = bpy.types.Material
 
 
+# noinspection PyUnusedLocal
+def update_preview(self, context):
+    context.space_data.context = context.space_data.context  # To force redrawing the preview panel
+
+
 @replace_properties_with_annotations
 class YafaRay4Properties(bpy.types.PropertyGroup):
 
     active_texture_index = IntProperty(
-        name="Active Material Texture Slot Index", description="Active material texture slot index", default=0
+        name="Active Material Texture Slot Index", description="Active material texture slot index", default=0,
+        update=update_preview
     )
 
     use_textures = BoolVectorProperty(
@@ -52,8 +58,7 @@ def items_mat2(self, context):
 
 # noinspection PyUnusedLocal
 def update_preview(self, context):
-    pass
-    #    context.material.update_tag()
+    context.space_data.context = context.space_data.context  # To force redrawing the preview panel
 
 
 def register():

@@ -12,10 +12,7 @@ from ..util.properties_annotations import replace_properties_with_annotations
 
 # noinspection PyUnusedLocal
 def update_preview(self, context):
-    if hasattr(context, "material") and context.material is not None:
-        context.material.update_tag()
-    elif len(bpy.data.materials) > 0:
-        bpy.data.materials[0].update_tag()
+    context.space_data.context = context.space_data.context  # To force redrawing the preview panel
 
 
 # noinspection PyTypeChecker
@@ -42,7 +39,8 @@ class YafaRay4SceneProperties(bpy.types.PropertyGroup):
 class YafaRay4TexturePropertiesEdition(bpy.types.PropertyGroup):
     texture_selected = PointerProperty(name="Texture selected",
                                        description="Texture selected for properties edition",
-                                       type=bpy.types.Texture)
+                                       type=bpy.types.Texture,
+                                       update=update_preview)
 
 
 # noinspection PyTypeChecker

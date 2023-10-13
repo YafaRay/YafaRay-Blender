@@ -90,7 +90,7 @@ class SelectTextureEditionPanelMaterial(Operator):
     # noinspection PyUnusedLocal
     def execute(self, context):
         context.scene.yafaray4.texture_edition_panel = 'MATERIAL'
-        #context.area.tag_redraw()
+        context.space_data.context = context.space_data.context  # To force redrawing the preview panel
         return {'FINISHED'}
 
 
@@ -103,7 +103,7 @@ class SelectTextureEditionPanelWorld(Operator):
     # noinspection PyUnusedLocal
     def execute(self, context):
         context.scene.yafaray4.texture_edition_panel = 'WORLD'
-        #context.area.tag_redraw()
+        context.space_data.context = context.space_data.context  # To force redrawing the preview panel
         return {'FINISHED'}
 
 
@@ -116,8 +116,7 @@ class SelectTextureEditionPanelTexture(Operator):
     # noinspection PyUnusedLocal
     def execute(self, context):
         context.scene.yafaray4.texture_edition_panel = 'TEXTURE'
-        context.area.type = context.area.type
-        #context.area.tag_redraw()
+        context.space_data.context = context.space_data.context  # To force redrawing the preview panel
         return {'FINISHED'}
 
 
@@ -130,29 +129,38 @@ class ShowTextureWindow(Operator):
 
     # noinspection PyUnusedLocal
     def execute(self, context):
-        properties_screen_area = None
-        for area in context.window_manager.windows[-1].screen.areas:
-            if area.type == 'PROPERTIES':
-                properties_screen_area = area
-                break
-        if properties_screen_area is None:
-            bpy.ops.screen.userpref_show("INVOKE_DEFAULT")
-            properties_screen_area = context.window_manager.windows[-1].screen.areas[0]
-            properties_screen_area.type = "PROPERTIES"
-            # print("node_editor_area.spaces[0].context", node_editor_area.spaces[0].context)
-        # context.scene.yafaray4.texture_properties_edition.texture_selected = bpy.data.textures[self.texture_name]
-        if properties_screen_area.spaces[0].context == 'WORLD':
+        if context.space_data.context == 'WORLD':
             context.scene.yafaray4.texture_edition_panel = 'WORLD'
-        elif properties_screen_area.spaces[0].context == 'MATERIAL':
+        elif context.space_data.context == 'MATERIAL':
             context.scene.yafaray4.texture_edition_panel = 'MATERIAL'
-        try:
-            properties_screen_area.spaces[0].context = 'TEXTURE'
-            if bpy.app.version < (2, 80, 0):
-                properties_screen_area.spaces[0].texture_context = 'OTHER'
-        except Exception:
-            pass
-        #properties_screen_area.tag_redraw()
+        context.space_data.context = 'TEXTURE'
         return {'FINISHED'}
+
+    # noinspection PyUnusedLocal
+    # def execute(self, context):
+    #     properties_screen_area = None
+    #     for area in context.window_manager.windows[-1].screen.areas:
+    #         if area.type == 'PROPERTIES':
+    #             properties_screen_area = area
+    #             break
+    #     if properties_screen_area is None:
+    #         bpy.ops.screen.userpref_show("INVOKE_DEFAULT")
+    #         properties_screen_area = context.window_manager.windows[-1].screen.areas[0]
+    #         properties_screen_area.type = "PROPERTIES"
+    #         # print("node_editor_area.spaces[0].context", node_editor_area.spaces[0].context)
+    #     # context.scene.yafaray4.texture_properties_edition.texture_selected = bpy.data.textures[self.texture_name]
+    #     if properties_screen_area.spaces[0].context == 'WORLD':
+    #         context.scene.yafaray4.texture_edition_panel = 'WORLD'
+    #     elif properties_screen_area.spaces[0].context == 'MATERIAL':
+    #         context.scene.yafaray4.texture_edition_panel = 'MATERIAL'
+    #     try:
+    #         properties_screen_area.spaces[0].context = 'TEXTURE'
+    #         if bpy.app.version < (2, 80, 0):
+    #             properties_screen_area.spaces[0].texture_context = 'OTHER'
+    #     except Exception:
+    #         pass
+    #     #properties_screen_area.tag_redraw()
+    #    return {'FINISHED'}
 
 
 class WorldGetSunPosition(Operator):

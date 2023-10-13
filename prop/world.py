@@ -13,7 +13,7 @@ World = bpy.types.World
 
 # noinspection PyUnusedLocal
 def update_preview(self, context):
-    context.scene.world.update_tag()
+    context.space_data.context = context.space_data.context  # To force redrawing the preview panel
 
 
 def register():

@@ -12,7 +12,7 @@ Texture = bpy.types.Texture
 
 # noinspection PyUnusedLocal
 def update_preview(self, context):
-    context.texture.update_tag()
+    context.space_data.context = context.space_data.context  # To force redrawing the preview panel
 
 
 # try to update Blender property texture.type to YafaRay's texture.yaf_tex_type
