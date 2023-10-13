@@ -136,10 +136,11 @@ class ContextMaterial(MaterialButtonsPanel, Panel):
             layout.separator()
             layout.prop(yaf_mat, "mat_type")
 
+        layout.separator()
+        layout.prop(yaf_mat, "use_nodes", icon='NODETREE')
         if yaf_mat.use_nodes:
-            layout.row().label(text="Warning: material is set to use nodes, which are still unsupported in YafaRay.", icon='ERROR')
-            layout.row().label(text="Please switch to one of the Blender render engines and deactivate the 'use nodes'", icon='ERROR')
-            layout.row().label(text="material setting, and then select the YafaRay render engine again.", icon='ERROR')
+            layout.row().label(text="Warning: material nodes are still unsupported in YafaRay.", icon='ERROR')
+            layout.row().label(text="Please deactivate 'Use Nodes' for now.", icon='ERROR')
 
 
 class Preview(MaterialButtonsPanel, Panel):

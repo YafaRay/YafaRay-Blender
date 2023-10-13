@@ -74,24 +74,26 @@ class World(WorldButtonsPanel, Panel):
                 row.prop(world, "bg_with_caustic")
 
         elif world.bg_type == "Texture":
-            layout.prop(world, "use_nodes", icon='NODETREE')
             layout.separator()
+            layout.prop(world, "use_nodes", icon='NODETREE')
             if world.use_nodes:
+                layout.row().label(text="Warning: world texture nodes are still unsupported in YafaRay.", icon='ERROR')
+                layout.row().label(text="Please deactivate 'Use Nodes' for now.", icon='ERROR')
                 # layout.template_ID(world, "node_tree", new="yafaray4.new_node_tree")
-                if world.node_tree:
-                    op = layout.operator("yafaray4.show_node_tree_window")
-                    op.shader_type = 'WORLD'
-                    node_displayed = None
-                    for node in world.node_tree.nodes:
-                        if getattr(node, "yafaray_type", None) == 'WORLD':
-                            if getattr(node, "is_active_output", True):
-                                node_displayed = node
-                    if not node_displayed:
-                        layout.label(text="No world node")
-                        layout.label(text="Show the Node Editor and add a YafaRay World Node, "
-                                          "connected to Texture Nodes", icon='INFO')
-                    else:
-                        layout.template_node_view(world.node_tree, node_displayed, None)
+                # if world.node_tree:
+                #     op = layout.operator("yafaray4.show_node_tree_window")
+                #     op.shader_type = 'WORLD'
+                #     node_displayed = None
+                #     for node in world.node_tree.nodes:
+                #         if getattr(node, "yafaray_type", None) == 'WORLD':
+                #             if getattr(node, "is_active_output", True):
+                #                 node_displayed = node
+                #     if not node_displayed:
+                #         layout.label(text="No world node")
+                #         layout.label(text="Show the Node Editor and add a YafaRay World Node, "
+                #                           "connected to Texture Nodes", icon='INFO')
+                #     else:
+                #         layout.template_node_view(world.node_tree, node_displayed, None)
 
             elif True:#bpy.app.version < (2, 80, 0):
                 layout.template_ID(context.scene.world, "texture", new="texture.new")
