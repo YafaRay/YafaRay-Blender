@@ -719,4 +719,3 @@ def unregister():
     del Scene.AA_pixelwidth
     del Scene.AA_filter_type
     del Scene.use_instances
-    del Scene.active_texture

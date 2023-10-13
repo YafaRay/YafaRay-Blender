@@ -67,14 +67,13 @@ class Context(TextureButtons, Panel):
 
     def draw(self, context):
         layout = self.layout
-        if bpy.app.version < (2, 80, 0):
-            row = layout.row()
-            row.operator("yafaray4.select_texture_edition_panel_material", text="", icon='MATERIAL',
-                         emboss=context.scene.yafaray4.texture_edition_panel == 'MATERIAL')
-            row.operator("yafaray4.select_texture_edition_panel_world", text="", text_ctxt="", translate=True,
-                         icon='WORLD', emboss=context.scene.yafaray4.texture_edition_panel == 'WORLD', icon_value=0)
-            row.operator("yafaray4.select_texture_edition_panel_texture", text="", text_ctxt="", translate=True,
-                         icon='TEXTURE', emboss=context.scene.yafaray4.texture_edition_panel == 'TEXTURE', icon_value=0)
+        row = layout.row()
+        row.operator("yafaray4.select_texture_edition_panel_material", text="", icon='MATERIAL',
+                     emboss=context.scene.yafaray4.texture_edition_panel == 'MATERIAL')
+        row.operator("yafaray4.select_texture_edition_panel_world", text="", text_ctxt="", translate=True,
+                     icon='WORLD', emboss=context.scene.yafaray4.texture_edition_panel == 'WORLD', icon_value=0)
+        row.operator("yafaray4.select_texture_edition_panel_texture", text="", text_ctxt="", translate=True,
+                     icon='TEXTURE', emboss=context.scene.yafaray4.texture_edition_panel == 'TEXTURE', icon_value=0)
         row = layout.row()
         if context.scene.yafaray4.texture_edition_panel == 'MATERIAL':
             material = context.active_object.active_material
