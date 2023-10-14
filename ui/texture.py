@@ -652,7 +652,7 @@ class SlotMapping(Slot, Panel):
         if context.scene.yafaray4.texture_edition_panel == 'WORLD':
             split = ui_split(layout, 0.3)
             col = split.column()
-            world = context.world
+            world = context.scene.world
             col.label(text="Coordinates:")
             col = split.column()
             col.prop(world, "yaf_mapworld_type", text="")
