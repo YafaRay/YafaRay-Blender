@@ -31,6 +31,15 @@ def migration(_dummy):
         return
 
     scene = bpy.context.scene
+
+    for tex in bpy.data.textures:
+        if tex is not None and tex.yaf_tex_type != tex.type:
+            # set the correct texture type on file load....
+            # converts old files, where property yaf_tex_type wasn't defined
+            print(bl_info["name"], "Handler: Yafaray texture \"{0}\" Setting correct YafaRay texture type (yaf_tex_type): \"{1}\" to \"{2}\""
+                  .format(tex.name, tex.yaf_tex_type, tex.type))
+            tex.yaf_tex_type = tex.type
+
     if scene.yafaray4.migrated_to_v4:
         if bpy.app.version >= (2, 80, 0):
             # Removing old scene yafaray property tree
@@ -38,14 +47,6 @@ def migration(_dummy):
         return
     else:
         scene.yafaray4.migrated_to_v4 = True
-
-    for tex in bpy.data.textures:
-        if tex is not None:
-            # set the correct texture type on file load....
-            # converts old files, where property yaf_tex_type wasn't defined
-            print(bl_info["name"], "Handler: Convert Yafaray texture \"{0}\" with texture type: \"{1}\" to \"{2}\""
-                  .format(tex.name, tex.yaf_tex_type, tex.type))
-            tex.yaf_tex_type = tex.type
     for mat in bpy.data.materials:
         if mat is not None:
             # from old scenes, convert old blend material Enum properties into the new string properties
