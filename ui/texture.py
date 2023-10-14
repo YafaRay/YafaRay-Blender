@@ -636,20 +636,11 @@ class SlotMapping(Slot, Panel):
         tex = get_texture_from_context(context)
         if tex is None:
             return
-        if not getattr(context, "texture_slot", None):
-            return False
         engine = context.scene.render.engine
-        return engine in cls.COMPAT_ENGINES
+        return engine in cls.COMPAT_ENGINES and context.scene.yafaray4.texture_edition_panel != 'TEXTURE'
 
     def draw(self, context):
-        tex = get_texture_from_context(context)
-        if tex is None:
-            return
         layout = self.layout
-        return  # FIXME DAVID!
-        _slot
-        # textype = context.texture
-
         if context.scene.yafaray4.texture_edition_panel == 'WORLD':
             split = ui_split(layout, 0.3)
             col = split.column()
@@ -658,31 +649,34 @@ class SlotMapping(Slot, Panel):
             col = split.column()
             col.prop(world, "yaf_mapworld_type", text="")
         else:
+            material_properties = context.active_object.active_material.yafaray4
+            tex = material_properties.texture_slots[material_properties.active_texture_index]
+            if tex is None:
+                return
             split = ui_split(layout, 0.3)
             col = split.column()
             col.label(text="Coordinates:")
             col = split.column()
             col.prop(tex, "texture_coords", text="")
 
-        if tex.texture_coords == 'UV':
-            pass
-            # UV layers not supported in yafaray engine
-            """
-            split = ui_split(layout, 0.3)
-            split.label(text="Layer:")
-            ob = context.object
-            if ob and ob.type == 'MESH':
-                split.prop_search(tex, "uv_layer", ob.data, "uv_textures", text="")
-            else:
-                split.prop(tex, "uv_layer", text="")
-            """
+            if tex.texture_coords == 'UV':
+                pass
+                # UV layers not supported in yafaray engine
+                """
+                split = ui_split(layout, 0.3)
+                split.label(text="Layer:")
+                ob = context.object
+                if ob and ob.type == 'MESH':
+                    split.prop_search(tex, "uv_layer", ob.data, "uv_textures", text="")
+                else:
+                    split.prop(tex, "uv_layer", text="")
+                """
 
-        elif tex.texture_coords == 'OBJECT':
-            split = ui_split(layout, 0.3)
-            split.label(text="Object:")
-            split.prop(tex, "object", text="")
+            elif tex.texture_coords == 'OBJECT':
+                split = ui_split(layout, 0.3)
+                split.label(text="Object:")
+                split.prop(tex, "object", text="")
 
-        if context.scene.yafaray4.texture_edition_panel == 'MATERIAL':
             split = ui_split(layout, 0.3)
             split.label(text="Projection:")
             split.prop(tex, "mapping", text="")
@@ -703,8 +697,6 @@ class SlotMapping(Slot, Panel):
             row.prop(tex, "mapping_y", text="")
             row.prop(tex, "mapping_z", text="")
 
-        # tes povman
-        if context.scene.yafaray4.texture_edition_panel != 'WORLD':
             row = layout.row()
             row.column().prop(tex, "offset")
             row.column().prop(tex, "scale")
