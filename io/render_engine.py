@@ -12,7 +12,18 @@ from ..util.io import scene_from_depsgraph
 yaf_logger = libyafaray4_bindings.Logger()
 yaf_logger.set_console_verbosity_level(yaf_logger.log_level_from_string("debug"))
 yaf_logger.set_log_verbosity_level(yaf_logger.log_level_from_string("debug"))
-
+#yaf_logger.set_console_log_colors_enabled(True)
+yaf_logger.enable_print_date_time(True)
+# Creating scene #
+yaf_scene = libyafaray4_bindings.Scene(yaf_logger, "Scene1")
+yaf_param_map = libyafaray4_bindings.ParamMap()
+yaf_param_map.set_string("type", "yafaray-kdtree-original")
+yaf_scene.set_accelerator_params(yaf_param_map)
+yaf_param_map.clear()
+yaf_param_map.set_string("type", "photonmapping")
+yaf_surface_integrator = libyafaray4_bindings.SurfaceIntegrator(yaf_logger, "SurfaceIntegrator1", yaf_param_map)
+yaf_param_map.clear()
+yaf_film = libyafaray4_bindings.Film(yaf_logger, yaf_surface_integrator, "Film1", yaf_param_map)
 
 class RenderEngine(bpy.types.RenderEngine):
     # These members are used by blender to set up the
