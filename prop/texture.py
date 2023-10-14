@@ -15,24 +15,24 @@ def update_preview(self, context):
     context.space_data.context = context.space_data.context  # To force redrawing the preview panel
 
 
+def get_texture_from_context(context):
+    if context.scene.yafaray4.texture_edition_panel == 'MATERIAL':
+        material_properties = context.active_object.active_material.yafaray4
+        return material_properties.texture_slots[material_properties.active_texture_index].texture
+    elif context.scene.yafaray4.texture_edition_panel == 'WORLD':
+        return context.scene.world.background_texture
+    elif context.scene.yafaray4.texture_edition_panel == 'TEXTURE':
+        return context.scene.yafaray4.texture_properties_edition.texture_selected
+    else:
+        return None
+
+
 # try to update Blender property texture.type to YafaRay's texture.yaf_tex_type
 # noinspection PyUnusedLocal,PyBroadException
 def call_tex_type_update(self, context):
-    try:
-        if not hasattr(context.space_data, "texture_context"):
-            tex = context.scene.active_texture
-        elif context.space_data.texture_context == 'MATERIAL':
-            tex = context.active_object.active_material.active_texture
-        elif context.space_data.texture_context == 'WORLD':
-            tex = context.scene.world.active_texture
-        elif context.space_data.texture_context == 'OTHER':
-            tex = context.scene.active_texture
-        else:
-            tex = None
-        if tex is not None:
-            tex.type = tex.yaf_tex_type
-    except Exception:
-        pass
+    tex = get_texture_from_context(context)
+    if tex is not None:
+        tex.type = tex.yaf_tex_type
 
 
 def register():

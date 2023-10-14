@@ -80,6 +80,7 @@ class Context(TextureButtons, Panel):
         row.operator("yafaray4.select_texture_edition_panel_texture", text="", text_ctxt="", translate=True,
                      icon='TEXTURE', emboss=context.scene.yafaray4.texture_edition_panel == 'TEXTURE', icon_value=0)
         row = layout.row()
+        tex = None
         if context.scene.yafaray4.texture_edition_panel == 'MATERIAL':
             material = context.active_object.active_material
             if hasattr(material.yafaray4, "texture_slots"):
@@ -90,9 +91,14 @@ class Context(TextureButtons, Panel):
                 col = row.column(align=True)
                 col.operator("texture.slot_move", text="", icon='TRIA_UP').type = 'UP'
                 col.operator("texture.slot_move", text="", icon='TRIA_DOWN').type = 'DOWN'
+            row = layout.row()
+            material_properties = context.active_object.active_material.yafaray4
+            row.template_ID(material_properties.texture_slots[material_properties.active_texture_index], "texture", new="texture.new")
+            tex = material_properties.texture_slots[material_properties.active_texture_index].texture
 
         elif context.scene.yafaray4.texture_edition_panel == 'WORLD':
             layout.template_ID(context.scene.world, "background_texture", new="texture.new")
+            tex = context.scene.world.background_texture
 
         elif context.scene.yafaray4.texture_edition_panel == 'TEXTURE':
             texture_properties_edition = context.scene.yafaray4.texture_properties_edition
@@ -105,10 +111,12 @@ class Context(TextureButtons, Panel):
             col.label(text="Texture to edit:")
             col = split.column()
             col.template_ID(texture_properties_edition, "texture_selected", new="texture.new")
+            tex = texture_properties_edition.texture_selected
+
+        if tex is not None:
             split = ui_split(layout, 0.2)
             split.label(text="Type:")
-            if texture_properties_edition.texture_selected is not None:
-                split.prop(texture_properties_edition.texture_selected, "yaf_tex_type", text="")
+            split.prop(tex, "yaf_tex_type", text="")
 
 
 class Preview(TextureButtons, Panel):

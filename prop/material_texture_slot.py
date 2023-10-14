@@ -19,12 +19,19 @@ from ..util.properties_annotations import replace_properties_with_annotations
 #   PovRay Blender Add-On
 #   Blender 2.79b source code, especially "rna_texture.c" and "rna_material.c"
 
+
+# noinspection PyUnusedLocal
+def update_preview(self, context):
+    context.space_data.context = context.space_data.context  # To force redrawing the preview panel
+
+
 # noinspection PyTypeChecker
 @replace_properties_with_annotations
 class YafaRay4MaterialTextureSlot(bpy.types.PropertyGroup):
 
     texture = PointerProperty(
-        name="Texture", description="Texture data-block used by this texture slot", type=bpy.types.Texture
+        name="Texture", description="Texture data-block used by this texture slot", type=bpy.types.Texture,
+        update=update_preview
     )
 
     # Start, from rna_material.c
