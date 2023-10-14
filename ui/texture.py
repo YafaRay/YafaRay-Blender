@@ -84,8 +84,8 @@ class Context(TextureButtons, Panel):
         if context.scene.yafaray4.texture_edition_panel == 'MATERIAL':
             material = context.active_object.active_material
             if hasattr(material.yafaray4, "texture_slots"):
-                row.prop(context.scene.yafaray4, "migrated_to_v4")
-                row = layout.row()
+                # row.prop(context.scene.yafaray4, "migrated_to_v4")
+                # row = layout.row()
                 row.template_list("OBJECT_UL_List", "test_coll", material.yafaray4, "texture_slots", material.yafaray4,
                                   "active_texture_index")
                 col = row.column(align=True)

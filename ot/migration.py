@@ -7,20 +7,21 @@ from .. import bl_info
 
 
 def copy_attributes(source, destination, mapping):
-    print("Copying attributes from", source, "to", destination)
-    attributes = [a for a in dir(source) if not a.startswith("__")]
-    for attr in attributes:
-        if attr in mapping:
-            if mapping[attr] is None:
-                continue
+    if source is not None:
+        print("Copying attributes from", source, "to", destination)
+        attributes = [a for a in dir(source) if not a.startswith("__")]
+        for attr in attributes:
+            if attr in mapping:
+                if mapping[attr] is None:
+                    continue
+                else:
+                    attr_v4 = mapping[attr]
             else:
-                attr_v4 = mapping[attr]
-        else:
-            attr_v4 = attr
-        if hasattr(source, attr):
-            attr_value = getattr(source, attr)
-            print("  Copying attribute:", attr, "with value:", attr_value, "to attribute v4:", attr_v4)
-            setattr(destination, attr_v4, attr_value)
+                attr_v4 = attr
+            if hasattr(source, attr):
+                attr_value = getattr(source, attr)
+                print("  Copying attribute:", attr, "with value:", attr_value, "to attribute v4:", attr_v4)
+                setattr(destination, attr_v4, attr_value)
 
 
 @persistent
@@ -202,7 +203,7 @@ def migration(_dummy):
         mapping.update(mapping_base)
 
         # convert old world texture slot to dedicated YafaRay world texture parameter
-        scene.world.texture = scene.world.active_texture
+        scene.world.background_texture = scene.world.active_texture
 
         # convert old material texture slots to dedicated YafaRay material texture slots parameters
         for material in bpy.data.materials:

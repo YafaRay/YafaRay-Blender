@@ -22,7 +22,8 @@ from ..util.properties_annotations import replace_properties_with_annotations
 
 # noinspection PyUnusedLocal
 def update_preview(self, context):
-    context.space_data.context = context.space_data.context  # To force redrawing the preview panel
+    if context is not None and context.space_data is not None:
+        context.space_data.context = context.space_data.context  # To force redrawing the preview panel
 
 
 # noinspection PyTypeChecker

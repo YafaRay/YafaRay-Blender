@@ -7,7 +7,6 @@ from bpy.props import (FloatProperty,
                        EnumProperty,
                        FloatVectorProperty,
                        StringProperty,
-                       CollectionProperty,
                        PointerProperty,
                        BoolVectorProperty,)
 from ..util.properties_annotations import replace_properties_with_annotations
@@ -18,7 +17,8 @@ Material = bpy.types.Material
 
 # noinspection PyUnusedLocal
 def update_preview(self, context):
-    context.space_data.context = context.space_data.context  # To force redrawing the preview panel
+    if context is not None and context.space_data is not None:
+        context.space_data.context = context.space_data.context  # To force redrawing the preview panel
 
 
 @replace_properties_with_annotations
@@ -54,11 +54,6 @@ def items_mat2(self, context):
     for mat in [m for m in bpy.data.materials if m.name not in self.name]:
         a.append((mat.name, mat.name, "Second blend material"))
     return a
-
-
-# noinspection PyUnusedLocal
-def update_preview(self, context):
-    context.space_data.context = context.space_data.context  # To force redrawing the preview panel
 
 
 def register():
