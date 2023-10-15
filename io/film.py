@@ -7,12 +7,12 @@ from ..util.math import multiply_matrix4x4_vector4
 
 
 class Film:
-    def __init__(self, yaf_film, yaf_logger, is_preview):
-        self.yaf_film = yaf_film
-        self.yaf_logger = yaf_logger
+    def __init__(self, film_yafaray, logger, is_preview):
+        self.film_yafaray = film_yafaray
+        self.logger = logger
         self.is_preview = is_preview
 
-    def define_camera(self, bl_camera, res_x, res_y, res_percentage, use_view_to_render, view_matrix):
+    def define_camera(self, camera, res_x, res_y, res_percentage, use_view_to_render, view_matrix):
         if use_view_to_render and view_matrix:
             # use the view matrix to calculate the inverted transformed
             # points cam pos (0,0,0), front (0,0,1) and up (0,1,0)
@@ -30,7 +30,7 @@ class Film:
 
         else:
             # get cam worldspace transformation matrix, e.g. if cam is parented matrix_local does not work
-            matrix = bl_camera.matrix_world.copy()
+            matrix = camera.matrix_world.copy()
             # matrix indexing (row, colums) changed in Blender rev.42816, for explanation see also:
             # http://wiki.blender.org/index.php/User:TrumanBlending/Matrix_Indexing
             pos = matrix.col[3]
@@ -42,72 +42,72 @@ class Film:
         x = int(res_x * res_percentage * 0.01)
         y = int(res_y * res_percentage * 0.01)
 
-        yaf_param_map = libyafaray4_bindings.ParamMap()
+        param_map = libyafaray4_bindings.ParamMap()
 
         if use_view_to_render:
-            yaf_param_map.set_string("type", "perspective")
-            yaf_param_map.set_float("focal", 0.7)
+            param_map.set_string("type", "perspective")
+            param_map.set_float("focal", 0.7)
 
         else:
-            cam_type = bl_camera.camera_type
+            cam_type = camera.camera_type
 
-            yaf_param_map.set_string("type", cam_type)
+            param_map.set_string("type", cam_type)
 
-            if bl_camera.use_clipping:
-                yaf_param_map.set_float("nearClip", bl_camera.clip_start)
-                yaf_param_map.set_float("farClip", bl_camera.clip_end)
+            if camera.use_clipping:
+                param_map.set_float("nearClip", camera.clip_start)
+                param_map.set_float("farClip", camera.clip_end)
 
             if cam_type == "orthographic":
-                yaf_param_map.set_float("scale", bl_camera.ortho_scale)
+                param_map.set_float("scale", camera.ortho_scale)
 
             elif cam_type in {"perspective", "architect"}:
                 # Blenders GSOC 2011 project "tomato branch" merged into trunk.
                 # Check for sensor settings and use them in yafaray exporter also.
-                if bl_camera.sensor_fit == 'AUTO':
+                if camera.sensor_fit == 'AUTO':
                     horizontal_fit = (x > y)
-                    sensor_size = bl_camera.sensor_width
-                elif bl_camera.sensor_fit == 'HORIZONTAL':
+                    sensor_size = camera.sensor_width
+                elif camera.sensor_fit == 'HORIZONTAL':
                     horizontal_fit = True
-                    sensor_size = bl_camera.sensor_width
+                    sensor_size = camera.sensor_width
                 else:
                     horizontal_fit = False
-                    sensor_size = bl_camera.sensor_height
+                    sensor_size = camera.sensor_height
 
                 if horizontal_fit:
                     f_aspect = 1.0
                 else:
                     f_aspect = x / y
 
-                yaf_param_map.set_float("focal", bl_camera.lens / (f_aspect * sensor_size))
+                param_map.set_float("focal", camera.lens / (f_aspect * sensor_size))
 
                 # DOF params, only valid for real camera
                 # use DOF object distance if present or fixed DOF
                 if bpy.app.version >= (2, 80, 0):
                     pass  # FIXME BLENDER >= v2.80
                 else:
-                    if bl_camera.dof_object is not None:
+                    if camera.dof_object is not None:
                         # use DOF object distance
-                        dist = (pos.xyz - bl_camera.dof_object.location.xyz).length
+                        dist = (pos.xyz - camera.dof_object.location.xyz).length
                         dof_distance = dist
                     else:
                         # use fixed DOF distance
-                        dof_distance = bl_camera.dof_distance
-                    yaf_param_map.set_float("dof_distance", dof_distance)
+                        dof_distance = camera.dof_distance
+                    param_map.set_float("dof_distance", dof_distance)
 
-                yaf_param_map.set_float("aperture", bl_camera.aperture)
+                param_map.set_float("aperture", camera.aperture)
                 # bokeh params
-                yaf_param_map.set_string("bokeh_type", bl_camera.bokeh_type)
-                yaf_param_map.set_float("bokeh_rotation", bl_camera.bokeh_rotation)
+                param_map.set_string("bokeh_type", camera.bokeh_type)
+                param_map.set_float("bokeh_rotation", camera.bokeh_rotation)
 
             elif cam_type == "angular":
-                yaf_param_map.set_bool("circular", bl_camera.circular)
-                yaf_param_map.set_bool("mirrored", bl_camera.mirrored)
-                yaf_param_map.set_string("projection", bl_camera.angular_projection)
-                yaf_param_map.set_float("max_angle", bl_camera.max_angle)
-                yaf_param_map.set_float("angle", bl_camera.angular_angle)
+                param_map.set_bool("circular", camera.circular)
+                param_map.set_bool("mirrored", camera.mirrored)
+                param_map.set_string("projection", camera.angular_projection)
+                param_map.set_float("max_angle", camera.max_angle)
+                param_map.set_float("angle", camera.angular_angle)
 
-        yaf_param_map.set_int("resx", x)
-        yaf_param_map.set_int("resy", y)
+        param_map.set_int("resx", x)
+        param_map.set_int("resy", y)
 
         if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable:
 
@@ -122,10 +122,10 @@ class Film:
                 up = (0,0,1)
                 to = (0,0,0)
 
-        yaf_param_map.set_vector("from", pos[0], pos[1], pos[2])
-        yaf_param_map.set_vector("up", up[0], up[1], up[2])
-        yaf_param_map.set_vector("to", to[0], to[1], to[2])
-        self.yaf_film.defineCamera(yaf_param_map)
+        param_map.set_vector("from", pos[0], pos[1], pos[2])
+        param_map.set_vector("up", up[0], up[1], up[2])
+        param_map.set_vector("to", to[0], to[1], to[2])
+        self.film_yafaray.defineCamera(param_map)
 
 
 
@@ -135,8 +135,8 @@ def computeSceneSize(render):
     return [sizeX, sizeY]
 
 
-def get_render_coords(bl_scene):
-    render = bl_scene.render
+def get_render_coords(scene_blender):
+    render = scene_blender.render
     [sizeX, sizeY] = computeSceneSize(render)
 
     bStartX = 0
@@ -146,8 +146,8 @@ def get_render_coords(bl_scene):
 
     cam_data = None
 
-    if bl_scene.objects:
-        for item in bl_scene.objects:
+    if scene_blender.objects:
+        for item in scene_blender.objects:
             if item.type == 'CAMERA':
                 cam_data = item.data
                 break
@@ -182,137 +182,137 @@ def get_render_coords(bl_scene):
     return [sizeX, sizeY, bStartX, bStartY, bsizeX, bsizeY, cam_data]
 
 
-def exportAA(yi, bl_scene, yaf_param_map):
-    yaf_param_map.set_int("AA_passes", bl_scene.AA_passes)
-    yaf_param_map.set_int("AA_minsamples", bl_scene.AA_min_samples)
-    yaf_param_map.set_int("AA_inc_samples", bl_scene.AA_inc_samples)
-    yaf_param_map.set_float("AA_pixelwidth", bl_scene.AA_pixelwidth)
-    yaf_param_map.set_float("AA_threshold", bl_scene.AA_threshold)
-    yaf_param_map.set_string("filter_type", bl_scene.AA_filter_type)
-    yaf_param_map.set_float("AA_resampled_floor", bl_scene.yafaray4.noise_control.resampled_floor)
-    yaf_param_map.set_float("AA_sample_multiplier_factor", bl_scene.yafaray4.noise_control.sample_multiplier_factor)
-    yaf_param_map.set_float("AA_light_sample_multiplier_factor", bl_scene.yafaray4.noise_control.light_sample_multiplier_factor)
-    yaf_param_map.set_float("AA_indirect_sample_multiplier_factor", bl_scene.yafaray4.noise_control.indirect_sample_multiplier_factor)
-    yaf_param_map.set_bool("AA_detect_color_noise", bl_scene.yafaray4.noise_control.detect_color_noise)
-    yaf_param_map.set_string("AA_dark_detection_type", bl_scene.yafaray4.noise_control.dark_detection_type)
-    yaf_param_map.set_float("AA_dark_threshold_factor", bl_scene.yafaray4.noise_control.dark_threshold_factor)
-    yaf_param_map.set_int("AA_variance_edge_size", bl_scene.yafaray4.noise_control.variance_edge_size)
-    yaf_param_map.set_int("AA_variance_pixels", bl_scene.yafaray4.noise_control.variance_pixels)
-    yaf_param_map.set_float("AA_clamp_samples", bl_scene.yafaray4.noise_control.clamp_samples)
-    yaf_param_map.set_float("AA_clamp_indirect", bl_scene.yafaray4.noise_control.clamp_indirect)
-    yaf_param_map.set_bool("background_resampling", bl_scene.yafaray4.noise_control.background_resampling)
+def exportAA(yi, scene_blender, param_map):
+    param_map.set_int("AA_passes", scene_blender.AA_passes)
+    param_map.set_int("AA_minsamples", scene_blender.AA_min_samples)
+    param_map.set_int("AA_inc_samples", scene_blender.AA_inc_samples)
+    param_map.set_float("AA_pixelwidth", scene_blender.AA_pixelwidth)
+    param_map.set_float("AA_threshold", scene_blender.AA_threshold)
+    param_map.set_string("filter_type", scene_blender.AA_filter_type)
+    param_map.set_float("AA_resampled_floor", scene_blender.yafaray4.noise_control.resampled_floor)
+    param_map.set_float("AA_sample_multiplier_factor", scene_blender.yafaray4.noise_control.sample_multiplier_factor)
+    param_map.set_float("AA_light_sample_multiplier_factor", scene_blender.yafaray4.noise_control.light_sample_multiplier_factor)
+    param_map.set_float("AA_indirect_sample_multiplier_factor", scene_blender.yafaray4.noise_control.indirect_sample_multiplier_factor)
+    param_map.set_bool("AA_detect_color_noise", scene_blender.yafaray4.noise_control.detect_color_noise)
+    param_map.set_string("AA_dark_detection_type", scene_blender.yafaray4.noise_control.dark_detection_type)
+    param_map.set_float("AA_dark_threshold_factor", scene_blender.yafaray4.noise_control.dark_threshold_factor)
+    param_map.set_int("AA_variance_edge_size", scene_blender.yafaray4.noise_control.variance_edge_size)
+    param_map.set_int("AA_variance_pixels", scene_blender.yafaray4.noise_control.variance_pixels)
+    param_map.set_float("AA_clamp_samples", scene_blender.yafaray4.noise_control.clamp_samples)
+    param_map.set_float("AA_clamp_indirect", scene_blender.yafaray4.noise_control.clamp_indirect)
+    param_map.set_bool("background_resampling", scene_blender.yafaray4.noise_control.background_resampling)
 
-    if bl_scene.name == "preview" and bpy.data.scenes[0].yafaray.preview.enable:
-        yaf_param_map.set_int("AA_passes", bpy.data.scenes[0].yafaray.preview.preview_aa_passes)
-        yaf_param_map.set_float("AA_threshold", 0.01)
+    if scene_blender.name == "preview" and bpy.data.scenes[0].yafaray.preview.enable:
+        param_map.set_int("AA_passes", bpy.data.scenes[0].yafaray.preview.preview_aa_passes)
+        param_map.set_float("AA_threshold", 0.01)
 
 
 def exportRenderSettings(yi, depsgraph, render_path, render_filename):
-    self.yaf_logger.printVerbose("Exporting Render Settings")
+    self.logger.printVerbose("Exporting Render Settings")
     scene = scene_from_depsgraph(depsgraph)
     render = scene.render
 
     [sizeX, sizeY, bStartX, bStartY, bsizeX, bsizeY, cam_data] = get_render_coords(scene)
 
-    yaf_param_map.set_string("scene_accelerator", scene.gs_accelerator)
+    param_map.set_string("scene_accelerator", scene.gs_accelerator)
 
     exportAA(yi, scene)
 
-    yaf_param_map.set_int("xstart", bStartX)
-    yaf_param_map.set_int("ystart", bStartY)
+    param_map.set_int("xstart", bStartX)
+    param_map.set_int("ystart", bStartY)
 
     # no border when rendering to view
     if render.use_border and cam_data:
-        yaf_param_map.set_int("width", bsizeX)
-        yaf_param_map.set_int("height", bsizeY)
+        param_map.set_int("width", bsizeX)
+        param_map.set_int("height", bsizeY)
     else:
-        yaf_param_map.set_int("width", sizeX)
-        yaf_param_map.set_int("height", sizeY)
+        param_map.set_int("width", sizeX)
+        param_map.set_int("height", sizeY)
 
-    yaf_param_map.set_bool("show_sam_pix", scene.gs_show_sam_pix)
+    param_map.set_bool("show_sam_pix", scene.gs_show_sam_pix)
 
     if scene.name == "preview" and bpy.data.scenes[0].yafaray.preview.enable:
-        yaf_param_map.set_bool("show_sam_pix", False)
+        param_map.set_bool("show_sam_pix", False)
 
-    yaf_param_map.set_int("tile_size", scene.gs_tile_size)
-    yaf_param_map.set_string("tiles_order", scene.gs_tile_order)
+    param_map.set_int("tile_size", scene.gs_tile_size)
+    param_map.set_string("tiles_order", scene.gs_tile_order)
 
     if scene.gs_auto_threads:
-        yaf_param_map.set_int("threads", -1)
-        yaf_param_map.set_int("threads_photons", -1)
+        param_map.set_int("threads", -1)
+        param_map.set_int("threads_photons", -1)
     else:
-        yaf_param_map.set_int("threads", scene.gs_threads)
-        yaf_param_map.set_int("threads_photons", scene.gs_threads)
+        param_map.set_int("threads", scene.gs_threads)
+        param_map.set_int("threads_photons", scene.gs_threads)
 
-    yaf_param_map.set_string("images_autosave_interval_type", scene.gs_images_autosave_interval_type)
-    yaf_param_map.set_int("images_autosave_interval_passes", scene.gs_images_autosave_interval_passes)
-    yaf_param_map.set_float("images_autosave_interval_seconds", scene.gs_images_autosave_interval_seconds)
+    param_map.set_string("images_autosave_interval_type", scene.gs_images_autosave_interval_type)
+    param_map.set_int("images_autosave_interval_passes", scene.gs_images_autosave_interval_passes)
+    param_map.set_float("images_autosave_interval_seconds", scene.gs_images_autosave_interval_seconds)
 
-    yaf_param_map.set_string("film_load_save_mode", scene.gs_film_save_load)
-    yaf_param_map.set_string("film_load_save_path", render_path + "/" + render_filename)
-    yaf_param_map.set_string("film_autosave_interval_type", scene.gs_film_autosave_interval_type)
-    yaf_param_map.set_int("film_autosave_interval_passes", scene.gs_film_autosave_interval_passes)
-    yaf_param_map.set_float("film_autosave_interval_seconds", scene.gs_film_autosave_interval_seconds)
+    param_map.set_string("film_load_save_mode", scene.gs_film_save_load)
+    param_map.set_string("film_load_save_path", render_path + "/" + render_filename)
+    param_map.set_string("film_autosave_interval_type", scene.gs_film_autosave_interval_type)
+    param_map.set_int("film_autosave_interval_passes", scene.gs_film_autosave_interval_passes)
+    param_map.set_float("film_autosave_interval_seconds", scene.gs_film_autosave_interval_seconds)
 
-    yaf_param_map.set_bool("adv_auto_shadow_bias_enabled", scene.adv_auto_shadow_bias_enabled)
-    yaf_param_map.set_float("adv_shadow_bias_value", scene.adv_shadow_bias_value)
-    yaf_param_map.set_bool("adv_auto_min_raydist_enabled", scene.adv_auto_min_raydist_enabled)
-    yaf_param_map.set_float("adv_min_raydist_value", scene.adv_min_raydist_value)
-    yaf_param_map.set_float("adv_min_raydist_value", scene.adv_min_raydist_value)
-    yaf_param_map.set_int("adv_base_sampling_offset", scene.adv_base_sampling_offset)
+    param_map.set_bool("adv_auto_shadow_bias_enabled", scene.adv_auto_shadow_bias_enabled)
+    param_map.set_float("adv_shadow_bias_value", scene.adv_shadow_bias_value)
+    param_map.set_bool("adv_auto_min_raydist_enabled", scene.adv_auto_min_raydist_enabled)
+    param_map.set_float("adv_min_raydist_value", scene.adv_min_raydist_value)
+    param_map.set_float("adv_min_raydist_value", scene.adv_min_raydist_value)
+    param_map.set_int("adv_base_sampling_offset", scene.adv_base_sampling_offset)
     if bpy.app.version >= (2, 80, 0):
         pass   # FIXME BLENDER >= v2.80
     else:
-        yaf_param_map.set_int("adv_computer_node", bpy.context.user_preferences.addons["yafaray4"].preferences.yafaray_computer_node)
+        param_map.set_int("adv_computer_node", bpy.context.user_preferences.addons["yafaray4"].preferences.yafaray_computer_node)
 
-    yaf_param_map.set_int("layer_mask_obj_index", scene.yafaray4.passes.pass_mask_obj_index)
-    yaf_param_map.set_int("layer_mask_mat_index", scene.yafaray4.passes.pass_mask_mat_index)
-    yaf_param_map.set_bool("layer_mask_invert", scene.yafaray4.passes.pass_mask_invert)
-    yaf_param_map.set_bool("layer_mask_only", scene.yafaray4.passes.pass_mask_only)
+    param_map.set_int("layer_mask_obj_index", scene.yafaray4.passes.pass_mask_obj_index)
+    param_map.set_int("layer_mask_mat_index", scene.yafaray4.passes.pass_mask_mat_index)
+    param_map.set_bool("layer_mask_invert", scene.yafaray4.passes.pass_mask_invert)
+    param_map.set_bool("layer_mask_only", scene.yafaray4.passes.pass_mask_only)
 
-    yaf_param_map.set_int("layer_object_edge_thickness", scene.yafaray4.passes.object_edge_thickness)
-    yaf_param_map.set_int("layer_faces_edge_thickness", scene.yafaray4.passes.faces_edge_thickness)
-    yaf_param_map.set_float("layer_object_edge_threshold", scene.yafaray4.passes.object_edge_threshold)
-    yaf_param_map.set_float("layer_faces_edge_threshold", scene.yafaray4.passes.faces_edge_threshold)
-    yaf_param_map.set_float("layer_object_edge_smoothness", scene.yafaray4.passes.object_edge_smoothness)
-    yaf_param_map.set_float("layer_faces_edge_smoothness", scene.yafaray4.passes.faces_edge_smoothness)
-    yaf_param_map.set_color("layer_toon_edge_color", scene.yafaray4.passes.toon_edge_color[0],
+    param_map.set_int("layer_object_edge_thickness", scene.yafaray4.passes.object_edge_thickness)
+    param_map.set_int("layer_faces_edge_thickness", scene.yafaray4.passes.faces_edge_thickness)
+    param_map.set_float("layer_object_edge_threshold", scene.yafaray4.passes.object_edge_threshold)
+    param_map.set_float("layer_faces_edge_threshold", scene.yafaray4.passes.faces_edge_threshold)
+    param_map.set_float("layer_object_edge_smoothness", scene.yafaray4.passes.object_edge_smoothness)
+    param_map.set_float("layer_faces_edge_smoothness", scene.yafaray4.passes.faces_edge_smoothness)
+    param_map.set_color("layer_toon_edge_color", scene.yafaray4.passes.toon_edge_color[0],
                             scene.yafaray4.passes.toon_edge_color[1], scene.yafaray4.passes.toon_edge_color[2])
-    yaf_param_map.set_float("layer_toon_pre_smooth", scene.yafaray4.passes.toon_pre_smooth)
-    yaf_param_map.set_float("layer_toon_post_smooth", scene.yafaray4.passes.toon_post_smooth)
-    yaf_param_map.set_float("layer_toon_quantization", scene.yafaray4.passes.toon_quantization)
+    param_map.set_float("layer_toon_pre_smooth", scene.yafaray4.passes.toon_pre_smooth)
+    param_map.set_float("layer_toon_post_smooth", scene.yafaray4.passes.toon_post_smooth)
+    param_map.set_float("layer_toon_quantization", scene.yafaray4.passes.toon_quantization)
 
 
 def setLoggingAndBadgeSettings(yi, scene):
-    self.yaf_logger.printVerbose("Exporting Logging and Badge settings")
-    yaf_param_map.set_bool("badge_draw_render_settings", scene.yafaray4.logging.draw_render_settings)
-    yaf_param_map.set_bool("badge_draw_aa_noise_settings", scene.yafaray4.logging.draw_aa_noise_settings)
-    yaf_param_map.set_bool("logging_save_txt", scene.yafaray4.logging.save_log)
-    yaf_param_map.set_bool("logging_save_html", scene.yafaray4.logging.save_html)
-    yaf_param_map.set_string("badge_position", scene.yafaray4.logging.params_badge_position)
-    yaf_param_map.set_string("badge_title", scene.yafaray4.logging.title)
-    yaf_param_map.set_string("badge_author", scene.yafaray4.logging.author)
-    yaf_param_map.set_string("badge_contact", scene.yafaray4.logging.contact)
-    yaf_param_map.set_string("badge_comment", scene.yafaray4.logging.comments)
+    self.logger.printVerbose("Exporting Logging and Badge settings")
+    param_map.set_bool("badge_draw_render_settings", scene.yafaray4.logging.draw_render_settings)
+    param_map.set_bool("badge_draw_aa_noise_settings", scene.yafaray4.logging.draw_aa_noise_settings)
+    param_map.set_bool("logging_save_txt", scene.yafaray4.logging.save_log)
+    param_map.set_bool("logging_save_html", scene.yafaray4.logging.save_html)
+    param_map.set_string("badge_position", scene.yafaray4.logging.params_badge_position)
+    param_map.set_string("badge_title", scene.yafaray4.logging.title)
+    param_map.set_string("badge_author", scene.yafaray4.logging.author)
+    param_map.set_string("badge_contact", scene.yafaray4.logging.contact)
+    param_map.set_string("badge_comment", scene.yafaray4.logging.comments)
     if scene.yafaray4.logging.custom_icon != "":
-        yaf_param_map.set_string("badge_icon_path", os.path.abspath(bpy.path.abspath(scene.yafaray4.logging.custom_icon)))
-    yaf_param_map.set_string("badge_font_path", scene.yafaray4.logging.custom_font)
-    yaf_param_map.set_float("badge_font_size_factor", scene.yafaray4.logging.font_scale)
+        param_map.set_string("badge_icon_path", os.path.abspath(bpy.path.abspath(scene.yafaray4.logging.custom_icon)))
+    param_map.set_string("badge_font_path", scene.yafaray4.logging.custom_font)
+    param_map.set_float("badge_font_size_factor", scene.yafaray4.logging.font_scale)
 
 
-def calc_alpha_premultiply(bl_scene):
+def calc_alpha_premultiply(scene_blender):
     alpha_premult = namedtuple("alpha_premult", ["blender", "secondary_output"])
-    if bl_scene.gs_premult == "auto":
-        if bl_scene.img_output == "PNG" or bl_scene.img_output == "JPEG":
+    if scene_blender.gs_premult == "auto":
+        if scene_blender.img_output == "PNG" or scene_blender.img_output == "JPEG":
             enable_premult = False
         else:
             enable_premult = True
-    elif bl_scene.gs_premult == "yes":
+    elif scene_blender.gs_premult == "yes":
         enable_premult = True
     else:
         enable_premult = False
 
-    if bl_scene.gs_type_render == "into_blender":
+    if scene_blender.gs_type_render == "into_blender":
         # We force alpha premultiply when rendering into Blender as it expects premultiplied input
         # In case we use a secondary file output, we set the premultiply according to the Blender setting
         return alpha_premult(True, enable_premult)
@@ -321,46 +321,46 @@ def calc_alpha_premultiply(bl_scene):
         return alpha_premult(enable_premult, False)
 
 
-def calc_gamma(bl_scene):
+def calc_gamma(scene_blender):
     gamma = namedtuple("gamma", ["blender", "secondary_output"])
     gamma_1 = 1.0
     gamma_2 = 1.0
-    if bl_scene.gs_type_render == "into_blender" and bl_scene.display_settings.display_device == "None":
-        gamma_1 = bl_scene.gs_gamma  # We only use the selected gamma if the output device is set to "None"
-        if bl_scene.display_settings.display_device == "None":
-            gamma_2 = bl_scene.gs_gamma  #We only use the selected gamma if the output device is set to "None"
-    elif bl_scene.display_settings.display_device == "None":
-        gamma_1 = bl_scene.gs_gamma  # We only use the selected gamma if the output device is set to "None"
+    if scene_blender.gs_type_render == "into_blender" and scene_blender.display_settings.display_device == "None":
+        gamma_1 = scene_blender.gs_gamma  # We only use the selected gamma if the output device is set to "None"
+        if scene_blender.display_settings.display_device == "None":
+            gamma_2 = scene_blender.gs_gamma  #We only use the selected gamma if the output device is set to "None"
+    elif scene_blender.display_settings.display_device == "None":
+        gamma_1 = scene_blender.gs_gamma  # We only use the selected gamma if the output device is set to "None"
 
     return gamma(gamma_1, gamma_2)
 
 
-def calc_color_space(bl_scene):
+def calc_color_space(scene_blender):
     color_space = namedtuple("color_space", ["blender", "secondary_output"])
     color_space_2 = "sRGB"
 
-    if bl_scene.gs_type_render == "into_blender":
-        if bl_scene.display_settings.display_device == "None":
+    if scene_blender.gs_type_render == "into_blender":
+        if scene_blender.display_settings.display_device == "None":
             color_space_1 = "Raw_Manual_Gamma"
         else:
             color_space_1 = "LinearRGB"  #For all other Blender display devices, it expects a linear output from YafaRay
         #Optional Secondary file output color space
-        if bl_scene.img_output == "OPEN_EXR" or bl_scene.img_output == "HDR":  #If the output file is a HDR/EXR file, we force the render output to Linear
+        if scene_blender.img_output == "OPEN_EXR" or scene_blender.img_output == "HDR":  #If the output file is a HDR/EXR file, we force the render output to Linear
             color_space_2 = "LinearRGB"
-        elif bl_scene.display_settings.display_device == "sRGB":
+        elif scene_blender.display_settings.display_device == "sRGB":
             color_space_2 = "sRGB"
-        elif bl_scene.display_settings.display_device == "XYZ":
+        elif scene_blender.display_settings.display_device == "XYZ":
             color_space_2 = "XYZ"
-        elif bl_scene.display_settings.display_device == "None":
+        elif scene_blender.display_settings.display_device == "None":
             color_space_2 = "Raw_Manual_Gamma"
     else:
-        if bl_scene.img_output == "OPEN_EXR" or bl_scene.img_output == "HDR":  # If the output file is a HDR/EXR file, we force the render output to Linear
+        if scene_blender.img_output == "OPEN_EXR" or scene_blender.img_output == "HDR":  # If the output file is a HDR/EXR file, we force the render output to Linear
             color_space_1 = "LinearRGB"
-        elif bl_scene.display_settings.display_device == "sRGB":
+        elif scene_blender.display_settings.display_device == "sRGB":
             color_space_1 = "sRGB"
-        elif bl_scene.display_settings.display_device == "XYZ":
+        elif scene_blender.display_settings.display_device == "XYZ":
             color_space_1 = "XYZ"
-        elif bl_scene.display_settings.display_device == "None":
+        elif scene_blender.display_settings.display_device == "None":
             color_space_1 = "Raw_Manual_Gamma"
         else:
             color_space_1 = "sRGB"
@@ -368,16 +368,16 @@ def calc_color_space(bl_scene):
     return color_space(color_space_1, color_space_2)
 
 def defineLayers(yi, depsgraph):
-    self.yaf_logger.printVerbose("Exporting Render Passes settings")
+    self.logger.printVerbose("Exporting Render Passes settings")
     scene = scene_from_depsgraph(depsgraph)
 
     def defineLayer(layer_type, exported_image_type, exported_image_name):
-        yaf_param_map.set_string("type", layer_type)
-        yaf_param_map.set_string("image_type", exported_image_type)
-        yaf_param_map.set_string("exported_image_name", exported_image_name)
-        yaf_param_map.set_string("exported_image_type", exported_image_type)
+        param_map.set_string("type", layer_type)
+        param_map.set_string("image_type", exported_image_type)
+        param_map.set_string("exported_image_name", exported_image_name)
+        param_map.set_string("exported_image_type", exported_image_type)
         yi.defineLayer()
-        yaf_param_map = libyafaray4_bindings.ParamMap()
+        param_map = libyafaray4_bindings.ParamMap()
 
     defineLayer("combined", "ColorAlpha", "Combined")
 
@@ -486,17 +486,17 @@ def defineLayers(yi, depsgraph):
         }
         filetype = switch_file_type.get(filetype, 'png')
         # write image or XML-File with filename from framenumber
-        frame_numb_str = "{:0" + str(len(str(self.bl_scene.frame_end))) + "d}"
+        frame_numb_str = "{:0" + str(len(str(self.scene_blender.frame_end))) + "d}"
 
         filebasename = ""
-        if self.bl_scene.img_add_blend_name:
+        if self.scene_blender.img_add_blend_name:
             if bpy.data.filepath == "":
                 filebasename += "temp"
             filebasename += os.path.splitext(os.path.basename(bpy.data.filepath))[0] + " - "
 
-        filebasename += frame_numb_str.format(self.bl_scene.frame_current)
+        filebasename += frame_numb_str.format(self.scene_blender.frame_current)
 
-        if self.bl_scene.img_add_datetime:
+        if self.scene_blender.img_add_datetime:
             filebasename += " (" + datetime.datetime.now().strftime("%Y-%m-%dT%H%M%S") + ")"
 
         output = os.path.join(output_path, filebasename)
@@ -513,27 +513,27 @@ def defineLayers(yi, depsgraph):
 
         return outputFile, output, filetype
 
-    def define_image_output(self, output_name, fp, bl_scene, bl_render, color_space, gamma, alpha_premultiply):
-        self.output_file, self.output, self.file_type = self.decide_output_file_name(fp, bl_scene.img_output)
-        yaf_param_map = libyafaray4_bindings.ParamMap()
-        yaf_param_map.set_string("image_path", str(self.output_file))
-        yaf_param_map.set_string("color_space", color_space)
-        yaf_param_map.set_float("gamma", gamma)
-        yaf_param_map.set_bool("alpha_premultiply", alpha_premultiply)
-        yaf_param_map.set_bool("multi_layer", bl_scene.img_multilayer)
-        yaf_param_map.set_bool("denoise_enabled", bl_scene.img_denoise)
-        yaf_param_map.set_int("denoise_h_lum", bl_scene.img_denoiseHLum)
-        yaf_param_map.set_int("denoise_h_col", bl_scene.img_denoiseHCol)
-        yaf_param_map.set_float("denoise_mix", bl_scene.img_denoiseMix)
+    def define_image_output(self, output_name, fp, scene_blender, bl_render, color_space, gamma, alpha_premultiply):
+        self.output_file, self.output, self.file_type = self.decide_output_file_name(fp, scene_blender.img_output)
+        param_map = libyafaray4_bindings.ParamMap()
+        param_map.set_string("image_path", str(self.output_file))
+        param_map.set_string("color_space", color_space)
+        param_map.set_float("gamma", gamma)
+        param_map.set_bool("alpha_premultiply", alpha_premultiply)
+        param_map.set_bool("multi_layer", scene_blender.img_multilayer)
+        param_map.set_bool("denoise_enabled", scene_blender.img_denoise)
+        param_map.set_int("denoise_h_lum", scene_blender.img_denoiseHLum)
+        param_map.set_int("denoise_h_col", scene_blender.img_denoiseHCol)
+        param_map.set_float("denoise_mix", scene_blender.img_denoiseMix)
         print(bl_render.image_settings.color_mode)
-        yaf_param_map.set_bool("alpha_channel", bl_render.image_settings.color_mode == "RGBA")
-        # self.yaf_film.setLoggingAndBadgeSettings(self.yaf_scene, self.scene)
-        self.co = self.film.yaf_film.createOutput(output_name, yaf_param_map)
+        param_map.set_bool("alpha_channel", bl_render.image_settings.color_mode == "RGBA")
+        # self.film_yafaray.setLoggingAndBadgeSettings(self.scene_yafaray, self.scene)
+        self.co = self.film.film_yafaray.createOutput(output_name, param_map)
 
 
         def update_blender_result(x, y, w, h, view_name, tiles, callback_name):
             # print(x, y, w, h, view_name, tiles, callback_name, scene.render.use_multiview)
-            if self.bl_scene.render.use_multiview:
+            if self.scene_blender.render.use_multiview:
                 blender_result_buffers = self.begin_result(x, y, w, h, "", view_name)
             else:
                 blender_result_buffers = self.begin_result(x, y, w, h)
@@ -553,7 +553,7 @@ def defineLayers(yi, depsgraph):
             w = x_1 - x_0
             h = y_1 - y_0
             if view_name == "":  # In case we use Render 3D viewport with Views enabled, it will copy the result to all views
-                for view in self.bl_scene.render.views:
+                for view in self.scene_blender.render.views:
                     update_blender_result(x_0, y_0, w, h, view.name, tiles, "highlightCallback")
             else:  # Normal rendering
                 update_blender_result(x_0, y_0, w, h, view_name, tiles, "highlightCallback")
@@ -565,7 +565,7 @@ def defineLayers(yi, depsgraph):
             w = x_1 - x_0
             h = y_1 - y_0
             if view_name == "":  # In case we use Render 3D viewport with Views enabled, it will copy the result to all views
-                for view in self.bl_scene.render.views:
+                for view in self.scene_blender.render.views:
                     update_blender_result(x_0, y_0, w, h, view.name, tiles, "flushAreaCallback")
             else:  # Normal rendering
                 update_blender_result(x_0, y_0, w, h, view_name, tiles, "flushAreaCallback")
@@ -574,26 +574,26 @@ def defineLayers(yi, depsgraph):
             w, h, tiles = args
             view_name = "test"
             if view_name == "":  # In case we use Render 3D viewport with Views enabled, it will copy the result to all views
-                for view in self.bl_scene.render.views:
+                for view in self.scene_blender.render.views:
                     update_blender_result(0, 0, w, h, view.name, tiles, "flushCallback")
             else:  # Normal rendering
                 update_blender_result(0, 0, w, h, view_name, tiles, "flushCallback")
 
     def render(self):
-        self.film.yaf_film.setFlushAreaCallback(flush_area_callback)
-        self.film.yaf_film.setFlushCallback(flush_callback)
-        self.film.yaf_film.setHighlightAreaCallback(highlight_callback)
+        self.film.film_yafaray.setFlushAreaCallback(flush_area_callback)
+        self.film.film_yafaray.setFlushCallback(flush_callback)
+        self.film.film_yafaray.setHighlightAreaCallback(highlight_callback)
         # Creating RenderControl #
         render_control = libyafaray4_bindings.RenderControl()
         # Creating RenderMonitor #
         render_monitor = libyafaray4_bindings.RenderMonitor(progress_callback)
         render_control.setForNormalStart()
-        scene_modified_flags = self.yaf_scene.checkAndClearModifiedFlags()
-        self.yaf_scene.preprocess(render_control, scene_modified_flags)
-        self.integrator.yaf_integrator.preprocess(render_monitor, render_control, self.yaf_scene)
-        self.integrator.yaf_integrator.render(render_control, render_monitor, self.film.yaf_film)
+        scene_modified_flags = self.scene_yafaray.checkAndClearModifiedFlags()
+        self.scene_yafaray.preprocess(render_control, scene_modified_flags)
+        self.integrator.yaf_integrator.preprocess(render_monitor, render_control, self.scene_yafaray)
+        self.integrator.yaf_integrator.render(render_control, render_monitor, self.film.film_yafaray)
         return  # FIXME!!!
-        t = threading.Thread(target=self.yaf_integrator, args=(self.yaf_scene, progressCallback,))
+        t = threading.Thread(target=self.yaf_integrator, args=(self.scene_yafaray, progressCallback,))
         t.start()
 
         while t.is_alive() and not self.test_break():
@@ -602,5 +602,5 @@ def defineLayers(yi, depsgraph):
         if t.is_alive():
             self.update_stats("",
                               "Aborting, please wait for all pending tasks to complete (progress in console log)...")
-            self.yaf_scene.cancelRendering()
+            self.scene_yafaray.cancelRendering()
             t.join()

@@ -9,17 +9,15 @@ from ..util.io import scene_from_depsgraph
 from .. import global_vars
 
 
-class Object(object):
-    def __init__(self, scene, logger, preview):
-        self.yaf_scene = scene
-        self.yaf_logger = logger
-        self.is_preview = preview
-
-    def setDepsgraph(self, depsgraph):
+class ObjectControl(object):
+    def __init__(self, depsgraph, scene_yafaray, logger, is_preview):
+        self.logger = logger
         self.depsgraph = depsgraph
         self.scene = scene_from_depsgraph(depsgraph)
+        self.scene_yafaray = scene_yafaray
+        self.is_preview = is_preview
 
-    def getBBCorners(self, object):
+    def get_bb_corners(self, object):
         bb = object.bound_box   # look bpy.types.Object if there is any problem
 
         min = [1e10, 1e10, 1e10]
@@ -34,67 +32,67 @@ class Object(object):
 
         return min, max
 
-    def writeObject(self, obj):
+    def write_object(self, obj):
 
         if obj.vol_enable:  # Volume region
-            self.writeVolumeObject(obj)
+            self.write_volume_object(obj)
 
         elif obj.ml_enable:  # Meshlight
-            self.writeMeshLight(obj)
+            self.write_mesh_light(obj)
 
         elif obj.bgp_enable:  # BGPortal Light
-            self.writeBGPortal(obj)
+            self.write_bg_portal(obj)
 
         elif obj.particle_systems:  # Particle Hair system
-            self.writeParticleStrands(obj)
+            self.write_particle_strands(obj)
 
         else:  # The rest of the object types
             matrix = obj.matrix_world.copy()
             if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable:
                 if "checkers" in obj.name and bpy.data.scenes[0].yafaray.preview.preview_background == "checker":
-                        self.writeMesh(obj, matrix)
+                        self.write_mesh(obj, matrix)
                 elif "checkers" not in obj.name:
-                        self.writeMesh(obj, matrix)
+                        self.write_mesh(obj, matrix)
             else:        
-                self.writeMesh(obj, matrix)
+                self.write_mesh(obj, matrix)
 
-    def writeInstanceBase(self, ID, obj):
-        self.yaf_logger.printInfo("Exporting Base Mesh: {0} with ID: {1}".format(obj.name, ID))
+    def write_instance_base(self, ID, obj):
+        self.logger.print_info("Exporting Base Mesh: {0} with ID: {1}".format(obj.name, ID))
         # Create this geometry object as a base object for instances
-        self.writeGeometry(ID, obj, None, obj.pass_index, None, "normal", True)  # We want the vertices in object space
+        self.write_geometry(ID, obj, None, obj.pass_index, None, "normal", True)  # We want the vertices in object space
         return ID
 
-    def writeInstance(self, oID, obj2WorldMatrix, base_obj_name):
-        obj_to_world = obj2WorldMatrix.to_4x4()
+    def write_instance(self, oID, obj_to_world_matrix, base_obj_name):
+        obj_to_world = obj_to_world_matrix.to_4x4()
         # mat4.transpose() --> not needed anymore: matrix indexing changed with Blender rev.42816
         #o2w = self.get4x4Matrix(mat4)
         #self.yi.addInstance(base_obj_name, o2w)
-        instance_id = self.yaf_scene.createInstance()
-        object_id = self.yaf_scene.getObjectId(base_obj_name)
-        self.yaf_logger.printVerbose("Exporting Instance ID={0} of {1} [ID = {2}]".format(instance_id, base_obj_name, object_id))
-        self.yaf_scene.addInstanceObject(instance_id, object_id)
-        self.addInstanceMatrix(instance_id, obj_to_world, 0.0)
+        instance_id = self.scene_yafaray.createInstance()
+        object_id = self.scene_yafaray.getObjectId(base_obj_name)
+        self.logger.printVerbose("Exporting Instance ID={0} of {1} [ID = {2}]".format(instance_id, base_obj_name, object_id))
+        self.scene_yafaray.addInstanceObject(instance_id, object_id)
+        self.add_instance_matrix(instance_id, obj_to_world, 0.0)
         return instance_id
 
-    def addInstanceMatrix(self, instance_id, obj2WorldMatrix, time):
-        self.yaf_logger.printVerbose("Adding matrix to Instance ID={0} at time {1}".format(instance_id, time))
-        #print(obj2WorldMatrix)
-        obj_to_world = obj2WorldMatrix.to_4x4()
-        self.yaf_scene.addInstanceMatrix(instance_id,
-                                         obj_to_world[0][0], obj_to_world[0][1], obj_to_world[0][2], obj_to_world[0][3],
-                                         obj_to_world[1][0], obj_to_world[1][1], obj_to_world[1][2], obj_to_world[1][3],
-                                         obj_to_world[2][0], obj_to_world[2][1], obj_to_world[2][2], obj_to_world[2][3],
-                                         obj_to_world[3][0], obj_to_world[3][1], obj_to_world[3][2], obj_to_world[3][3],
-                                         time)
+    def add_instance_matrix(self, instance_id, obj_to_world_matrix, time):
+        self.logger.printVerbose("Adding matrix to Instance ID={0} at time {1}".format(instance_id, time))
+        #print(obj_to_world_matrix)
+        obj_to_world = obj_to_world_matrix.to_4x4()
+        self.scene_yafaray.add_instance_matrix(instance_id,
+                                               obj_to_world[0][0], obj_to_world[0][1], obj_to_world[0][2], obj_to_world[0][3],
+                                               obj_to_world[1][0], obj_to_world[1][1], obj_to_world[1][2], obj_to_world[1][3],
+                                               obj_to_world[2][0], obj_to_world[2][1], obj_to_world[2][2], obj_to_world[2][3],
+                                               obj_to_world[3][0], obj_to_world[3][1], obj_to_world[3][2], obj_to_world[3][3],
+                                               time)
         del obj_to_world
 
-    def writeMesh(self, obj, matrix, ID=None):
+    def write_mesh(self, obj, matrix, ID=None):
 
         if ID is None:
             # Generate unique object ID
             ID = obj.name
         
-        self.yaf_logger.printInfo("Exporting Mesh: {0}".format(ID))
+        self.logger.print_info("Exporting Mesh: {0}".format(ID))
 
         if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable and "preview" in obj.name:
             ymat = obj.active_material.name
@@ -105,102 +103,102 @@ class Object(object):
                     previewMatrix[0][3]=0
                     previewMatrix[1][3]=0
                     previewMatrix[2][3]=0
-                    self.writeGeometry(ID, customObj, previewMatrix, obj.pass_index, ymat)
+                    self.write_geometry(ID, customObj, previewMatrix, obj.pass_index, ymat)
             else:
                     previewMatrix = obj.matrix_world.copy()
                     previewMatrix[0][3]=0
                     previewMatrix[1][3]=0
                     previewMatrix[2][3]=0
                     
-                    self.writeGeometry(ID, obj, previewMatrix, obj.pass_index)
+                    self.write_geometry(ID, obj, previewMatrix, obj.pass_index)
         else:
-            self.writeGeometry(ID, obj, matrix, obj.pass_index)
+            self.write_geometry(ID, obj, matrix, obj.pass_index)
 
-    def writeBGPortal(self, obj):
-        self.yaf_logger.printInfo("Exporting Background Portal Light: {0}".format(obj.name))
-        yaf_param_map = libyafaray4_bindings.ParamMap()
-        #yaf_param_map.set_int("obj_pass_index", obj.pass_index)
-        yaf_param_map.set_string("type", "bgPortalLight")
-        yaf_param_map.set_float("power", obj.bgp_power)
-        yaf_param_map.set_int("samples", obj.bgp_samples)
-        yaf_param_map.set_string("object_name", obj.name)
-        yaf_param_map.set_bool("with_caustic", obj.bgp_with_caustic)
-        yaf_param_map.set_bool("with_diffuse", obj.bgp_with_diffuse)
-        yaf_param_map.set_bool("photon_only", obj.bgp_photon_only)
-        self.yaf_scene.createLight(obj.name)
+    def write_bg_portal(self, obj):
+        self.logger.print_info("Exporting Background Portal Light: {0}".format(obj.name))
+        param_map = libyafaray4_bindings.ParamMap()
+        #param_map.set_int("obj_pass_index", obj.pass_index)
+        param_map.set_string("type", "bgPortalLight")
+        param_map.set_float("power", obj.bgp_power)
+        param_map.set_int("samples", obj.bgp_samples)
+        param_map.set_string("object_name", obj.name)
+        param_map.set_bool("with_caustic", obj.bgp_with_caustic)
+        param_map.set_bool("with_diffuse", obj.bgp_with_diffuse)
+        param_map.set_bool("photon_only", obj.bgp_photon_only)
+        self.scene_yafaray.create_light(obj.name)
         matrix = obj.matrix_world.copy()
         # Makes object invisible to the renderer (doesn't enter the kdtree)
-        self.writeGeometry(obj.name, obj, matrix, obj.pass_index, None, "invisible")
+        self.write_geometry(obj.name, obj, matrix, obj.pass_index, None, "invisible")
 
-    def writeMeshLight(self, obj):
+    def write_mesh_light(self, obj):
 
-        self.yaf_logger.printInfo("Exporting Meshlight: {0}".format(obj.name))
+        self.logger.print_info("Exporting Meshlight: {0}".format(obj.name))
         ml_matname = "ML_"
         ml_matname += obj.name + "." + str(obj.__hash__())
 
-        yaf_param_map = libyafaray4_bindings.ParamMap()
-        yaf_param_map_list = libyafaray4_bindings.ParamMapList()
-        yaf_param_map.set_string("type", "light_mat")
-        yaf_param_map.set_bool("double_sided", obj.ml_double_sided)
+        param_map = libyafaray4_bindings.ParamMap()
+        param_map_list = libyafaray4_bindings.ParamMapList()
+        param_map.set_string("type", "light_mat")
+        param_map.set_bool("double_sided", obj.ml_double_sided)
         c = obj.ml_color
-        yaf_param_map.set_color("color", c[0], c[1], c[2])
-        yaf_param_map.set_float("power", obj.ml_power)
-        self.yaf_scene.createMaterial(ml_matname, yaf_param_map, yaf_param_map_list)
+        param_map.set_color("color", c[0], c[1], c[2])
+        param_map.set_float("power", obj.ml_power)
+        self.scene_yafaray.create_material(ml_matname, param_map, param_map_list)
 
         # Export mesh light
-        yaf_param_map = libyafaray4_bindings.ParamMap()
-        #yaf_param_map.set_int("obj_pass_index", obj.pass_index)
-        yaf_param_map.set_string("type", "objectlight")
-        yaf_param_map.set_bool("double_sided", obj.ml_double_sided)
+        param_map = libyafaray4_bindings.ParamMap()
+        #param_map.set_int("obj_pass_index", obj.pass_index)
+        param_map.set_string("type", "objectlight")
+        param_map.set_bool("double_sided", obj.ml_double_sided)
         c = obj.ml_color
-        yaf_param_map.set_color("color", c[0], c[1], c[2])
-        yaf_param_map.set_float("power", obj.ml_power)
-        yaf_param_map.set_int("samples", obj.ml_samples)
-        yaf_param_map.set_string("object_name", obj.name)
-        self.yaf_scene.createLight(obj.name, yaf_param_map)
+        param_map.set_color("color", c[0], c[1], c[2])
+        param_map.set_float("power", obj.ml_power)
+        param_map.set_int("samples", obj.ml_samples)
+        param_map.set_string("object_name", obj.name)
+        self.scene_yafaray.create_light(obj.name, param_map)
 
         matrix = obj.matrix_world.copy()
-        self.writeGeometry(obj.name, obj, matrix, obj.pass_index, ml_matname)
+        self.write_geometry(obj.name, obj, matrix, obj.pass_index, ml_matname)
 
-    def writeVolumeObject(self, obj):
+    def write_volume_object(self, obj):
 
-        self.yaf_logger.printInfo("Exporting Volume Region: {0}".format(obj.name))
+        self.logger.print_info("Exporting Volume Region: {0}".format(obj.name))
 
         
         # me = obj.data  /* UNUSED */
         # me_materials = me.materials  /* UNUSED */
 
-        yaf_param_map = libyafaray4_bindings.ParamMap()
-        yaf_param_map.set_int("obj_pass_index", obj.pass_index)
+        param_map = libyafaray4_bindings.ParamMap()
+        param_map.set_int("obj_pass_index", obj.pass_index)
 
         if obj.vol_region == 'ExpDensity Volume':
-            yaf_param_map.set_string("type", "ExpDensityVolume")
-            yaf_param_map.set_float("a", obj.vol_height)
-            yaf_param_map.set_float("b", obj.vol_steepness)
+            param_map.set_string("type", "ExpDensityVolume")
+            param_map.set_float("a", obj.vol_height)
+            param_map.set_float("b", obj.vol_steepness)
 
         elif obj.vol_region == 'Uniform Volume':
-            yaf_param_map.set_string("type", "UniformVolume")
+            param_map.set_string("type", "UniformVolume")
 
         elif obj.vol_region == 'Noise Volume':
             if not obj.active_material:
-                self.yaf_logger.printError("Volume object ({0}) is missing the materials".format(obj.name))
+                self.logger.printError("Volume object ({0}) is missing the materials".format(obj.name))
             elif not obj.active_material.active_texture:
-                self.yaf_logger.printError("Volume object's material ({0}) is missing the noise texture".format(obj.name))
+                self.logger.printError("Volume object's material ({0}) is missing the noise texture".format(obj.name))
             else:
                 texture = obj.active_material.active_texture
 
-                yaf_param_map.set_string("type", "NoiseVolume")
-                yaf_param_map.set_float("sharpness", obj.vol_sharpness)
-                yaf_param_map.set_float("cover", obj.vol_cover)
-                yaf_param_map.set_float("density", obj.vol_density)
-                yaf_param_map.set_string("texture", texture.name)
+                param_map.set_string("type", "NoiseVolume")
+                param_map.set_float("sharpness", obj.vol_sharpness)
+                param_map.set_float("cover", obj.vol_cover)
+                param_map.set_float("density", obj.vol_density)
+                param_map.set_string("texture", texture.name)
 
         elif obj.vol_region == 'Grid Volume':
-            yaf_param_map.set_string("type", "GridVolume")
+            param_map.set_string("type", "GridVolume")
 
-        yaf_param_map.set_float("sigma_a", obj.vol_absorp)
-        yaf_param_map.set_float("sigma_s", obj.vol_scatter)
-        yaf_param_map.set_int("attgridScale", self.scene.world.v_int_attgridres)
+        param_map.set_float("sigma_a", obj.vol_absorp)
+        param_map.set_float("sigma_s", obj.vol_scatter)
+        param_map.set_int("attgridScale", self.scene.world.v_int_attgridres)
 
         # Calculate BoundingBox: get the low corner (minx, miny, minz)
         # and the up corner (maxx, maxy, maxz) then apply object scale,
@@ -215,22 +213,22 @@ class Object(object):
 
         vec = [j for v in mesh.vertices for j in v.co]
 
-        yaf_param_map.set_float("minX", max(min(vec[0::3]), -1e10))
-        yaf_param_map.set_float("minY", max(min(vec[1::3]), -1e10))
-        yaf_param_map.set_float("minZ", max(min(vec[2::3]), -1e10))
-        yaf_param_map.set_float("maxX", min(max(vec[0::3]), 1e10))
-        yaf_param_map.set_float("maxY", min(max(vec[1::3]), 1e10))
-        yaf_param_map.set_float("maxZ", min(max(vec[2::3]), 1e10))
+        param_map.set_float("minX", max(min(vec[0::3]), -1e10))
+        param_map.set_float("minY", max(min(vec[1::3]), -1e10))
+        param_map.set_float("minZ", max(min(vec[2::3]), -1e10))
+        param_map.set_float("maxX", min(max(vec[0::3]), 1e10))
+        param_map.set_float("maxY", min(max(vec[1::3]), 1e10))
+        param_map.set_float("maxZ", min(max(vec[2::3]), 1e10))
 
-        self.yaf_scene.createVolumeRegion("VR.{0}-{1}".format(obj.name, str(obj.__hash__())), yaf_param_map)
+        self.scene_yafaray.createVolumeRegion("VR.{0}-{1}".format(obj.name, str(obj.__hash__())), param_map)
         if bpy.app.version >= (2, 80, 0):
             pass  # FIXME BLENDER >= v2.80
         else:
             bpy.data.meshes.remove(mesh, do_unlink=False)
 
-    def writeGeometry(self, ID, obj, matrix, pass_index, oMat=None, visibility="normal", is_base_object=False):
-        isSmooth = False
-        hasOrco = False
+    def write_geometry(self, ID, obj, matrix, pass_index, oMat=None, visibility="normal", is_base_object=False):
+        is_smooth = False
+        has_orco = False
 
         if bpy.app.version >= (2, 80, 0):
             mesh = obj.to_mesh(preserve_all_data_layers=True, depsgraph=self.depsgraph)
@@ -238,7 +236,7 @@ class Object(object):
             uv_texture = mesh.uv_layers if 'uv_layers' in dir(mesh) else mesh.uv_textures
             # test for faces after BMesh API changes
             face_attr = 'polygons' if 'polygons' in dir(mesh) else 'loop_triangles'
-            hasUV = False  # FIXME BLENDER >= v2.80 #len(uv_texture) > 0  # check for UV's
+            has_uv = False  # FIXME BLENDER >= v2.80 #len(uv_texture) > 0  # check for UV's
 
             if face_attr == 'loop_triangles':
                 if not mesh.loop_triangles and mesh.polygons:
@@ -260,7 +258,7 @@ class Object(object):
             uv_texture = mesh.tessface_uv_textures if 'tessface_uv_textures' in dir(mesh) else mesh.uv_textures
             # test for faces after BMesh API changes
             face_attr = 'faces' if 'faces' in dir(mesh) else 'tessfaces'
-            hasUV = len(uv_texture) > 0  # check for UV's
+            has_uv = len(uv_texture) > 0  # check for UV's
 
             if face_attr == 'tessfaces':
                 if not mesh.tessfaces and mesh.polygons:
@@ -284,18 +282,18 @@ class Object(object):
             for mat in [mmat for mmat in mesh.materials if mmat is not None]:
                 for m in [mtex for mtex in mat.texture_slots if mtex is not None]:
                     if m.texture_coords == 'ORCO':
-                        hasOrco = True
+                        has_orco = True
                         break
-                if hasOrco:
+                if has_orco:
                     break
 
         # normalized vertex positions for orco mapping
         ov = []
 
-        if hasOrco:
+        if has_orco:
             # Keep a copy of the untransformed vertex and bring them
             # into a (-1 -1 -1) (1 1 1) bounding box
-            bbMin, bbMax = self.getBBCorners(obj)
+            bbMin, bbMax = self.get_bb_corners(obj)
 
             delta = []
 
@@ -327,24 +325,24 @@ class Object(object):
                 mesh.transform(matrix2)
             pass
 
-        yaf_param_map = libyafaray4_bindings.ParamMap()
+        param_map = libyafaray4_bindings.ParamMap()
 
-        yaf_param_map.set_string("type", "mesh")
-        yaf_param_map.set_int("num_vertices", len(mesh.vertices))
-        yaf_param_map.set_int("num_faces", len(getattr(mesh, face_attr)))
-        yaf_param_map.set_bool("has_orco", hasOrco)
-        yaf_param_map.set_bool("has_uv", hasUV)
-        yaf_param_map.set_bool("is_base_object", is_base_object)
-        yaf_param_map.set_string("visibility", visibility)
-        yaf_param_map.set_int("object_index", pass_index)
-        yaf_param_map.set_bool("motion_blur_bezier", obj.motion_blur_bezier)
-        object_id = self.yaf_scene.createObject(str(ID), yaf_param_map)
+        param_map.set_string("type", "mesh")
+        param_map.set_int("num_vertices", len(mesh.vertices))
+        param_map.set_int("num_faces", len(getattr(mesh, face_attr)))
+        param_map.set_bool("has_orco", has_orco)
+        param_map.set_bool("has_uv", has_uv)
+        param_map.set_bool("is_base_object", is_base_object)
+        param_map.set_string("visibility", visibility)
+        param_map.set_int("object_index", pass_index)
+        param_map.set_bool("motion_blur_bezier", obj.motion_blur_bezier)
+        object_id = self.scene_yafaray.create_object(str(ID), param_map)
 
         for ind, v in enumerate(mesh.vertices):
-            if hasOrco:
-                self.yaf_scene.addVertexWithOrco(object_id, v.co[0], v.co[1], v.co[2], ov[ind][0], ov[ind][1], ov[ind][2])
+            if has_orco:
+                self.scene_yafaray.add_vertex_with_orco(object_id, v.co[0], v.co[1], v.co[2], ov[ind][0], ov[ind][1], ov[ind][2])
             else:
-                self.yaf_scene.addVertex(object_id, v.co[0], v.co[1], v.co[2])
+                self.scene_yafaray.add_vertex(object_id, v.co[0], v.co[1], v.co[2])
 
         if self.scene.adv_scene_mesh_tesselation == "triangles_only":
             triangles_only = True
@@ -353,42 +351,42 @@ class Object(object):
 
         for index, f in enumerate(getattr(mesh, face_attr)):
             if f.use_smooth:
-                isSmooth = True
+                is_smooth = True
 
             if oMat:
                 ymaterial = oMat
             else:
-                ymaterial = self.getFaceMaterial(mesh.materials, f.material_index, obj.material_slots)
-            material_id = self.yaf_scene.getMaterialId(ymaterial)
+                ymaterial = self.get_face_material(mesh.materials, f.material_index, obj.material_slots)
+            material_id = self.scene_yafaray.get_material_id(ymaterial)
             co = None
-            if hasUV:
+            if has_uv:
                 if self.is_preview:
                     co = uv_texture[0].data[index].uv
                 else:
                     co = uv_texture.active.data[index].uv
 
-                uv0 = self.yaf_scene.addUv(object_id, co[0][0], co[0][1])
-                uv1 = self.yaf_scene.addUv(object_id, co[1][0], co[1][1])
-                uv2 = self.yaf_scene.addUv(object_id, co[2][0], co[2][1])
+                uv0 = self.scene_yafaray.addUv(object_id, co[0][0], co[0][1])
+                uv1 = self.scene_yafaray.addUv(object_id, co[1][0], co[1][1])
+                uv2 = self.scene_yafaray.addUv(object_id, co[2][0], co[2][1])
 
                 if len(f.vertices) == 4:
-                    uv3 = self.yaf_scene.addUv(object_id, co[3][0], co[3][1])
+                    uv3 = self.scene_yafaray.addUv(object_id, co[3][0], co[3][1])
                     if triangles_only:
-                        self.yaf_scene.addTriangleWithUv(object_id, f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2, material_id)
-                        self.yaf_scene.addTriangleWithUv(object_id, f.vertices[0], f.vertices[2], f.vertices[3], uv0, uv2, uv3, material_id)
+                        self.scene_yafaray.add_triangle_with_uv(object_id, f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2, material_id)
+                        self.scene_yafaray.add_triangle_with_uv(object_id, f.vertices[0], f.vertices[2], f.vertices[3], uv0, uv2, uv3, material_id)
                     else:
-                        self.yaf_scene.addQuadWithUv(object_id, f.vertices[0], f.vertices[1], f.vertices[2], f.vertices[3], uv0, uv1, uv2, uv3, material_id)
+                        self.scene_yafaray.add_quad_with_uv(object_id, f.vertices[0], f.vertices[1], f.vertices[2], f.vertices[3], uv0, uv1, uv2, uv3, material_id)
                 else:
-                    self.yaf_scene.addTriangleWithUv(object_id, f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2, material_id)
+                    self.scene_yafaray.add_triangle_with_uv(object_id, f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2, material_id)
             else:
                 if len(f.vertices) == 4:
                     if triangles_only:
-                        self.yaf_scene.addTriangle(object_id, f.vertices[0], f.vertices[1], f.vertices[2], material_id)
-                        self.yaf_scene.addTriangle(object_id, f.vertices[0], f.vertices[2], f.vertices[3], material_id)
+                        self.scene_yafaray.add_triangle(object_id, f.vertices[0], f.vertices[1], f.vertices[2], material_id)
+                        self.scene_yafaray.add_triangle(object_id, f.vertices[0], f.vertices[2], f.vertices[3], material_id)
                     else:
-                        self.yaf_scene.addQuad(object_id, f.vertices[0], f.vertices[1], f.vertices[2], f.vertices[3], material_id)
+                        self.scene_yafaray.add_quad(object_id, f.vertices[0], f.vertices[1], f.vertices[2], f.vertices[3], material_id)
                 else:
-                    self.yaf_scene.addTriangle(object_id, f.vertices[0], f.vertices[1], f.vertices[2], material_id)
+                    self.scene_yafaray.add_triangle(object_id, f.vertices[0], f.vertices[1], f.vertices[2], material_id)
 
         auto_smooth_enabled = mesh.use_auto_smooth
         auto_smooth_angle = mesh.auto_smooth_angle
@@ -407,26 +405,26 @@ class Object(object):
                 if obj.matrix_world is not None:
                     mesh.transform(obj.matrix_world)
                 for ind, v in enumerate(mesh.vertices):
-                    if hasOrco:
-                        self.yaf_scene.addVertexWithOrcoTimeStep(object_id, v.co[0], v.co[1], v.co[2], ov[ind][0], ov[ind][1], ov[ind][2], time_step)
+                    if has_orco:
+                        self.scene_yafaray.add_vertex_with_orcoTimeStep(object_id, v.co[0], v.co[1], v.co[2], ov[ind][0], ov[ind][1], ov[ind][2], time_step)
                     else:
-                        self.yaf_scene.addVertexTimeStep(object_id, v.co[0], v.co[1], v.co[2], time_step)
+                        self.scene_yafaray.add_vertexTimeStep(object_id, v.co[0], v.co[1], v.co[2], time_step)
                 if bpy.app.version >= (2, 80, 0):
                     pass  # FIXME BLENDER >= v2.80
                 else:
                     bpy.data.meshes.remove(mesh, do_unlink=False)
             self.scene.frame_set(frame_current, 0.0)
-        self.yaf_scene.initObject(object_id, 0)
+        self.scene_yafaray.init_object(object_id, 0)
 
-        if isSmooth and auto_smooth_enabled:
-            self.yaf_scene.smoothObjectMesh(object_id, math.degrees(auto_smooth_angle))
-        elif isSmooth and obj.type == 'FONT':  # getting nicer result with smooth angle 60 degr. for text objects
-            self.yaf_scene.smoothObjectMesh(object_id, 60)
-        elif isSmooth:
-            self.yaf_scene.smoothObjectMesh(object_id, 181)
+        if is_smooth and auto_smooth_enabled:
+            self.scene_yafaray.smoothObjectMesh(object_id, math.degrees(auto_smooth_angle))
+        elif is_smooth and obj.type == 'FONT':  # getting nicer result with smooth angle 60 degr. for text objects
+            self.scene_yafaray.smoothObjectMesh(object_id, 60)
+        elif is_smooth:
+            self.scene_yafaray.smoothObjectMesh(object_id, 181)
 
 
-    def getFaceMaterial(self, meshMats, matIndex, matSlots):
+    def get_face_material(self, meshMats, matIndex, matSlots):
 
         ymaterial = "defaultMat"
 
@@ -442,10 +440,10 @@ class Object(object):
 
         return ymaterial
 
-    def writeParticleStrands(self, object):
+    def write_particle_strands(self, object):
 
         
-        renderEmitter = False
+        render_emitter = False
         if hasattr(object, 'particle_systems') == False:
             return
 
@@ -455,7 +453,7 @@ class Object(object):
                 continue  # FIXME BLENDER >= v2.80
             for mod in [m for m in object.modifiers if (m is not None) and (m.type == 'PARTICLE_SYSTEM')]:
                 if (pSys.settings.render_type == 'PATH') and mod.show_render and (pSys.name == mod.particle_system.name):
-                    self.yaf_logger.printInfo("Exporter: Creating Hair Particle System {!r}".format(pSys.name))
+                    self.logger.print_info("Exporter: Creating Hair Particle System {!r}".format(pSys.name))
                     tstart = time.time()
                     # TODO: clay particles uses at least materials thikness?
                     if object.active_material is not None:
@@ -477,18 +475,18 @@ class Object(object):
 
                     matrix = object.matrix_world.copy()
                     for particle in pSys.particles:
-                        yaf_param_map = libyafaray4_bindings.ParamMap()
+                        param_map = libyafaray4_bindings.ParamMap()
                         yi.setCurrentMaterial(pmaterial.name)
-                        yaf_param_map.set_string("type", "curve")
-                        yaf_param_map.set_float("strand_start", strandStart)
-                        yaf_param_map.set_float("strand_end", strandEnd)
-                        yaf_param_map.set_float("strand_shape", strandShape)
-                        yaf_param_map.set_int("num_vertices", len(particle.hair_keys))
-                        yaf_param_map.set_bool("motion_blur_bezier", object.motion_blur_bezier)
-                        self.yaf_scene.createObject(object.name + "_strand_" + str(yi.getNextFreeId()))
+                        param_map.set_string("type", "curve")
+                        param_map.set_float("strand_start", strandStart)
+                        param_map.set_float("strand_end", strandEnd)
+                        param_map.set_float("strand_shape", strandShape)
+                        param_map.set_int("num_vertices", len(particle.hair_keys))
+                        param_map.set_bool("motion_blur_bezier", object.motion_blur_bezier)
+                        self.scene_yafaray.create_object(object.name + "_strand_" + str(yi.getNextFreeId()))
                         for location in particle.hair_keys:
                             vertex = matrix * location.co  # use reverse vector multiply order, API changed with rev. 38674
-                            yi.addVertex(vertex[0], vertex[1], vertex[2])
+                            yi.add_vertex(vertex[0], vertex[1], vertex[2])
 
                         if object.motion_blur_bezier:
                             frame_current = self.scene.frame_current
@@ -498,20 +496,20 @@ class Object(object):
                                 for particle in pSys.particles:
                                     for location in particle.hair_keys:
                                         vertex = matrix * location.co  # use reverse vector multiply order, API changed with rev. 38674
-                                        yi.addVertexTimeStep(vertex[0], vertex[1], vertex[2], time_step)
+                                        yi.add_vertexTimeStep(vertex[0], vertex[1], vertex[2], time_step)
                             self.scene.frame_set(frame_current, 0.0)
 
                         yi.endObject()
                     # TODO: keep object smooth
                     #yi.smoothMesh(0, 60.0)
-                    self.yaf_logger.printInfo("Exporter: Particle creation time: {0:.3f}".format(time.time() - tstart))
+                    self.logger.print_info("Exporter: Particle creation time: {0:.3f}".format(time.time() - tstart))
 
                     if pSys.settings.use_render_emitter:
-                        renderEmitter = True
+                        render_emitter = True
                 else:
-                    self.writeMesh(object, object.matrix_world.copy())
+                    self.write_mesh(object, object.matrix_world.copy())
 
         # We only need to render emitter object once
-        if renderEmitter:
+        if render_emitter:
             # ymat = self.materialMap["default"]  /* UNUSED */
-            self.writeMesh(object, object.matrix_world.copy())
+            self.write_mesh(object, object.matrix_world.copy())

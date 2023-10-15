@@ -1,9 +1,10 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-import re
 import math
-import bpy
 import os
+import re
+
+import bpy
 import libyafaray4_bindings
 from bpy.path import abspath, clean_name
 
@@ -20,32 +21,27 @@ def noise2string(ntype):
         'VORONOI_F2_F1': 'voronoi_f2f1',
         'VORONOI_CRACKLE': 'voronoi_crackle',
         'CELL_NOISE': 'cellnoise',
-        }
+    }
 
     return a.get(ntype, 'newperlin')
 
 
-class Texture:
-    def __init__(self, scene, logger):
-        self.yaf_scene = scene
-        self.yaf_logger = logger
-        self.loadedTextures = set()
+class TextureControl:
+    def __init__(self, scene_yafaray, logger):
+        self.scene_yafaray = scene_yafaray
+        self.logger = logger
 
-    def writeTexture(self, scene, tex):
+    def write_texture(self, scene, tex):
         name = tex.name
+        param_map = libyafaray4_bindings.ParamMap()
 
-        if name in self.loadedTextures:
-            return
+        texture_configured = False
 
-        yaf_param_map = libyafaray4_bindings.ParamMap()
-
-        textureConfigured = False
-        
         if tex.yaf_tex_type == 'BLEND':
-            self.yaf_logger.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
-            yaf_param_map.set_string("type", "blend")
+            self.logger.print_info("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
+            param_map.set_string("type", "blend")
 
-            switchBlendType = {
+            switch_blend_type = {
                 'LINEAR': 'linear',
                 'QUADRATIC': 'quadratic',
                 'EASING': 'easing',
@@ -55,42 +51,43 @@ class Texture:
                 'RADIAL': 'radial',
             }
 
-            blend_type = switchBlendType.get(tex.progression, 'linear')  # set blend type for blend texture, default is linear
-            yaf_param_map.set_string("blend_type", blend_type)
-            
+            blend_type = switch_blend_type.get(tex.progression,
+                                               'linear')  # set blend type for blend texture, default is linear
+            param_map.set_string("blend_type", blend_type)
+
             if tex.use_flip_axis == "HORIZONTAL":
-                yaf_param_map.set_bool("use_flip_axis", False)
+                param_map.set_bool("use_flip_axis", False)
             if tex.use_flip_axis == "VERTICAL":
-                yaf_param_map.set_bool("use_flip_axis", True)
-                
-            textureConfigured = True
+                param_map.set_bool("use_flip_axis", True)
+
+            texture_configured = True
 
         elif tex.yaf_tex_type == 'CLOUDS':
-            self.yaf_logger.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
-            yaf_param_map.set_string("type", "clouds")
+            self.logger.print_info("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
+            param_map.set_string("type", "clouds")
 
             noise_size = tex.noise_scale
-            if  noise_size > 0:
+            if noise_size > 0:
                 noise_size = 1.0 / noise_size
 
-            yaf_param_map.set_float("size", noise_size)
+            param_map.set_float("size", noise_size)
 
             if tex.noise_type == 'HARD_NOISE':
                 hard = True
             else:
                 hard = False
 
-            yaf_param_map.set_bool("hard", hard)
-            yaf_param_map.set_int("depth", tex.noise_depth)
-            yaf_param_map.set_string("noise_type", noise2string(tex.noise_basis))
+            param_map.set_bool("hard", hard)
+            param_map.set_int("depth", tex.noise_depth)
+            param_map.set_string("noise_type", noise2string(tex.noise_basis))
 
-            textureConfigured = True
+            texture_configured = True
 
         elif tex.yaf_tex_type == 'WOOD':
-            self.yaf_logger.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
-            yaf_param_map.set_string("type", "wood")
+            self.logger.print_info("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
+            param_map.set_string("type", "wood")
 
-            yaf_param_map.set_int("depth", 0)
+            param_map.set_int("depth", 0)
 
             turb = 0.0
             noise_size = 0.25
@@ -101,22 +98,22 @@ class Texture:
                 turb = tex.turbulence
                 noise_size = tex.noise_scale
 
-                if  noise_size > 0:
+                if noise_size > 0:
                     noise_size = 1.0 / noise_size
                 if tex.noise_type == 'SOFT_NOISE':
                     hard = False
 
-            yaf_param_map.set_float("turbulence", turb)
-            yaf_param_map.set_float("size", noise_size)
-            yaf_param_map.set_bool("hard", hard)
+            param_map.set_float("turbulence", turb)
+            param_map.set_float("size", noise_size)
+            param_map.set_bool("hard", hard)
 
             ts = "bands"
 
             if tex.wood_type == 'RINGS' or tex.wood_type == 'RINGNOISE':
                 ts = "rings"
 
-            yaf_param_map.set_string("wood_type", ts)
-            yaf_param_map.set_string("noise_type", noise2string(tex.noise_basis))
+            param_map.set_string("wood_type", ts)
+            param_map.set_string("noise_type", noise2string(tex.noise_basis))
 
             # shape parameter
 
@@ -127,19 +124,19 @@ class Texture:
             else:
                 ts = "sin"
 
-            yaf_param_map.set_string("shape", ts)
+            param_map.set_string("shape", ts)
 
-            textureConfigured = True
+            texture_configured = True
 
         elif tex.yaf_tex_type == 'MARBLE':
-            self.yaf_logger.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
-            yaf_param_map.set_string("type", "marble")
+            self.logger.print_info("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
+            param_map.set_string("type", "marble")
 
-            yaf_param_map.set_int("depth", tex.noise_depth)
-            yaf_param_map.set_float("turbulence", tex.turbulence)
+            param_map.set_int("depth", tex.noise_depth)
+            param_map.set_float("turbulence", tex.turbulence)
 
             noise_size = tex.noise_scale
-            if  noise_size > 0:
+            if noise_size > 0:
                 noise_size = 1.0 / noise_size
 
             if tex.noise_type == 'HARD_NOISE':
@@ -147,8 +144,8 @@ class Texture:
             else:
                 hard = False
 
-            yaf_param_map.set_float("size", noise_size)
-            yaf_param_map.set_bool("hard", hard)
+            param_map.set_float("size", noise_size)
+            param_map.set_bool("hard", hard)
 
             sharp = 4.0
             if tex.marble_type == 'SOFT':
@@ -158,8 +155,8 @@ class Texture:
             elif tex.marble_type == 'SHARPER':
                 sharp = 8.0
 
-            yaf_param_map.set_float("sharpness", sharp)
-            yaf_param_map.set_string("noise_type", noise2string(tex.noise_basis))
+            param_map.set_float("sharpness", sharp)
+            param_map.set_string("noise_type", noise2string(tex.noise_basis))
 
             if tex.noise_basis_2 == 'SAW':
                 ts = "saw"
@@ -168,13 +165,13 @@ class Texture:
             else:
                 ts = "sin"
 
-            yaf_param_map.set_string("shape", ts)
+            param_map.set_string("shape", ts)
 
-            textureConfigured = True
+            texture_configured = True
 
         elif tex.yaf_tex_type == 'VORONOI':
-            self.yaf_logger.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
-            yaf_param_map.set_string("type", "voronoi")
+            self.logger.print_info("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
+            param_map.set_string("type", "voronoi")
 
             if tex.color_mode == 'POSITION':
                 ts = "position"
@@ -185,22 +182,22 @@ class Texture:
             else:
                 ts = "intensity-without-color"
 
-            yaf_param_map.set_string("color_mode", ts)
+            param_map.set_string("color_mode", ts)
 
-            yaf_param_map.set_float("weight1", tex.weight_1)
-            yaf_param_map.set_float("weight2", tex.weight_2)
-            yaf_param_map.set_float("weight3", tex.weight_3)
-            yaf_param_map.set_float("weight4", tex.weight_4)
+            param_map.set_float("weight1", tex.weight_1)
+            param_map.set_float("weight2", tex.weight_2)
+            param_map.set_float("weight3", tex.weight_3)
+            param_map.set_float("weight4", tex.weight_4)
 
-            yaf_param_map.set_float("mk_exponent", tex.minkovsky_exponent)
-            yaf_param_map.set_float("intensity", tex.noise_intensity)
+            param_map.set_float("mk_exponent", tex.minkovsky_exponent)
+            param_map.set_float("intensity", tex.noise_intensity)
 
             noise_size = tex.noise_scale
-            if  noise_size > 0:
+            if noise_size > 0:
                 noise_size = 1.0 / noise_size
-            yaf_param_map.set_float("size", noise_size)
+            param_map.set_float("size", noise_size)
 
-            switchDistMetric = {
+            switch_dist_metric = {
                 'DISTANCE_SQUARED': 'squared',
                 'MANHATTAN': 'manhattan',
                 'CHEBYCHEV': 'chebychev',
@@ -209,55 +206,57 @@ class Texture:
                 'MINKOVSKY': 'minkovsky',
             }
 
-            ts = switchDistMetric.get(tex.distance_metric, 'minkovsky')  # set distance metric for VORONOI Texture, default is 'minkovsky'
-            yaf_param_map.set_string("distance_metric", ts)
+            ts = switch_dist_metric.get(tex.distance_metric,
+                                        'minkovsky')  # set distance metric for VORONOI Texture, default is 'minkovsky'
+            param_map.set_string("distance_metric", ts)
 
-            textureConfigured = True
+            texture_configured = True
 
         elif tex.yaf_tex_type == 'MUSGRAVE':
-            self.yaf_logger.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
-            yaf_param_map.set_string("type", "musgrave")
+            self.logger.print_info("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
+            param_map.set_string("type", "musgrave")
 
-            switchMusgraveType = {
+            switch_musgrave_type = {
                 'MULTIFRACTAL': 'multifractal',
                 'RIDGED_MULTIFRACTAL': 'ridgedmf',
                 'HYBRID_MULTIFRACTAL': 'hybridmf',
                 'HETERO_TERRAIN': 'heteroterrain',
                 'FBM': 'fBm',
-                }
-            ts = switchMusgraveType.get(tex.musgrave_type, 'multifractal')  # set MusgraveType, default is 'multifractal'
+            }
+            ts = switch_musgrave_type.get(tex.musgrave_type,
+                                          'multifractal')  # set MusgraveType, default is 'multifractal'
 
-            yaf_param_map.set_string("musgrave_type", ts)
-            yaf_param_map.set_string("noise_type", noise2string(tex.noise_basis))
-            yaf_param_map.set_float("H", tex.dimension_max)
-            yaf_param_map.set_float("lacunarity", tex.lacunarity)
-            yaf_param_map.set_float("octaves", tex.octaves)
+            param_map.set_string("musgrave_type", ts)
+            param_map.set_string("noise_type", noise2string(tex.noise_basis))
+            param_map.set_float("H", tex.dimension_max)
+            param_map.set_float("lacunarity", tex.lacunarity)
+            param_map.set_float("octaves", tex.octaves)
 
             noise_size = tex.noise_scale
-            if  noise_size > 0:
+            if noise_size > 0:
                 noise_size = 1.0 / noise_size
-            yaf_param_map.set_float("size", noise_size)
-            yaf_param_map.set_float("offset", tex.offset)
-            yaf_param_map.set_float("intensity", tex.noise_intensity)
-            yaf_param_map.set_float("gain", tex.gain)
+            param_map.set_float("size", noise_size)
+            param_map.set_float("offset", tex.offset)
+            param_map.set_float("intensity", tex.noise_intensity)
+            param_map.set_float("gain", tex.gain)
 
-            textureConfigured = True
+            texture_configured = True
 
         elif tex.yaf_tex_type == 'DISTORTED_NOISE':
-            self.yaf_logger.printInfo("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
-            yaf_param_map.set_string("type", "distorted_noise")
+            self.logger.print_info("Exporter: Creating Texture: '{0}' type {1}".format(name, tex.yaf_tex_type))
+            param_map.set_string("type", "distorted_noise")
 
-            yaf_param_map.set_float("distort", tex.distortion)
+            param_map.set_float("distort", tex.distortion)
 
             noise_size = tex.noise_scale
-            if  noise_size > 0:
+            if noise_size > 0:
                 noise_size = 1.0 / noise_size
-            yaf_param_map.set_float("size", noise_size)
+            param_map.set_float("size", noise_size)
 
-            yaf_param_map.set_string("noise_type1", noise2string(tex.noise_basis))
-            yaf_param_map.set_string("noise_type2", noise2string(tex.noise_distortion))
+            param_map.set_string("noise_type1", noise2string(tex.noise_basis))
+            param_map.set_string("noise_type2", noise2string(tex.noise_distortion))
 
-            textureConfigured = True
+            texture_configured = True
 
         elif tex.yaf_tex_type == 'IMAGE' and tex.image and tex.image.source in {'FILE', 'SEQUENCE', 'GENERATED'}:
 
@@ -272,6 +271,7 @@ class Texture:
             filename = clean_name(filename)
             file_format = scene.render.image_settings.file_format.lower()
             extract_path = os.path.join(filename, "{:05d}".format(scene.frame_current))
+            image_tex = None
 
             if tex.image.source == 'GENERATED':
                 image_tex = "yaf_baked_image_{0}.{1}".format(clean_name(tex.name), file_format)
@@ -290,7 +290,8 @@ class Texture:
                     else:
                         image_tex = abspath(tex.image.filepath)
                     if not os.path.exists(image_tex):
-                        self.yaf_logger.printError("Exporter: Image texture {0} not found on: {1}".format(tex.name, image_tex))
+                        self.logger.printError(
+                            "Exporter: Image texture {0} not found on: {1}".format(tex.name, image_tex))
                         return False
             if tex.image.source == 'SEQUENCE':
                 if tex.image.packed_file:
@@ -299,39 +300,51 @@ class Texture:
                     image_tex = abspath(image_tex)
                     tex.image.save_render(image_tex, scene)
                 else:
-                    #Try to figure out the correct file name depending on the frame, guessing the calculations done by Blender
+                    # Try to figure out the correct file name depending on the frame,
+                    # guessing the calculations done by Blender
                     if tex.image_user.use_cyclic:
                         image_number = scene.frame_current - tex.image_user.frame_start
                         if image_number < 0:
-                            image_number += (divmod(-1 * image_number, tex.image_user.frame_duration)[0]+1) * tex.image_user.frame_duration
+                            image_number += (divmod(-1 * image_number, tex.image_user.frame_duration)[
+                                                 0] + 1) * tex.image_user.frame_duration
 
                         image_number = (image_number % tex.image_user.frame_duration) + tex.image_user.frame_offset + 1
 
                     else:
-                        image_number = scene.frame_current - (tex.image_user.frame_start - 1) + tex.image_user.frame_offset
+                        image_number = scene.frame_current - (
+                                    tex.image_user.frame_start - 1) + tex.image_user.frame_offset
                         if image_number < tex.image_user.frame_start:
                             image_number = tex.image_user.frame_start
                         elif image_number > (tex.image_user.frame_duration + tex.image_user.frame_offset):
                             image_number = (tex.image_user.frame_duration + tex.image_user.frame_offset)
 
                     tex_image_filepath = abspath(tex.image.filepath)
-                    tex_image_filepath_splitext = os.path.splitext(tex_image_filepath)
-                    tex_image_filepath_searchnumber = re.search(r'\d+$', tex_image_filepath_splitext[0])
-                    tex_image_filepath_base = tex_image_filepath[0:tex_image_filepath_searchnumber.span()[0]] if tex_image_filepath_searchnumber else tex_image_filepath_splitext[0]
-                    tex_image_filepath_number = tex_image_filepath_searchnumber.group() if tex_image_filepath_searchnumber else None
-                    tex_image_filepath_number_numdigits = len(tex_image_filepath_number) if tex_image_filepath_number else 0
-                    tex_image_filepath_ext = tex_image_filepath_splitext[1]
-                    if tex_image_filepath_number is not None:
-                        tex_image_filepath_sequence = tex_image_filepath_base + str(image_number).zfill(tex_image_filepath_number_numdigits) + tex_image_filepath_ext
+                    tex_image_filepath_split_ext = os.path.splitext(tex_image_filepath)
+                    tex_image_filepath_search_number = re.search(r'\d+$', tex_image_filepath_split_ext[0])
+                    tex_image_filepath_base = tex_image_filepath[0:tex_image_filepath_search_number.span()[
+                        0]] if tex_image_filepath_search_number else tex_image_filepath_split_ext[0]
+                    if tex_image_filepath_search_number:
+                        tex_image_filepath_number = tex_image_filepath_search_number.group()
                     else:
-                        tex_image_filepath_sequence = tex_image_filepath_base + str(image_number) + tex_image_filepath_ext
+                        tex_image_filepath_number = None
+
+                    tex_image_filepath_number_num_digits = len(
+                        tex_image_filepath_number) if tex_image_filepath_number else 0
+                    tex_image_filepath_ext = tex_image_filepath_split_ext[1]
+                    if tex_image_filepath_number is not None:
+                        tex_image_filepath_sequence = tex_image_filepath_base + str(image_number).zfill(
+                            tex_image_filepath_number_num_digits) + tex_image_filepath_ext
+                    else:
+                        tex_image_filepath_sequence = tex_image_filepath_base + str(
+                            image_number) + tex_image_filepath_ext
 
                     if tex.image.library is not None:
                         image_tex = abspath(tex_image_filepath_sequence, library=tex.image.library)
                     else:
                         image_tex = abspath(tex_image_filepath_sequence)
                     if not os.path.exists(image_tex):
-                        self.yaf_logger.printError("Exporter: Image texture {0} not found on: {1}".format(tex.name, image_tex))
+                        self.logger.printError(
+                            "Exporter: Image texture {0} not found on: {1}".format(tex.name, image_tex))
                         return False
 
             image_tex = os.path.realpath(image_tex)
@@ -344,34 +357,39 @@ class Texture:
                 texture_color_space = "sRGB"
             elif tex.image.colorspace_settings.name == "XYZ":
                 texture_color_space = "XYZ"
-            elif tex.image.colorspace_settings.name == "Linear" or tex.image.colorspace_settings.name == "Linear ACES" or tex.image.colorspace_settings.name == "Non-Color":
+            elif tex.image.colorspace_settings.name == "Linear"\
+                    or tex.image.colorspace_settings.name == "Linear ACES"\
+                    or tex.image.colorspace_settings.name == "Non-Color":
                 texture_color_space = "LinearRGB"
             elif tex.image.colorspace_settings.name == "Raw":
                 texture_color_space = "Raw_Manual_Gamma"
-                texture_gamma = tex.yaf_gamma_input  #We only use the selected gamma if the color space is set to "Raw"
-            yaf_param_map.set_string("color_space", texture_color_space)
-            yaf_param_map.set_float("gamma", texture_gamma)
+                texture_gamma = tex.yaf_gamma_input  # We only use the selected gamma if the color space is set to "Raw"
+            param_map.set_string("color_space", texture_color_space)
+            param_map.set_float("gamma", texture_gamma)
 
             if tex.yaf_tex_optimization == "default":
                 texture_optimization = scene.gs_tex_optimization
             else:
                 texture_optimization = tex.yaf_tex_optimization
-            yaf_param_map.set_string("image_optimization", texture_optimization)
-            yaf_param_map.set_string("filename", image_tex)
+            param_map.set_string("image_optimization", texture_optimization)
+            param_map.set_string("filename", image_tex)
             image_name = name + "_image"
-            self.yaf_scene.createImage(image_name, yaf_param_map)
-            yaf_param_map = libyafaray4_bindings.ParamMap()
+            self.scene_yafaray.create_image(image_name, param_map)
+            param_map = libyafaray4_bindings.ParamMap()
 
-            self.yaf_logger.printInfo("Exporter: Creating Texture: '{0}' type {1}: {2}. Texture Color Space: '{3}', gamma={4}. Texture optimization='{5}'".format(name, tex.yaf_tex_type, image_tex, texture_color_space, texture_gamma, texture_optimization))
+            self.logger.print_info(
+                "Exporter: Creating Texture: '{0}' type {1}: {2}. "
+                "Texture Color Space: '{3}', gamma={4}. Texture optimization='{5}'".format(
+                    name, tex.yaf_tex_type, image_tex, texture_color_space, texture_gamma, texture_optimization))
 
-            yaf_param_map.set_string("type", "image")
-            yaf_param_map.set_string("image_name", image_name)
+            param_map.set_string("type", "image")
+            param_map.set_string("image_name", image_name)
 
-            yaf_param_map.set_string("interpolate", tex.yaf_tex_interpolate)
+            param_map.set_string("interpolate", tex.yaf_tex_interpolate)
 
-            yaf_param_map.set_bool("use_alpha", tex.yaf_use_alpha)
-            yaf_param_map.set_bool("calc_alpha", tex.use_calculate_alpha)
-            yaf_param_map.set_bool("normalmap", tex.yaf_is_normal_map)
+            param_map.set_bool("use_alpha", tex.yaf_use_alpha)
+            param_map.set_bool("calc_alpha", tex.use_calculate_alpha)
+            param_map.set_bool("normalmap", tex.yaf_is_normal_map)
 
             # repeat
             repeat_x = 1
@@ -381,59 +399,59 @@ class Texture:
                 repeat_x = tex.repeat_x
                 repeat_y = tex.repeat_y
 
-            yaf_param_map.set_int("xrepeat", repeat_x)
-            yaf_param_map.set_int("yrepeat", repeat_y)
+            param_map.set_int("xrepeat", repeat_x)
+            param_map.set_int("yrepeat", repeat_y)
 
             # clipping
             extension = tex.extension
-            switchExtension = {
+            switch_extension = {
                 'EXTEND': 'extend',
                 'CLIP': 'clip',
                 'CLIP_CUBE': 'clipcube',
                 'CHECKER': 'checker',
-                }
-            clipping = switchExtension.get(extension, 'repeat')  # set default clipping to 'repeat'
-            yaf_param_map.set_string("clipping", clipping)
+            }
+            clipping = switch_extension.get(extension, 'repeat')  # set default clipping to 'repeat'
+            param_map.set_string("clipping", clipping)
             if clipping == 'checker':
-                yaf_param_map.set_bool("even_tiles", tex.use_checker_even)
-                yaf_param_map.set_bool("odd_tiles", tex.use_checker_odd)
+                param_map.set_bool("even_tiles", tex.use_checker_even)
+                param_map.set_bool("odd_tiles", tex.use_checker_odd)
 
             # crop min/max
-            yaf_param_map.set_float("cropmin_x", tex.crop_min_x)
-            yaf_param_map.set_float("cropmin_y", tex.crop_min_y)
-            yaf_param_map.set_float("cropmax_x", tex.crop_max_x)
-            yaf_param_map.set_float("cropmax_y", tex.crop_max_y)
-            yaf_param_map.set_bool("rot90", tex.use_flip_axis)
-            yaf_param_map.set_bool("mirror_x", tex.use_mirror_x)
-            yaf_param_map.set_bool("mirror_y", tex.use_mirror_y)
-            yaf_param_map.set_float("trilinear_level_bias", tex.yaf_trilinear_level_bias)
-            yaf_param_map.set_float("ewa_max_anisotropy", tex.yaf_ewa_max_anisotropy)
+            param_map.set_float("cropmin_x", tex.crop_min_x)
+            param_map.set_float("cropmin_y", tex.crop_min_y)
+            param_map.set_float("cropmax_x", tex.crop_max_x)
+            param_map.set_float("cropmax_y", tex.crop_max_y)
+            param_map.set_bool("rot90", tex.use_flip_axis)
+            param_map.set_bool("mirror_x", tex.use_mirror_x)
+            param_map.set_bool("mirror_y", tex.use_mirror_y)
+            param_map.set_float("trilinear_level_bias", tex.yaf_trilinear_level_bias)
+            param_map.set_float("ewa_max_anisotropy", tex.yaf_ewa_max_anisotropy)
 
-            textureConfigured = True
+            texture_configured = True
 
-        #yaf_param_map.set_bool("img_grayscale", tex.yaf_img_grayscale)
-        yaf_param_map.set_float("adj_mult_factor_red", tex.factor_red)
-        yaf_param_map.set_float("adj_mult_factor_green", tex.factor_green)
-        yaf_param_map.set_float("adj_mult_factor_blue", tex.factor_blue)
-        yaf_param_map.set_float("adj_intensity", tex.intensity)
-        yaf_param_map.set_float("adj_contrast", tex.contrast)
-        yaf_param_map.set_float("adj_saturation", tex.saturation)
-        yaf_param_map.set_float("adj_hue", math.degrees(tex.yaf_adj_hue))
-        yaf_param_map.set_bool("adj_clamp", tex.use_clamp)
+        # param_map.set_bool("img_grayscale", tex.yaf_img_grayscale)
+        param_map.set_float("adj_mult_factor_red", tex.factor_red)
+        param_map.set_float("adj_mult_factor_green", tex.factor_green)
+        param_map.set_float("adj_mult_factor_blue", tex.factor_blue)
+        param_map.set_float("adj_intensity", tex.intensity)
+        param_map.set_float("adj_contrast", tex.contrast)
+        param_map.set_float("adj_saturation", tex.saturation)
+        param_map.set_float("adj_hue", math.degrees(tex.yaf_adj_hue))
+        param_map.set_bool("adj_clamp", tex.use_clamp)
 
         if tex.use_color_ramp:
-            yaf_param_map.set_string("ramp_color_mode", tex.color_ramp.color_mode)
-            yaf_param_map.set_string("ramp_hue_interpolation", tex.color_ramp.hue_interpolation)
-            yaf_param_map.set_string("ramp_interpolation", tex.color_ramp.interpolation)
+            param_map.set_string("ramp_color_mode", tex.color_ramp.color_mode)
+            param_map.set_string("ramp_hue_interpolation", tex.color_ramp.hue_interpolation)
+            param_map.set_string("ramp_interpolation", tex.color_ramp.interpolation)
             i = 0
             for item in tex.color_ramp.elements:
-                yaf_param_map.set_color("ramp_item_" + str(i) + "_color", item.color[0], item.color[1], item.color[2], item.color[3])
-                yaf_param_map.set_float("ramp_item_" + str(i) + "_position", item.position)
+                param_map.set_color("ramp_item_" + str(i) + "_color", item.color[0], item.color[1], item.color[2],
+                                    item.color[3])
+                param_map.set_float("ramp_item_" + str(i) + "_position", item.position)
                 i += 1
-            yaf_param_map.set_int("ramp_num_items", i)
+            param_map.set_int("ramp_num_items", i)
 
-        if textureConfigured:
-            self.yaf_scene.createTexture(name, yaf_param_map)
-            self.loadedTextures.add(name)
+        if texture_configured:
+            self.scene_yafaray.create_texture(name, param_map)
 
-        return textureConfigured
+        return texture_configured
