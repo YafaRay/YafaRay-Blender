@@ -31,17 +31,17 @@ class MaterialControl:
     @staticmethod
     def get_used_textures(material):
         used_textures = []
-        if bpy.app.version >= (2, 80, 0):
-            if material.node_tree and False:
-                for node in material.node_tree.nodes:
-                    pprint(getmembers(node))
-                    if node.type.startswith(
-                            "TEX_IMAGE"):  # FIXME BLENDER >= v2.80 TEX_ but later getting .texture attribute does not work
-                        used_textures.append(node)
-        else:
-            for tex_slot in material.texture_slots:
-                if tex_slot and tex_slot.use and tex_slot.texture:
-                    used_textures.append(tex_slot)
+        # if bpy.app.version >= (2, 80, 0):
+        #     if material.node_tree:
+        #         for node in material.node_tree.nodes:
+        #             pprint(getmembers(node))
+        #             if node.type.startswith(
+        #                     "TEX_IMAGE"):  # FIXME BLENDER >= v2.80 TEX_ but later getting .texture attribute does not work
+        #                 used_textures.append(node)
+        # else:
+        for tex_slot in material.yafaray4.texture_slots:
+            if tex_slot and tex_slot.use and tex_slot.texture:
+                used_textures.append(tex_slot)
 
         return used_textures
 

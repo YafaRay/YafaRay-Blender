@@ -69,8 +69,6 @@ class SceneControl:
             self.world_control.export(self.scene_blender, self.scene_yafaray, self.is_preview)
 
     def export_texture(self, obj):
-        if bpy.app.version >= (2, 80, 0):
-            return None  # FIXME BLENDER >= v2.80
         # First export the textures of the materials type 'blend'
         for mat_slot in [m for m in obj.material_slots if m.material is not None]:
             if mat_slot.material.mat_type == 'blend':
@@ -102,7 +100,7 @@ class SceneControl:
                 continue
 
         for mat_slot in [m for m in obj.material_slots if m.material is not None]:
-            for tex in [t for t in mat_slot.material.texture_slots if (t and t.texture and t.use)]:
+            for tex in [t for t in mat_slot.material.yafaray4.texture_slots if (t and t.texture and t.use)]:
                 if self.is_preview and tex.texture.name == "fakeshadow":
                     continue
                 self.texture_control.write_texture(self.scene_blender, tex.texture)

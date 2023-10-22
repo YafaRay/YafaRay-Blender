@@ -56,7 +56,6 @@ class RenderEngine(bpy.types.RenderEngine):
         scene = SceneControl(self.is_preview, depsgraph, scene_yafaray, logger)
         scene.export_scene()
 
-
     # Blender callback. Render scene into an image
     # This is the method called by Blender for both final renders (F12) and
     # small preview for materials, world and lights.
