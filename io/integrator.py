@@ -3,13 +3,13 @@
 import bpy
 import libyafaray4_bindings
 
+
 class Integrator:
     def __init__(self, logger):
         self.yaf_integrator = None
         self.logger = logger
 
-    def exportIntegrator(self, scene, is_preview):
-
+    def export_integrator(self, scene, is_preview):
         param_map = libyafaray4_bindings.ParamMap()
 
         param_map.set_bool("bg_transp", scene.bg_transp)
@@ -58,13 +58,12 @@ class Integrator:
             param_map.set_int("diffuse_search", scene.intg_search)
             param_map.set_int("caustic_mix", scene.intg_caustic_mix)
             #
-            param_map.set_bool("finalGather", scene.intg_final_gather)            
+            param_map.set_bool("finalGather", scene.intg_final_gather)
             #
             if scene.intg_final_gather:
                 param_map.set_int("fg_bounces", scene.intg_fg_bounces)
                 param_map.set_int("fg_samples", scene.intg_fg_samples)
                 param_map.set_bool("show_map", scene.intg_show_map)
-                
 
         elif light_type == "Pathtracing":
             param_map.set_string("type", "pathtracing")
@@ -73,19 +72,19 @@ class Integrator:
             param_map.set_int("russian_roulette_min_bounces", scene.intg_russian_roulette_min_bounces)
             param_map.set_bool("no_recursive", scene.intg_no_recursion)
 
-            #-- test for simplify code
-            causticTypeStr = scene.intg_caustic_method
-            switchCausticType = {
+            # -- test for simplify code
+            caustic_type_str = scene.intg_caustic_method
+            switch_caustic_type = {
                 'None': 'none',
                 'Path': 'path',
                 'Photon': 'photon',
                 'Path+Photon': 'both',
             }
 
-            causticType = switchCausticType.get(causticTypeStr)
-            param_map.set_string("caustic_type", causticType)
+            caustic_type = switch_caustic_type.get(caustic_type_str)
+            param_map.set_string("caustic_type", caustic_type)
 
-            if causticType not in {'none', 'path'}:
+            if caustic_type not in {'none', 'path'}:
                 param_map.set_int("caustic_photons", scene.intg_photons)
                 param_map.set_int("caustic_mix", scene.intg_caustic_mix)
                 param_map.set_int("caustic_depth", scene.intg_caustic_depth)
@@ -114,15 +113,12 @@ class Integrator:
         else:
             integrator_name = "Blender Preview SurfaceIntegrator"
 
-        self.yaf_integrator = libyafaray4_bindings.SurfaceIntegrator(self.logger, "Blender Main SurfaceIntegrator", param_map)
+        self.yaf_integrator = libyafaray4_bindings.SurfaceIntegrator(self.logger, integrator_name, param_map)
         return True
 
-    def exportVolumeIntegrator(self, scene_blender, scene_yafaray):
-        
+    def export_volume_integrator(self, scene_blender, scene_yafaray):
         param_map = libyafaray4_bindings.ParamMap()
-
         world = scene_blender.world
-
         if world:
             vint_type = world.v_int_type
             self.logger.print_info("Exporting Volume Integrator: {0}".format(vint_type))

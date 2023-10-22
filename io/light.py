@@ -26,7 +26,7 @@ def multiplyMatrix4x4Vector4(matrix, vector):
 class LightControl:
     def __init__(self, depsgraph, scene_yafaray, logger, is_preview):
         self.depsgraph = depsgraph
-        self.scene = scene_from_depsgraph(depsgraph)
+        self.scene_blender = scene_from_depsgraph(depsgraph)
         self.scene_yafaray = scene_yafaray
         self.logger = logger
         self.lightMatName = None

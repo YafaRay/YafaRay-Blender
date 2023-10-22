@@ -13,7 +13,7 @@ class ObjectControl(object):
     def __init__(self, depsgraph, scene_yafaray, logger, is_preview):
         self.logger = logger
         self.depsgraph = depsgraph
-        self.scene = scene_from_depsgraph(depsgraph)
+        self.scene_blender = scene_from_depsgraph(depsgraph)
         self.scene_yafaray = scene_yafaray
         self.is_preview = is_preview
 
@@ -198,7 +198,7 @@ class ObjectControl(object):
 
         param_map.set_float("sigma_a", obj.vol_absorp)
         param_map.set_float("sigma_s", obj.vol_scatter)
-        param_map.set_int("attgridScale", self.scene.world.v_int_attgridres)
+        param_map.set_int("attgridScale", self.scene_blender.world.v_int_attgridres)
 
         # Calculate BoundingBox: get the low corner (minx, miny, minz)
         # and the up corner (maxx, maxy, maxz) then apply object scale,
@@ -207,7 +207,7 @@ class ObjectControl(object):
         if bpy.app.version >= (2, 80, 0):
             mesh = obj.to_mesh(preserve_all_data_layers=True, depsgraph=self.depsgraph)
         else:
-            mesh = obj.to_mesh(self.scene, True, 'RENDER')
+            mesh = obj.to_mesh(self.scene_blender, True, 'RENDER')
         matrix = obj.matrix_world.copy()
         mesh.transform(matrix)
 
@@ -253,7 +253,7 @@ class ObjectControl(object):
                     bpy.data.meshes.remove(mesh, do_unlink=False)
                     return
         else:
-            mesh = obj.to_mesh(self.scene, True, 'RENDER')
+            mesh = obj.to_mesh(self.scene_blender, True, 'RENDER')
             # test for UV Map after BMesh API changes
             uv_texture = mesh.tessface_uv_textures if 'tessface_uv_textures' in dir(mesh) else mesh.uv_textures
             # test for faces after BMesh API changes
@@ -344,7 +344,7 @@ class ObjectControl(object):
             else:
                 self.scene_yafaray.add_vertex(object_id, v.co[0], v.co[1], v.co[2])
 
-        if self.scene.adv_scene_mesh_tesselation == "triangles_only":
+        if self.scene_blender.adv_scene_mesh_tesselation == "triangles_only":
             triangles_only = True
         else:
             triangles_only = False
@@ -397,10 +397,10 @@ class ObjectControl(object):
             bpy.data.meshes.remove(mesh, do_unlink=False)
 
         if obj.motion_blur_bezier:
-            frame_current = self.scene.frame_current
+            frame_current = self.scene_blender.frame_current
             for time_step in range(1, 3):
-                self.scene.frame_set(frame_current, 0.5 * time_step)
-                mesh = self.scene.objects[obj.name].to_mesh(self.scene, True, 'RENDER')
+                self.scene_blender.frame_set(frame_current, 0.5 * time_step)
+                mesh = self.scene_blender.objects[obj.name].to_mesh(self.scene_blender, True, 'RENDER')
                 mesh.update(calc_tessface=True)
                 if obj.matrix_world is not None:
                     mesh.transform(obj.matrix_world)
@@ -413,7 +413,7 @@ class ObjectControl(object):
                     pass  # FIXME BLENDER >= v2.80
                 else:
                     bpy.data.meshes.remove(mesh, do_unlink=False)
-            self.scene.frame_set(frame_current, 0.0)
+            self.scene_blender.frame_set(frame_current, 0.0)
         self.scene_yafaray.init_object(object_id, 0)
 
         if is_smooth and auto_smooth_enabled:
@@ -428,7 +428,7 @@ class ObjectControl(object):
 
         ymaterial = "defaultMat"
 
-        #if self.scene.gs_clay_render:
+        #if self.scene_blender.gs_clay_render:
         #    ymaterial = self.materialMap["clay"]
         if len(meshMats) and meshMats[matIndex]:
             mat = meshMats[matIndex]
@@ -489,15 +489,15 @@ class ObjectControl(object):
                             yi.add_vertex(vertex[0], vertex[1], vertex[2])
 
                         if object.motion_blur_bezier:
-                            frame_current = self.scene.frame_current
+                            frame_current = self.scene_blender.frame_current
                             for time_step in range(1, 3):
-                                self.scene.frame_set(frame_current, 0.5 * time_step)
+                                self.scene_blender.frame_set(frame_current, 0.5 * time_step)
                                 matrix = object.matrix_world.copy()
                                 for particle in pSys.particles:
                                     for location in particle.hair_keys:
                                         vertex = matrix * location.co  # use reverse vector multiply order, API changed with rev. 38674
                                         yi.add_vertexTimeStep(vertex[0], vertex[1], vertex[2], time_step)
-                            self.scene.frame_set(frame_current, 0.0)
+                            self.scene_blender.frame_set(frame_current, 0.0)
 
                         yi.endObject()
                     # TODO: keep object smooth
