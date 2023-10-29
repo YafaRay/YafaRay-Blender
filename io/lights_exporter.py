@@ -23,7 +23,7 @@ def multiplyMatrix4x4Vector4(matrix, vector):
     return result
 
 
-class LightControl:
+class LightsExporter:
     def __init__(self, depsgraph, scene_yafaray, logger, is_preview):
         self.depsgraph = depsgraph
         self.scene_blender = scene_from_depsgraph(depsgraph)

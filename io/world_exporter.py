@@ -8,7 +8,7 @@ from bpy.path import abspath
 from ..util.io import scene_from_depsgraph
 
 
-class WorldControl:
+class WorldExporter:
     def __init__(self, depsgraph, scene_yafaray, logger, is_preview):
         self.depsgraph = depsgraph
         self.scene_blender = scene_from_depsgraph(depsgraph)

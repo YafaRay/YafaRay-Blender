@@ -9,7 +9,7 @@ from ..util.io import scene_from_depsgraph
 from .. import global_vars
 
 
-class ObjectControl(object):
+class ObjectsExporter(object):
     def __init__(self, depsgraph, scene_yafaray, logger, is_preview):
         self.logger = logger
         self.depsgraph = depsgraph

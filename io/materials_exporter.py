@@ -19,7 +19,7 @@ def proj2int(val):
         return 3
 
 
-class MaterialControl:
+class MaterialsExporter:
     def __init__(self, depsgraph, scene_yafaray, logger, material_set, is_preview):
         self.depsgraph = depsgraph
         self.scene_blender = scene_from_depsgraph(depsgraph)

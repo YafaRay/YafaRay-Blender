@@ -4,7 +4,7 @@ import bpy
 import libyafaray4_bindings
 
 
-class Integrator:
+class IntegratorExporter:
     def __init__(self, logger):
         self.yaf_integrator = None
         self.logger = logger

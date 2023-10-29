@@ -107,7 +107,7 @@ def get_render_coords(scene_blender):
     return [size_x, size_y, b_start_x, b_start_y, b_size_x, b_size_y, cam_data]
 
 
-class Film:
+class FilmExporter:
     def __init__(self, film_yafaray, logger, is_preview):
         self.film_yafaray = film_yafaray
         self.logger = logger

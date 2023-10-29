@@ -10,7 +10,7 @@ if bpy.app.version >= (2, 80, 0):
     from gpu_extras.presets import draw_texture_2d
 import libyafaray4_bindings
 from ..util.io import scene_from_depsgraph
-from .scene import SceneControl
+from .scene_exporter import SceneExporter
 
 logger_render = libyafaray4_bindings.Logger()
 logger_preview = libyafaray4_bindings.Logger()
@@ -53,7 +53,7 @@ class RenderEngine(bpy.types.RenderEngine):
         else:
             scene_yafaray = scene_render
             logger = logger_render
-        scene = SceneControl(self.is_preview, depsgraph, scene_yafaray, logger)
+        scene = SceneExporter(self.is_preview, depsgraph, scene_yafaray, logger)
         scene.export_scene()
 
     # Blender callback. Render scene into an image

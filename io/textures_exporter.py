@@ -26,7 +26,7 @@ def noise2string(ntype):
     return a.get(ntype, 'newperlin')
 
 
-class TextureControl:
+class TexturesExporter:
     def __init__(self, scene_yafaray, logger):
         self.scene_yafaray = scene_yafaray
         self.logger = logger
