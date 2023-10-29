@@ -263,3 +263,31 @@ class SceneExporter:
             for mat_slot in obj.material_slots:
                 if mat_slot.material not in self.material_set:
                     self.materials_exporter.export_material(mat_slot.material)
+
+    def export_volume_integrator(self):
+        param_map = libyafaray4_bindings.ParamMap()
+        world = self.scene_blender.world
+        if world:
+            vint_type = world.v_int_type
+            self.logger.print_info("Exporting Volume Integrator: {0}".format(vint_type))
+
+            if vint_type == 'Single Scatter':
+                param_map.set_string("type", "SingleScatterIntegrator")
+                param_map.set_float("stepSize", world.v_int_step_size)
+                param_map.set_bool("adaptive", world.v_int_adaptive)
+                param_map.set_bool("optimize", world.v_int_optimize)
+
+            elif vint_type == 'Sky':
+                param_map.set_string("type", "SkyIntegrator")
+                param_map.set_float("turbidity", world.v_int_dsturbidity)
+                param_map.set_float("stepSize", world.v_int_step_size)
+                param_map.set_float("alpha", world.v_int_alpha)
+                param_map.set_float("sigma_t", world.v_int_scale)
+
+            else:
+                param_map.set_string("type", "none")
+        else:
+            param_map.set_string("type", "none")
+
+        self.scene_yafaray.defineVolumeIntegrator(self.scene_yafaray, param_map)
+        return True
