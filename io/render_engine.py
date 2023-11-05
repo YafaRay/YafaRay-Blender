@@ -53,8 +53,8 @@ class RenderEngine(bpy.types.RenderEngine):
         else:
             scene_yafaray = scene_render
             logger = logger_render
-        scene = SceneExporter(self.is_preview, depsgraph, scene_yafaray, logger)
-        scene.export_scene()
+        scene_exporter = SceneExporter(self.is_preview, depsgraph, scene_yafaray, logger)
+        scene_exporter.export_scene()
 
     # Blender callback. Render scene into an image
     # This is the method called by Blender for both final renders (F12) and
@@ -271,9 +271,11 @@ class CustomDrawData:
         width, height = dimensions
 
         pixels = width * height * array.array('f', [0.1, 0.2, 0.1, 1.0])
+        # noinspection PyArgumentList
         pixels = gpu.types.Buffer('FLOAT', width * height * 4, pixels)
 
         # Generate texture
+        # noinspection PyArgumentList
         self.texture = gpu.types.GPUTexture((width, height), format='RGBA16F', data=pixels)
 
         # Note: This is just a didactic example.
@@ -284,6 +286,7 @@ class CustomDrawData:
         del self.texture
 
     def draw(self):
+        # noinspection PyTypeChecker
         draw_texture_2d(self.texture, (0, 0), self.texture.width, self.texture.height)
 
 
