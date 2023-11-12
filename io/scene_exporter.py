@@ -5,13 +5,13 @@ import platform
 import bpy
 import libyafaray4_bindings
 
-from .. import YAFARAY_BLENDER_VERSION
-from ..util.io import scene_from_depsgraph
-from .texture_exporter import export_texture
+from .light_exporter import export_light
 from .materials_exporter import MaterialsExporter
 from .object_exporter import export_object, export_mesh, export_instance, export_instance_base, add_instance_matrix
-from .light_exporter import export_light
+from .texture_exporter import export_texture
 from .world_exporter import export_world
+from .. import YAFARAY_BLENDER_VERSION
+from ..util.io import scene_from_depsgraph
 
 
 class SceneExporter:
@@ -68,6 +68,7 @@ class SceneExporter:
         for mat_slot in [m for m in obj.material_slots if m.material is not None]:
             if mat_slot.material.mat_type == 'blend':
                 mat_error = False
+                # noinspection PyBroadException
                 try:
                     mat1 = bpy.data.materials[mat_slot.material.material1name]
                 except Exception:
@@ -76,6 +77,7 @@ class SceneExporter:
                         "Could not find the first material:\"{1}\"".format(
                             mat_slot.material.name, mat_slot.material.material1name))
                     mat_error = True
+                # noinspection PyBroadException
                 try:
                     mat2 = bpy.data.materials[mat_slot.material.material2name]
                 except Exception:
@@ -145,8 +147,8 @@ class SceneExporter:
         self.logger.print_info("Exporter: Processing Geometry...")
 
         # export only visible objects
-        base_ids = {}
-        dup_base_ids = {}
+        base_names = set()
+        dup_base_names = set()
 
         if bpy.app.version >= (2, 80, 0):
             visible_objects = [o.object for o in self.depsgraph.object_instances if not (
@@ -183,27 +185,18 @@ class SceneExporter:
 
                         if not self.scene_blender.use_instances:
                             matrix = obj_dupli.matrix.copy()
-                            export_mesh(
-                                self.depsgraph,
-                                self.scene_yafaray,
-                                self.logger,
-                                self.is_preview,
-                                obj_dupli.object, matrix,
-                                obj_dupli.object.name + "_" + str(idx))
+                            export_mesh(self.depsgraph, self.scene_yafaray, self.logger, self.is_preview,
+                                        obj_dupli.object, matrix,
+                                        obj_dupli.object.name + "_" + str(idx))
                         else:
-                            if obj_dupli.object.name not in dup_base_ids:
-                                dup_base_ids[obj_dupli.object.name] = export_instance_base(
-                                    self.depsgraph,
-                                    self.scene_yafaray,
-                                    self.logger,
-                                    self.is_preview,
-                                    self.scene_yafaray.get_object_id(obj_dupli.object.name), obj_dupli.object)
+                            if obj_dupli.object.name not in dup_base_names:
+                                dup_base_names.add(obj_dupli.object.name)
+                                export_instance_base(self.depsgraph, self.scene_yafaray, self.logger, self.is_preview,
+                                                     obj_dupli.object)
                             matrix = obj_dupli.matrix.copy()
                             if time_step == 0:
-                                instance_id = export_instance(
-                                    self.scene_yafaray,
-                                    self.logger,
-                                    dup_base_ids[obj_dupli.object.name], matrix, obj_dupli.object.name)
+                                instance_id = export_instance(self.scene_yafaray, self.logger, matrix,
+                                                              obj_dupli.object.name)
                                 instance_ids.append(instance_id)
                             elif obj.motion_blur_bezier:
                                 add_instance_matrix(self.scene_yafaray, self.logger, instance_ids[idx],
@@ -230,31 +223,25 @@ class SceneExporter:
             # Exporting objects with shared mesh data blocks as instances
             elif obj.data.users > 1 and self.scene_blender.use_instances:
                 self.logger.printVerbose("Processing shared mesh data node object: {0}".format(obj.name))
-                if obj.data.name not in base_ids:
-                    base_ids[obj.data.name] = export_instance_base(
-                        self.depsgraph,
-                        self.scene_yafaray,
-                        self.logger,
-                        self.is_preview,
-                        self.scene_yafaray.get_object_id(obj.data.name), obj)
+                if obj.data.name not in base_names:
+                    self.add = base_names.add(obj.data.name)
+                    export_instance_base(self.depsgraph, self.scene_yafaray, self.logger, self.is_preview, obj)
 
-                if obj.name not in dup_base_ids:
+                if obj.name not in dup_base_names:
                     matrix = obj.matrix_world.copy()
-                    instance_id = export_instance(self.scene_yafaray, self.logger,
-                                                  self.scene_yafaray.get_object_id(obj.name),
-                                                  matrix, base_ids[obj.data.name])
+                    instance_id = export_instance(self.scene_yafaray, self.logger, matrix, obj.data.name)
                     if obj.motion_blur_bezier:
                         frame_current = self.scene_blender.frame_current
                         self.scene_blender.frame_set(frame_current, 0.5)
                         matrix = obj.matrix_world.copy()
-                        add_instance_matrix(instance_id, matrix, 0.5)
+                        add_instance_matrix(self.scene_yafaray, self.logger, instance_id, matrix, 0.5)
                         self.scene_blender.frame_set(frame_current, 1.0)
                         matrix = obj.matrix_world.copy()
-                        add_instance_matrix(instance_id, matrix, 1.0)
+                        add_instance_matrix(self.scene_yafaray, self.logger, instance_id, matrix, 1.0)
                         self.scene_blender.frame_set(frame_current, 0.0)
 
-            elif obj.data.name not in base_ids and obj.name not in dup_base_ids:
-                export_object(obj)
+            elif obj.data.name not in base_names and obj.name not in dup_base_names:
+                export_object(self.depsgraph, self.scene_yafaray, self.logger, self.is_preview, obj)
 
     def export_materials(self):
         self.logger.print_info("Exporter: Processing Materials...")

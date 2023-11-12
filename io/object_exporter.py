@@ -51,24 +51,23 @@ def export_object(depsgraph, scene_yafaray, logger, is_preview, obj):
             export_mesh(depsgraph, scene_yafaray, logger, is_preview, obj, matrix)
 
 
-def export_instance_base(depsgraph, scene_yafaray, logger, is_preview, obj_id, obj):
-    logger.print_info("Exporting Base Mesh: {0} with ID: {1}".format(obj.name, obj_id))
+def export_instance_base(depsgraph, scene_yafaray, logger, is_preview, obj):
+    logger.print_info("Exporting Base Mesh: {0}".format(obj.name))
     # Create this geometry object as a base object for instances
-    write_geometry(depsgraph, scene_yafaray, is_preview, obj_id, obj, None, obj.pass_index,
+    write_geometry(depsgraph, scene_yafaray, is_preview, obj.name, obj, None, obj.pass_index,
                    None, "normal", True)  # We want the vertices in object space
-    return obj_id
 
 
-def export_instance(scene_yafaray, logger, obj_id, obj_to_world_matrix, base_obj_name):
+def export_instance(scene_yafaray, logger, obj_to_world_matrix, base_obj_name):
     obj_to_world = obj_to_world_matrix.to_4x4()
     # mat4.transpose() --> not needed anymore: matrix indexing changed with Blender rev.42816
     # o2w = get4x4Matrix(mat4)
     # yi.addInstance(base_obj_name, o2w)
     instance_id = scene_yafaray.createInstance()
-    object_id = scene_yafaray.getObjectId(base_obj_name)
+    object_id = scene_yafaray.get_object_id(base_obj_name)
     logger.printVerbose(
-        "Exporting Instance ID={0} of {1} [ID = {2}]".format(instance_id, base_obj_name, object_id))
-    scene_yafaray.addInstanceObject(instance_id, object_id)
+        "Exporting Instance ID={0} of {1} [Object ID = {2}]".format(instance_id, base_obj_name, object_id))
+    scene_yafaray.add_instance_object(instance_id, object_id)
     add_instance_matrix(scene_yafaray, logger, instance_id, obj_to_world, 0.0)
     return instance_id
 
@@ -83,17 +82,15 @@ def add_instance_matrix(scene_yafaray, logger, instance_id, obj_to_world_matrix,
                                       obj_to_world[2][0], obj_to_world[2][1], obj_to_world[2][2], obj_to_world[2][3],
                                       obj_to_world[3][0], obj_to_world[3][1], obj_to_world[3][2], obj_to_world[3][3],
                                       instance_time)
-    del obj_to_world
 
 
-def export_mesh(depsgraph, scene_yafaray, logger, is_preview, obj, matrix, obj_id=None):
-    if obj_id is None:
-        # Generate unique object ID
-        obj_id = obj.name
+def export_mesh(depsgraph, scene_yafaray, logger, is_preview, obj, matrix, obj_name=None):
+    if obj_name is None:
+        obj_name = obj.name
 
-    logger.print_info("Exporting Mesh: {0}".format(obj_id))
+    logger.print_info("Exporting Mesh: {0}".format(obj_name))
 
-    if is_preview and bpy.data.scenes[0].yafaray.preview.enable and "preview" in obj.name:
+    if is_preview and bpy.data.scenes[0].yafaray.preview.enable and "preview" in obj_name:
         mat_name = obj.active_material.name
 
         if bpy.data.scenes[0].yafaray.preview.preview_object != "" and \
@@ -103,7 +100,7 @@ def export_mesh(depsgraph, scene_yafaray, logger, is_preview, obj, matrix, obj_i
             preview_matrix[0][3] = 0
             preview_matrix[1][3] = 0
             preview_matrix[2][3] = 0
-            write_geometry(depsgraph, scene_yafaray, is_preview, obj_id, custom_obj, preview_matrix, obj.pass_index,
+            write_geometry(depsgraph, scene_yafaray, is_preview, obj_name, custom_obj, preview_matrix, obj.pass_index,
                            mat_name)
         else:
             preview_matrix = obj.matrix_world.copy()
@@ -111,9 +108,9 @@ def export_mesh(depsgraph, scene_yafaray, logger, is_preview, obj, matrix, obj_i
             preview_matrix[1][3] = 0
             preview_matrix[2][3] = 0
 
-            write_geometry(depsgraph, scene_yafaray, is_preview, obj_id, obj, preview_matrix, obj.pass_index)
+            write_geometry(depsgraph, scene_yafaray, is_preview, obj_name, obj, preview_matrix, obj.pass_index)
     else:
-        write_geometry(depsgraph, scene_yafaray, is_preview, obj_id, obj, matrix, obj.pass_index)
+        write_geometry(depsgraph, scene_yafaray, is_preview, obj_name, obj, matrix, obj.pass_index)
 
 
 def write_bg_portal(depsgraph, scene_yafaray, logger, is_preview, obj):
@@ -228,7 +225,7 @@ def write_volume_object(depsgraph, scene_yafaray, logger, obj):
         bpy.data.meshes.remove(mesh, do_unlink=False)
 
 
-def write_geometry(depsgraph, scene_yafaray, is_preview, obj_id, obj, matrix, pass_index, obj_mat=None,
+def write_geometry(depsgraph, scene_yafaray, is_preview, obj_name, obj, matrix, pass_index, obj_mat=None,
                    visibility="normal", is_base_object=False):
     is_smooth = False
     has_orco = False
@@ -342,7 +339,7 @@ def write_geometry(depsgraph, scene_yafaray, is_preview, obj_id, obj, matrix, pa
     param_map.set_string("visibility", visibility)
     param_map.set_int("object_index", pass_index)
     param_map.set_bool("motion_blur_bezier", obj.motion_blur_bezier)
-    object_id = scene_yafaray.create_object(str(obj_id), param_map)
+    object_id = scene_yafaray.create_object(obj_name, param_map)
 
     for ind, v in enumerate(mesh.vertices):
         if has_orco:
@@ -452,15 +449,15 @@ def get_face_material(mesh_mats, mat_index, mat_slots):
     return material_yafaray
 
 
-def write_particle_strands(scene_blender, scene_yafaray, logger, is_preview, obj):
+def write_particle_strands(depsgraph, scene_yafaray, logger, is_preview, obj):
     render_emitter = False
     if not hasattr(obj, 'particle_systems'):
         return
-    obj_id = scene_yafaray.get_object_id(obj.name)
     # Check for hair particles:
     for particle_system in obj.particle_systems:
         if bpy.app.version >= (2, 80, 0):
             continue  # FIXME BLENDER >= v2.80
+        scene_blender = scene_from_depsgraph(depsgraph)
         for mod in [m for m in obj.modifiers if (m is not None) and (m.type == 'PARTICLE_SYSTEM')]:
             if (particle_system.settings.render_type == 'PATH') and mod.show_render \
                     and (particle_system.name == mod.particle_system.name):
@@ -495,7 +492,7 @@ def write_particle_strands(scene_blender, scene_yafaray, logger, is_preview, obj
                     param_map.set_float("strand_shape", strand_shape)
                     param_map.set_int("num_vertices", len(particle.hair_keys))
                     param_map.set_bool("motion_blur_bezier", obj.motion_blur_bezier)
-                    strand_obj_id = scene_yafaray.create_object(obj.name + "_strand_" + str(strand_id))
+                    strand_obj_id = scene_yafaray.create_object(obj.name + "_strand_" + str(strand_id), param_map)
                     for location in particle.hair_keys:
                         vertex = matrix * location.co  # use reverse vector multiply order, API changed with rev. 38674
                         scene_yafaray.add_vertex(strand_obj_id, vertex[0], vertex[1], vertex[2])
@@ -521,9 +518,9 @@ def write_particle_strands(scene_blender, scene_yafaray, logger, is_preview, obj
                 if particle_system.settings.use_render_emitter:
                     render_emitter = True
             else:
-                export_mesh(scene_yafaray, logger, is_preview, obj, obj.matrix_world.copy(), obj_id)
+                export_mesh(depsgraph, scene_yafaray, logger, is_preview, obj, obj.matrix_world.copy())
 
     # We only need to render emitter object once
     if render_emitter:
         # ymat = materialMap["default"]  /* UNUSED */
-        export_mesh(scene_yafaray, logger, is_preview, obj, obj.matrix_world.copy(), obj_id)
+        export_mesh(depsgraph, scene_yafaray, logger, is_preview, obj, obj.matrix_world.copy())
