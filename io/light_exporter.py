@@ -9,16 +9,7 @@ import mathutils
 from bpy.path import abspath
 from mathutils import Vector
 
-
-def multiply_matrix4x4_vector4(matrix, vector):
-    result = mathutils.Vector((0.0, 0.0, 0.0, 0.0))
-    if bpy.app.version >= (2, 80, 0):
-        for i in range(4):
-            result[i] = vector @ matrix[i]  # use reverse vector multiply order, API changed with rev. 38674
-    else:
-        for i in range(4):
-            result[i] = vector * matrix[i]  # use reverse vector multiply order, API changed with rev. 38674
-    return result
+from ..util.math import multiply_matrix4x4_vector4
 
 
 def make_sphere(scene_yafaray, nu, nv, x, y, z, rad, mat):
@@ -109,6 +100,7 @@ def export_light(light_blender, scene_yafaray, logger, is_preview, matrix=None):
 
     logger.print_info("Exporting Light: {0} [{1}]".format(name, light_type))
 
+    light_mat_name = None
     if light.create_geometry:  # and not lightMat:
         param_map = libyafaray4_bindings.ParamMap()
         param_map_list = libyafaray4_bindings.ParamMapList()
@@ -125,7 +117,7 @@ def export_light(light_blender, scene_yafaray, logger, is_preview, matrix=None):
     if light_type == "point":
         param_map.set_string("type", "pointlight")
         if getattr(light, "use_sphere", False):
-            if light.create_geometry:
+            if light.create_geometry and light_mat_name:
                 object_name = make_sphere(scene_yafaray, 24, 48, pos[0], pos[1], pos[2],
                                           light.yaf_sphere_radius, light_mat_name)
                 param_map.set_string("object_name", object_name)
@@ -144,7 +136,6 @@ def export_light(light_blender, scene_yafaray, logger, is_preview, matrix=None):
             angle = degrees(light.spot_size) * 0.5
 
         param_map.set_string("type", "spotlight")
-
         param_map.set_float("cone_angle", angle)
         param_map.set_float("blend", light.spot_blend)
         param_map.set_vector("to", to[0], to[1], to[2])
