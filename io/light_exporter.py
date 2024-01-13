@@ -237,6 +237,6 @@ def export_light(light_blender, scene_yafaray, logger, is_preview, matrix=None):
     param_map.set_bool("with_caustic", light.caustic_photons)
     param_map.set_bool("with_diffuse", light.diffuse_photons)
     param_map.set_bool("photon_only", light.photon_only)
-    scene_yafaray.export_light(name, param_map)
+    scene_yafaray.create_light(name, param_map)
 
     return True
