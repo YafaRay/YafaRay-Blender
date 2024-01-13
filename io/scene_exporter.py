@@ -6,7 +6,7 @@ import bpy
 import libyafaray4_bindings
 
 from .light_exporter import export_light
-from .materials_exporter import MaterialsExporter
+from .materials_exporter import export_material
 from .object_exporter import export_object, export_mesh, export_instance, export_instance_base, add_instance_matrix
 from .texture_exporter import export_texture
 from .world_exporter import export_world
@@ -22,8 +22,6 @@ class SceneExporter:
         self.scene_blender = scene_from_depsgraph(depsgraph)
         self.scene_yafaray = scene_yafaray
         self.material_set = set()
-        self.materials_exporter = MaterialsExporter(self.depsgraph, self.scene_yafaray, self.logger,
-                                                    self.material_set, self.is_preview)
 
         if self.is_preview:
             self.logger.set_console_verbosity_level(self.logger.log_level_from_string("debug"))
@@ -181,7 +179,8 @@ class SceneExporter:
                         self.export_texture(obj_dupli.object)
                         for mat_slot in obj_dupli.object.material_slots:
                             if mat_slot.material not in self.material_set:
-                                self.materials_exporter.export_material(mat_slot.material)
+                                export_material(mat_slot.material, self.material_set, self.scene_blender,
+                                                self.scene_yafaray, self.logger, self.is_preview)
 
                         if not self.scene_blender.use_instances:
                             matrix = obj_dupli.matrix.copy()
@@ -224,7 +223,7 @@ class SceneExporter:
             elif obj.data.users > 1 and self.scene_blender.use_instances:
                 self.logger.printVerbose("Processing shared mesh data node object: {0}".format(obj.name))
                 if obj.data.name not in base_names:
-                    self.add = base_names.add(obj.data.name)
+                    base_names.add(obj.data.name)
                     export_instance_base(self.depsgraph, self.scene_yafaray, self.logger, self.is_preview, obj)
 
                 if obj.name not in dup_base_names:
@@ -262,7 +261,8 @@ class SceneExporter:
         for obj in self.scene_blender.objects:
             for mat_slot in obj.material_slots:
                 if mat_slot.material not in self.material_set:
-                    self.materials_exporter.export_material(mat_slot.material)
+                    export_material(mat_slot.material, self.material_set, self.scene_blender, self.scene_yafaray,
+                                    self.logger, self.is_preview)
 
     def export_volume_integrator(self):
         param_map = libyafaray4_bindings.ParamMap()
