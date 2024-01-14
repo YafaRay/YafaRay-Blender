@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import array
+from .integrator_exporter import export_integrator
 
 # TODO: Use Blender enumerators if any
 import bpy
@@ -71,19 +72,10 @@ class RenderEngine(bpy.types.RenderEngine):
         size_x = int(scene_blender.render.resolution_x * scale)
         size_y = int(scene_blender.render.resolution_y * scale)
 
-        param_map = libyafaray4_bindings.ParamMap()
-        # Creating SurfaceIntegrator #
-        param_map.clear()
-        param_map.set_string("type", "photonmapping")
-        # param_map.set_int("AA_minsamples",  50)
-        param_map.set_int("AA_passes", 5)
-        param_map.set_int("AA_inc_samples", 2)
-        param_map.set_float("AA_threshold", 0.05)
-        param_map.set_int("threads", -1)
-        param_map.set_int("threads_photons", -1)
-        surface_integrator = libyafaray4_bindings.SurfaceIntegrator(logger, "SurfaceIntegrator1", param_map)
+        surface_integrator = export_integrator("SurfaceIntegrator1", scene_blender, logger)
 
         # Creating volume integrator #
+        param_map = libyafaray4_bindings.ParamMap()
         param_map.clear()
         param_map.set_string("type", "none")
         surface_integrator.define_volume_integrator(scene_yafaray, param_map)
