@@ -36,9 +36,7 @@ class SceneExporter:
                 self.logger.log_level_from_string(self.scene_blender.yafaray4.logging.log_verbosity))
             self.logger.print_info("YafaRay-Blender (v" + YAFARAY_BLENDER_VERSION + ")")
             self.logger.print_info(
-                "Exporter: Blender version " + str(bpy.app.version[0]) + "." + str(bpy.app.version[1]) + "." + str(
-                    bpy.app.version[
-                        2]) + "." + bpy.app.version_char + "  Build information: " + bpy.app.build_platform.decode(
+                "Exporter: Blender version " + bpy.app.version_string + "  Build information: " + bpy.app.build_platform.decode(
                     "utf-8") + ", " + bpy.app.build_type.decode("utf-8") + ", branch: " + bpy.app.build_branch.decode(
                     "utf-8") + ", hash: " + bpy.app.build_hash.decode("utf-8"))
             self.logger.print_info(
