@@ -12,6 +12,7 @@ if bpy.app.version >= (2, 80, 0):
 import libyafaray4_bindings
 from ..util.io import scene_from_depsgraph
 from .scene_exporter import SceneExporter
+from .film_exporter import FilmExporter
 
 logger_render = libyafaray4_bindings.Logger()
 logger_preview = libyafaray4_bindings.Logger()
@@ -82,7 +83,7 @@ class RenderEngine(bpy.types.RenderEngine):
 
         # Creating Film #
         param_map.clear()
-        film = libyafaray4_bindings.Film(logger, surface_integrator, "Film1", param_map)
+        film = FilmExporter("Film1", param_map, scene_blender, surface_integrator, logger, self.is_preview)
 
         # Creating camera #
         param_map.clear()
@@ -93,12 +94,12 @@ class RenderEngine(bpy.types.RenderEngine):
         param_map.set_vector("from", 8.6, -7.2, 8.1)
         param_map.set_vector("to", 8.0, -6.7, 7.6)
         param_map.set_vector("up", 8.3, -6.8, 9)
-        film.define_camera(param_map)
+        film.film_yafaray.define_camera(param_map)
 
         # Creating image output #
         param_map.clear()
         param_map.set_string("image_path", "./test01-output1.tga")
-        film.create_output("output1_tga", param_map)
+        film.film_yafaray.create_output("output1_tga", param_map)
 
         # Creating RenderControl #
         render_control = libyafaray4_bindings.RenderControl()
@@ -114,7 +115,7 @@ class RenderEngine(bpy.types.RenderEngine):
         scene_modified_flags = scene_yafaray.check_and_clear_modified_flags()
         scene_yafaray.preprocess(render_control, scene_modified_flags)
         surface_integrator.preprocess(render_monitor, render_control, scene_yafaray)
-        surface_integrator.render(render_control, render_monitor, film)
+        surface_integrator.render(render_control, render_monitor, film.film_yafaray)
 
         if self.is_preview:
             self.render_preview(scene_blender, size_x, size_y)
