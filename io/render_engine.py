@@ -82,19 +82,13 @@ class RenderEngine(bpy.types.RenderEngine):
         surface_integrator.define_volume_integrator(scene_yafaray, param_map)
 
         # Creating Film #
+        film = FilmExporter("Film1", scene_blender, surface_integrator, logger, self.is_preview)
         param_map.clear()
-        film = FilmExporter("Film1", param_map, scene_blender, surface_integrator, logger, self.is_preview)
+        film.export_aa(scene_blender, param_map)
+        film.export_render_settings(depsgraph, "", "")
 
         # Creating camera #
-        param_map.clear()
-        param_map.set_string("type", "perspective")
-        param_map.set_int("resx", size_x)
-        param_map.set_int("resy", size_y)
-        param_map.set_float("focal", 1.1)
-        param_map.set_vector("from", 8.6, -7.2, 8.1)
-        param_map.set_vector("to", 8.0, -6.7, 7.6)
-        param_map.set_vector("up", 8.3, -6.8, 9)
-        film.film_yafaray.define_camera(param_map)
+        film.define_camera(scene_blender.camera, scene_blender.render.resolution_x, scene_blender.render.resolution_y, scene_blender.render.resolution_percentage, False, None) #FIXME
 
         # Creating image output #
         param_map.clear()

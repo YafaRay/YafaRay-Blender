@@ -108,13 +108,15 @@ def get_render_coords(scene_blender):
 
 
 class FilmExporter:
-    def __init__(self, film_name, param_map, scene_blender, surface_integrator_yafaray, logger, is_preview):
+    def __init__(self, film_name, scene_blender, surface_integrator_yafaray, logger, is_preview):
         self.scene_blender = scene_blender
         self.logger = logger
         self.is_preview = is_preview
-        self.film_yafaray = libyafaray4_bindings.Film(logger, surface_integrator_yafaray, film_name, param_map)
+        self.film_name = film_name
+        self.surface_integrator_yafaray = surface_integrator_yafaray
+        self.film_yafaray = None
 
-    def define_camera(self, camera, res_x, res_y, res_percentage, use_view_to_render, view_matrix):
+    def define_camera(self, camera_blender, res_x, res_y, res_percentage, use_view_to_render, view_matrix):
         if use_view_to_render and view_matrix:
             # use the view matrix to calculate the inverted transformed
             # points cam pos (0,0,0), front (0,0,1) and up (0,1,0)
@@ -132,7 +134,7 @@ class FilmExporter:
 
         else:
             # get cam worldspace transformation matrix, e.g. if cam is parented matrix_local does not work
-            matrix = camera.matrix_world.copy()
+            matrix = camera_blender.matrix_world.copy()
             # matrix indexing (row, colums) changed in Blender rev.42816, for explanation see also:
             # http://wiki.blender.org/index.php/User:TrumanBlending/Matrix_Indexing
             pos = matrix.col[3]
@@ -151,62 +153,62 @@ class FilmExporter:
             param_map.set_float("focal", 0.7)
 
         else:
-            cam_type = camera.camera_type
+            cam_type = camera_blender.data.camera_type
 
             param_map.set_string("type", cam_type)
 
-            if camera.use_clipping:
-                param_map.set_float("nearClip", camera.clip_start)
-                param_map.set_float("farClip", camera.clip_end)
+            if camera_blender.data.use_clipping:
+                param_map.set_float("nearClip", camera_blender.data.clip_start)
+                param_map.set_float("farClip", camera_blender.data.clip_end)
 
             if cam_type == "orthographic":
-                param_map.set_float("scale", camera.ortho_scale)
+                param_map.set_float("scale", camera_blender.data.ortho_scale)
 
             elif cam_type in {"perspective", "architect"}:
                 # Blenders GSOC 2011 project "tomato branch" merged into trunk.
                 # Check for sensor settings and use them in yafaray exporter also.
-                if camera.sensor_fit == 'AUTO':
+                if camera_blender.data.sensor_fit == 'AUTO':
                     horizontal_fit = (x > y)
-                    sensor_size = camera.sensor_width
-                elif camera.sensor_fit == 'HORIZONTAL':
+                    sensor_size = camera_blender.data.sensor_width
+                elif camera_blender.data.sensor_fit == 'HORIZONTAL':
                     horizontal_fit = True
-                    sensor_size = camera.sensor_width
+                    sensor_size = camera_blender.data.sensor_width
                 else:
                     horizontal_fit = False
-                    sensor_size = camera.sensor_height
+                    sensor_size = camera_blender.data.sensor_height
 
                 if horizontal_fit:
                     f_aspect = 1.0
                 else:
                     f_aspect = x / y
 
-                param_map.set_float("focal", camera.lens / (f_aspect * sensor_size))
+                param_map.set_float("focal", camera_blender.data.lens / (f_aspect * sensor_size))
 
                 # DOF params, only valid for real camera
                 # use DOF object distance if present or fixed DOF
                 if bpy.app.version >= (2, 80, 0):
                     pass  # FIXME BLENDER >= v2.80
                 else:
-                    if camera.dof_object is not None:
+                    if camera_blender.data.dof_object is not None:
                         # use DOF object distance
-                        dist = (pos.xyz - camera.dof_object.location.xyz).length
+                        dist = (pos.xyz - camera_blender.data.dof_object.location.xyz).length
                         dof_distance = dist
                     else:
                         # use fixed DOF distance
-                        dof_distance = camera.dof_distance
+                        dof_distance = camera_blender.data.dof_distance
                     param_map.set_float("dof_distance", dof_distance)
 
-                param_map.set_float("aperture", camera.aperture)
+                param_map.set_float("aperture", camera_blender.data.aperture)
                 # bokeh params
-                param_map.set_string("bokeh_type", camera.bokeh_type)
-                param_map.set_float("bokeh_rotation", camera.bokeh_rotation)
+                param_map.set_string("bokeh_type", camera_blender.data.bokeh_type)
+                param_map.set_float("bokeh_rotation", camera_blender.data.bokeh_rotation)
 
             elif cam_type == "angular":
-                param_map.set_bool("circular", camera.circular)
-                param_map.set_bool("mirrored", camera.mirrored)
-                param_map.set_string("projection", camera.angular_projection)
-                param_map.set_float("max_angle", camera.max_angle)
-                param_map.set_float("angle", camera.angular_angle)
+                param_map.set_bool("circular", camera_blender.data.circular)
+                param_map.set_bool("mirrored", camera_blender.data.mirrored)
+                param_map.set_string("projection", camera_blender.data.angular_projection)
+                param_map.set_float("max_angle", camera_blender.data.max_angle)
+                param_map.set_float("angle", camera_blender.data.angular_angle)
 
         param_map.set_int("resx", x)
         param_map.set_int("resy", y)
@@ -226,7 +228,7 @@ class FilmExporter:
         param_map.set_vector("from", pos[0], pos[1], pos[2])
         param_map.set_vector("up", up[0], up[1], up[2])
         param_map.set_vector("to", to[0], to[1], to[2])
-        self.film_yafaray.defineCamera(param_map)
+        self.film_yafaray.define_camera(param_map)
 
     @staticmethod
     def export_aa(scene_blender, param_map):
@@ -257,7 +259,7 @@ class FilmExporter:
             param_map.set_float("AA_threshold", 0.01)
 
     def export_render_settings(self, depsgraph, render_path, render_filename):
-        self.logger.printVerbose("Exporting Render Settings")
+        self.logger.print_verbose("Exporting Render Settings")
         scene_blender = scene_from_depsgraph(depsgraph)
         render = scene_blender.render
 
@@ -334,6 +336,8 @@ class FilmExporter:
         param_map.set_float("layer_toon_pre_smooth", scene_blender.yafaray4.passes.toon_pre_smooth)
         param_map.set_float("layer_toon_post_smooth", scene_blender.yafaray4.passes.toon_post_smooth)
         param_map.set_float("layer_toon_quantization", scene_blender.yafaray4.passes.toon_quantization)
+
+        self.film_yafaray = libyafaray4_bindings.Film(self.logger, self.surface_integrator_yafaray, self.film_name, param_map)
 
     def set_logging_and_badge_settings(self, scene_blender, param_map):
         self.logger.printVerbose("Exporting Logging and Badge settings")
