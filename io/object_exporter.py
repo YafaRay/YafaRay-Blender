@@ -368,12 +368,12 @@ def write_geometry(depsgraph, scene_yafaray, is_preview, obj_name, obj, matrix, 
             else:
                 co = uv_texture.active.data[index].uv
 
-            uv0 = scene_yafaray.addUv(object_id, co[0][0], co[0][1])
-            uv1 = scene_yafaray.addUv(object_id, co[1][0], co[1][1])
-            uv2 = scene_yafaray.addUv(object_id, co[2][0], co[2][1])
+            uv0 = scene_yafaray.add_uv(object_id, co[0][0], co[0][1])
+            uv1 = scene_yafaray.add_uv(object_id, co[1][0], co[1][1])
+            uv2 = scene_yafaray.add_uv(object_id, co[2][0], co[2][1])
 
             if len(f.vertices) == 4:
-                uv3 = scene_yafaray.addUv(object_id, co[3][0], co[3][1])
+                uv3 = scene_yafaray.add_uv(object_id, co[3][0], co[3][1])
                 if triangles_only:
                     scene_yafaray.add_triangle_with_uv(object_id, f.vertices[0], f.vertices[1], f.vertices[2], uv0,
                                                        uv1, uv2, material_id)

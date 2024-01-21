@@ -19,7 +19,7 @@ from .film_exporter import FilmExporter
 
 logger_render = libyafaray4_bindings.Logger()
 logger_preview = libyafaray4_bindings.Logger()
-scene_render = libyafaray4_bindings.Scene(logger_render, "Scene Render")
+scene_render = None #libyafaray4_bindings.Scene(logger_render, "Scene Render")
 scene_preview = libyafaray4_bindings.Scene(logger_render, "Scene Preview")
 surface_integrator_render = None  # libyafaray4_bindings.SurfaceIntegrator(logger, "SurfaceIntegrator1", param_map)
 surface_integrator_preview = None
@@ -52,6 +52,8 @@ class RenderEngine(bpy.types.RenderEngine):
     def update(self, bl_data=None, depsgraph=None):
         self.update_stats("", "Setting up render")
         print("update (is_preview=", self.is_preview, ")", self, bl_data, depsgraph)
+        global scene_render
+        scene_render = libyafaray4_bindings.Scene(logger_render, "Scene Render") # FIXME
         if self.is_preview:
             scene_yafaray = scene_preview
             logger = logger_preview
