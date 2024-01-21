@@ -524,9 +524,9 @@ class FilmExporter:
                 define_layer(scene_blender.yafaray4.passes.pass_subsurface_col, "Color", "SubsurfaceCol")
 
     def define_image_output(self, output_name, fp, scene_blender, bl_render, color_space, gamma, alpha_premultiply):
-        self.output_file, self.output, self.file_type = decide_output_file_name(fp, scene_blender.img_output)
+        output_file, output, file_type = decide_output_file_name(scene_blender, fp, scene_blender.img_output)
         param_map = libyafaray4_bindings.ParamMap()
-        param_map.set_string("image_path", str(self.output_file))
+        param_map.set_string("image_path", str(output_file))
         param_map.set_string("color_space", color_space)
         param_map.set_float("gamma", gamma)
         param_map.set_bool("alpha_premultiply", alpha_premultiply)
@@ -538,34 +538,36 @@ class FilmExporter:
         print(bl_render.image_settings.color_mode)
         param_map.set_bool("alpha_channel", bl_render.image_settings.color_mode == "RGBA")
         # self.film_yafaray.setLoggingAndBadgeSettings(self.scene_yafaray, self.scene_blender)
-        self.co = self.film_yafaray.createOutput(output_name, param_map)
+        self.film_yafaray.create_output(output_name, param_map)
 
     def update_blender_result(self, x, y, w, h, view_name, tiles, callback_name):
         # print(x, y, w, h, view_name, tiles, callback_name, scene.render.use_multiview)
         if self.scene_blender.render.use_multiview:
-            blender_result_buffers = self.begin_result(x, y, w, h, "", view_name)
+            blender_result_buffers = self.scene_blender.begin_result(x, y, w, h, "", view_name)
         else:
-            blender_result_buffers = self.begin_result(x, y, w, h)
+            blender_result_buffers = self.scene_blender.begin_result(x, y, w, h)
         for tile in tiles:
             tile_name, tile_bitmap = tile
-            print("tile_name:", tile_name, " tile_bitmap:", tile_bitmap, " blender_result_buffers:",
-                  blender_result_buffers)
+            # print("tile_name:", tile_name, " tile_bitmap:", tile_bitmap, " blender_result_buffers:",
+            #       blender_result_buffers)
             try:
                 blender_result_buffers.layers[0].passes[0].rect = tile_bitmap
             except Exception:
                 print("Exporter: Exception while rendering in " + callback_name + " function:")
                 traceback.print_exc()
-        self.end_result(blender_result_buffers)
+        self.scene_blender.end_result(blender_result_buffers)
 
     def highlight_callback(self, *args):
-        view_name, area_id, x_0, y_0, x_1, y_1, tiles = args
+        area_id, x_0, y_0, x_1, y_1, tiles = args
         w = x_1 - x_0
         h = y_1 - y_0
-        if view_name == "":  # In case we use Render 3D viewport with Views enabled, it will copy the result to all views
+        if self.film_name == "":
+            # In case we use Render 3D viewport with Views enabled, it will copy the result to all views
             for view in self.scene_blender.render.views:
                 self.update_blender_result(x_0, y_0, w, h, view.name, tiles, "highlightCallback")
-        else:  # Normal rendering
-            self.update_blender_result(x_0, y_0, w, h, view_name, tiles, "highlightCallback")
+        else:
+            # Normal rendering
+            self.update_blender_result(x_0, y_0, w, h, self.film_name, tiles, "highlightCallback")
 
     def flush_area_callback(self, *args):
         # view_name, area_id, x_0, y_0, x_1, y_1, tiles = args
@@ -573,11 +575,13 @@ class FilmExporter:
         view_name = "test"
         w = x_1 - x_0
         h = y_1 - y_0
-        if view_name == "":  # In case we use Render 3D viewport with Views enabled, it will copy the result to all views
+        if view_name == "":
+            # In case we use Render 3D viewport with Views enabled, it will copy the result to all views
             for view in self.scene_blender.render.views:
                 self.update_blender_result(x_0, y_0, w, h, view.name, tiles, "flushAreaCallback")
-        else:  # Normal rendering
-            self.update_blender_result(x_0, y_0, w, h, view_name, tiles, "flushAreaCallback")
+        else:
+            # Normal rendering
+            self.update_blender_result(x_0, y_0, w, h, self.film_name, tiles, "flushAreaCallback")
 
     def flush_callback(self, *args):
         w, h, tiles = args
@@ -595,7 +599,7 @@ class FilmExporter:
         # Creating RenderControl #
         render_control = libyafaray4_bindings.RenderControl()
         # Creating RenderMonitor #
-        render_monitor = libyafaray4_bindings.RenderMonitor(self.progress_callback)
+        render_monitor = libyafaray4_bindings.RenderMonitor(self.scene_blender.progress_callback)
         render_control.setForNormalStart()
         scene_modified_flags = self.scene_yafaray.checkAndClearModifiedFlags()
         self.scene_yafaray.preprocess(render_control, scene_modified_flags)

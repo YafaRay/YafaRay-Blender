@@ -1,10 +1,13 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import array
-from .integrator_exporter import export_integrator
+import tempfile
+import os
 
 # TODO: Use Blender enumerators if any
 import bpy
+
+from .integrator_exporter import export_integrator
 
 if bpy.app.version >= (2, 80, 0):
     import gpu
@@ -88,12 +91,76 @@ class RenderEngine(bpy.types.RenderEngine):
         film.export_render_settings(depsgraph, "", "")
 
         # Creating camera #
-        film.define_camera(scene_blender.camera, scene_blender.render.resolution_x, scene_blender.render.resolution_y, scene_blender.render.resolution_percentage, False, None) #FIXME
+        film.define_camera(scene_blender.camera, scene_blender.render.resolution_x, scene_blender.render.resolution_y,
+                           scene_blender.render.resolution_percentage, False, None)  # FIXME
 
         # Creating image output #
-        param_map.clear()
-        param_map.set_string("image_path", "./test01-output1.tga")
-        film.film_yafaray.create_output("output1_tga", param_map)
+        # param_map.clear()
+        # param_map.set_string("image_path", "./test01-output1.tga")
+        # film.film_yafaray.create_output("output1_tga", param_map)
+
+        if bpy.data.filepath == "":
+            render_filename = "render"
+            render_path = tempfile.gettempdir() + "/temp_render/"
+        else:
+            render_filename = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
+            render_path = "//" + render_filename + "_render/"
+
+        render_filename += " - " + str(scene_blender.frame_current)
+
+        if scene_blender.img_save_with_blend_file:
+            scene_blender.render.filepath = render_path
+            render_path = bpy.path.abspath(render_path)
+        else:
+            render_path = bpy.path.abspath(scene_blender.render.filepath)
+
+        render_path = os.path.realpath(render_path)
+        render_path = os.path.normpath(render_path)
+
+        if not os.path.exists(render_path):
+            os.mkdir(render_path)
+
+        color_space = film.calc_color_space(scene_blender)
+        gamma = film.calc_gamma(scene_blender)
+        alpha_premultiply = film.calc_alpha_premultiply(scene_blender)
+
+        if scene_blender.gs_type_render == "file":
+            # self.setInterface(libyafaray4_bindings.Interface())
+            # self.yi.setInputColorSpace("LinearRGB", 1.0)    #When rendering into Blender, color picker floating point data is already linear (linearized by Blender)
+            film.define_image_output("blender_file_output", render_path, scene_blender, scene_blender.render, color_space.blender, gamma.blender, alpha_premultiply.blender)
+            if scene_blender.yafaray4.logging.save_preset:
+                pass  # FIXME
+                #yafaray_presets.YAF_AddPresetBase.export_to_file(yafaray_presets.YAFARAY_OT_presets_renderset, self.outputFile)
+
+        elif scene_blender.gs_type_render == "xml" or scene_blender.gs_type_render == "c" or scene_blender.gs_type_render == "python":
+            output_file, output, file_type = film.define_image_output(render_path, scene_blender.gs_type_render)
+            # self.setInterface(libyafaray4_bindings.Interface(output_file))
+
+            input_color_values_color_space = "sRGB"
+            input_color_values_gamma = 1.0
+
+            if scene_blender.display_settings.display_device == "sRGB":
+                input_color_values_color_space = "sRGB"
+
+            elif scene_blender.display_settings.display_device == "XYZ":
+                input_color_values_color_space = "XYZ"
+
+            elif scene_blender.display_settings.display_device == "None":
+                input_color_values_color_space = "Raw_Manual_Gamma"
+                input_color_values_gamma = scene_blender.gs_gamma  #We only use the selected gamma if the output device is set to "None"
+
+            # self.yi.setInputColorSpace("LinearRGB", 1.0)    #Values from Blender, color picker floating point data are already linear (linearized by Blender)
+            film.define_image_output("xml_file_output", render_path, scene_blender, scene_blender.render, color_space.blender, gamma.blender, alpha_premultiply.blender)
+            #FIXME! self.yi.setXmlColorSpace(input_color_values_color_space, input_color_values_gamma)  #To set the XML interface to write the XML values with the correction included for the selected color space (and gamma if applicable)
+
+        else:
+            #self.setInterface(libyafaray4_bindings.Interface())
+            #self.yi.setInputColorSpace("LinearRGB", 1.0)    #When rendering into Blender, color picker floating point data is already linear (linearized by Blender)
+            if scene_blender.gs_secondary_file_output and not self.is_preview:
+                film.define_image_output("blender_secondary_output", render_path, scene_blender, scene_blender.render, color_space.secondary_output, gamma.secondary_output, alpha_premultiply.secondary_output)
+                if scene_blender.yafaray4.logging.save_preset:
+                    pass  # FIXME
+                    #yafaray_presets.YAF_AddPresetBase.export_to_file(yafaray_presets.YAFARAY_OT_presets_renderset, self.outputFile)
 
         # Creating RenderControl #
         render_control = libyafaray4_bindings.RenderControl()
@@ -108,7 +175,6 @@ class RenderEngine(bpy.types.RenderEngine):
                 self.update_progress(steps_done / steps_total)
             else:
                 self.update_progress(0.0)
-
 
         render_monitor = libyafaray4_bindings.RenderMonitor(monitor_callback)
 
