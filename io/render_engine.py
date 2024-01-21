@@ -101,7 +101,14 @@ class RenderEngine(bpy.types.RenderEngine):
         # Creating RenderMonitor #
 
         def monitor_callback(steps_total, steps_done, tag):
-            print("*PYTHON MONITOR CALLBACK*", steps_total, steps_done, tag)
+            # print("*PYTHON MONITOR CALLBACK*", steps_total, steps_done, tag)
+            self.update_stats("YafaRay Render: ", "{0}".format(tag))
+            # Now, Blender use same range to YafaRay
+            if steps_total > 0:
+                self.update_progress(steps_done / steps_total)
+            else:
+                self.update_progress(0.0)
+
 
         render_monitor = libyafaray4_bindings.RenderMonitor(monitor_callback)
 
