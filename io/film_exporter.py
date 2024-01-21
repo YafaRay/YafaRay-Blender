@@ -108,11 +108,12 @@ def get_render_coords(scene_blender):
 
 
 class FilmExporter:
-    def __init__(self, film_name, scene_blender, surface_integrator_yafaray, logger, is_preview):
+    def __init__(self, film_name, render_engine, scene_blender, surface_integrator_yafaray, logger, is_preview):
         self.scene_blender = scene_blender
         self.logger = logger
         self.is_preview = is_preview
         self.film_name = film_name
+        self.render_engine = render_engine
         self.surface_integrator_yafaray = surface_integrator_yafaray
         self.film_yafaray = None
 
@@ -338,6 +339,9 @@ class FilmExporter:
         param_map.set_float("layer_toon_quantization", scene_blender.yafaray4.passes.toon_quantization)
 
         self.film_yafaray = libyafaray4_bindings.Film(self.logger, self.surface_integrator_yafaray, self.film_name, param_map)
+        self.film_yafaray.set_flush_area_callback(self.flush_area_callback)
+        self.film_yafaray.set_flush_callback(self.flush_callback)
+        self.film_yafaray.set_highlight_area_callback(self.highlight_callback)
 
     def set_logging_and_badge_settings(self, scene_blender, param_map):
         self.logger.printVerbose("Exporting Logging and Badge settings")
@@ -543,19 +547,19 @@ class FilmExporter:
     def update_blender_result(self, x, y, w, h, view_name, tiles, callback_name):
         # print(x, y, w, h, view_name, tiles, callback_name, scene.render.use_multiview)
         if self.scene_blender.render.use_multiview:
-            blender_result_buffers = self.scene_blender.begin_result(x, y, w, h, "", view_name)
+            blender_result_buffers = self.render_engine.begin_result(x, y, w, h, "", view_name)
         else:
-            blender_result_buffers = self.scene_blender.begin_result(x, y, w, h)
+            blender_result_buffers = self.render_engine.begin_result(x, y, w, h)
         for tile in tiles:
             tile_name, tile_bitmap = tile
             # print("tile_name:", tile_name, " tile_bitmap:", tile_bitmap, " blender_result_buffers:",
             #       blender_result_buffers)
-            try:
-                blender_result_buffers.layers[0].passes[0].rect = tile_bitmap
-            except Exception:
-                print("Exporter: Exception while rendering in " + callback_name + " function:")
-                traceback.print_exc()
-        self.scene_blender.end_result(blender_result_buffers)
+            #try:
+            blender_result_buffers.layers[0].passes[0].rect = tile_bitmap
+            #except Exception:
+            #    print("Exporter: Exception while rendering in " + callback_name + " function:")
+            #    traceback.print_exc()
+        self.render_engine.end_result(blender_result_buffers)
 
     def highlight_callback(self, *args):
         area_id, x_0, y_0, x_1, y_1, tiles = args
@@ -593,9 +597,6 @@ class FilmExporter:
             self.update_blender_result(0, 0, w, h, view_name, tiles, "flushCallback")
 
     def render(self):
-        self.film_yafaray.setFlushAreaCallback(self.flush_area_callback)
-        self.film_yafaray.setFlushCallback(self.flush_callback)
-        self.film_yafaray.setHighlightAreaCallback(self.highlight_callback)
         # Creating RenderControl #
         render_control = libyafaray4_bindings.RenderControl()
         # Creating RenderMonitor #

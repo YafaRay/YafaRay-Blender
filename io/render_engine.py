@@ -85,7 +85,7 @@ class RenderEngine(bpy.types.RenderEngine):
         surface_integrator.define_volume_integrator(scene_yafaray, param_map)
 
         # Creating Film #
-        film = FilmExporter("Film1", scene_blender, surface_integrator, logger, self.is_preview)
+        film = FilmExporter("Film1", self, scene_blender, surface_integrator, logger, self.is_preview)
         param_map.clear()
         film.export_aa(scene_blender, param_map)
         film.export_render_settings(depsgraph, "", "")
@@ -184,10 +184,10 @@ class RenderEngine(bpy.types.RenderEngine):
         surface_integrator.preprocess(render_monitor, render_control, scene_yafaray)
         surface_integrator.render(render_control, render_monitor, film.film_yafaray)
 
-        if self.is_preview:
-            self.render_preview(scene_blender, size_x, size_y)
-        else:
-            self.render_scene(scene_blender, size_x, size_y)
+        #if self.is_preview:
+        #    self.render_preview(scene_blender, size_x, size_y)
+        #else:
+        #    self.render_scene(scene_blender, size_x, size_y)
         self.update_stats("", "Done!")
         print("render", self, depsgraph)
 
