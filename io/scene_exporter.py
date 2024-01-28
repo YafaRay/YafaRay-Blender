@@ -53,8 +53,8 @@ class SceneExporter:
         self.export_materials()
         self.export_objects()
 
-        if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable \
-                and bpy.data.scenes[0].yafaray.preview.preview_background == "world":
+        if self.is_preview and bpy.data.scenes[0].yafaray4.preview.enable \
+                and bpy.data.scenes[0].yafaray4.preview.preview_background == "world":
             export_world(bpy.data.scenes[0], self.scene_yafaray, self.logger, self.is_preview)
         else:
             export_world(self.scene_blender, self.scene_yafaray, self.logger, self.is_preview)

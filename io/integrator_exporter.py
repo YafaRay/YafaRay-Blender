@@ -14,8 +14,8 @@ def export_integrator(integrator_name, scene_blender, logger):
         param_map.set_bool("bg_transp_refract", False)
 
     param_map.set_int("raydepth", scene_blender.gs_ray_depth)
-    if scene_blender.name == "preview" and bpy.data.scenes[0].yafaray.preview.enable:
-        param_map.set_int("raydepth", bpy.data.scenes[0].yafaray.preview.preview_ray_depth)
+    if scene_blender.name == "preview" and bpy.data.scenes[0].yafaray4.preview.enable:
+        param_map.set_int("raydepth", bpy.data.scenes[0].yafaray4.preview.preview_ray_depth)
     param_map.set_int("shadowDepth", scene_blender.gs_shadow_depth)
     param_map.set_bool("transpShad", scene_blender.gs_transp_shad)
 

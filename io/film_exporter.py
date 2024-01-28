@@ -214,11 +214,11 @@ class FilmExporter:
         param_map.set_int("resx", x)
         param_map.set_int("resy", y)
 
-        if self.is_preview and bpy.data.scenes[0].yafaray.preview.enable:
-            # incl = bpy.data.scenes[0].yafaray.preview.camRotIncl
-            # azi = bpy.data.scenes[0].yafaray.preview.camRotAzi
-            rot = bpy.data.scenes[0].yafaray.preview.cam_rot
-            dist = bpy.data.scenes[0].yafaray.preview.cam_dist
+        if self.is_preview and bpy.data.scenes[0].yafaray4.preview.enable:
+            # incl = bpy.data.scenes[0].yafaray4.preview.camRotIncl
+            # azi = bpy.data.scenes[0].yafaray4.preview.camRotAzi
+            rot = bpy.data.scenes[0].yafaray4.preview.cam_rot
+            dist = bpy.data.scenes[0].yafaray4.preview.cam_dist
 
             # pos = (dist*math.sin(incl)*math.cos(azi), dist*math.sin(incl)*math.sin(azi), dist*math.cos(incl))
             # up = (math.sin(rotZ), 0, math.cos(rotZ))
@@ -255,8 +255,8 @@ class FilmExporter:
         param_map.set_float("AA_clamp_indirect", scene_blender.yafaray4.noise_control.clamp_indirect)
         param_map.set_bool("background_resampling", scene_blender.yafaray4.noise_control.background_resampling)
 
-        if scene_blender.name == "preview" and bpy.data.scenes[0].yafaray.preview.enable:
-            param_map.set_int("AA_passes", bpy.data.scenes[0].yafaray.preview.preview_aa_passes)
+        if scene_blender.name == "preview" and bpy.data.scenes[0].yafaray4.preview.enable:
+            param_map.set_int("AA_passes", bpy.data.scenes[0].yafaray4.preview.preview_aa_passes)
             param_map.set_float("AA_threshold", 0.01)
 
     def export_render_settings(self, depsgraph, render_path, render_filename):
@@ -285,7 +285,7 @@ class FilmExporter:
 
         param_map.set_bool("show_sam_pix", scene_blender.gs_show_sam_pix)
 
-        if scene_blender.name == "preview" and bpy.data.scenes[0].yafaray.preview.enable:
+        if scene_blender.name == "preview" and bpy.data.scenes[0].yafaray4.preview.enable:
             param_map.set_bool("show_sam_pix", False)
 
         param_map.set_int("tile_size", scene_blender.gs_tile_size)
