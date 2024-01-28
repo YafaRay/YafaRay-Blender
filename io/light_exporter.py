@@ -9,7 +9,7 @@ import mathutils
 from bpy.path import abspath
 from mathutils import Vector
 
-from ..util.math import multiply_matrix4x4_vector4, multiply_matrix3x3_vector3
+from ..util.math import multiply_matrix4x4_vector4
 
 
 def make_sphere(scene_yafaray, nu, nv, x, y, z, rad, mat):
@@ -191,10 +191,16 @@ def export_light(light_blender, scene_yafaray, logger, is_preview, matrix=None):
         corner2 = Vector((size_x / 2, size_y / 2, 0))
         corner3 = Vector((size_x / 2, -size_y / 2, 0))
 
-        point = multiply_matrix3x3_vector3(matrix, point)
-        corner1 = multiply_matrix3x3_vector3(matrix, corner1)
-        corner2 = multiply_matrix3x3_vector3(matrix, corner2)
-        corner3 = multiply_matrix3x3_vector3(matrix, corner3)
+        if bpy.app.version >= (2, 80, 0):
+            point = matrix @ point  # use reverse vector multiply order, API changed with rev. 38674
+            corner1 = matrix @ corner1  # use reverse vector multiply order, API changed with rev. 38674
+            corner2 = matrix @ corner2  # use reverse vector multiply order, API changed with rev. 38674
+            corner3 = matrix @ corner3  # use reverse vector multiply order, API changed with rev. 38674
+        else:
+            point = matrix * point  # use reverse vector multiply order, API changed with rev. 38674
+            corner1 = matrix * corner1  # use reverse vector multiply order, API changed with rev. 38674
+            corner2 = matrix * corner2  # use reverse vector multiply order, API changed with rev. 38674
+            corner3 = matrix * corner3  # use reverse vector multiply order, API changed with rev. 38674
 
         param_map = libyafaray4_bindings.ParamMap()
         if light.create_geometry:

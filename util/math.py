@@ -14,14 +14,3 @@ def multiply_matrix4x4_vector4(matrix, vector):
             result[i] = vector * matrix[i]  # use reverse vector multiply order, API changed with rev. 38674
 
     return result
-
-def multiply_matrix3x3_vector3(matrix, vector):
-    result = mathutils.Vector((0.0, 0.0, 0.0))
-    if bpy.app.version >= (2, 80, 0):
-        for i in range(3):
-            result[i] = vector @ matrix[i]  # use reverse vector multiply order, API changed with rev. 38674
-    else:
-        for i in range(3):
-            result[i] = vector * matrix[i]  # use reverse vector multiply order, API changed with rev. 38674
-
-    return result
