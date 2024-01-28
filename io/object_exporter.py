@@ -267,17 +267,18 @@ def write_geometry(depsgraph, scene_yafaray, is_preview, obj_name, obj, matrix, 
                 bpy.data.meshes.remove(mesh, do_unlink=False)
                 return
 
-    if bpy.app.version >= (2, 80, 0):
-        pass  # FIXME BLENDER >= v2.80
-    else:
-        # Check if the object has an orco mapped texture
-        for mat in [mmat for mmat in mesh.materials if mmat is not None]:
-            for m in [mtex for mtex in mat.texture_slots if mtex is not None]:
-                if m.texture_coords == 'ORCO':
-                    has_orco = True
-                    break
-            if has_orco:
+    # Check if the object has an orco mapped texture
+    for mat in [mmat for mmat in mesh.materials if mmat is not None]:
+        if bpy.app.version >= (2, 80, 0):
+            mat_texture_slots = mat.yafaray4.texture_slots
+        else:
+            mat_texture_slots = mat.texture_slots
+        for m in [mtex for mtex in mat_texture_slots if mtex is not None]:
+            if m.texture_coords == 'ORCO':
+                has_orco = True
                 break
+        if has_orco:
+            break
 
     # normalized vertex positions for orco mapping
     ov = []
