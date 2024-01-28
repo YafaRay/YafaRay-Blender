@@ -154,7 +154,7 @@ def write_mesh_light(depsgraph, scene_yafaray, logger, is_preview, obj):
     param_map.set_float("power", obj.ml_power)
     param_map.set_int("samples", obj.ml_samples)
     param_map.set_string("object_name", obj.name)
-    scene_yafaray.export_light(obj.name, param_map)
+    scene_yafaray.create_light(obj.name, param_map)
 
     matrix = obj.matrix_world.copy()
     write_geometry(depsgraph, scene_yafaray, is_preview, obj.name, obj, matrix, obj.pass_index, mat_name)
@@ -218,7 +218,7 @@ def write_volume_object(depsgraph, scene_yafaray, logger, obj):
     param_map.set_float("maxY", min(max(vec[1::3]), 1e10))
     param_map.set_float("maxZ", min(max(vec[2::3]), 1e10))
 
-    scene_yafaray.createVolumeRegion("VR.{0}-{1}".format(obj.name, str(obj.__hash__())), param_map)
+    scene_yafaray.create_volume_region("VR.{0}-{1}".format(obj.name, str(obj.__hash__())), param_map)
     if bpy.app.version >= (2, 80, 0):
         pass  # FIXME BLENDER >= v2.80
     else:
@@ -434,7 +434,7 @@ def write_geometry(depsgraph, scene_yafaray, is_preview, obj_name, obj, matrix, 
                     scene_yafaray.add_vertex_with_orcoTimeStep(object_id, v.co[0], v.co[1], v.co[2], ov[ind][0],
                                                                ov[ind][1], ov[ind][2], time_step)
                 else:
-                    scene_yafaray.add_vertexTimeStep(object_id, v.co[0], v.co[1], v.co[2], time_step)
+                    scene_yafaray.add_vertex_time_step(object_id, v.co[0], v.co[1], v.co[2], time_step)
             if bpy.app.version >= (2, 80, 0):
                 pass  # FIXME BLENDER >= v2.80
             else:

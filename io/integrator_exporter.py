@@ -104,3 +104,31 @@ def export_integrator(integrator_name, scene_blender, logger):
         param_map.set_bool("pmIRE", scene_blender.intg_pm_ire)
 
     return libyafaray4_bindings.SurfaceIntegrator(logger, integrator_name, param_map)
+
+
+def export_volume_integrator(surface_integrator, world, scene_yafaray, logger):
+    param_map = libyafaray4_bindings.ParamMap()
+    if world:
+        vint_type = world.v_int_type
+        logger.print_info("Exporting Volume Integrator: {0}".format(vint_type))
+
+        if vint_type == 'Single Scatter':
+            param_map.set_string("type", "SingleScatterIntegrator")
+            param_map.set_float("stepSize", world.v_int_step_size)
+            param_map.set_bool("adaptive", world.v_int_adaptive)
+            param_map.set_bool("optimize", world.v_int_optimize)
+
+        elif vint_type == 'Sky':
+            param_map.set_string("type", "SkyIntegrator")
+            param_map.set_float("turbidity", world.v_int_dsturbidity)
+            param_map.set_float("stepSize", world.v_int_step_size)
+            param_map.set_float("alpha", world.v_int_alpha)
+            param_map.set_float("sigma_t", world.v_int_scale)
+
+        else:
+            param_map.set_string("type", "none")
+    else:
+        param_map.set_string("type", "none")
+
+    surface_integrator.define_volume_integrator(scene_yafaray, param_map)
+    return True

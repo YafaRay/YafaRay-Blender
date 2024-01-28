@@ -7,7 +7,7 @@ import os
 # TODO: Use Blender enumerators if any
 import bpy
 
-from .integrator_exporter import export_integrator
+from .integrator_exporter import export_integrator, export_volume_integrator
 
 if bpy.app.version >= (2, 80, 0):
     import gpu
@@ -78,17 +78,12 @@ class RenderEngine(bpy.types.RenderEngine):
         size_x = int(scene_blender.render.resolution_x * scale)
         size_y = int(scene_blender.render.resolution_y * scale)
 
+        # Creating surface integrator #
         surface_integrator = export_integrator("SurfaceIntegrator1", scene_blender, logger)
-
-        # Creating volume integrator #
-        param_map = libyafaray4_bindings.ParamMap()
-        param_map.clear()
-        param_map.set_string("type", "none")
-        surface_integrator.define_volume_integrator(scene_yafaray, param_map)
 
         # Creating Film #
         film = FilmExporter("Film1", self, scene_blender, surface_integrator, logger, self.is_preview)
-        param_map.clear()
+        param_map = libyafaray4_bindings.ParamMap()
         film.export_aa(scene_blender, param_map)
         film.export_render_settings(depsgraph, "", "")
 
@@ -184,7 +179,14 @@ class RenderEngine(bpy.types.RenderEngine):
         render_control.set_for_normal_start()
         scene_modified_flags = scene_yafaray.check_and_clear_modified_flags()
         scene_yafaray.preprocess(render_control, scene_modified_flags)
+
+        # Creating volume integrator #
+        export_volume_integrator(surface_integrator, scene_blender.world, scene_yafaray, logger)
+
+        # Preprocess integrator
         surface_integrator.preprocess(render_monitor, render_control, scene_yafaray)
+
+        # Render
         surface_integrator.render(render_control, render_monitor, film.film_yafaray)
 
         #if self.is_preview:
