@@ -17,8 +17,8 @@ from ..util.io import scene_from_depsgraph
 from .scene_exporter import SceneExporter
 from .film_exporter import FilmExporter
 
-logger_render = libyafaray4_bindings.Logger()
-logger_preview = libyafaray4_bindings.Logger()
+logger_render = libyafaray4_bindings.Logger("")
+logger_preview = libyafaray4_bindings.Logger("Preview")
 scene_render = None #libyafaray4_bindings.Scene(logger_render, "Scene Render")
 scene_preview = libyafaray4_bindings.Scene(logger_render, "Scene Preview")
 surface_integrator_render = None  # libyafaray4_bindings.SurfaceIntegrator(logger, "SurfaceIntegrator1", param_map)
