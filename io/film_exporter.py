@@ -435,97 +435,105 @@ class FilmExporter:
             param_map.set_string("image_type", exported_image_type)
             param_map.set_string("exported_image_name", exported_image_name)
             param_map.set_string("exported_image_type", exported_image_type)
-            define_layer(param_map)
+            self.film_yafaray.define_layer(param_map)
 
         define_layer("combined", "ColorAlpha", "Combined")
 
         if scene_blender.yafaray4.passes.pass_enable:
-            if scene_blender.render.layers[0].use_pass_z:
+            if bpy.app.version >= (2, 80, 0):
+                blender_layer = scene_blender.view_layers[0]
+            else:
+                blender_layer = scene_blender.render.layers[0]
+
+            if blender_layer.use_pass_z:
                 define_layer(scene_blender.yafaray4.passes.pass_depth, "Gray", "Depth")
 
-            if scene_blender.render.layers[0].use_pass_vector:
+            if blender_layer.use_pass_vector:
                 define_layer(scene_blender.yafaray4.passes.pass_vector, "ColorAlpha", "Vector")
 
-            if scene_blender.render.layers[0].use_pass_normal:
+            if blender_layer.use_pass_normal:
                 define_layer(scene_blender.yafaray4.passes.pass_normal, "Color", "Normal")
 
-            if scene_blender.render.layers[0].use_pass_uv:
+            if blender_layer.use_pass_uv:
                 define_layer(scene_blender.yafaray4.passes.pass_uv, "Color", "UV")
 
-            if scene_blender.render.layers[0].use_pass_color:
-                define_layer(scene_blender.yafaray4.passes.pass_color, "ColorAlpha", "Color")
-
-            if scene_blender.render.layers[0].use_pass_emit:
+            if blender_layer.use_pass_emit:
                 define_layer(scene_blender.yafaray4.passes.pass_emit, "Color", "Emit")
 
-            if scene_blender.render.layers[0].use_pass_mist:
+            if blender_layer.use_pass_mist:
                 define_layer(scene_blender.yafaray4.passes.pass_mist, "Gray", "Mist")
 
-            if scene_blender.render.layers[0].use_pass_diffuse:
-                define_layer(scene_blender.yafaray4.passes.pass_diffuse, "Color", "Diffuse")
-
-            if scene_blender.render.layers[0].use_pass_specular:
-                define_layer(scene_blender.yafaray4.passes.pass_spec, "Color", "Spec")
-
-            if scene_blender.render.layers[0].use_pass_ambient_occlusion:
+            if blender_layer.use_pass_ambient_occlusion:
                 define_layer(scene_blender.yafaray4.passes.pass_ao, "Color", "AO")
 
-            if scene_blender.render.layers[0].use_pass_environment:
+            if blender_layer.use_pass_environment:
                 define_layer(scene_blender.yafaray4.passes.pass_env, "Color", "Env")
 
-            if scene_blender.render.layers[0].use_pass_indirect:
-                define_layer(scene_blender.yafaray4.passes.pass_indirect, "Color", "Indirect")
-
-            if scene_blender.render.layers[0].use_pass_shadow:
+            if blender_layer.use_pass_shadow:
                 define_layer(scene_blender.yafaray4.passes.pass_shadow, "Color", "Shadow")
 
-            if scene_blender.render.layers[0].use_pass_reflection:
-                define_layer(scene_blender.yafaray4.passes.pass_reflect, "Color", "Reflect")
-
-            if scene_blender.render.layers[0].use_pass_refraction:
-                define_layer(scene_blender.yafaray4.passes.pass_refract, "Color", "Refract")
-
-            if scene_blender.render.layers[0].use_pass_object_index:
+            if blender_layer.use_pass_object_index:
                 define_layer(scene_blender.yafaray4.passes.pass_index_ob, "Gray", "IndexOB")
 
-            if scene_blender.render.layers[0].use_pass_material_index:
+            if blender_layer.use_pass_material_index:
                 define_layer(scene_blender.yafaray4.passes.pass_index_ma, "Gray", "IndexMA")
 
-            if scene_blender.render.layers[0].use_pass_diffuse_direct:
-                define_layer(scene_blender.yafaray4.passes.pass_depth, "pass_DiffDir", "DiffDir")
+            if blender_layer.use_pass_diffuse_direct:
+                define_layer(scene_blender.yafaray4.passes.pass_depth, "Color", "DiffDir")
 
-            if scene_blender.render.layers[0].use_pass_diffuse_indirect:
+            if blender_layer.use_pass_diffuse_indirect:
                 define_layer(scene_blender.yafaray4.passes.pass_diff_ind, "Color", "DiffInd")
 
-            if scene_blender.render.layers[0].use_pass_diffuse_color:
+            if blender_layer.use_pass_diffuse_color:
                 define_layer(scene_blender.yafaray4.passes.pass_diff_col, "Color", "DiffCol")
 
-            if scene_blender.render.layers[0].use_pass_glossy_direct:
+            if blender_layer.use_pass_glossy_direct:
                 define_layer(scene_blender.yafaray4.passes.pass_gloss_dir, "Color", "GlossDir")
 
-            if scene_blender.render.layers[0].use_pass_glossy_indirect:
+            if blender_layer.use_pass_glossy_indirect:
                 define_layer(scene_blender.yafaray4.passes.pass_gloss_ind, "Color", "GlossInd")
 
-            if scene_blender.render.layers[0].use_pass_glossy_color:
+            if blender_layer.use_pass_glossy_color:
                 define_layer(scene_blender.yafaray4.passes.pass_gloss_col, "Color", "GlossCol")
 
-            if scene_blender.render.layers[0].use_pass_transmission_direct:
+            if blender_layer.use_pass_transmission_direct:
                 define_layer(scene_blender.yafaray4.passes.pass_trans_dir, "Color", "TransDir")
 
-            if scene_blender.render.layers[0].use_pass_transmission_indirect:
+            if blender_layer.use_pass_transmission_indirect:
                 define_layer(scene_blender.yafaray4.passes.pass_trans_ind, "Color", "TransInd")
 
-            if scene_blender.render.layers[0].use_pass_transmission_color:
+            if blender_layer.use_pass_transmission_color:
                 define_layer(scene_blender.yafaray4.passes.pass_trans_col, "Color", "TransCol")
 
-            if scene_blender.render.layers[0].use_pass_subsurface_direct:
+            if blender_layer.use_pass_subsurface_direct:
                 define_layer(scene_blender.yafaray4.passes.pass_subsurface_dir, "Color", "SubsurfaceDir")
 
-            if scene_blender.render.layers[0].use_pass_subsurface_indirect:
+            if blender_layer.use_pass_subsurface_indirect:
                 define_layer(scene_blender.yafaray4.passes.pass_subsurface_ind, "Color", "SubsurfaceInd")
 
-            if scene_blender.render.layers[0].use_pass_subsurface_color:
+            if blender_layer.use_pass_subsurface_color:
                 define_layer(scene_blender.yafaray4.passes.pass_subsurface_col, "Color", "SubsurfaceCol")
+
+            if bpy.app.version >= (2, 80, 0):
+                pass
+            else:
+                if blender_layer.use_pass_color:
+                    define_layer(scene_blender.yafaray4.passes.pass_color, "ColorAlpha", "Color")
+
+                if blender_layer.use_pass_diffuse:
+                    define_layer(scene_blender.yafaray4.passes.pass_diffuse, "Color", "Diffuse")
+
+                if blender_layer.use_pass_specular:
+                    define_layer(scene_blender.yafaray4.passes.pass_spec, "Color", "Spec")
+
+                if blender_layer.use_pass_indirect:
+                    define_layer(scene_blender.yafaray4.passes.pass_indirect, "Color", "Indirect")
+
+                if blender_layer.use_pass_reflection:
+                    define_layer(scene_blender.yafaray4.passes.pass_reflect, "Color", "Reflect")
+
+                if blender_layer.use_pass_refraction:
+                    define_layer(scene_blender.yafaray4.passes.pass_refract, "Color", "Refract")
 
     def define_image_output(self, output_name, fp, scene_blender, bl_render, color_space, gamma, alpha_premultiply):
         output_file, output, file_type = decide_output_file_name(scene_blender, fp, scene_blender.img_output)
@@ -555,7 +563,7 @@ class FilmExporter:
             # print("tile_name:", tile_name, " tile_bitmap:", tile_bitmap, " blender_result_buffers:",
             #       blender_result_buffers)
             #try:
-            blender_result_buffers.layers[0].passes[0].rect = tile_bitmap
+            blender_result_buffers.layers[0].passes[tile_name].rect = tile_bitmap
             #except Exception:
             #    print("Exporter: Exception while rendering in " + callback_name + " function:")
             #    traceback.print_exc()
@@ -597,6 +605,7 @@ class FilmExporter:
             self.update_blender_result(0, 0, w, h, view_name, tiles, "flushCallback")
 
     def render(self):
+        self.define_layers(self.depsgraph)
         # Creating RenderControl #
         render_control = libyafaray4_bindings.RenderControl()
         # Creating RenderMonitor #

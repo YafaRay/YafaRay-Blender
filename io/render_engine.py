@@ -180,6 +180,7 @@ class RenderEngine(bpy.types.RenderEngine):
 
         render_monitor = libyafaray4_bindings.RenderMonitor(monitor_callback)
 
+        film.define_layers(depsgraph)
         render_control.set_for_normal_start()
         scene_modified_flags = scene_yafaray.check_and_clear_modified_flags()
         scene_yafaray.preprocess(render_control, scene_modified_flags)
@@ -322,8 +323,76 @@ class RenderEngine(bpy.types.RenderEngine):
     #    print("update_script_node", self, bl_node)
 
     # Blender callback. Update the render passes that will be generated
-    def update_render_passes(self, scene_blender=None, bl_renderlayer=None):
-        print("update_render_passes", self, scene_blender, bl_renderlayer)
+    def update_render_passes(self, scene_blender=None, render_layer_blender=None):
+        # print("update_render_passes", self, scene_blender, render_layer_blender)
+        if render_layer_blender.use_pass_z:
+            self.register_pass(scene_blender, render_layer_blender, 'Depth', 1, 'Z', 'VALUE')
+
+        if render_layer_blender.use_pass_vector:
+            self.register_pass(scene_blender, render_layer_blender, "Vector", 4, '', 'COLOR')
+
+        if render_layer_blender.use_pass_normal:
+            self.register_pass(scene_blender, render_layer_blender, "Normal", 3, '', 'COLOR')
+
+        if render_layer_blender.use_pass_uv:
+            self.register_pass(scene_blender, render_layer_blender, "UV", 3, '', 'COLOR')
+
+        if render_layer_blender.use_pass_emit:
+            self.register_pass(scene_blender, render_layer_blender, "Emit", 3, '', 'COLOR')
+
+        if render_layer_blender.use_pass_mist:
+            self.register_pass(scene_blender, render_layer_blender, "Mist", 1, 'Z', 'VALUE')
+
+        if render_layer_blender.use_pass_ambient_occlusion:
+            self.register_pass(scene_blender, render_layer_blender, 'AO', 3, '', 'COLOR')
+
+        if render_layer_blender.use_pass_environment:
+            self.register_pass(scene_blender, render_layer_blender, "Env", 3, '', 'COLOR')
+
+        if render_layer_blender.use_pass_shadow:
+            self.register_pass(scene_blender, render_layer_blender, "Shadow", 3, '', 'COLOR')
+
+        if render_layer_blender.use_pass_object_index:
+            self.register_pass(scene_blender, render_layer_blender, "IndexOB", 1, '', 'VALUE')
+
+        if render_layer_blender.use_pass_material_index:
+            self.register_pass(scene_blender, render_layer_blender, "IndexMA", 1, '', 'VALUE')
+
+        if render_layer_blender.use_pass_diffuse_direct:
+            self.register_pass(scene_blender, render_layer_blender, "DiffDir", 3, '', 'COLOR')
+
+        if render_layer_blender.use_pass_diffuse_indirect:
+            self.register_pass(scene_blender, render_layer_blender, "DiffInd", 3, '', 'COLOR')
+
+        if render_layer_blender.use_pass_diffuse_color:
+            self.register_pass(scene_blender, render_layer_blender, "DiffCol", 3, '', 'COLOR')
+
+        if render_layer_blender.use_pass_glossy_direct:
+            self.register_pass(scene_blender, render_layer_blender, "GlossDir", 3, '', 'COLOR')
+
+        if render_layer_blender.use_pass_glossy_indirect:
+            self.register_pass(scene_blender, render_layer_blender, "GlossInd", 3, '', 'COLOR')
+
+        if render_layer_blender.use_pass_glossy_color:
+            self.register_pass(scene_blender, render_layer_blender, "GlossCol", 3, '', 'COLOR')
+
+        if render_layer_blender.use_pass_transmission_direct:
+            self.register_pass(scene_blender, render_layer_blender, "TransDir", 3, '', 'COLOR')
+
+        if render_layer_blender.use_pass_transmission_indirect:
+            self.register_pass(scene_blender, render_layer_blender, "TransInd", 3, '', 'COLOR')
+
+        if render_layer_blender.use_pass_transmission_color:
+            self.register_pass(scene_blender, render_layer_blender, "TransCol", 3, '', 'COLOR')
+
+        if render_layer_blender.use_pass_subsurface_direct:
+            self.register_pass(scene_blender, render_layer_blender, "SubsurfaceDir", 3, '', 'COLOR')
+
+        if render_layer_blender.use_pass_subsurface_indirect:
+            self.register_pass(scene_blender, render_layer_blender, "SubsurfaceInd", 3, '', 'COLOR')
+
+        if render_layer_blender.use_pass_subsurface_color:
+            self.register_pass(scene_blender, render_layer_blender, "SubsurfaceCol", 3, '', 'COLOR')
 
 
 class CustomDrawData:
