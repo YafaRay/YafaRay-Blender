@@ -344,7 +344,7 @@ class FilmExporter:
         self.film_yafaray.set_highlight_area_callback(self.highlight_callback)
 
     def set_logging_and_badge_settings(self, scene_blender, param_map):
-        self.logger.printVerbose("Exporting Logging and Badge settings")
+        self.logger.print_verbose("Exporting Logging and Badge settings")
         param_map.set_bool("badge_draw_render_settings", scene_blender.yafaray4.logging.draw_render_settings)
         param_map.set_bool("badge_draw_aa_noise_settings", scene_blender.yafaray4.logging.draw_aa_noise_settings)
         param_map.set_bool("logging_save_txt", scene_blender.yafaray4.logging.save_log)
@@ -426,7 +426,7 @@ class FilmExporter:
         return color_space(color_space_1, color_space_2)
 
     def define_layers(self, depsgraph):
-        self.logger.printVerbose("Exporting Render Passes settings")
+        self.logger.print_verbose("Exporting Render Passes settings")
         scene_blender = scene_from_depsgraph(depsgraph)
 
         def define_layer(layer_type, exported_image_type, exported_image_name):

@@ -63,9 +63,9 @@ def export_instance(scene_yafaray, logger, obj_to_world_matrix, base_obj_name):
     # mat4.transpose() --> not needed anymore: matrix indexing changed with Blender rev.42816
     # o2w = get4x4Matrix(mat4)
     # yi.addInstance(base_obj_name, o2w)
-    instance_id = scene_yafaray.createInstance()
+    instance_id = scene_yafaray.create_instance()
     object_id = scene_yafaray.get_object_id(base_obj_name)
-    logger.printVerbose(
+    logger.print_verbose(
         "Exporting Instance ID={0} of {1} [Object ID = {2}]".format(instance_id, base_obj_name, object_id))
     scene_yafaray.add_instance_object(instance_id, object_id)
     add_instance_matrix(scene_yafaray, logger, instance_id, obj_to_world, 0.0)
@@ -73,7 +73,7 @@ def export_instance(scene_yafaray, logger, obj_to_world_matrix, base_obj_name):
 
 
 def add_instance_matrix(scene_yafaray, logger, instance_id, obj_to_world_matrix, instance_time):
-    logger.printVerbose("Adding matrix to Instance ID={0} at time {1}".format(instance_id, instance_time))
+    logger.print_verbose("Adding matrix to Instance ID={0} at time {1}".format(instance_id, instance_time))
     # print(obj_to_world_matrix)
     obj_to_world = obj_to_world_matrix.to_4x4()
     scene_yafaray.add_instance_matrix(instance_id,

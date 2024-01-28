@@ -162,7 +162,7 @@ class SceneExporter:
             else:
                 obj_is_instancer = obj.is_duplicator
             if obj_is_instancer:
-                self.logger.printVerbose("Processing duplis for: {0}".format(obj.name))
+                self.logger.print_verbose("Processing duplis for: {0}".format(obj.name))
                 frame_current = self.scene_blender.frame_current
                 if self.scene_blender.use_instances:
                     time_steps = 3
@@ -219,7 +219,7 @@ class SceneExporter:
 
             # Exporting objects with shared mesh data blocks as instances
             elif obj.data.users > 1 and self.scene_blender.use_instances:
-                self.logger.printVerbose("Processing shared mesh data node object: {0}".format(obj.name))
+                self.logger.print_verbose("Processing shared mesh data node object: {0}".format(obj.name))
                 if obj.data.name not in base_names:
                     base_names.add(obj.data.name)
                     export_instance_base(self.depsgraph, self.scene_yafaray, self.logger, self.is_preview, obj)
