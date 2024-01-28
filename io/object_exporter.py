@@ -233,26 +233,17 @@ def write_geometry(depsgraph, scene_yafaray, is_preview, obj_name, obj, matrix, 
 
     if bpy.app.version >= (2, 80, 0):
         mesh = obj.to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph)
+        mesh.update(calc_edges=False, calc_edges_loose=False)
+        mesh.calc_loop_triangles()
         # test for UV Map after BMesh API changes
-        uv_texture = mesh.uv_layers if 'uv_layers' in dir(mesh) else mesh.uv_textures
+        uv_texture = mesh.uv_layers if 'uv_layers' in dir(mesh) else None
         # test for faces after BMesh API changes
-        face_attr = 'polygons' if 'polygons' in dir(mesh) else 'loop_triangles'
-        has_uv = False  # FIXME BLENDER >= v2.80 #len(uv_texture) > 0  # check for UV's
-
-        if face_attr == 'loop_triangles':
-            if not mesh.loop_triangles and mesh.polygons:
-                # BMesh API update, check for tessellated faces, if needed calculate them...
-                mesh.update(calc_edges=False, calc_edges_loose=False, calc_loop_triangles=True)
-
-            if not mesh.loop_triangles:
-                # if there are no faces, no need to write geometry, remove mesh data then...
-                bpy.data.meshes.remove(mesh, do_unlink=False)
-                return
-        else:
-            if not mesh.polygons:
-                # if there are no faces, no need to write geometry, remove mesh data then...
-                bpy.data.meshes.remove(mesh, do_unlink=False)
-                return
+        face_attr = "loop_triangles"
+        has_uv = len(uv_texture) > 0  # check for UV's
+        if not mesh.loop_triangles:
+            # if there are no faces, no need to write geometry, remove mesh data then...
+            bpy.data.meshes.remove(mesh, do_unlink=False)
+            return
     else:
         mesh = obj.to_mesh(scene_blender, True, 'RENDER')
         # test for UV Map after BMesh API changes
@@ -353,48 +344,73 @@ def write_geometry(depsgraph, scene_yafaray, is_preview, obj_name, obj, matrix, 
     else:
         triangles_only = False
 
-    for index, f in enumerate(getattr(mesh, face_attr)):
-        if f.use_smooth:
-            is_smooth = True
+    if bpy.app.version >= (2, 80, 0):
+        for tri in mesh.loop_triangles:
+            if tri.use_smooth:
+                is_smooth = True
 
-        if obj_mat:
-            material_yafaray = obj_mat
-        else:
-            material_yafaray = get_face_material(mesh.materials, f.material_index, obj.material_slots)
-        material_id = scene_yafaray.get_material_id(material_yafaray)
-        if has_uv:
-            if is_preview:
-                co = uv_texture[0].data[index].uv
+            if obj_mat:
+                material_yafaray = obj_mat
             else:
-                co = uv_texture.active.data[index].uv
+                material_yafaray = get_face_material(mesh.materials, tri.material_index, obj.material_slots)
+            material_id = scene_yafaray.get_material_id(material_yafaray)
 
-            uv0 = scene_yafaray.add_uv(object_id, co[0][0], co[0][1])
-            uv1 = scene_yafaray.add_uv(object_id, co[1][0], co[1][1])
-            uv2 = scene_yafaray.add_uv(object_id, co[2][0], co[2][1])
+            if has_uv:
+                if is_preview:
+                    uv_layer_data = uv_texture[0].data
+                else:
+                    uv_layer_data = uv_texture.active.data
 
-            if len(f.vertices) == 4:
-                uv3 = scene_yafaray.add_uv(object_id, co[3][0], co[3][1])
-                if triangles_only:
+                uv0 = scene_yafaray.add_uv(object_id, uv_layer_data[tri.loops[0]].uv[0], uv_layer_data[tri.loops[0]].uv[1])
+                uv1 = scene_yafaray.add_uv(object_id, uv_layer_data[tri.loops[1]].uv[0], uv_layer_data[tri.loops[1]].uv[1])
+                uv2 = scene_yafaray.add_uv(object_id, uv_layer_data[tri.loops[2]].uv[0], uv_layer_data[tri.loops[2]].uv[1])
+
+                scene_yafaray.add_triangle_with_uv(object_id, tri.vertices[0], tri.vertices[1], tri.vertices[2], uv0,
+                                                       uv1, uv2, material_id)
+            else:
+                scene_yafaray.add_triangle(object_id, tri.vertices[0], tri.vertices[1], tri.vertices[2], material_id)
+    else:
+        for index, f in enumerate(getattr(mesh, face_attr)):
+            if f.use_smooth:
+                is_smooth = True
+
+            if obj_mat:
+                material_yafaray = obj_mat
+            else:
+                material_yafaray = get_face_material(mesh.materials, f.material_index, obj.material_slots)
+            material_id = scene_yafaray.get_material_id(material_yafaray)
+            if has_uv:
+                if is_preview:
+                    co = uv_texture[0].data[index].uv
+                else:
+                    co = uv_texture.active.data[index].uv
+                uv0 = scene_yafaray.add_uv(object_id, co[0][0], co[0][1])
+                uv1 = scene_yafaray.add_uv(object_id, co[1][0], co[1][1])
+                uv2 = scene_yafaray.add_uv(object_id, co[2][0], co[2][1])
+
+                if len(f.vertices) == 4:
+                    uv3 = scene_yafaray.add_uv(object_id, co[3][0], co[3][1])
+                    if triangles_only:
+                        scene_yafaray.add_triangle_with_uv(object_id, f.vertices[0], f.vertices[1], f.vertices[2], uv0,
+                                                           uv1, uv2, material_id)
+                        scene_yafaray.add_triangle_with_uv(object_id, f.vertices[0], f.vertices[2], f.vertices[3], uv0,
+                                                           uv2, uv3, material_id)
+                    else:
+                        scene_yafaray.add_quad_with_uv(object_id, f.vertices[0], f.vertices[1], f.vertices[2],
+                                                       f.vertices[3], uv0, uv1, uv2, uv3, material_id)
+                else:
                     scene_yafaray.add_triangle_with_uv(object_id, f.vertices[0], f.vertices[1], f.vertices[2], uv0,
                                                        uv1, uv2, material_id)
-                    scene_yafaray.add_triangle_with_uv(object_id, f.vertices[0], f.vertices[2], f.vertices[3], uv0,
-                                                       uv2, uv3, material_id)
-                else:
-                    scene_yafaray.add_quad_with_uv(object_id, f.vertices[0], f.vertices[1], f.vertices[2],
-                                                   f.vertices[3], uv0, uv1, uv2, uv3, material_id)
             else:
-                scene_yafaray.add_triangle_with_uv(object_id, f.vertices[0], f.vertices[1], f.vertices[2], uv0,
-                                                   uv1, uv2, material_id)
-        else:
-            if len(f.vertices) == 4:
-                if triangles_only:
+                if len(f.vertices) == 4:
+                    if triangles_only:
+                        scene_yafaray.add_triangle(object_id, f.vertices[0], f.vertices[1], f.vertices[2], material_id)
+                        scene_yafaray.add_triangle(object_id, f.vertices[0], f.vertices[2], f.vertices[3], material_id)
+                    else:
+                        scene_yafaray.add_quad(object_id, f.vertices[0], f.vertices[1], f.vertices[2], f.vertices[3],
+                                               material_id)
+                else:
                     scene_yafaray.add_triangle(object_id, f.vertices[0], f.vertices[1], f.vertices[2], material_id)
-                    scene_yafaray.add_triangle(object_id, f.vertices[0], f.vertices[2], f.vertices[3], material_id)
-                else:
-                    scene_yafaray.add_quad(object_id, f.vertices[0], f.vertices[1], f.vertices[2], f.vertices[3],
-                                           material_id)
-            else:
-                scene_yafaray.add_triangle(object_id, f.vertices[0], f.vertices[1], f.vertices[2], material_id)
 
     auto_smooth_enabled = mesh.use_auto_smooth
     auto_smooth_angle = mesh.auto_smooth_angle
