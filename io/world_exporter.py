@@ -26,8 +26,8 @@ def export_world(scene_blender, scene_yafaray, logger, is_preview):
     param_map = libyafaray4_bindings.ParamMap()
 
     if bg_type == 'Texture':
-        if world.active_texture is not None:
-            world_tex = world.active_texture
+        if world.background_texture is not None:
+            world_tex = world.background_texture
             logger.print_info("World Texture, name: {0}".format(world_tex.name))
         else:
             world_tex = None
