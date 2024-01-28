@@ -20,7 +20,7 @@ from .film_exporter import FilmExporter
 logger_render = libyafaray4_bindings.Logger("")
 logger_preview = libyafaray4_bindings.Logger("Preview")
 scene_render = None #libyafaray4_bindings.Scene(logger_render, "Scene Render")
-scene_preview = libyafaray4_bindings.Scene(logger_render, "Scene Preview")
+scene_preview = None #libyafaray4_bindings.Scene(logger_render, "Scene Preview")
 surface_integrator_render = None  # libyafaray4_bindings.SurfaceIntegrator(logger, "SurfaceIntegrator1", param_map)
 surface_integrator_preview = None
 film_render = None  # libyafaray4_bindings.Film(logger, yaf_surface_integrator, "Film1", param_map)
@@ -53,11 +53,13 @@ class RenderEngine(bpy.types.RenderEngine):
         self.update_stats("", "Setting up render")
         print("update (is_preview=", self.is_preview, ")", self, bl_data, depsgraph)
         global scene_render
-        scene_render = libyafaray4_bindings.Scene(logger_render, "Scene Render") # FIXME
+        global scene_preview
         if self.is_preview:
+            scene_preview = libyafaray4_bindings.Scene(logger_preview, "Scene Preview")  # FIXME: this needs to be handled differently for scene reuse
             scene_yafaray = scene_preview
             logger = logger_preview
         else:
+            scene_render = libyafaray4_bindings.Scene(logger_render, "Scene Render")  # FIXME: this needs to be handled differently for scene reuse
             scene_yafaray = scene_render
             logger = logger_render
         scene_exporter = SceneExporter(self.is_preview, depsgraph, scene_yafaray, logger)

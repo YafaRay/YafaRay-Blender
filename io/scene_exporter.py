@@ -24,21 +24,24 @@ class SceneExporter:
         self.material_set = set()
 
         if self.is_preview:
-            self.logger.set_console_verbosity_level(self.logger.log_level_from_string("debug"))
+            self.logger.set_console_verbosity_level(self.logger.log_level_from_string("verbose"))
             self.logger.set_log_verbosity_level(self.logger.log_level_from_string("debug"))
             self.scene_blender.bg_transp = False  # to correct alpha problems in preview roughglass
             self.scene_blender.bg_transp_refract = False  # to correct alpha problems in preview roughglass
         else:
             self.logger.enable_print_date_time(self.scene_blender.yafaray4.logging.log_print_date_time)
-            # self.logger.set_console_verbosity_level(self.logger.log_level_from_string(self.scene_blender.yafaray4.logging.console_verbosity))
-            self.logger.set_console_verbosity_level(self.logger.log_level_from_string("debug"))
+            self.logger.set_console_verbosity_level(
+                self.logger.log_level_from_string(self.scene_blender.yafaray4.logging.console_verbosity)
+            )
             self.logger.set_log_verbosity_level(
-                self.logger.log_level_from_string(self.scene_blender.yafaray4.logging.log_verbosity))
+                self.logger.log_level_from_string(self.scene_blender.yafaray4.logging.log_verbosity)
+            )
             self.logger.print_info("YafaRay-Blender (v" + YAFARAY_BLENDER_VERSION + ")")
             self.logger.print_info(
-                "Exporter: Blender version " + bpy.app.version_string + "  Build information: " + bpy.app.build_platform.decode(
-                    "utf-8") + ", " + bpy.app.build_type.decode("utf-8") + ", branch: " + bpy.app.build_branch.decode(
-                    "utf-8") + ", hash: " + bpy.app.build_hash.decode("utf-8"))
+                "Exporter: Blender version " + bpy.app.version_string +
+                "  Build information: " + bpy.app.build_platform.decode("utf-8") + ", " +
+                bpy.app.build_type.decode("utf-8") + ", branch: " + bpy.app.build_branch.decode("utf-8") +
+                ", hash: " + bpy.app.build_hash.decode("utf-8"))
             self.logger.print_info(
                 "Exporter: System information: " + platform.processor() + ", " + platform.platform())
 
@@ -155,6 +158,9 @@ class SceneExporter:
                     o.is_visible(self.scene_blender) or o.hide) and self.object_on_visible_layer(o) and (
                                        o.type in {'MESH', 'SURFACE', 'CURVE', 'FONT', 'EMPTY'})]
         for obj in visible_objects:
+            #self.logger.print_error("TEST: obj.name: {0}".format(obj.name))
+            #if("checkers" in obj.name):
+            #    continue #FIXME!
             # Exporting dupliObjects as instances, also check for dupliObject
             # type 'EMPTY' and don't export them as geometry
             if bpy.app.version >= (2, 80, 0):
