@@ -52,9 +52,9 @@ def export_object(depsgraph, scene_yafaray, logger, is_preview, obj):
 
 
 def export_instance_base(depsgraph, scene_yafaray, logger, is_preview, obj):
-    logger.print_info("Exporting Base Mesh: {0}".format(obj.name))
+    logger.print_info("Exporting Base Mesh: {0}".format(obj.data.name))
     # Create this geometry object as a base object for instances
-    write_geometry(depsgraph, scene_yafaray, is_preview, obj.name, obj, None, obj.pass_index,
+    write_geometry(depsgraph, scene_yafaray, is_preview, obj.data.name, obj, None, obj.pass_index,
                    None, "normal", True)  # We want the vertices in object space
 
 
@@ -66,7 +66,7 @@ def export_instance(scene_yafaray, logger, obj_to_world_matrix, base_obj_name):
     instance_id = scene_yafaray.create_instance()
     object_id = scene_yafaray.get_object_id(base_obj_name)
     logger.print_verbose(
-        "Exporting Instance ID={0} of {1} [Object ID = {2}]".format(instance_id, base_obj_name, object_id))
+        "Exporting Instance ID={0} of '{1}' [Object ID = {2}]".format(instance_id, base_obj_name, object_id))
     scene_yafaray.add_instance_object(instance_id, object_id)
     add_instance_matrix(scene_yafaray, logger, instance_id, obj_to_world, 0.0)
     return instance_id
