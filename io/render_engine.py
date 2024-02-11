@@ -3,6 +3,9 @@
 import array
 import tempfile
 import os
+import threading
+import time
+
 
 # TODO: Use Blender enumerators if any
 import bpy
@@ -69,6 +72,7 @@ class RenderEngine(bpy.types.RenderEngine):
     # This is the method called by Blender for both final renders (F12) and
     # small preview for materials, world and lights.
     def render(self, depsgraph):
+        print("render", self, depsgraph)
         scene_blender = scene_from_depsgraph(depsgraph)
         if self.is_preview:
             scene_yafaray = scene_preview
@@ -189,14 +193,25 @@ class RenderEngine(bpy.types.RenderEngine):
         surface_integrator.preprocess(render_monitor, render_control, scene_yafaray)
 
         # Render
-        surface_integrator.render(render_control, render_monitor, film.film_yafaray)
+        # surface_integrator.render(render_control, render_monitor, film.film_yafaray)
+
+        t = threading.Thread(target=surface_integrator.render, args=(render_control, render_monitor, film.film_yafaray,))
+        t.start()
+
+        while t.is_alive() and not self.test_break():
+            time.sleep(0.2)
+
+        if t.is_alive():
+            self.update_stats("",
+                              "Aborting, please wait for all pending tasks to complete (progress in console log)...")
+            render_control.cancel()
+            t.join()
 
         #if self.is_preview:
         #    self.render_preview(scene_blender, size_x, size_y)
         #else:
         #    self.render_scene(scene_blender, size_x, size_y)
         self.update_stats("", "Done!")
-        print("render", self, depsgraph)
 
     # In this example, we fill the preview renders with a flat green color.
     def render_preview(self, scene_blender, size_x, size_y):
