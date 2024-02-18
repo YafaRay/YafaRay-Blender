@@ -169,7 +169,6 @@ class RenderEngine(bpy.types.RenderEngine):
         render_control = libyafaray4_bindings.RenderControl()
 
         # Creating RenderMonitor #
-
         def monitor_callback(steps_total, steps_done, tag):
             # print("*PYTHON MONITOR CALLBACK*", steps_total, steps_done, tag)
             self.update_stats("YafaRay Render: ", "{0}".format(tag))
@@ -193,8 +192,6 @@ class RenderEngine(bpy.types.RenderEngine):
         surface_integrator.preprocess(render_monitor, render_control, scene_yafaray)
 
         # Render
-        # surface_integrator.render(render_control, render_monitor, film.film_yafaray)
-
         t = threading.Thread(target=surface_integrator.render, args=(render_control, render_monitor, film.film_yafaray,))
         t.start()
 

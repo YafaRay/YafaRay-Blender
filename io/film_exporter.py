@@ -603,27 +603,3 @@ class FilmExporter:
                 self.update_blender_result(0, 0, w, h, view.name, tiles, "flushCallback")
         else:  # Normal rendering
             self.update_blender_result(0, 0, w, h, view_name, tiles, "flushCallback")
-
-    def render(self):
-        self.define_layers(self.depsgraph)
-        # Creating RenderControl #
-        render_control = libyafaray4_bindings.RenderControl()
-        # Creating RenderMonitor #
-        render_monitor = libyafaray4_bindings.RenderMonitor(self.scene_blender.progress_callback)
-        render_control.setForNormalStart()
-        scene_modified_flags = self.scene_yafaray.checkAndClearModifiedFlags()
-        self.scene_yafaray.preprocess(render_control, scene_modified_flags)
-        self.integrator_yafaray.preprocess(render_monitor, render_control, self.scene_yafaray)
-        self.integrator_yafaray.render(render_control, render_monitor, self.film_yafaray)
-        return  # FIXME!!!
-        t = threading.Thread(target=self.yaf_integrator, args=(self.scene_yafaray, progressCallback,))
-        t.start()
-
-        while t.is_alive() and not self.test_break():
-            time.sleep(0.2)
-
-        if t.is_alive():
-            self.update_stats("",
-                              "Aborting, please wait for all pending tasks to complete (progress in console log)...")
-            self.scene_yafaray.cancelRendering()
-            t.join()
