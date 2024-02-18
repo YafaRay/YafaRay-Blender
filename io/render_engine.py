@@ -20,6 +20,16 @@ from ..util.io import scene_from_depsgraph
 from .scene_exporter import SceneExporter
 from .film_exporter import FilmExporter
 
+if __name__ == "__main__":  # Only used when editing and testing "live" within Blender Text Editor. If needed,
+    # before running Blender set the environment variable "PYTHONPATH" with the path to the directory where the
+    # "libyafaray4_bindings" compiled module is installed on. Assuming that the YafaRay-Plugin exporter is installed
+    # in a folder named "yafaray4" within the addons Blender directory
+    # noinspection PyUnresolvedReferences
+    from yafaray4 import global_vars
+else:
+    from .. import global_vars
+
+
 logger_render = libyafaray4_bindings.Logger("")
 logger_preview = libyafaray4_bindings.Logger("Preview")
 scene_render = None #libyafaray4_bindings.Scene(logger_render, "Scene Render")
@@ -95,7 +105,7 @@ class RenderEngine(bpy.types.RenderEngine):
 
         # Creating camera #
         film.define_camera(scene_blender.camera, scene_blender.render.resolution_x, scene_blender.render.resolution_y,
-                           scene_blender.render.resolution_percentage, False, None)  # FIXME
+                           scene_blender.render.resolution_percentage, global_vars.use_view_to_render, global_vars.view_matrix)
 
         # Creating image output #
         # param_map.clear()
@@ -208,6 +218,8 @@ class RenderEngine(bpy.types.RenderEngine):
         #    self.render_preview(scene_blender, size_x, size_y)
         #else:
         #    self.render_scene(scene_blender, size_x, size_y)
+        if global_vars.use_view_to_render:
+            global_vars.use_view_to_render = False
         self.update_stats("", "Done!")
 
     # In this example, we fill the preview renders with a flat green color.
