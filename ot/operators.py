@@ -18,12 +18,25 @@ else:
     from .. import global_vars
 
 
+def find_node_editor_area(context):
+    node_editor_area = None
+    for area in context.window_manager.windows[-1].screen.areas:
+        if area.type == 'NODE_EDITOR':
+            node_editor_area = area
+            break
+    if node_editor_area is None:
+        bpy.ops.screen.userpref_show("INVOKE_DEFAULT")
+        node_editor_area = context.window_manager.windows[-1].screen.areas[0]
+        node_editor_area.type = "NODE_EDITOR"
+    return node_editor_area
+
+
 class CreateNode(Operator):
     bl_idname = "yafaray4.new_node_tree"
     bl_label = "Create YafaRay Node Tree"
     bl_description = "Creates a new YafaRay Node Tree"
 
-    # noinspection PyUnusedLocal
+    # noinspection PyUnusedLocal,PyMethodMayBeStatic
     def execute(self, context):
         bpy.ops.node.new_node_tree(type="YAFARAY4_NODE_TREE")
         return {'FINISHED'}
@@ -34,21 +47,13 @@ class NewMaterial(Operator):
     bl_label = "Create New Material"
     bl_description = "Creates a new YafaRay material or clones existing selected material"
 
-    # noinspection PyUnusedLocal
+    # noinspection PyUnusedLocal,PyMethodMayBeStatic
     def execute(self, context):
         if context.material is not None:
             context.active_object.active_material = context.material.copy()
             if context.material.yafaray_nodes is not None:
                 context.active_object.active_material.yafaray_nodes = context.material.yafaray_nodes.copy()
-                node_editor_area = None
-                for area in context.window_manager.windows[-1].screen.areas:
-                    if area.type == 'NODE_EDITOR':
-                        node_editor_area = area
-                        break
-                if node_editor_area is None:
-                    bpy.ops.screen.userpref_show("INVOKE_DEFAULT")
-                    node_editor_area = context.window_manager.windows[-1].screen.areas[0]
-                    node_editor_area.type = "NODE_EDITOR"
+                node_editor_area = self.find_node_editor_area(context)
                 node_editor_area.spaces[0].tree_type = 'YAFARAY4_NODE_TREE'
                 node_editor_area.spaces[0].node_tree = bpy.data.node_groups[
                     context.active_object.active_material.yafaray_nodes.name]
@@ -67,15 +72,7 @@ class ShowNodeTreeWindow(Operator):
 
     # noinspection PyUnusedLocal
     def execute(self, context):
-        node_editor_area = None
-        for area in context.window_manager.windows[-1].screen.areas:
-            if area.type == 'NODE_EDITOR':
-                node_editor_area = area
-                break
-        if node_editor_area is None:
-            bpy.ops.screen.userpref_show("INVOKE_DEFAULT")
-            node_editor_area = context.window_manager.windows[-1].screen.areas[0]
-            node_editor_area.type = "NODE_EDITOR"
+        node_editor_area = self.find_node_editor_area(context)
         node_editor_area.spaces[0].tree_type = 'ShaderNodeTree'
         node_editor_area.spaces[0].shader_type = self.shader_type
         return {'FINISHED'}
@@ -87,7 +84,7 @@ class SelectTextureEditionPanelMaterial(Operator):
     bl_label = "Select Material Texture Edition Panel"
     bl_description= "Select Material Texture Edition Panel"
 
-    # noinspection PyUnusedLocal
+    # noinspection PyUnusedLocal,PyMethodMayBeStatic
     def execute(self, context):
         context.scene.yafaray4.texture_edition_panel = 'MATERIAL'
         context.space_data.context = context.space_data.context  # To force redrawing the preview panel
@@ -100,7 +97,7 @@ class SelectTextureEditionPanelWorld(Operator):
     bl_label = "Select World Texture Edition Panel"
     bl_description = "Select World Texture Edition Panel"
 
-    # noinspection PyUnusedLocal
+    # noinspection PyUnusedLocal,PyMethodMayBeStatic
     def execute(self, context):
         context.scene.yafaray4.texture_edition_panel = 'WORLD'
         context.space_data.context = context.space_data.context  # To force redrawing the preview panel
@@ -113,7 +110,7 @@ class SelectTextureEditionPanelTexture(Operator):
     bl_label = "Select Generic Texture Edition Panel"
     bl_description = "Select Generic Texture Edition Panel"
 
-    # noinspection PyUnusedLocal
+    # noinspection PyUnusedLocal,PyMethodMayBeStatic
     def execute(self, context):
         context.scene.yafaray4.texture_edition_panel = 'TEXTURE'
         context.space_data.context = context.space_data.context  # To force redrawing the preview panel
@@ -127,7 +124,7 @@ class ShowTextureWindow(Operator):
     bl_description = "Shows the YafaRay Texture Parameters Window for the selected texture"
     texture_name = StringProperty()
 
-    # noinspection PyUnusedLocal
+    # noinspection PyUnusedLocal,PyMethodMayBeStatic
     def execute(self, context):
         if context.space_data.context == 'WORLD':
             context.scene.yafaray4.texture_edition_panel = 'WORLD'
@@ -136,7 +133,7 @@ class ShowTextureWindow(Operator):
         context.space_data.context = 'TEXTURE'
         return {'FINISHED'}
 
-    # noinspection PyUnusedLocal
+    # noinspection PyUnusedLocal,PyMethodMayBeStatic
     # def execute(self, context):
     #     properties_screen_area = None
     #     for area in context.window_manager.windows[-1].screen.areas:
@@ -168,7 +165,7 @@ class WorldGetSunPosition(Operator):
     bl_label = "From( get position )"
     bl_description = "Get the position of the sun from the selected light location"
 
-    # noinspection PyUnusedLocal
+    # noinspection PyUnusedLocal,PyMethodMayBeStatic
     def execute(self, context):
         warning_message = sun_pos_angle(mode="get", val="position")
         if warning_message:
@@ -183,7 +180,7 @@ class WorldGetSunAngle(Operator):
     bl_label = "From( get angle )"
     bl_description = "Get the position of the sun from selected light angle"
 
-    # noinspection PyUnusedLocal
+    # noinspection PyUnusedLocal,PyMethodMayBeStatic
     def execute(self, context):
         warning_message = sun_pos_angle(mode="get", val="angle")
         if warning_message:
@@ -198,7 +195,7 @@ class WorldUpdateSunPositionAndAngle(Operator):
     bl_label = "From( update sun )"
     bl_description = "Update the position and angle of selected light in 3D View according to GUI values"
 
-    # noinspection PyUnusedLocal
+    # noinspection PyUnusedLocal,PyMethodMayBeStatic
     def execute(self, context):
         warning_message = sun_pos_angle(mode="update")
         if warning_message:
@@ -260,7 +257,7 @@ def check_scene_lights():
     scene = bpy.context.scene
     world = scene.world
 
-    # expand fuction for include light from 'add sun' or 'add skylight' in sunsky or sunsky2 mode    
+    # expand function for include light from 'add sun' or 'add skylight' in sunsky or sunsky2 mode
     have_lights = False
     # use light create with sunsky, sunsky2 or with use ibl ON
     if world.bg_add_sun or world.bg_background_light or world.bg_use_ibl:
